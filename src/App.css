@@ -1,7 +1,12 @@
-.App {
-  text-align: center;
-}
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap');
 
+.App {
+  /* text-align: center; */
+  min-height: 100vh;
+}
+.MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
