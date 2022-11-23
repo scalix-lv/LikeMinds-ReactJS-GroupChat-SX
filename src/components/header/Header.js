@@ -158,7 +158,7 @@ export default function Header() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" sx={{boxShadow: "none"}}>
 
         <Toolbar style={{
             height: "72px",

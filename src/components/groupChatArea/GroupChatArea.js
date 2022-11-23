@@ -1,18 +1,28 @@
 import { Box } from '@mui/material'
 import { styled } from '@mui/system'
 import React from 'react'
+import RegularBox from '../channelGroups/RegularBox'
+import Input from '../InputComponent/Input'
 import Tittle from './tittle/Tittle'
-const StyledBox = styled(Box)({
-    backgroundColor: "#F1E8D5",
-    minHeight: "100vh"
+export const StyledBox = styled(Box)({
+    backgroundColor: "#FFFBF2",
+    minHeight: "100vh",
+    borderTop: "1px solid #EEEEEE",
+    display: "flex",
+    flexDirection: "column",
+    height: "100%"
+    // marginBottom: "8px"
 })
 function GroupChatArea() {
+  const chats = [{
+
+  }]
   return (
     <StyledBox>
-        <Tittle headerProps={{
-            title: "Founders Social",
-            memberCount: 5
-        }}/>
+        
+        <RegularBox/>
+        <div style={{flexGrow: 1}}/>
+        <Input/>
     </StyledBox>
   )
 }

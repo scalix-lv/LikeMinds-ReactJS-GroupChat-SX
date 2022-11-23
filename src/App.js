@@ -1,8 +1,13 @@
 import './App.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Header from './components/header/Header';
-import Block from './components/Block/Block';
+import Block from './components/Groups/Groups';
 import Main from './Main';
+import Groups from './components/Groups/Groups';
+import GroupInfo from './components/groupChatArea/GroupInfo';
+import GroupChatArea from './components/groupChatArea/GroupChatArea';
+import AcceptInvite from './components/groupChatArea/AcceptInvite';
+import PersonInfo from './components/groupChatArea/PersonInfo';
 
 const router = createBrowserRouter([
   {
@@ -15,7 +20,25 @@ const router = createBrowserRouter([
      },
      {
       path: 'groups',
-      element: null 
+      element: <Groups/>,
+      children: [
+        {
+          path: '/groups/main',
+          element: <GroupChatArea/>
+        },
+        {
+          path: '/groups/info',
+          element: <GroupInfo/>
+        },
+        {
+          path: "/groups/acceptInvite",
+          element: <AcceptInvite/>
+        },
+        {
+          path: "/groups/personalInfo",
+          element: <PersonInfo/>
+        }
+      ]
      },
      {
       path: 'events',
@@ -37,7 +60,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="App"  >
+    <div className="App">
       <RouterProvider router={router}/>
       {/* <Block/> */}
     </div>

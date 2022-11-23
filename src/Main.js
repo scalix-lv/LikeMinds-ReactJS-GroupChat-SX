@@ -5,14 +5,20 @@ import Header from './components/header/Header'
 import Sidenav from './components/sidenav/Sidenav'
 function Main() {
     return (
-        <div>
+        <div style={{
+            overflow: "hidden",
+            height: '100%'
+        }}>
             <Header />
-            <Grid container>
+            <Grid container >
                 <Grid item xs={1}>
-                    <Sidenav/>
+                    <Sidenav />
+                </Grid>
+                <Grid item xs={11}>
+                    <Outlet />
                 </Grid>
             </Grid>
-            <Outlet/>
+
         </div>
     )
 }
