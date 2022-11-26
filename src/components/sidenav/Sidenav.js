@@ -20,7 +20,7 @@ function Sidenav() {
       path: "forums",
       Icon: SaveAsIcon
 
-    }, 
+    },  
     {
       title: "Groups",
       path: "groups",
