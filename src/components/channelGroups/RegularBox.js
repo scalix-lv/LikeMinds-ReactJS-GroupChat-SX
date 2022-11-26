@@ -16,46 +16,32 @@ function RegularBox() {
             userId: "SASH"
         }
     ]
-  return (
-    <div style={{
-        padding: "24px 96px 12px 24px"
-    }}>
-        <DateSpecifier/>
-
-       {
-        msgBoxes.map((msg, msgIndex)=>{
-            return <MessageBlock userId={msg.userId} key={msg.userId + msgIndex}/>
-        })
-       }
-    </div>
-  )
-}   
-
-
-function DateSpecifier(){
     return (
-        <div>
-            <div style={{
-                border: "0.5px solid #EEEEEE",
-                position: "relative",
-                marginBottom: "12px"
-            }}>
-                <span style={{
-                padding: "4px 12px",
-                fontSize: "10px",
-                fontWeight: "400",
-                borderRadius: "35%",
-                position: "absolute",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "#FFFFFF",
-                border: "1px solid #EEEEEE"
-            }}>
+        <div
+        className='pt-6 pr-24 pb-3 pl-6'
+        >
+            <DateSpecifier />
+
+            {
+                msgBoxes.map((msg, msgIndex) => {
+                    return <MessageBlock userId={msg.userId} key={msg.userId + msgIndex} />
+                })
+            }
+        </div>
+    )
+}
+
+
+function DateSpecifier() {
+    return (
+
+        <div className='border border-solid border-[#EEEEEE] relative mb-3'>
+            <span className="border-[#EEEEEE] border-solid border py-1 px-3 text-[10px] font-normal rounded-[35%] absolute left-[50%] translate-y-[-50%] bg-white">
                 Yesterday
             </span>
-            </div>
-            
         </div>
+
+
     )
 }
 

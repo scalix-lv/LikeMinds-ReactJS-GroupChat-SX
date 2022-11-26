@@ -160,25 +160,17 @@ export default function Header() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{boxShadow: "none"}}>
 
-        <Toolbar style={{
-            height: "72px",
-            backgroundColor: "#FFFFFF",
-            padding: "0 30px",
-        }}>
+        <Toolbar className='h-18 bg-white px-0 py-7.5'>
 
 
           <img src={logo}/>
           
           <Navigation/>
-          <Box style={{flexGrow: 1}}/>
+          <Box className='grow'/>
           
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Box className='xs:hidden md:flex'>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} style={{
-                backgroundColor: "gray",
-                borderRadius: "50%",
-                padding: "04px"
-              }}>
+              <Badge className='bg-gray-500 rounded-full p-1' badgeContent={4}>
                 <MailIcon style={{
                     fontSize: "18px"
                 }}/>
@@ -190,16 +182,10 @@ export default function Header() {
               color="inherit"
             >
               <Badge badgeContent={4} 
-              style={{
-                backgroundColor: "gray",
-                borderRadius: "50%",
-                padding: "04px"
-              }}
+              className='bg-gray-500 rounded-full p-1'
               >
                 <NotificationsIcon 
-                style={{
-                    fontSize: "18px"
-                }}/>
+                className='text-lg'/>
               </Badge>
             </IconButton>
             <IconButton
@@ -214,7 +200,7 @@ export default function Header() {
               <AccountCircle />
             </IconButton>
           </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+          <Box className='xs:hidden md:flex' >
             <IconButton
               size="large"
               aria-label="show more"

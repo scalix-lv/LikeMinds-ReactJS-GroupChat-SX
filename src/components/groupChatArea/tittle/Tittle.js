@@ -21,13 +21,13 @@ const TitleBox = styled(Box)({
 function Tittle({ headerProps }) {
     return (
 
-        <Box sx={{ display: "flex" }}>
+        <Box className='flex'>
             <TitleBox>
                 <TitleArea title={headerProps.title} memberCount={headerProps.memberCount} />
                 <Gap />
                 <OptionArea />
             </TitleBox>
-            <Box sx={{ flexGrow: 1 }} />
+            <Box className='flex'/>
         </Box>
 
     )
@@ -35,26 +35,22 @@ function Tittle({ headerProps }) {
 
 function TitleArea({ title, memberCount }) {
     return (
-        <Box sx={{
-            textAlign: "left"
-        }}>
+        <Box className='text-left'>
 
             {/* For Group Title */}
-            <Typography component={'p'} sx={{
+            <span component={'p'}
+            className="font-semibold text-xl leading-6"
+            sx={{
                 fontFamily: "Lato",
-                fontWeight: 600,
-                fontSize: '20px',
-                lineHeight: '24px'
-            }}>{title ? title : null}</Typography>
+            }}>{title ? title : null}</span>
 
 
             {/* For Group Members */}
 
-            <Typography component={'p'} sx={{
+            <Typography component={'p'}
+            className="text-sm font-normal leading-[14.5px]"
+            sx={{
                 fontFamily: "Lato",
-                fontSize: "12px",
-                fontWeight: "500",
-                lineHeight: "14.5px"
             }}>{memberCount ? memberCount : null} members</Typography>
         </Box>
     )

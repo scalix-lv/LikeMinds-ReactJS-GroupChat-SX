@@ -1,55 +1,53 @@
-import './App.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Header from './components/header/Header';
-import Block from './components/Groups/Groups';
 import Main from './Main';
 import Groups from './components/Groups/Groups';
 import GroupInfo from './components/groupChatArea/GroupInfo';
 import GroupChatArea from './components/groupChatArea/GroupChatArea';
 import AcceptInvite from './components/groupChatArea/AcceptInvite';
 import PersonInfo from './components/groupChatArea/PersonInfo';
-
+import { addedByMePath, directMessagePath, eventsPath, forumPath, groupAcceptInvitePath, groupInfoPath, groupMainPath, groupPath, groupPersonalInfoPath, mainPath } from './routes';
+ 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: mainPath,
     element: <Main/>,
     children: [
      {
-      path: 'forums',
+      path: forumPath,
       element: null 
      },
      {
-      path: 'groups',
+      path: groupPath,
       element: <Groups/>,
       children: [
         {
-          path: '/groups/main',
+          path: groupMainPath,
           element: <GroupChatArea/>
         },
         {
-          path: '/groups/info',
+          path: groupInfoPath,
           element: <GroupInfo/>
         },
         {
-          path: "/groups/acceptInvite",
+          path: groupAcceptInvitePath,
           element: <AcceptInvite/>
         },
         {
-          path: "/groups/personalInfo",
+          path: groupPersonalInfoPath,
           element: <PersonInfo/>
         }
       ]
      },
      {
-      path: 'events',
+      path: eventsPath,
       element: null 
      },
      {
-      path: 'direct-messages',
+      path: directMessagePath,
       element: null 
      },
      {
-      path: 'added-by-me',
+      path: addedByMePath,
       element: null 
      }
     ]

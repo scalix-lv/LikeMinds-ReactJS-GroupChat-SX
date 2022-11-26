@@ -19,11 +19,7 @@ const StyledInputWriteComment = styled(TextField)({
 
 function Input() {
     return (
-        <Box sx={{
-            padding: "20px 40px",
-            backgroundColor: "#FFFFFF",
-            padding: "12px 25px"
-        }}>
+        <Box className='py-3 px-6 bg-white '>
 
             <InputSearchField/>
             <InputOptions/>
@@ -75,9 +71,7 @@ function InputOptions(){
         }
     ]
     return (
-        <Box sx={{
-            display: "flex"
-        }}>
+        <Box className='flex'>
             {
                 optionArr.map((option, optionIndex)=>{
                     return (

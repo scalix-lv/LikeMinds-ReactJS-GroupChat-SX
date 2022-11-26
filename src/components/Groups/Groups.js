@@ -2,26 +2,19 @@
 import { Grid } from '@mui/material'
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import ChannelGroups from '../channelGroups/ChannelGroups'
-import GroupChatArea from '../groupChatArea/GroupChatArea'
-import Sidenav from '../sidenav/Sidenav'
 import CurrentGroups from './GroupsAndInvitations/CurrentGroups'
 import SearchbarGroups from './SearchBar/SearchBarGroups'
 import Tittle from '../groupChatArea/tittle/Tittle'
 import { StyledBox } from '../groupChatArea/GroupChatArea'
 function Groups() {
-  function setHeight(){
-    const t = (window.innerHeight - 72).toString() + "px"
-    console.log(t)
-    return t
-  }
+  // function setHeight(){
+  //   const t = (window.innerHeight - 72).toString() + "px"
+  //   console.log(t)
+  //   return t
+  // }
   return (
     <Grid container>
-        <Grid item xs={4} sx={{
-          border: "1px solid #EEEEEE",
-          textAlign: "center",
-          // height: setHeight()
-        }}>
+        <Grid item xs={4} className="text-center border-gray border">
 
           {/* Search Bar */}
           <SearchbarGroups/>

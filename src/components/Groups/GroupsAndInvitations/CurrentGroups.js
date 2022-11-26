@@ -1,5 +1,5 @@
 import { Box, Button, Collapse, IconButton, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -28,12 +28,12 @@ function CurrentGroups() {
         }
     ]
 
-    
+
     return (
         <Box sx={
             {
-                
-                
+
+
             }
         }>
             {
@@ -61,40 +61,26 @@ function CurrentGroups() {
 
 function GroupTile({ title, newUnread }) {
     return (
-        <Box
+        <Box className='flex justify-between p-[18px] border border-solid border-[#EEEEEE]'
             sx={{
                 backgroundColor: newUnread > 0 ? "#ECF3FF" : "#FFFFFF",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "18px 18px",
-                border: "1px solid #EEEEEE",
+
             }}
         >
-            <Typography component={'span'}
+            <Typography component={'span'} className="text-base font-normal"
                 sx={{
                     color: newUnread > 0 ? "#3884F7" : "#323232",
-                    fontSize: "16px",
-                    fontWeight: 400
                 }}
             >
                 {title}
                 {newUnread <= 0 ? (
-                    <span style={{
-                        backgroundColor: "#FFEFC6",
-                        padding: "4px",
-                        color: "#F6BD2A",
-                        fontSize: "10px",
-                        fontWeight: 500,
-                        margin: "4px"
-                    }}>
+                    <span className='bg-[#FFEFC6] p-1 text-[#F6BD2A] text-[10px] font-medium m-1'>
                         Private
                     </span>
                 ) : null}
             </Typography>
-            <Typography component={'span'} sx={{
+            <Typography component={'span'} className="text-sm font-light" sx={{
                 color: newUnread > 0 ? "#3884F7" : "#323232",
-                fontSize: "12px",
-                fontWeight: 300
             }}>
                 {newUnread > 0 ? (<>{newUnread} new messages</>) : null}
             </Typography>
@@ -105,46 +91,26 @@ function GroupTile({ title, newUnread }) {
 
 function GroupInviteTile({ title, groupType }) {
     return (
-        <Box
-            sx={{
-                backgroundColor: "#FFFFFF",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "18px 18px",
-                border: "1px solid #EEEEEE",
-            }}
+        <Box className='bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE]'
+
         >
             <Box>
                 <Typography component={'p'}
-                    sx={{
-                        color: "#ADADAD",
-                        fontSize: "12px",
-                        fontWeight: 400,
-                        textAlign: "left"
-                    }}
+                    className="text-[#ADADAD] text-sm text-left font-normal"
+
                 >
                     You have been invited to
 
                 </Typography>
 
 
-                <Typography component={'p'}
-                    sx={{
-                        color: "#323232",
-                        fontSize: "16px",
-                        fontWeight: 400
-                    }}
+                <Typography component={'p'} className="text-[#323232] text-base font-normal"
+
                 >
                     {title}
                     {groupType === "private" ? (
-                        <span style={{
-                            backgroundColor: "#FFEFC6",
-                            padding: "4px",
-                            color: "#F6BD2A",
-                            fontSize: "10px",
-                            fontWeight: 500,
-                            margin: "4px"
-                        }}>
+                        <span className='bg-[#FFEFC6] p-1 text-[#F6BD2A] text-[10px] font-medium m-1'
+                        >
                             Private
                         </span>
                     ) : null}
@@ -153,21 +119,15 @@ function GroupInviteTile({ title, groupType }) {
 
             <Box>
                 <IconButton disableRipple={true}>
-                    <CloseIcon sx={{
-                        backgroundColor: "#F9F9F9",
-                        color: "#ADADAD",
-                        padding: "8px",
-                        borderRadius: "50%"
-                    }} />
+                    <CloseIcon
+                        className='bg-[#F9F9F9] text-[#ADADAD] p-2 rounder-full'
+                    />
                 </IconButton>
 
                 <IconButton disableRipple={true}>
-                    <DoneIcon sx={{
-                        backgroundColor: "#E0FFDF",
-                        color: "#83D381",
-                        padding: "8px",
-                        borderRadius: "50%"
-                    }} />
+                    <DoneIcon
+                        className='bg-[#E0FFDF] text-[#83D381] p-2 rounded-full'
+                    />
                 </IconButton>
             </Box>
 
@@ -175,7 +135,7 @@ function GroupInviteTile({ title, groupType }) {
     )
 }
 
-function PublicGroup({groupTitle}) {
+function PublicGroup({ groupTitle }) {
     const [shouldOpen, setShouldOpen] = useState(true)
     function handleCollapse() {
         setShouldOpen(!shouldOpen)
@@ -187,16 +147,12 @@ function PublicGroup({groupTitle}) {
     console.log(publicGroups)
     return (
         <Box>
-            <Box sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "14px 18px "
-
-            }}>
-                <Typography component={"span"} sx={{
-                    fontSize: "20px",
-                    fontWeight: 500,
-                }}>
+            <Box
+                className='flex justify-between px-3.5 py-[18px]'
+            >
+                <Typography component={"span"}
+                    className="text-4 font-medium"
+                >
                     All Public Groups
                 </Typography>
 
@@ -209,13 +165,12 @@ function PublicGroup({groupTitle}) {
             </Box>
             <Collapse
                 in={shouldOpen}
-                sx={{
-                    border: "1px solid #EEEEEE"
-                }}>
+                className="border border-solid border-[#EEEEEE]"
+            >
                 {
-                    publicGroups.map((group, groupIndex)=>{
+                    publicGroups.map((group, groupIndex) => {
                         return (
-                            <PublicGroupTile key={group.groupTitle + groupIndex} groupTitle={group.groupTitle + " " + groupIndex}/>
+                            <PublicGroupTile key={group.groupTitle + groupIndex} groupTitle={group.groupTitle + " " + groupIndex} />
                         )
                     })
                 }
@@ -226,16 +181,12 @@ function PublicGroup({groupTitle}) {
 
 function PublicGroupTile({ groupTitle }) {
     return (
-        <Box sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "14px 18px ",
-            alignItems: "center "
-        }}>
-            <Typography component={"span"} sx={{
-                fontSize: "16px",
-                fontWeight: 400,
-            }}>
+        <Box
+            className='flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b'
+        >
+            <Typography component={"span"}
+                className="text-base font-normal"
+            >
                 {groupTitle}
             </Typography>
 

@@ -8,10 +8,12 @@ function MessageBlock({
 
     const currentUser = "NASH"
   return (
-    <Box sx={{
-        display: "flex",
+    <Box
+    className='flex py-2 px-0'
+    sx={{
+        
         flexDirection: userId === currentUser ? 'row-reverse' : 'row',
-        padding: '8px 0',
+        
     }}>
         <MessageBox userId={userId} username={userId} messageString={"Hello"} time={"10:15pm"}/>
     </Box>

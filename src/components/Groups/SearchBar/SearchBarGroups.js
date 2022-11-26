@@ -9,38 +9,33 @@ function SearchbarGroups() {
   const [searchString, setSearchString] = useState("")
 
   return (
-    <Box
-      sx={{
-        padding: "24px 8px 6px 8px",
-        display: "flex",
-        justifyContent: "space-evenly",
-        margin: "12px 0px"
-      }}
+    <Box className='pt-1.5 px-4 pb-1.5  flex justify-between my-3 mx-0'
     >
       <TextField 
-
+        className='mr-4'
         InputProps={{
           startAdornment: (
-            <InputAdornment sx={{
-              marginRight: "8px"
-            }}>
-              <SearchIcon sx={{
-                color: "#000000"
-              }}/>
+            <InputAdornment className='mr-2'>
+              <SearchIcon className='text-black'/>
             </InputAdornment>
           ),
-          endAdornment: searchString.length > 100 ? (
-            <InputAdornment sx={{
-              marginRight: "8px"
-            }}>
+          endAdornment: searchString.length > 1 ? (
+            <InputAdornment className='mr-8'>
               <CloseIcon />
             </InputAdornment>
           ): null,
           sx: {
             fontFamily: "Lato",
-            backgroundColor: "#F5F5F5",
-            width: "310px"
+            
+          },
+
+          className: "bg-[#F5F5F5] w-[310px] text-md leading-3 p-1",
+          inputProps:{
+            style: {
+              padding: "8px"
+            }
           }
+          
         }}
         
         value={searchString}
@@ -50,17 +45,9 @@ function SearchbarGroups() {
         />
         <IconButton
         disableRipple={true}
-        sx={{
-          padding: "12px",
-          border: "1px solid #EEEEEE",
-          borderRadius: "12px",
-          margin: "0 12px",
-        }}>
-          <FilterListIcon sx={{
-            fontSize: "32px",
-            color: "#000000",
-            
-          }}/>
+        className="p-3 border-0.5 border-[#F5F5F5] rounder-[12px] mx-3 my-0"
+        >
+          <FilterListIcon className='text-[32px] text-[#000000]'/>
         </IconButton>
     </Box>
   )

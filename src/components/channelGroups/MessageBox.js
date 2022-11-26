@@ -8,9 +8,9 @@ function MessageBox({
     userId
 }) {
     return (
-        <Box sx={{
-            display: "flex",
-        }}>
+        <Box
+        className='flex'
+        >
             <StringBox username={username} messageString={messageString} time={time} userId={userId} />
             <MoreOptions />
         </Box>
@@ -19,21 +19,20 @@ function MessageBox({
 
 function StringBox({ username, messageString, time, userId }) {
     return (
-        <Box sx={{
-            display: 'flex',
-            justifyContent: "space-between",
-            padding: "16px 20px 16px 20px",
-            width: "280px",
+        <Box 
+        className='flex justify-between py-4 px-5 w-[280px] rounded-[10px]'
+        sx={{
+            
             background: userId === "NASH" ? "#ECF3FF" : "#FFFFFF",
-            borderRadius: "10px"
+            
         }}>
 
             <Box>
-                <Typography component={'p'} fontWeight={700} fontSize={12} fontFamily={"Lato"}>
+                <Typography component={'p'} fontWeight={700} fontSize={12} >
                     {username}
                 </Typography>
 
-                <Typography component={'p'} fontWeight={300} fontSize={14} fontFamily={"Lato"}>
+                <Typography component={'p'} fontWeight={300} fontSize={14} >
                     {messageString}
                 </Typography>
             </Box>

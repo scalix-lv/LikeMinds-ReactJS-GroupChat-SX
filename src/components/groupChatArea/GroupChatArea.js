@@ -4,6 +4,9 @@ import React from 'react'
 import RegularBox from '../channelGroups/RegularBox'
 import Input from '../InputComponent/Input'
 import Tittle from './tittle/Tittle'
+
+
+// Exported Styled Box
 export const StyledBox = styled(Box)({
     backgroundColor: "#FFFBF2",
     minHeight: "100vh",
@@ -11,7 +14,6 @@ export const StyledBox = styled(Box)({
     display: "flex",
     flexDirection: "column",
     height: "100%"
-    // marginBottom: "8px"
 })
 function GroupChatArea() {
   const chats = [{
@@ -21,7 +23,7 @@ function GroupChatArea() {
     <StyledBox>
         
         <RegularBox/>
-        <div style={{flexGrow: 1}}/>
+        <div className='grow'/>
         <Input/>
     </StyledBox>
   )

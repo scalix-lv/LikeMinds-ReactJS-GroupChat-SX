@@ -5,10 +5,7 @@ import Header from './components/header/Header'
 import Sidenav from './components/sidenav/Sidenav'
 function Main() {
     return (
-        <div style={{
-            overflow: "hidden",
-            height: '100%'
-        }}>
+        <div className='overflow-hidden h-full'>
             <Header />
             <Grid container >
                 <Grid item xs={1}>
