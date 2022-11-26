@@ -42,7 +42,7 @@ function PersonInfo() {
             className='ml-3 mt-4'
             >
                 <Box>
-                    <AccountCircleIcon fontSize='56px' />
+                    <AccountCircleIcon fontSize='large' />
                 </Box>
                 <p 
                 className='text-base font-bold my-2 mx-0 text-[#323232]'>
@@ -56,20 +56,17 @@ function PersonInfo() {
                         return (
                             <MediaIcon
                             className='m-1 text-4xl'
+                            fontSize='medium'
                             />
                         )
                     })
                    }
                 </Box>
-                <Typography sx={{
-                    fontFamily: "Lato"
-                }} fontSize={"14px"} fontWeight={400} color={"#323232"} marginTop={2}>
+                <Typography  fontSize={"14px"} fontWeight={400} color={"#323232"} marginTop={2}>
                     An organized and enthusiastic designer, whose life has been nothing but a series of unplanned and unexpected events. I enjoy working on topics that are out of the box and that would let me come up with innovative ideas.
                 </Typography>
 
-                <Typography sx={{
-                    fontFamily: "Lato"
-                }} fontSize={"16px"} fontWeight={700} color={"#323232"} marginTop={2}>
+                <Typography  fontSize={"16px"} fontWeight={700} color={"#323232"} marginTop={2}>
                     Founder of <a href='#'
                     className='text-[#734AC7]'
                     >
@@ -84,9 +81,7 @@ function PersonInfo() {
                 >
                     <p
                     className='font-bold text-2xl'
-                        style={{
-                            fontFamily: 'Lato',
-                        }}
+                       
                     >
                         Find them in
                     </p>
@@ -107,10 +102,10 @@ function InfoTile({ index, title, buttontitle }) {
 
     return (
         <Box 
-        className='bg-white py-2 px-4 flex justify-center items-center border-0.5 border-solid border-[#EEEEEE] mb-2'>
+        className='bg-white py-2 px-4 flex justify-center items-center border border-solid border-[#EEEEEE] mb-2'>
             <Box>
                 <p 
-                className='mt-1 mx-0 mb-2'
+                className='mt-0 mx-0 mb-1'
                 >
                     <span 
                     className='text-[#323232] text-base font-semibold'

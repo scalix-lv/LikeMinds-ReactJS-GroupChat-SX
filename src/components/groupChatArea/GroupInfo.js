@@ -26,9 +26,7 @@ function GroupInfo() {
                 <IconButton>
                     <KeyboardBackspaceIcon />
                 </IconButton>
-                <Typography sx={{
-                    fontFamily: "Lato"
-                }} fontSize={"20px"} fontWeight={700} color={"#3884F7"}>
+                <Typography  fontSize={"20px"} fontWeight={700} color={"#3884F7"}>
                     Group Info
                 </Typography>
             </Box>
@@ -37,9 +35,7 @@ function GroupInfo() {
                 marginLeft: "12px"
             }}>
                 This group is a community of people working in start- ups coming together to help each other.
-                <Typography sx={{
-                    fontFamily: "Lato"
-                }} fontSize={"16px"} fontWeight={700} color={"#323232"} marginTop={2}>
+                <Typography  fontSize={"16px"} fontWeight={700} color={"#323232"} marginTop={2}>
                     Participants
                 </Typography>
 
@@ -63,14 +59,14 @@ function GroupInfo() {
 function ParticipantTile({ index }) {
 
     return (
-        <Box className="py-3 mx-2 border-gray-500 flex justify-center items-center"
+        <Box className="py-3 px-2 my-2  border-gray border flex justify-center items-center bg-white"
         >
 
-            <AccountCircleIcon fontSize='32px' className='mr-3' />
+            <AccountCircleIcon fontSize='large' className='mr-3' />
 
             <span 
             className='font-bold text-sm'
-            style={{ fontFamily: "Lato"}}>Person {index}</span>
+            >Person {index}</span>
             <div className='grow' />
             <IconButton>
                 <KeyboardArrowRightIcon />
