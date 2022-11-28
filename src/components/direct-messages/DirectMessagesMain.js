@@ -1,6 +1,7 @@
 import { Grid } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import AcceptTheirInviteFirst from './AcceptTheirInviteFirst'
+import ChatArea from './ChatArea'
 import { profileListSample } from './constantsDirectMessages'
 import LetThemAcceptInvite from './LetThemAcceptInvite'
 
@@ -43,8 +44,8 @@ function DirectMessagesMain() {
                 <Grid xs={8} className="h-full bg-[#fffbf2]">
                     {
                         currentProfile.isAdded ? (
-                            currentProfile.isFriends ? (
-                                null
+                            currentProfile.isFriend ? (
+                                <ChatArea profile={currentProfile}/>
                             ): (
                                 currentProfile.isInvitationPending ? (
                                     currentProfile.hasRecievedInvitation ? (

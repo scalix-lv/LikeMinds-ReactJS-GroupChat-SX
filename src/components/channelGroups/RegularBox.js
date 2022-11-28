@@ -7,13 +7,13 @@ function RegularBox() {
             userId: "NASH"
         },
         {
-            userId: "DASH"
+            userId: "NASH"
         },
         {
             userId: "BASH"
         },
         {
-            userId: "SASH"
+            userId: "NASH"
         }
     ]
     return (
