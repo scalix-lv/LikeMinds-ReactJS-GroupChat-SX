@@ -6,6 +6,7 @@ import GroupChatArea from './components/groupChatArea/GroupChatArea';
 import AcceptInvite from './components/groupChatArea/AcceptInvite';
 import PersonInfo from './components/groupChatArea/PersonInfo';
 import { addedByMePath, directMessagePath, eventsPath, forumPath, groupAcceptInvitePath, groupInfoPath, groupMainPath, groupPath, groupPersonalInfoPath, mainPath } from './routes';
+import DirectMessagesMain from './components/direct-messages/DirectMessagesMain';
 // import DirectMessagesMain from './components/direct-messages/DirectMessagesMain';
  
 const router = createBrowserRouter([
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
      {
       path: directMessagePath,
       // element: <DirectMessagesMain/>,
-      element: null
+      element: <DirectMessagesMain/>
      },
      {
       path: addedByMePath,

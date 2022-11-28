@@ -89,7 +89,7 @@ function NavBlock({ title, Icon, path }) {
         </Box>
         <span sx={{
           ...linkTextCss,
-          fontWeight: useNavContext.currentPath === path ? 800 : 300 
+          fontWeight: useNavContext.currentPath === path ? 400 : 300 
         }} variant='p'>
           {title}
         </span>
