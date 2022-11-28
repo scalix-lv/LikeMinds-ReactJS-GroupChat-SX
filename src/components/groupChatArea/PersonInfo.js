@@ -32,9 +32,7 @@ function PersonInfo() {
                 </IconButton>
                 <Typography
                 
-                sx={{
-                    fontFamily: "Lato"
-                }} fontSize={"20px"} fontWeight={700} color={"#3884F7"}>
+                 fontSize={"20px"} fontWeight={700} color={"#3884F7"}>
                     Group Info / Person 1
                 </Typography>
             </Box>
@@ -67,7 +65,7 @@ function PersonInfo() {
                 </Typography>
 
                 <Typography  fontSize={"16px"} fontWeight={700} color={"#323232"} marginTop={2}>
-                    Founder of <a href='#'
+                    Founder of <a href='#./'
                     className='text-[#734AC7]'
                     >
                         @Beyond Design

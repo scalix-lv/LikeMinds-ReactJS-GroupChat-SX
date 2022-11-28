@@ -2,7 +2,7 @@ import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 import acceptLogo from '../../assets/acceptInvite.png'
 
-function AcceptInvite() {
+function AcceptDm({name}) {
   return (
     <Box
     className='flex justify-center items-center flex-col h-full'
@@ -10,7 +10,7 @@ function AcceptInvite() {
         <div className='grow'/>
         <img src={acceptLogo} alt=""/>
         <Typography fontSize={"24px"} fontWeight={700} color={"#323232"} fontFamily={"Lato"} maxWidth={"400px"} textAlign="center">
-        Please accept the invite to view the messages in this Group.
+        Please accept the invite to view the message {name}
         </Typography>
         <Button
         sx={{
@@ -29,4 +29,4 @@ function AcceptInvite() {
   )
 }
 
-export default AcceptInvite
+export default AcceptDm

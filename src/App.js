@@ -6,6 +6,7 @@ import GroupChatArea from './components/groupChatArea/GroupChatArea';
 import AcceptInvite from './components/groupChatArea/AcceptInvite';
 import PersonInfo from './components/groupChatArea/PersonInfo';
 import { addedByMePath, directMessagePath, eventsPath, forumPath, groupAcceptInvitePath, groupInfoPath, groupMainPath, groupPath, groupPersonalInfoPath, mainPath } from './routes';
+import DirectMessagesMain from './components/direct-messages/DirectMessagesMain';
  
 const router = createBrowserRouter([
   {
@@ -44,7 +45,7 @@ const router = createBrowserRouter([
      },
      {
       path: directMessagePath,
-      element: null 
+      element: <DirectMessagesMain/>
      },
      {
       path: addedByMePath,
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="App">
+    <div className="App h-full">
       <RouterProvider router={router}/>
       {/* <Block/> */}
     </div>

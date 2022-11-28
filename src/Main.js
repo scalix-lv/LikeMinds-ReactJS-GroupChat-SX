@@ -5,9 +5,9 @@ import Header from './components/header/Header'
 import Sidenav from './components/sidenav/Sidenav'
 function Main() {
     return (
-        <div className='overflow-hidden h-full'>
+        <div className='h-full '>
             <Header />
-            <Grid container >
+            <Grid container className='h-full' >
                 <Grid item xs={1}>
                     <Sidenav />
                 </Grid>
