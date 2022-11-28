@@ -23,7 +23,9 @@ function GroupChatArea() {
     <StyledBox>
         
         <RegularBox/>
-        <div className='grow'/>
+        <div  style={{
+          flexGrow: 0.4
+        }}/>
         <Input/>
     </StyledBox>
   )
