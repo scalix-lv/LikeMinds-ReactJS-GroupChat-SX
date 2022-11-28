@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Header from './components/header/Header';
 import Block from './components/Block/Block';
 import Main from './Main';
+import DirectMessagesMain from './components/direct-messages/DirectMessagesMain';
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
      },
      {
       path: 'direct-messages',
-      element: null 
+      element: <DirectMessagesMain/>
      },
      {
       path: 'added-by-me',
