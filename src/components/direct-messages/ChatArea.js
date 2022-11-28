@@ -1,9 +1,10 @@
 import { Box } from '@mui/material'
 import { styled } from '@mui/system'
 import React from 'react'
-import RegularBox from '../channelGroups/RegularBox'
-import Input from '../InputComponent/Input'
-import Tittle from './tittle/Tittle'
+// import RegularBox from '../channelGroups/RegularBox'
+// import Input from '../InputComponent/Input'
+
+import TittleDm from './TitleDM'
 
 
 // Exported Styled Box
@@ -15,14 +16,15 @@ export const StyledBox = styled(Box)({
     flexDirection: "column",
     height: "100%"
 })
-function ChatArea() {
+function ChatArea({profile}) {
   const chats = [{
 
   }]
   return (
     <StyledBox>
-        
-        <RegularBox/>
+        <TittleDm title={profile.name}/>
+        {/* <RegularBox/> */}
+        <Regular
         <div className='grow'/>
         <Input/>
     </StyledBox>
