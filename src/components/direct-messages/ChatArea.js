@@ -2,8 +2,8 @@ import { Box } from '@mui/material'
 import { styled } from '@mui/system'
 import React from 'react'
 // import RegularBox from '../channelGroups/RegularBox'
-// import Input from '../InputComponent/Input'
-import Input from '../Inp'
+import Input from '../InputComponent/Input'
+
 import RegularBox from "./../channelGroups/RegularBox"
 import TittleDm from './TitleDM'
 
