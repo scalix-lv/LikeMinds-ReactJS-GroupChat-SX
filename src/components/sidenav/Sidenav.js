@@ -1,11 +1,10 @@
-import { Box } from '@mui/system'
+import { Box } from '@mui/material'
 import React, { useContext, useState } from 'react'
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import GroupsIcon from '@mui/icons-material/Groups';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ChatIcon from '@mui/icons-material/Chat';
 import StarIcon from '@mui/icons-material/Star';
-import { Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { linkCss, linkTextCss, navIconCss } from '../../styledAccessories/css';
 const NavContext = React.createContext({
@@ -21,7 +20,7 @@ function Sidenav() {
       path: "forums",
       Icon: SaveAsIcon
 
-    },
+    },  
     {
       title: "Groups",
       path: "groups",
@@ -76,28 +75,24 @@ function NavBlock({ title, Icon, path }) {
   }
   return (
     <Link to={path} style={{...linkCss}} onClick={changeCurrentPath}>
-      <Box sx={{
-        margin: 'auto',
-        textAlign: 'center',
-        // border: "1px solid black",
-        padding: "12px",
-       
-
-      }}>
-        {/* <Icon /> */}
+      <Box
+       className='m-auto text-center p-3'
+      >
         <Box>
-        {<Icon sx={{
+        {<Icon 
+          
+          sx={{
           ...navIconCss,
           color: useNavContext.currentPath === path ? "#FFFFFF" : "#3884F7",
           backgroundColor: useNavContext.currentPath === path ? "#3884F7": " #D7E6FD"
         }}/>}
         </Box>
-        <Typography sx={{
+        <span sx={{
           ...linkTextCss,
           fontWeight: useNavContext.currentPath === path ? 800 : 300 
         }} variant='p'>
           {title}
-        </Typography>
+        </span>
       </Box>
     </Link>
   )

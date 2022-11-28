@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 
 function SearchBar() {
-    
+
 
     const [openSearch, setOpenSearch] = useState(false)
     const closeSearchField = () => {
@@ -31,14 +31,14 @@ function SearchBar() {
 
 function SearchField({ closeSearchField }) {
     const ref = useRef(null)
-    useEffect(()=>{
-        const handleOutSideClick = (e) =>{
-            if(ref.current && !ref.current.contains(e.target)){
+    useEffect(() => {
+        const handleOutSideClick = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) {
                 closeSearchField()
             }
         }
         document.addEventListener('click', handleOutSideClick, true);
-        return ()=>{
+        return () => {
             document.removeEventListener('click', handleOutSideClick, true)
         }
     })
@@ -47,9 +47,7 @@ function SearchField({ closeSearchField }) {
             ref={ref}
             InputProps={{
                 startAdornment: (
-                    <InputAdornment sx={{
-                        marginRight: "8px"
-                    }}>
+                    <InputAdornment className='mr-2'>
                         <SearchIcon />
                     </InputAdornment>
                 ),
@@ -60,15 +58,17 @@ function SearchField({ closeSearchField }) {
                 ),
                 sx: {
                     fontFamily: "Lato"
+                },
+                inputProps: {
+                    style: {
+                        padding: '8px'
+                    }
                 }
-                
+
             }}
-            
+            className="rounded-[12px] bg-white p-0"
             sx={{
-                background: "#FFFFFF",
-                borderRadius: "12px",
                 fontFamily: "Lato",
-                padding: "0px"
             }}>
 
         </TextField>
