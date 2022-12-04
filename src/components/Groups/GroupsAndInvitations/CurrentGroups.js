@@ -79,11 +79,11 @@ function GroupTile({ title, newUnread }) {
                     </span>
                 ) : null}
             </Typography>
-            <Typography component={'span'} className="text-sm font-light" sx={{
+            <span className="text-xs font-light" style={{
                 color: newUnread > 0 ? "#3884F7" : "#323232",
             }}>
                 {newUnread > 0 ? (<>{newUnread} new messages</>) : null}
-            </Typography>
+            </span>
         </Box>
     )
 }
@@ -95,8 +95,8 @@ function GroupInviteTile({ title, groupType }) {
 
         >
             <Box>
-                <Typography component={'p'}
-                    className="text-[#ADADAD] text-sm text-left font-normal"
+                <Typography variant='body2'
+                    className="text-[#ADADAD] text-xs text-left font-normal"
 
                 >
                     You have been invited to
@@ -190,8 +190,8 @@ function PublicGroupTile({ groupTitle }) {
                 {groupTitle}
             </Typography>
 
-            <Button variant='outlined'>
-                JOIN
+            <Button variant='outlined' className='rounded-[5px]'> 
+                Join
             </Button>
 
         </Box>

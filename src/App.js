@@ -61,7 +61,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="App h-full">
+    <div className="App h-full relative">
       <RouterProvider router={router}/>
       {/* <Block/> */}
     </div>

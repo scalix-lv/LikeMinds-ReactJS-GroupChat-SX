@@ -24,7 +24,9 @@ function GroupInfo() {
         }}>
             <Box className='flex items-center'>
                 <IconButton>
-                    <KeyboardBackspaceIcon />
+                    <KeyboardBackspaceIcon sx={{
+                        color: "#3884F7"
+                    }}/>
                 </IconButton>
                 <Typography  fontSize={"20px"} fontWeight={700} color={"#3884F7"}>
                     Group Info
@@ -59,7 +61,7 @@ function GroupInfo() {
 function ParticipantTile({ index }) {
 
     return (
-        <Box className="py-3 px-2 my-2  border-gray border flex justify-center items-center bg-white"
+        <Box className="py-3 px-2  border-gray border flex justify-center items-center bg-white"
         >
 
             <AccountCircleIcon fontSize='large' className='mr-3' />

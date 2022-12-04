@@ -48,9 +48,10 @@ function DmTile({ profile, handleCurrentProfile }) {
         
         <Box
         onClick={()=>{
+            console.log("hello")
             handleCurrentProfile(profile)
         }}
-        className='flex justify-between p-[18px] border border-solid border-[#EEEEEE]'
+        className='flex justify-between p-[18px] border border-solid border-[#EEEEEE] cursor-pointer'
              sx={
                 profile.isFriend?({
                 backgroundColor: profile.hasUnreadMessages > 0 ? "#ECF3FF" : "#FFFFFF",
@@ -80,8 +81,9 @@ function DmTile({ profile, handleCurrentProfile }) {
 
 function DmInviteTile({ title, handleCurrentProfile, profile }) {
     return (
-        <Box className='bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE]'
+        <div className='bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE] cursor-pointer'
         onClick={()=>{
+            console.log("hello")
             handleCurrentProfile(profile)
         }}
         >
@@ -117,7 +119,7 @@ function DmInviteTile({ title, handleCurrentProfile, profile }) {
                 </IconButton>
             </Box>
 
-        </Box>
+        </div>
     )
 }
 

@@ -39,9 +39,7 @@ function TitleArea({ title }) {
             {/* For Group Title */}
             <span component={'p'}
             className="font-semibold text-xl leading-6"
-            sx={{
-                fontFamily: "Lato",
-            }}>{title ? title : null}</span>
+           >{title ? title : null}</span>
 
 
             {/* For Group Members */}

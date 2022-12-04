@@ -24,9 +24,10 @@ function ChatArea({profile}) {
     <StyledBox>
         <TittleDm title={profile.name}/>
         {/* <RegularBox/> */}
+        {/* <div className='grow'/> */}
         <GroupChatArea/>
-        <div className='grow'/>
-        <Input/>
+        
+        {/* <Input/> */}
         
     </StyledBox>
   )

@@ -1,7 +1,7 @@
 export const mainPath = "/"
 
 // path for forums
-export const forumPath = "/forum"
+export const forumPath = "/forums"
 
 // path for groups
 export const groupPath = "/groups"

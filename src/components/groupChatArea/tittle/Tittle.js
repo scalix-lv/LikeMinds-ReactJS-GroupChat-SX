@@ -46,12 +46,12 @@ function TitleArea({ title, memberCount }) {
 
 
             {/* For Group Members */}
-
-            <Typography component={'p'}
-            className="text-sm font-normal leading-[14.5px]"
+            <div/>
+            <span 
+            className="text-xs font-normal leading-[14.5px] text-[#ADADAD]"
             sx={{
                 fontFamily: "Lato",
-            }}>{memberCount ? memberCount : null} members</Typography>
+            }}>{memberCount ? memberCount : null} members</span>
         </Box>
     )
 }
