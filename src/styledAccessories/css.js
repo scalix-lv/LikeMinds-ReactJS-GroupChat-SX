@@ -7,13 +7,13 @@ export const linkCss = {
 export const navIconCss = {
     padding: "4px",
     borderRadius: "50%",
-    height: "30px",
-    width: "30px"
+    height: "40px",
+    width: "40px"
 }
 
 export const linkTextCss = {
     fontSize: "14px",
-    fontfamily:"Lato",
+ 
     color: "#323232",
     lineHeight: "17px"
 }

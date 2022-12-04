@@ -1,6 +1,7 @@
 import { Box } from '@mui/material'
 import { styled } from '@mui/system'
 import React from 'react'
+import GroupChatArea from '../groupChatArea/GroupChatArea'
 // import RegularBox from '../channelGroups/RegularBox'
 import Input from '../InputComponent/Input'
 
@@ -18,16 +19,16 @@ export const StyledBox = styled(Box)({
     height: "100%"
 })
 function ChatArea({profile}) {
-  const chats = [{
-
-  }]
+  
   return (
     <StyledBox>
         <TittleDm title={profile.name}/>
         {/* <RegularBox/> */}
+        {/* <div className='grow'/> */}
+        <GroupChatArea/>
         
-        <div className='grow'/>
-        <Input/>
+        {/* <Input/> */}
+        
     </StyledBox>
   )
 }

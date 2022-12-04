@@ -1,25 +1,16 @@
 import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
-import acceptLogo from './../../assets/acceptInvite.png'
-import TittleDm from './TitleDM'
+import acceptLogo from '../../assets/acceptInvite.png'
 
-function AcceptTheirInviteFirst({
-  title
-}) {
+function AcceptInvite() {
   return (
-    <div className='h-full'><TittleDm title={title}/>
     <Box
-<<<<<<< HEAD
     className='flex justify-center items-center flex-col h-full'
-=======
-    className='flex justify-center items-center flex-col h-[98%]'
->>>>>>> feature/LM-7621
     >
-      
         <div className='grow'/>
         <img src={acceptLogo} alt=""/>
-        <Typography fontSize={"24px"} fontWeight={700} color={"#323232"}  maxWidth={"400px"} textAlign="center">
-        Please accept the invite to message {title}
+        <Typography fontSize={"24px"} fontWeight={700} color={"#323232"} fontFamily={"Lato"} maxWidth={"400px"} textAlign="center">
+        Please accept the invite to view the messages in this Group.
         </Typography>
         <Button
         sx={{
@@ -35,8 +26,7 @@ function AcceptTheirInviteFirst({
         
         
     </Box>
-    </div>
   )
 }
 
-export default AcceptTheirInviteFirst
+export default AcceptInvite
