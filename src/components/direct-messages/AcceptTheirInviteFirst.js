@@ -9,11 +9,7 @@ function AcceptTheirInviteFirst({
   return (
     <div className='h-full'><TittleDm title={title}/>
     <Box
-<<<<<<< HEAD
-    className='flex justify-center items-center flex-col h-full'
-=======
     className='flex justify-center items-center flex-col h-[98%]'
->>>>>>> feature/LM-7621
     >
       
         <div className='grow'/>

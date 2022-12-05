@@ -39,13 +39,7 @@ function TitleArea({ title }) {
             {/* For Group Title */}
             <span component={'p'}
             className="font-semibold text-xl leading-6"
-<<<<<<< HEAD
-            sx={{
-                fontFamily: "Lato",
-            }}>{title ? title : null}</span>
-=======
            >{title ? title : null}</span>
->>>>>>> feature/LM-7621
 
 
             {/* For Group Members */}

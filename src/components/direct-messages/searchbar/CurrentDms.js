@@ -10,8 +10,11 @@ function CurrentDms() {
     const {profileList, setCurrentProfile, currentSelectedProfile} = profileContext
 
     const handleCurrentProfile = (profile)=>{
-        // console.log(currentSelectedProfile)
+        console.log(currentSelectedProfile)
         setCurrentProfile(profile)
+    }
+    const sampleClick = ()=>{
+        console.log("hello")
     }
     return (
         <Box>
@@ -43,14 +46,14 @@ function CurrentDms() {
 }
 
 function DmTile({ profile, handleCurrentProfile }) {
+    const sampleClick = ()=>{
+        console.log("hello")
+    }
     return (
         
         
-        <Box
-        onClick={()=>{
-            console.log("hello")
-            handleCurrentProfile(profile)
-        }}
+        <div
+        onClick={sampleClick}
         className='flex justify-between p-[18px] border border-solid border-[#EEEEEE] cursor-pointer'
              sx={
                 profile.isFriend?({
@@ -73,19 +76,21 @@ function DmTile({ profile, handleCurrentProfile }) {
             }):null}>
                 {profile.hasUnreadMessages && profile.isFriend > 0 ? (<>{profile.totalUnread} new messages</>) : null}
             </Typography>
-        </Box>
+        </div>
         )
     
 }
 
 
 function DmInviteTile({ title, handleCurrentProfile, profile }) {
+    const sampleClick = ()=>{
+        console.log("hello")
+    }
     return (
-        <div className='bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE] cursor-pointer'
-        onClick={()=>{
-            console.log("hello")
-            handleCurrentProfile(profile)
-        }}
+        <div
+        onClick={sampleClick}
+        className='bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE] cursor-pointer'
+        
         >
             <Box>
                 <Typography component={'p'}
@@ -132,7 +137,7 @@ function MemberTile({ groupTitle }) {
     const publicGroups = Array(10).fill({
         groupTitle: "Person"
     })
-    console.log(publicGroups)
+    // console.log(publicGroups)
     return (
         <Box>
             <Box

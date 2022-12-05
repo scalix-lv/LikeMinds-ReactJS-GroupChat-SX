@@ -3,7 +3,15 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
+// import Typicode from 'likeminds-apis-sdk';
+// const client = new Typicode({
+//   apiKey: "8fa4304d-a5b6-4f10-baeb-a80650a480a4"
+// })
+// client.getChatroom().then(res=>{
+//   console.log(res)
+// }).catch(e=>{
+//   console.log(e)
+// })
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

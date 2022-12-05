@@ -1,9 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Main from './Main';
-<<<<<<< HEAD
-import DirectMessagesMain from './components/direct-messages/DirectMessagesMain';
-
-=======
 import Groups from './components/Groups/Groups';
 import GroupInfo from './components/groupChatArea/GroupInfo';
 import GroupChatArea from './components/groupChatArea/GroupChatArea';
@@ -12,8 +8,7 @@ import PersonInfo from './components/groupChatArea/PersonInfo';
 import { addedByMePath, directMessagePath, eventsPath, forumPath, groupAcceptInvitePath, groupInfoPath, groupMainPath, groupPath, groupPersonalInfoPath, mainPath } from './routes';
 import DirectMessagesMain from './components/direct-messages/DirectMessagesMain';
 // import DirectMessagesMain from './components/direct-messages/DirectMessagesMain';
- 
->>>>>>> feature/LM-7621
+
 const router = createBrowserRouter([
   {
     path: mainPath,
@@ -50,12 +45,8 @@ const router = createBrowserRouter([
       element: null 
      },
      {
-<<<<<<< HEAD
-      path: 'direct-messages',
-=======
       path: directMessagePath,
       // element: <DirectMessagesMain/>,
->>>>>>> feature/LM-7621
       element: <DirectMessagesMain/>
      },
      {
