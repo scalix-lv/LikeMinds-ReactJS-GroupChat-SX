@@ -7,6 +7,11 @@ import GifIcon from '@mui/icons-material/Gif';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import styled from '@emotion/styled';
+import smiley from "./../../assets/smile.png"
+import camera from "./../../assets/camera.png"
+import giffy from "./../../assets/giffy.png"
+import mic from "./../../assets/mic.png"
+import paperclip from "./../../assets/paperclip.png"
 const StyledInputWriteComment = styled(TextField)({
     background: "#F9F9F9",
     borderRadius: "20px",
@@ -37,7 +42,7 @@ function InputSearchField() {
                 InputProps={{
                     endAdornment: (
                         <IconButton>
-                            <SendIcon color='#3884F7'/>
+                            <SendIcon className='text-[#3884F7]'/>
                         </IconButton>
                     ),
                     
@@ -51,23 +56,23 @@ function InputOptions(){
     const optionArr = [
         {
             title: "emojis",
-            Icon: SentimentSatisfiedAltIcon
+            Icon: smiley
         },
         {
             title: "audio",
-            Icon: MicIcon
+            Icon: mic
         },
         {
             title: "GIF",
-            Icon: GifIcon
+            Icon: giffy
         },
         {
             title: "camera",
-            Icon:  CameraAltIcon
+            Icon:  camera
         },
         {
             title: "attach",
-            Icon: AttachFileIcon
+            Icon: paperclip
         }
     ]
     return (
@@ -76,7 +81,7 @@ function InputOptions(){
                 optionArr.map((option, optionIndex)=>{
                     return (
                         <IconButton>
-                            <option.Icon/>
+                            <img className='w-[20px] h-[20px]' src={option.Icon}/>
                         </IconButton>
                     )
                 })

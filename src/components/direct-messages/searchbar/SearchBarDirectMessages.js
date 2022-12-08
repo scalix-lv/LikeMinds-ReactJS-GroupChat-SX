@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchBarContainer from '../../SearchBar/SearchBar';
-
+import searchIcon from "./../../../assets/search.png"
 function SearchBarDirectMessages() {
 
   const [searchString, setSearchString] = useState("")
@@ -25,7 +25,7 @@ function SearchBarDirectMessages() {
     <div>
       <div className='h-[100%] w-[100%] absolute top-[72px] overflow-hidden' onClick={()=>{
         setShouldOpen(false)
-      }} style={{background: shouldOpen ? "rgba(0,0,0, 0.5)" : 'none'}}/>
+      }} style={{background: shouldOpen ? "rgba(0,0,0, 0.5)" : 'none', zIndex: shouldOpen? 0: -100}}/>
       <Box className='pt-1.5 px-4 pb-1.5 relative  flex justify-between my-3 mx-0'
     >
       
@@ -34,11 +34,12 @@ function SearchBarDirectMessages() {
         InputProps={{
           startAdornment: (
             <InputAdornment className='mr-2'>
-              <SearchIcon className='text-black'/>
+              {/* <SearchIcon className='text-black'/> */}
+              <img src={searchIcon} className="w-[20px] h-[20px]"/>
             </InputAdornment>
           ),
           endAdornment: searchString.length > 1 ? (
-            <InputAdornment className='mr-8'>
+            <InputAdornment className='mr-1'>
               <CloseIcon />
             </InputAdornment>
           ): null,
@@ -69,9 +70,13 @@ function SearchBarDirectMessages() {
         />
         <IconButton
         disableRipple={true}
-        className="p-3 border-0.5 border-[#F5F5F5] rounder-[12px] mx-3 my-0"
+        className="p-3 border border-[#F5F5F5] p-2 border mx-3 my-0 "
+        sx={{
+          border: "1px solid #EEEEEE",
+          borderRadius: "5px"
+        }}
         >
-          <FilterListIcon className='text-[32px] text-[#000000]'/>
+          <FilterListIcon fontSize='large' className='text-[40px] font-light text-[#000000] '/>
         </IconButton>
         <Collapse in={shouldOpen} className="absolute w-[100%] h-[100%] mt-16 bg-white z-10" >
           <SearchBarContainer/>

@@ -40,6 +40,8 @@ function TitleArea({ title }) {
             <span component={'p'}
             className="font-semibold text-xl leading-6"
            >{title ? title : null}</span>
+           <div/>
+           <span className='text-xs font-medium text-[#ADADAD]'>member</span>
 
 
             {/* For Group Members */}

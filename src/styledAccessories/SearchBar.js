@@ -16,8 +16,8 @@ function SearchBar() {
     return (
         <span>
             {!openSearch ?
-                (<IconButton onClick={openSearchField} >
-                    <SearchIcon />
+                (<IconButton  onClick={openSearchField} >
+                    <SearchIcon fontSize='large' className='bg-white rounded-full'/>
                 </IconButton>)
                 :
                 (

@@ -4,14 +4,17 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 // import Typicode from 'likeminds-apis-sdk';
-// const client = new Typicode({
-//   apiKey: "8fa4304d-a5b6-4f10-baeb-a80650a480a4"
-// })
-// client.getChatroom().then(res=>{
-//   console.log(res)
-// }).catch(e=>{
-//   console.log(e)
-// })
+import LikeMinds from 'likeminds-apis-sdk';
+
+
+export const myClient = new LikeMinds({
+  apiKey: "45c469dc-06e1-4f05-914e-dd02419eb53f",
+  baseUrl: "https://beta.likeminds.community/api",
+  xMemberId: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
+  xPlatformCode: "web",
+  xVersionCode: 16,
+})
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

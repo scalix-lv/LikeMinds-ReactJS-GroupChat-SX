@@ -88,12 +88,13 @@ function MoreOptions() {
         }
     ]
     return (
-        <Box>
+        <Box className='flex items-center'>
             <IconButton
             ref={ref}
             onClick={(e)=>{
                 setAnchor(e.currentTarget)
             }}
+            className="my-auto"
             >
                 <MoreVertIcon />
             </IconButton>

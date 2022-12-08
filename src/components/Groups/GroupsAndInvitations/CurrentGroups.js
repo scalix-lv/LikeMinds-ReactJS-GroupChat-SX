@@ -1,11 +1,18 @@
 import { Box, Button, Collapse, IconButton, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import Typicode from 'likeminds-apis-sdk';
+import { createNewClient, getChatRoomDetails } from '../../../sdkFunctions';
+import { myClient } from '../../..';
+import { NavLink } from 'react-router-dom';
+import { groupMainPath } from '../../../routes';
 
-function CurrentGroups() {
+function CurrentGroups() { 
+
+    // content to be deleted
     const groupsInfo = [
         {
             title: "Founders Social",
@@ -28,6 +35,41 @@ function CurrentGroups() {
         }
     ]
 
+    // for gettingChatRoom()
+    async function getChatRoomData(chatroomId){
+        try {
+            // const chatRoomData = await getChatRoomDetails(myClient)
+            // const chatConmvo = await myClient.getConversations({
+            //     chatroomID: 27849,
+            //     page: 50
+            // })
+            const init = await myClient.initSDK({
+                user_unique_id: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
+                is_guest: true,
+                user_name: "gaurav"
+            })
+            console.log(init)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    useEffect(() =>{
+        const fn = async () =>{
+            try {
+                const feedCall = await myClient.getHomeFeedData({
+                    communityId: 50421,
+                    page: 100
+                })
+                console.log(feedCall)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        // fn()
+        getChatRoomData()
+    })
 
     return (
         <Box sx={
@@ -39,7 +81,12 @@ function CurrentGroups() {
             {
                 groupsInfo.map((group, groupIndex) => {
                     return (
-                        <GroupTile key={group.title + groupIndex.toString()} title={group.title} newUnread={group.newUnread} />
+                        <NavLink key={group.title + groupIndex.toString()}
+                        to={groupMainPath}
+                       
+                        >
+                        <GroupTile  title={group.title} newUnread={group.newUnread} getChatRoomData={getChatRoomData}/>
+                        </NavLink>
                     )
                 })
             }
@@ -47,7 +94,11 @@ function CurrentGroups() {
             {
                 groupsInviteInfo.map((group, groupIndex) => {
                     return (
-                        <GroupInviteTile title={group.title} groupType={group.groupType} />
+                        <NavLink key={group.title+groupIndex}
+                        to={groupMainPath}
+                        >
+                        <GroupInviteTile title={group.title} groupType={group.groupType} getChatRoomData={getChatRoomData} />
+                        </NavLink>
                     )
                 })
             }
@@ -59,12 +110,15 @@ function CurrentGroups() {
     )
 }
 
-function GroupTile({ title, newUnread }) {
+function GroupTile({ title, newUnread, getChatRoomData }) {
     return (
-        <Box className='flex justify-between p-[18px] border border-solid border-[#EEEEEE]'
-            sx={{
-                backgroundColor: newUnread > 0 ? "#ECF3FF" : "#FFFFFF",
+        <div className='flex justify-between p-[18px] border border-solid border-[#EEEEEE] bg-inherit'
+            // style={{
+            //     backgroundColor: newUnread > 0 ? "#ECF3FF" : "#FFFFFF",
 
+            // }}
+            onClick={()=>{
+                getChatRoomData("none")
             }}
         >
             <Typography component={'span'} className="text-base font-normal"
@@ -84,15 +138,17 @@ function GroupTile({ title, newUnread }) {
             }}>
                 {newUnread > 0 ? (<>{newUnread} new messages</>) : null}
             </span>
-        </Box>
+        </div>
     )
 }
 
 
-function GroupInviteTile({ title, groupType }) {
+function GroupInviteTile({ title, groupType, getChatRoomData }) {
     return (
-        <Box className='bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE]'
-
+        <div className='bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE]'
+        onClick={()=>{
+            getChatRoomData("none")
+        }}
         >
             <Box>
                 <Typography variant='body2'
@@ -131,7 +187,7 @@ function GroupInviteTile({ title, groupType }) {
                 </IconButton>
             </Box>
 
-        </Box>
+        </div>
     )
 }
 

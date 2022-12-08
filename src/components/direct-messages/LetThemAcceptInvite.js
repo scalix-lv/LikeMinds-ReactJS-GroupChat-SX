@@ -11,7 +11,7 @@ function LetThemAcceptInvite({
     className='flex justify-center items-center flex-col h-full'
     >
         <div className='grow'/>
-        <img src={appLogo} alt=""/>
+        <img src={appLogo} alt="" className='h-[50px] w-[50px]'/>
         <Typography fontSize={"24px"} fontWeight={700} color={"#323232"}  maxWidth={"400px"} textAlign="center">
         Waiting for {title} to accept your request
         </Typography>

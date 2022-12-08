@@ -128,7 +128,7 @@ function MatchTileFields({
 
 function NothingFound(){
     return (
-        <div className='flex justify-center items-center flex-col px-14 py-7 w-[100%]'>
+        <div className='flex justify-center items-center flex-col px-14 py-7 w-[100%] rounded-[10px] border '>
             <img src={NotFoundLogo}/>
             <p className='leading-12 text-2xl text-center'>
                 Oops, There are no posts related to this search.
