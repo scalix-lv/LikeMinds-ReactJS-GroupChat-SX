@@ -14,12 +14,20 @@ export const myClient = new LikeMinds({
   xPlatformCode: "web",
   xVersionCode: 16,
 })
-
+export const userObj = {
+  "id": 3555,
+  "name": "Ankit Garg",
+  "updated_at": 1660911399,
+  "is_guest": false,
+  "user_unique_id": "707a866a-2d28-4b8d-b34b-382ac76c8b85",
+  "organisation_name": null,
+  "image_url": ""
+}
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <App />
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

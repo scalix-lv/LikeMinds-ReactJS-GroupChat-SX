@@ -1,12 +1,13 @@
 import { Box } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
+import { userObj } from '../..'
 import MessageBox from './MessageBox'
 
 function MessageBlock({
-    userId, message, reactions, metaDetails
+    conversationObject, userId
 }) {
-
-    const currentUser = "NASH"
+  const [convoDetails, setConvoDetails] = useState(conversationObject)
+    const currentUser = userObj.id
   return (
     <Box
     className='flex py-2 px-0'
@@ -15,7 +16,7 @@ function MessageBlock({
         flexDirection: userId === currentUser ? 'row-reverse' : 'row',
         
     }}>
-        <MessageBox userId={userId} username={userId} messageString={"Hello"} time={"10:15pm"}/>
+        <MessageBox userId={userId} username={convoDetails.member.name} messageString={convoDetails.answer} time={convoDetails.created_at}/>
     </Box>
   )
 }

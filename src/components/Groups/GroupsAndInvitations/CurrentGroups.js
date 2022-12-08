@@ -1,5 +1,5 @@
 import { Box, Button, Collapse, IconButton, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -7,10 +7,13 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Typicode from 'likeminds-apis-sdk';
 import { createNewClient, getChatRoomDetails } from '../../../sdkFunctions';
 import { myClient } from '../../..';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { groupMainPath } from '../../../routes';
+import { GroupContext } from '../Groups';
 
 function CurrentGroups() { 
+
+    const [chatRoomsList, setChatRoomsList] = useState([])
 
     // content to be deleted
     const groupsInfo = [
@@ -35,49 +38,49 @@ function CurrentGroups() {
         }
     ]
 
-    // for gettingChatRoom()
-    async function getChatRoomData(chatroomId){
-        try {
-            // const chatRoomData = await getChatRoomDetails(myClient)
-            // const chatConmvo = await myClient.getConversations({
-            //     chatroomID: 27849,
-            //     page: 50
-            // })
-            const init = await myClient.initSDK({
-                user_unique_id: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
-                is_guest: true,
-                user_name: "gaurav"
-            })
-            console.log(init)
-        } catch (error) {
-            console.log(error)
-        }
+// for gettingChatRoom()
+async function getChatRoomData(chatroomId){
+    try {
+        const chatRoomData = await getChatRoomDetails(myClient, chatroomId)
+        console.log(chatRoomData)
+        // const init = await myClient.initSDK({
+        //     user_unique_id: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
+        //     is_guest: true,
+        //     user_name: "gaurav"
+        // })
+        // console.log(init)
+    } catch (error) {
+        console.log(error)
     }
-
+}
 
     useEffect(() =>{
         const fn = async () =>{
             try {
+                
                 const feedCall = await myClient.getHomeFeedData({
                     communityId: 50421,
-                    page: 100
+                    page: 1
                 })
-                console.log(feedCall)
+                // console.log()
+                let chatroomlist = feedCall.my_chatrooms
+                let newChatRoomList = [...chatRoomsList]
+                for(let chatroom of chatroomlist){
+                    newChatRoomList.push(chatroom)
+                }
+                console.log(newChatRoomList)
+                setChatRoomsList(newChatRoomList)
+
             } catch (error) {
                 console.log(error)
             }
         }
-        // fn()
-        getChatRoomData()
-    })
+        fn()
+        // getChatRoomData()
+    },[])
 
     return (
-        <Box sx={
-            {
-
-
-            }
-        }>
+        <Box >
             {
                 groupsInfo.map((group, groupIndex) => {
                     return (
@@ -104,7 +107,7 @@ function CurrentGroups() {
             }
 
             {
-                <PublicGroup />
+                <PublicGroup groupList={chatRoomsList}/>
             }
         </Box>
     )
@@ -191,16 +194,29 @@ function GroupInviteTile({ title, groupType, getChatRoomData }) {
     )
 }
 
-function PublicGroup({ groupTitle }) {
+function PublicGroup({ groupTitle, groupList }) {
+
+
     const [shouldOpen, setShouldOpen] = useState(true)
     function handleCollapse() {
         setShouldOpen(!shouldOpen)
     }
 
-    const publicGroups = Array(10).fill({
-        groupTitle: "Public Group"
-    })
-    console.log(publicGroups)
+    const groupContext = useContext(GroupContext)
+
+    // for gettingChatRoom()
+    async function getChatRoomData(chatroomId){
+        try {
+            const chatRoomData = await getChatRoomDetails(myClient, chatroomId)
+            if(!chatRoomData.error){
+                groupContext.setActiveGroup(chatRoomData.data)
+            }else{
+                console.log(chatRoomData.errorMessage)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     return (
         <Box>
             <Box
@@ -224,9 +240,16 @@ function PublicGroup({ groupTitle }) {
                 className="border border-solid border-[#EEEEEE]"
             >
                 {
-                    publicGroups.map((group, groupIndex) => {
+                    groupList.map((group, groupIndex) => {
+
                         return (
-                            <PublicGroupTile key={group.groupTitle + groupIndex} groupTitle={group.groupTitle + " " + groupIndex} />
+                            <Link to={groupMainPath} onClick={()=>{
+                                getChatRoomData(group.chatroom.id)
+                            }}>
+                            <div >
+                            <PublicGroupTile key={group.chatroom.id + groupIndex} groupTitle={group.chatroom.header} />
+                            </div>
+                            </Link>
                         )
                     })
                 }
