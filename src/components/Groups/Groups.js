@@ -1,63 +1,54 @@
-
-import { Grid } from '@mui/material'
-import React, { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import CurrentGroups from './GroupsAndInvitations/CurrentGroups'
-import SearchbarGroups from './SearchBar/SearchBarGroups'
-import Tittle from '../groupChatArea/tittle/Tittle'
-import { StyledBox } from '../groupChatArea/GroupChatArea'
-
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import CurrentGroups from "./GroupsAndInvitations/CurrentGroups";
+import SearchbarGroups from "./SearchBar/SearchBarGroups";
+import Tittle from "../groupChatArea/tittle/Tittle";
+import { StyledBox } from "../groupChatArea/GroupChatArea";
+import "./Groups.css";
 export const GroupContext = React.createContext({
   activeGroup: {},
-  setActiveGroup: () => { }
-})
-
+  setActiveGroup: () => {},
+});
 
 function Groups() {
-
-  const [activeGroup, setActiveGroup] = useState({})
+  const [activeGroup, setActiveGroup] = useState({});
 
   return (
     <GroupContext.Provider
       value={{
         activeGroup: activeGroup,
-        setActiveGroup: setActiveGroup
+        setActiveGroup: setActiveGroup,
       }}
     >
-      <Grid container>
-
-        <Grid item xs={4} className="text-center border-gray border">
-
+      <div
+        className="flex overflow-hidden"
+        style={{ height: "calc(100vh - 72px)" }}
+      >
+        <div className="w-[540px] overflow-auto">
           {/* Search Bar */}
           <SearchbarGroups />
 
           {/* Current private groups and intivations */}
           <CurrentGroups />
 
-
           {/* All Public Groups */}
-        </Grid>
+        </div>
 
-        <Grid item xs={8}>
-
-          <StyledBox>
-
-            <Tittle headerProps={{
+        <div className="w-full bg-[#f6f6ff] relative">
+          <Tittle
+            headerProps={{
               title: "Founders Social",
-              memberCount: 5
-            }} />
+              memberCount: 5,
+            }}
+          />
 
-            <Outlet />
+          <Outlet />
 
-          </StyledBox>
           {/* <GroupChatArea/> */}
-
-        </Grid>
-
-      </Grid>
-      
+        </div>
+      </div>
     </GroupContext.Provider>
-  )
+  );
 }
 
-export default Groups
+export default Groups;
