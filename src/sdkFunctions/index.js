@@ -50,9 +50,26 @@ export function parseMessageString(message){
     let newMessage = " " + message + " ";
     
 }
-function splitString(str, separator){
-    let resArr = str.split(separator)
-    // return [resArr[0], resArr[]]
+export function getUsername(str){
+    let userMatchString = /(?<=<<)(@*).+(?=\|)/gs
+    let userName = str.match(userMatchString)
+    return userName
+}
+export function getUserLink(str){
+    let userMatchString = /(?<=\|).+(?=>>)/gs
+    let userName = str.match(userMatchString)
+    return userName
+}
+export function getString(str){
+    if(!Boolean(getUsername(str))){
+        let userMatchString = /.+/gs
+        let userName = str.match(userMatchString)
+        return userName
+    }else{
+        let userMatchString = /(?<=>>)(@*).+/gs
+    let userName = str.match(userMatchString)
+    return userName
+    }
 }
 
 

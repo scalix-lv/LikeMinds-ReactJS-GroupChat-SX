@@ -2,28 +2,38 @@ import { Box, IconButton, Menu, MenuItem, Typography } from '@mui/material'
 import React, { useRef, useState } from 'react'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { userObj } from '../..';
+import { getString, getUserLink, getUsername } from '../../sdkFunctions';
+import { Link } from 'react-router-dom';
 function MessageBox({
     username,
     messageString,
     time,
-    userId
+    userId,
+    attachments
 }) {
+
+
     return (
         <Box
         className='flex'
         >
-            <StringBox username={username} messageString={messageString} time={time} userId={userId} />
+            
+            
+            <StringBox username={username} messageString={messageString} time={time} userId={userId} attachments={attachments}/>
+            
+            
+
             <MoreOptions />
         </Box>
     )
 }
 
-function StringBox({ username, messageString, time, userId }) {
+function StringBox({ username, messageString, time, userId, attachments }) {
     
 
     return (
         <Box 
-        className='flex justify-between py-4 px-5 w-[280px] rounded-[10px]'
+        className='flex justify-between py-4 px-4  w-[282px] rounded-[10px]'
         sx={{
             
             background: userId === userObj.id ? "#ECF3FF" : "#FFFFFF",
@@ -35,8 +45,34 @@ function StringBox({ username, messageString, time, userId }) {
                     {username}
                 </Typography>
 
+                {
+                attachments != null ?
+                (
+                    attachments.filter((item, itemIndex)=>{
+                        console.log(item)
+                        return item.type === 'image'
+                    }).map((item, itemIndex)=>{
+                        console.log(item)
+                        return (
+                            <img src={item.url} className="max-w-[100%] h-auto"/>
+                        )
+                    })
+                ):
+                null
+            }
+
+                
                 <Typography component={'p'} fontWeight={300} fontSize={14} >
-                    {messageString}
+                    
+                    {
+                        <Link to={"/"+getUserLink(messageString)}>
+                        <span className="text-green-500 font-semibold">
+                       {getUsername(messageString)}
+                       </span>
+                    </Link> } 
+                    
+                    {getString(messageString)
+                    }
                 </Typography>
             </Box>
             <TimeBox time={time} />
