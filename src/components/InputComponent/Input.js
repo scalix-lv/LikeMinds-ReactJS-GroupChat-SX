@@ -81,6 +81,20 @@ function InputSearchField() {
         }
         // console.log(response)
       }
+
+      let handleSendMessage = (event)=>{
+        if(val.length != 0){
+            myClient.onConversationsCreate({
+                text: val.toString(),
+                created_at: Date.now(),
+                has_files: false,
+                // attachment_count: false,
+                chatroom_id: groupContext.activeGroup.chatroom.id
+            }).then(res=>console.log(res)).catch(e=>console.log(e))
+            setVal("")
+            fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+        }
+    }
     return (
         <Box>
             <StyledInputWriteComment
@@ -89,19 +103,7 @@ function InputSearchField() {
                 fullWidth
                 InputProps={{
                     endAdornment: (
-                        <IconButton onClick={(event)=>{
-                            if(val.length != 0){
-                                myClient.onConversationsCreate({
-                                    text: val.toString(),
-                                    created_at: Date.now(),
-                                    has_files: false,
-                                    // attachment_count: false,
-                                    chatroom_id: groupContext.activeGroup.chatroom.id
-                                }).then(res=>console.log(res)).catch(e=>console.log(e))
-                                setVal("")
-                                fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
-                            }
-                        }}>
+                        <IconButton onClick={handleSendMessage}>
                             <SendIcon className='text-[#3884F7]'/>
                         </IconButton>
                     ),
@@ -111,6 +113,7 @@ function InputSearchField() {
                 onChange={(event)=>{
                     setVal(event.target.value)
                 }}
+                onKeyUp={()=>console.log("hello")}
                 />
 
         </Box>

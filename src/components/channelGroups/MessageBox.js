@@ -1,6 +1,7 @@
 import { Box, IconButton, Menu, MenuItem, Typography } from '@mui/material'
 import React, { useRef, useState } from 'react'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { userObj } from '../..';
 function MessageBox({
     username,
     messageString,
@@ -18,12 +19,14 @@ function MessageBox({
 }
 
 function StringBox({ username, messageString, time, userId }) {
+    
+
     return (
         <Box 
         className='flex justify-between py-4 px-5 w-[280px] rounded-[10px]'
         sx={{
             
-            background: userId === "NASH" ? "#ECF3FF" : "#FFFFFF",
+            background: userId === userObj.id ? "#ECF3FF" : "#FFFFFF",
             
         }}>
 

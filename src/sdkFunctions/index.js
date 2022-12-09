@@ -46,6 +46,15 @@ export const getConversationsForGroup = async (optionObject)=>{
     }
 }
 
+export function parseMessageString(message){
+    let newMessage = " " + message + " ";
+    
+}
+function splitString(str, separator){
+    let resArr = str.split(separator)
+    // return [resArr[0], resArr[]]
+}
+
 
 // communityId = 50421
 
