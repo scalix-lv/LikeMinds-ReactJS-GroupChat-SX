@@ -5,7 +5,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import Typicode from "likeminds-apis-sdk";
-import { createNewClient, getChatRoomDetails } from "../../../sdkFunctions";
+import { createNewClient, getChatRoomDetails, getTaggingList } from "../../../sdkFunctions";
 import { myClient } from "../../..";
 import { Link, NavLink } from "react-router-dom";
 import { groupMainPath } from "../../../routes";
@@ -205,6 +205,9 @@ function PublicGroup({ groupTitle, groupList }) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
       if (!chatRoomData.error) {
+        const tagCall = await getTaggingList(chatRoomData.data.community.id, chatRoomData.data.chatroom.id)
+        console.log(tagCall)
+        chatRoomData.data.membersDetail = tagCall.data.members
         groupContext.setActiveGroup(chatRoomData.data);
       } else {
         console.log(chatRoomData.errorMessage);

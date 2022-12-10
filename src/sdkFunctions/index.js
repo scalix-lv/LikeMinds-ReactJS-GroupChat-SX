@@ -145,6 +145,18 @@ export async function initiateSDK(is_guest, user_unique_id, user_name){
     }
 }
 
+export async function getTaggingList(communityId, chatroomId){
+    try {
+        let tagListCall = await myClient.getTaggingList({
+            community_id: communityId,
+            chatroom_id: chatroomId
+        })
+        return jsonReturnHandler(tagListCall, null)
+    } catch (error) {
+        return jsonReturnHandler(null, error)
+    }
+}
+
 // const userContext = useContext(UserContext)
 // import above 2 things
 // userContext.
