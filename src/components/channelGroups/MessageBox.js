@@ -66,7 +66,7 @@ function StringBox({ username, messageString, time, userId, attachments }) {
     >
       <div className="flex w-full justify-between mb-1 clear-both">
         <div className="text-[12px] leading-[14px] text-[#323232] font-[700]">
-          {username}
+          {userId === userObj.id ? "You" : username}
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
           {time}
@@ -148,7 +148,7 @@ function StringBox({ username, messageString, time, userId, attachments }) {
                 return [newDomNode];
               }}
             >
-              ---{getString(messageString)}
+              {getString(messageString)}
             </span>
           }
         </Typography>
