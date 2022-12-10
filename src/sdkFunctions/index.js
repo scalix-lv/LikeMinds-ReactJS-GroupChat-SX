@@ -161,7 +161,11 @@ export async function getTaggingList(communityId, chatroomId){
 // import above 2 things
 // userContext.
 
-
+export function mergeInputFiles(inputContext){
+    let {audioFiles, mediaFiles, docFiles} = inputContext
+    let newArr = [...audioFiles, ...mediaFiles, ...docFiles]
+    return newArr
+}
 
 
 

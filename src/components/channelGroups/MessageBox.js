@@ -21,6 +21,7 @@ import ReportConversationDialogBox from "../reportConversation/ReportConversatio
 import emojiIcon from "../../assets/emojioption.png";
 import EmojiPicker from "emoji-picker-react";
 import { GroupContext } from "../Groups/Groups";
+import {groupPersonalInfoPath} from './../../routes'
 function MessageBox({
   username,
   messageString,
@@ -57,6 +58,7 @@ function ReactionIndicator({ reaction }) {
 
 function StringBox({ username, messageString, time, userId, attachments }) {
   const ref = useRef(null);
+  const groupContext = useContext(GroupContext)
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
@@ -66,7 +68,16 @@ function StringBox({ username, messageString, time, userId, attachments }) {
     >
       <div className="flex w-full justify-between mb-1 clear-both">
         <div className="text-[12px] leading-[14px] text-[#323232] font-[700]">
+          <Link to={
+            groupPersonalInfoPath
+          }
+          state={{
+            communityId: groupContext.activeGroup.community.id,
+            memberId: userId
+          }}
+          >
           {userId === userObj.id ? "You" : username}
+          </Link>
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
           {time}

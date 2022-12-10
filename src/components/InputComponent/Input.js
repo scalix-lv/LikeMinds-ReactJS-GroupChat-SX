@@ -15,7 +15,7 @@ import paperclip from "./../../assets/paperclip.png"
 import { GroupContext } from '../Groups/Groups';
 import { myClient } from '../..';
 import { ConversationContext } from '../groupChatArea/GroupChatArea';
-import { getConversationsForGroup } from '../../sdkFunctions';
+import { getConversationsForGroup, mergeInputFiles } from '../../sdkFunctions';
 import EmojiPicker from 'emoji-picker-react';
 import { MentionsInput, Mention } from 'react-mentions'
 // import Mentions
@@ -110,14 +110,38 @@ function InputSearchField() {
         }
         // console.log(response)
     }
+
     let handleSendMessage = (event) => {
         let { text, setText } = inputContext
+        let filesArray = mergeInputFiles(inputContext)
         if (text.length != 0) {
+            if(!filesArray.length){
+                myClient.onConversationsCreate({
+                    text: text.toString(),
+                    created_at: Date.now(),
+                    has_files: false,
+                    // attachment_count: false,
+                    chatroom_id: groupContext.activeGroup.chatroom.id
+                }).then(res => console.log(res)).catch(e => console.log(e))
+                setText("")
+                fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+            }else{
+                myClient.onConversationsCreate({
+                    text: text.toString(),
+                    created_at: Date.now(),
+                    has_files: true,
+                    attachment_count: filesArray.length,
+                    chatroom_id: groupContext.activeGroup.chatroom.id
+                }).then(res => console.log(res)).catch(e => console.log(e))
+                setText("")
+                fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+            }
+        }else if(filesArray.length > 0){
             myClient.onConversationsCreate({
                 text: text.toString(),
                 created_at: Date.now(),
-                has_files: false,
-                // attachment_count: false,
+                has_files: true,
+                attachment_count: filesArray.length,
                 chatroom_id: groupContext.activeGroup.chatroom.id
             }).then(res => console.log(res)).catch(e => console.log(e))
             setText("")
@@ -126,50 +150,50 @@ function InputSearchField() {
     }
     const [open, setOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
-    useEffect(()=>{
+    useEffect(() => {
         const textString = inputContext.text
         const inputStrArr = textString.split(" ")
-        let l = inputStrArr.length-1
+        let l = inputStrArr.length - 1
         console.log("hehe")
-        if(inputStrArr[l] === "@"){
+        if (inputStrArr[l] === "@") {
             setOpen(true)
             setAnchorEl(ref)
-        }else{
+        } else {
             setOpen(false)
             setAnchorEl(ref)
         }
-    },[inputContext.text])
+    }, [inputContext.text])
     return (
         <Box sx={{
             position: "relative"
         }}>
-            <div 
-            style={{
-                display: open ? "block" : "none",
-                maxHeight: "240px",
-                position: "absolute",
-                transform: 'translate(0, -105%)',
-                background: 'white',
-                overflow: 'auto',
-                width: "50%",
-                borderTopLeftRadius: "10px",
-                borderTopRightRadius: "10px",
-                border: '0.5px solid black',
-                // borderBottom: "none"
-            }}
+            <div
+                style={{
+                    display: open ? "block" : "none",
+                    maxHeight: "240px",
+                    position: "absolute",
+                    transform: 'translate(0, -105%)',
+                    background: 'white',
+                    overflow: 'auto',
+                    width: "50%",
+                    borderTopLeftRadius: "10px",
+                    borderTopRightRadius: "10px",
+                    border: '0.5px solid black',
+                    // borderBottom: "none"
+                }}
             >
-               {
-                groupContext.activeGroup.membersDetail?.map((member, index)=>{
-                    return (
-                        <div
-                        className='border-t text-base py-2 px-4'
-                        key={member.id}
-                        >
-                            {member.name}
-                        </div>
-                    )
-                })
-               }
+                {
+                    groupContext.activeGroup.membersDetail?.map((member, index) => {
+                        return (
+                            <div
+                                className='border-t text-base py-2 px-4'
+                                key={member.id}
+                            >
+                                {member.name}
+                            </div>
+                        )
+                    })
+                }
 
             </div>
             <StyledInputWriteComment
@@ -184,7 +208,7 @@ function InputSearchField() {
                         </IconButton>
                     ),
                 }}
-                
+
                 value={inputContext.text}
                 onChange={(event) => {
                     inputContext.setText(event.target.value)
@@ -195,7 +219,7 @@ function InputSearchField() {
                     }
                 }}
             />
-            
+
         </Box>
     )
 }
@@ -298,7 +322,7 @@ function EmojiButton({ option }) {
                     console.log(e)
                     let newText = inputContext.text
                     console.log(newText)
-                    newText += ` &# ${e.unified}`
+                    newText += `${e.emoji}`
                     console.log(newText)
                     inputContext.setText(newText)
                     console.log(e.emoji)

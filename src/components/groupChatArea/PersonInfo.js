@@ -1,6 +1,6 @@
 // import { AccountCircleIcon } from '@mui/icons-material'
 import { Box, Button } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import InstagramIcon from '@mui/icons-material/Instagram';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
@@ -12,13 +12,20 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { StyledBox } from './GroupChatArea';
 import { IconButton } from '@mui/material';
 import { Typography } from '@mui/material';
+import { useLocation } from 'react-router-dom';
+import { myClient } from '../..';
 function PersonInfo() {
     const mediaArray = [
         LinkedInIcon,
         InstagramIcon,
         TwitterIcon
     ]
-
+    const location = useLocation()
+    // location.state
+    const [profileDate, setProfileData] = useState({})
+    useEffect(()=>{
+        // myClient.
+    })
     return (
         <StyledBox style={{
             marginTop: "none",
