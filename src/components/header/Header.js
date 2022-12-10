@@ -53,7 +53,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("md")]: {
-      width: "20ch",
+      width: "20vh",
     },
   },
 }));
@@ -141,6 +141,7 @@ export default function Header() {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
+
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
@@ -160,9 +161,10 @@ export default function Header() {
     <Box sx={{ flexGrow: 1 }} className="border-b-[1px] border-[#eeeeee]">
       <AppBar position="static" sx={{ boxShadow: "none" }}>
         <Toolbar className="h-18 bg-white px-0 py-7.5">
-          <img src={logo} />
+          <img src={logo} alt="logo" />
 
           <Navigation />
+
           <Box className="grow" />
 
           <Box className="xs:hidden md:flex">
@@ -179,6 +181,7 @@ export default function Header() {
                 />
               </Badge>
             </IconButton>
+
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
@@ -188,6 +191,7 @@ export default function Header() {
                 <NotificationsIcon className="text-lg" />
               </Badge>
             </IconButton>
+
             <IconButton
               size="large"
               edge="end"

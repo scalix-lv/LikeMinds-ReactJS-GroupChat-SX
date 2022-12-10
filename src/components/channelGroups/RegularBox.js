@@ -22,7 +22,7 @@ function RegularBox({ convoArray }) {
 function DateSpecifier({ dateString }) {
   return (
     <div className="border border-solid border-[#EEEEEE] relative mb-3">
-      <span className="border-[#EEEEEE] border-solid border py-1 px-3 text-[10px] font-normal rounded-[35%] absolute left-[50%] translate-y-[-50%] bg-white">
+      <span className="border-[#EEEEEE] border-solid border py-1 px-3 text-[10px] line-height-[12px] font-normal rounded-[20px] absolute left-[50%] translate-y-[-50%] bg-white">
         {dateString}
       </span>
     </div>
