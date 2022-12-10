@@ -17,6 +17,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import logo from "../../assets/Scalix.png";
 import Navigation from "./Navigation";
+import { useContext, useEffect, useRef, useState } from "react";
+import { UserContext } from "../..";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -59,6 +61,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Header() {
+  const userContext = useContext(UserContext);
+
+  console.log(userContext.currentUser);
+  // let groupContext = useContext(GroupContext);
+  // React.useEffect(() => {
+  //   userContext.currentUser;
+  // });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -162,13 +171,11 @@ export default function Header() {
       <AppBar position="static" sx={{ boxShadow: "none" }}>
         <Toolbar className="h-18 bg-white px-0 py-7.5">
           <img src={logo} alt="logo" />
-
           <Navigation />
-
+          {/* === {userContext.currentUser} */}
           <Box className="grow" />
-
           <Box className="xs:hidden md:flex">
-            <IconButton
+            {/* <IconButton
               size="large"
               aria-label="show 4 new mails"
               color="inherit"
@@ -180,9 +187,9 @@ export default function Header() {
                   }}
                 />
               </Badge>
-            </IconButton>
+            </IconButton> */}
 
-            <IconButton
+            {/* <IconButton
               size="large"
               aria-label="show 17 new notifications"
               color="inherit"
@@ -190,19 +197,21 @@ export default function Header() {
               <Badge badgeContent={4} className="bg-gray-500 rounded-full p-1">
                 <NotificationsIcon className="text-lg" />
               </Badge>
-            </IconButton>
+            </IconButton> */}
 
-            <IconButton
-              size="large"
-              edge="end"
+            <div className="w-[40px] h-[40px] rounded-[50% flex justify-center items-center mt-2 font-bold">
+              <img src="./../assets/bell.svg" alt="" />
+            </div>
+
+            <div
+              className="w-[40px] h-[40px] rounded-[50%] bg-black flex justify-center items-center mt-2 font-bold"
               aria-label="account of current user"
               aria-controls={menuId}
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
-              color="inherit"
             >
-              <AccountCircle />
-            </IconButton>
+              {userContext?.currentUser?.user?.name[0]}
+            </div>
           </Box>
           <Box className="xs:hidden md:flex">
             <IconButton
