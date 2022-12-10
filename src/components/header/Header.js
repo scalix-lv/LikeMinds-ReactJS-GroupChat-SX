@@ -63,7 +63,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function Header() {
   const userContext = useContext(UserContext);
 
-  console.log(userContext.currentUser);
+  // console.log(userContext.currentUser);
   // let groupContext = useContext(GroupContext);
   // React.useEffect(() => {
   //   userContext.currentUser;

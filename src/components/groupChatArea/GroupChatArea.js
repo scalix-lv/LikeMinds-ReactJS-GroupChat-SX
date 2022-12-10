@@ -55,7 +55,7 @@ function GroupChatArea() {
       console.log(response);
       if (!response.error) {
         let conversations = response.data;
-        console.log(conversations);
+        // console.log(conversations);
         let conversationToBeSetArray = [];
         let newConversationArray = [];
         let lastDate = "";
@@ -84,6 +84,8 @@ function GroupChatArea() {
     fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
 
+  const [isSelected, setIsSelected] = useState(false)
+  const [conversationObject, setConversationObject] = useState({})
   // useEffect(()=>{
   //   const fn = async (chatroomId, pageNo) => {
   //     let optionObject = {
@@ -136,6 +138,13 @@ function GroupChatArea() {
         setConversationArray: setConversationArray,
       }}
     >
+      <CurrentSelectedConversationContext.Provider
+        value={{
+          conversationObject, setConversationObject, setIsSelected, isSelected
+        }}
+      >
+
+      
       {groupContext.activeGroup.chatroom?.id ? (
         <Tittle
           headerProps={{
@@ -172,8 +181,16 @@ function GroupChatArea() {
           <>hi</>
         )}
       </div>
+      </CurrentSelectedConversationContext.Provider>
     </ConversationContext.Provider>
   );
 }
+
+export const CurrentSelectedConversationContext = React.createContext({
+  isSelected: Boolean,
+  setIsSelected: ()=>{},
+  conversationObject: {},
+  setConversationObject: ()=>{}
+})
 
 export default GroupChatArea;

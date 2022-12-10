@@ -14,12 +14,14 @@ import mic from "./../../assets/mic.png"
 import paperclip from "./../../assets/paperclip.png"
 import { GroupContext } from '../Groups/Groups';
 import { myClient } from '../..';
-import { ConversationContext } from '../groupChatArea/GroupChatArea';
-import { getConversationsForGroup, mergeInputFiles } from '../../sdkFunctions';
+import { ConversationContext, CurrentSelectedConversationContext } from '../groupChatArea/GroupChatArea';
+import { getConversationsForGroup, getString, getUsername, mergeInputFiles } from '../../sdkFunctions';
 import EmojiPicker from 'emoji-picker-react';
 import { MentionsInput, Mention } from 'react-mentions'
 // import Mentions
 import m from "./m"
+import MessageBox from '../channelGroups/MessageBox';
+import { Close } from '@mui/icons-material';
 const StyledInputWriteComment = styled(TextField)({
     background: "#F9F9F9",
     borderRadius: "20px",
@@ -47,9 +49,9 @@ export const InputContext = React.createContext({
 })
 
 function Input() {
-    const [audioFiles, setAudioFiles] = useState(null)
-    const [mediaFiles, setMediaFiles] = useState(null)
-    const [docFiles, setDocFiles] = useState(null)
+    const [audioFiles, setAudioFiles] = useState([])
+    const [mediaFiles, setMediaFiles] = useState([])
+    const [docFiles, setDocFiles] = useState([])
     const [text, setText] = useState("")
     const data = [
         {
@@ -110,44 +112,105 @@ function InputSearchField() {
         }
         // console.log(response)
     }
+    let handleSendMessage = async () => {
+        try {
+            let { text, setText } = inputContext
+            let filesArray = mergeInputFiles(inputContext)
+            let res = null
+            if (text.length != 0) {
 
-    let handleSendMessage = (event) => {
-        let { text, setText } = inputContext
-        let filesArray = mergeInputFiles(inputContext)
-        if (text.length != 0) {
-            if(!filesArray.length){
-                myClient.onConversationsCreate({
-                    text: text.toString(),
-                    created_at: Date.now(),
-                    has_files: false,
-                    // attachment_count: false,
-                    chatroom_id: groupContext.activeGroup.chatroom.id
-                }).then(res => console.log(res)).catch(e => console.log(e))
-                setText("")
-                fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
-            }else{
-                myClient.onConversationsCreate({
-                    text: text.toString(),
-                    created_at: Date.now(),
-                    has_files: true,
-                    attachment_count: filesArray.length,
-                    chatroom_id: groupContext.activeGroup.chatroom.id
-                }).then(res => console.log(res)).catch(e => console.log(e))
-                setText("")
-                fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+                if (!filesArray.length) {
+                    res = await fnew(false, 0, text, setText)
+                } else {
+                    res = await fnew(true, filesArray.length, text, setText)
+                }
+            } else if (filesArray.length > 0) {
+                res = await fnew(true, filesArray.length, text, setText)
+
             }
-        }else if(filesArray.length > 0){
-            myClient.onConversationsCreate({
-                text: text.toString(),
-                created_at: Date.now(),
-                has_files: true,
-                attachment_count: filesArray.length,
-                chatroom_id: groupContext.activeGroup.chatroom.id
-            }).then(res => console.log(res)).catch(e => console.log(e))
-            setText("")
-            fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+
+            if (res != null && filesArray.length > 0) {
+                let config = {
+                    messageId: res.id,
+                    chatroomId: groupContext.activeGroup.chatroom.id,
+                    file: filesArray[0],
+                    // index?: number,
+                }
+                let fileUploadRes = await myClient.uploadMedia(config)
+                console.log(fileUploadRes)
+            } else {
+                return {
+                    error: false,
+                    data: res
+                }
+            }
+
+        } catch (error) {
+            return {
+                error: true,
+                errorMessage: error
+            }
         }
     }
+    let fnew = async (has_files, attachment_count, text, setText) => {
+        try {
+            let config = {
+                text: text.toString(),
+                created_at: Date.now(),
+                has_files: false,
+                // attachment_count: false,
+                chatroom_id: groupContext.activeGroup.chatroom.id
+            }
+            if (has_files) {
+                config.attachment_count = attachment_count
+            }
+            let callRes = await myClient.onConversationsCreate(config)
+
+            setText("")
+            fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+            return { error: false, data: callRes }
+        } catch (error) {
+            return { error: true, errorMessage: error }
+        }
+    }
+
+    // let handleSendMessage = (event) => {
+    //     let { text, setText } = inputContext
+    //     let filesArray = mergeInputFiles(inputContext)
+    //     if (text.length != 0) {
+    //         if (!filesArray.length) {
+    //             myClient.onConversationsCreate({
+    //                 text: text.toString(),
+    //                 created_at: Date.now(),
+    //                 has_files: false,
+    //                 // attachment_count: false,
+    //                 chatroom_id: groupContext.activeGroup.chatroom.id
+    //             }).then(res => console.log(res)).catch(e => console.log(e))
+    //             setText("")
+    //             fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+    //         } else {
+    //             myClient.onConversationsCreate({
+    //                 text: text.toString(),
+    //                 created_at: Date.now(),
+    //                 has_files: true,
+    //                 attachment_count: filesArray.length,
+    //                 chatroom_id: groupContext.activeGroup.chatroom.id
+    //             }).then(res => console.log(res)).catch(e => console.log(e))
+    //             setText("")
+    //             fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+    //         }
+    //     } else if (filesArray.length > 0) {
+    //         myClient.onConversationsCreate({
+    //             text: text.toString(),
+    //             created_at: Date.now(),
+    //             has_files: true,
+    //             attachment_count: filesArray.length,
+    //             chatroom_id: groupContext.activeGroup.chatroom.id
+    //         }).then(res => console.log(res)).catch(e => console.log(e))
+    //         setText("")
+    //         fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
+    //     }
+    // }
     const [open, setOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
     useEffect(() => {
@@ -163,6 +226,12 @@ function InputSearchField() {
             setAnchorEl(ref)
         }
     }, [inputContext.text])
+    const [openReplyBox, setOpenReplyBox] = useState(false)
+
+    const selectedConversationContext = useContext(CurrentSelectedConversationContext)
+    useEffect(() => {
+        setOpenReplyBox(true)
+    }, [selectedConversationContext.conversationObject])
     return (
         <Box sx={{
             position: "relative"
@@ -196,6 +265,48 @@ function InputSearchField() {
                 }
 
             </div>
+            {/* for adding reply */}
+            {
+                selectedConversationContext.isSelected ? (<div
+                    // className='flex'
+                    style={{
+                        display: openReplyBox ? "flex" : "none",
+                        height: "80px",
+                        position: "absolute",
+                        transform: 'translate(0, -105%)',
+                        background: 'white',
+                        overflow: 'auto',
+                        width: "50%",
+                        borderTopLeftRadius: "10px",
+                        borderTopRightRadius: "10px",
+                        border: '0.5px solid black',
+                        justifyContent: 'space-between'
+                        // borderBottom: "none"
+                    }}
+                >
+
+                    <div className='border-l-4 border-l-green-500 px-2'>
+                        <p className='mb-3'>
+                            {
+                                selectedConversationContext.conversationObject?.member.name
+                            }
+                        </p>
+                        <div>
+                            {getString(selectedConversationContext.conversationObject?.answer)}
+                        </div>
+                    </div>
+                    <div >
+                        <IconButton onClick={()=>{
+                            selectedConversationContext.setIsSelected(false)
+                            selectedConversationContext.setConversationObject(null)
+                        }}>
+                            <Close />
+                        </IconButton>
+                    </div>
+
+
+                </div>) : null
+            }
             <StyledInputWriteComment
                 ref={ref}
                 variant='filled'
@@ -272,7 +383,7 @@ function InputOptions() {
                     }
                     if (option.title != "GIF" && option.title != "emojis") {
                         return (
-                            <OptionButtonBox key={option.title} option={option} accept={accept} />
+                            <OptionButtonBox key={option.title} option={option} accept={accept} setFile={option.setFile} />
                         )
                     }
                     else {

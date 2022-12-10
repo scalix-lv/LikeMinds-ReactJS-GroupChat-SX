@@ -25,6 +25,7 @@ function MessageBlock({ conversationObject, userId }) {
         }
         convoId={conversationObject.id}
         conversationReactions={conversationObject.reactions}
+        conversationObject={conversationObject}
       />
     </Box>
   );

@@ -22,6 +22,7 @@ import emojiIcon from "../../assets/emojioption.png";
 import EmojiPicker from "emoji-picker-react";
 import { GroupContext } from "../Groups/Groups";
 import {groupPersonalInfoPath} from './../../routes'
+import { CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
 function MessageBox({
   username,
   messageString,
@@ -30,6 +31,7 @@ function MessageBox({
   attachments,
   convoId,
   conversationReactions,
+  conversationObject
 }) {
   return (
     <div>
@@ -41,7 +43,7 @@ function MessageBox({
           userId={userId}
           attachments={attachments}
         />
-        <MoreOptions convoId={convoId} />
+        <MoreOptions convoId={convoId} convoObject={conversationObject}/>
       </Box>
       <div>
         {conversationReactions.map((reactionObject, reactionObjectIndex) => {
@@ -182,7 +184,7 @@ function TimeBox({ time }) {
   );
 }
 
-function MoreOptions({ convoId, userId }) {
+function MoreOptions({ convoId, userId, convoObject }) {
   const [anchor, setAnchor] = useState(null);
   const [shouldShow, setShouldShowBlock] = useState(false);
   let open = Boolean(anchor);
@@ -220,10 +222,16 @@ function MoreOptions({ convoId, userId }) {
       console.log(error);
     }
   }
+  const selectedConversationContext = useContext(CurrentSelectedConversationContext)
   const options = [
     {
       title: "Reply",
-      clickFunction: null,
+      clickFunction: (e)=>{
+        selectedConversationContext.setIsSelected(true)
+        console.log(selectedConversationContext)
+        console.log(convoObject)
+        selectedConversationContext.setConversationObject(convoObject)
+      },
     },
     {
       title: "Reply Privately",
@@ -236,6 +244,7 @@ function MoreOptions({ convoId, userId }) {
       },
     },
   ];
+  
   return (
     <Box className="flex items-center">
       <IconButton ref={ref2} onClick={handleOpen}>

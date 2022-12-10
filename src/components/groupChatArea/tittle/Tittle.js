@@ -6,6 +6,8 @@ import Gap from '../../../styledAccessories/Gap'
 
 import SearchBar from '../../../styledAccessories/SearchBar'
 import MoreOptions from '../../../styledAccessories/MoreOptions'
+import { Link } from 'react-router-dom'
+import { groupInfoPath } from '../../../routes'
 const TitleBox = styled(Box)({
     display: "flex",
     borderBottom: '1px solid #ADADAD',
@@ -51,7 +53,8 @@ function TitleArea({ title, memberCount }) {
             className="text-xs font-normal leading-[14.5px] text-[#ADADAD]"
             sx={{
                 fontFamily: "Lato",
-            }}>{memberCount ? memberCount : null} members</span>
+            }}>
+               <Link to={groupInfoPath}> {memberCount ? memberCount : null} members</Link></span> 
         </Box>
     )
 }

@@ -82,7 +82,7 @@ function App() {
         console.log(error);
         alert("error at " + __dirname + "inside useEffect");
       });
-  });
+  },[]);
   return (
     <div className="App h-full">
       <UserContext.Provider
