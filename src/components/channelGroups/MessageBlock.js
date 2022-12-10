@@ -19,6 +19,8 @@ function MessageBlock({ conversationObject, userId }) {
         messageString={convoDetails.answer}
         time={convoDetails.created_at}
         attachments={convoDetails.attachments != undefined ? convoDetails.attachments : null}
+        convoId={conversationObject.id}
+        conversationReactions={conversationObject.reactions}
       />
     </Box>
   );

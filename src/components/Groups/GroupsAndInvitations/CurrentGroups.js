@@ -54,15 +54,18 @@ function CurrentGroups() {
   }
 
   useEffect(() => {
+
+    // loading the list of chatrooms 
     const fn = async () => {
       try {
         const feedCall = await myClient.getHomeFeedData({
           communityId: 50421,
           page: 1,
         });
-        // console.log()
+        
         let chatroomlist = feedCall.my_chatrooms;
         let newChatRoomList = [...chatRoomsList];
+        
         for (let chatroom of chatroomlist) {
           newChatRoomList.push(chatroom);
         }
@@ -73,7 +76,9 @@ function CurrentGroups() {
       }
     };
     fn();
-    // getChatRoomData()
+
+    
+    
   }, []);
 
   return (

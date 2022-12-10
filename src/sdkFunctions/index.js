@@ -1,13 +1,15 @@
 import Typicode from 'likeminds-apis-sdk';
+import { json } from 'react-router-dom';
 import { myClient } from '..';
 // import('likeminds-apis-sdk/dist/chatroom/types').ConversationData as conversationData
 export const jsonReturnHandler = (data, error) => {
     let returnObject = {
         error: false,
     }
-    if(!Boolean(error)){
+    if (!Boolean(error)) {
         returnObject.data = data;
-    }else{
+    } else {
+        returnObject.error = true
         returnObject.errorMessage = error;
     }
     return returnObject;
@@ -20,10 +22,10 @@ export const createNewClient = (key) => {
     return client;
 }
 
-export const getChatRoomDetails = async (myClient : Typicode, chatRoomId) => {
+export const getChatRoomDetails = async (myClient: Typicode, chatRoomId) => {
     try {
         console.log(chatRoomId)
-        
+
         const chatRoomResponse = await myClient.getChatroom(
             chatRoomId
         );
@@ -35,45 +37,134 @@ export const getChatRoomDetails = async (myClient : Typicode, chatRoomId) => {
     }
 }
 
-export const getConversationsForGroup = async (optionObject)=>{
+export const getConversationsForGroup = async (optionObject) => {
     try {
         let conversationCall = await myClient.getConversations(optionObject)
         // console.log(conversationCall)
         return jsonReturnHandler(conversationCall.conversations, null)
     } catch (error) {
-       
+
         return jsonReturnHandler(null, error)
     }
 }
 
-export function parseMessageString(message){
+export function parseMessageString(message) {
     let newMessage = " " + message + " ";
-    
+
 }
-export function getUsername(str){
+export function getUsername(str) {
     let userMatchString = /(?<=<<)(@*).+(?=\|)/gs
     let userName = str.match(userMatchString)
     return userName
 }
-export function getUserLink(str){
+export function getUserLink(str) {
     let userMatchString = /(?<=\|).+(?=>>)/gs
     let userName = str.match(userMatchString)
     return userName
 }
-export function getString(str){
-    if(!Boolean(getUsername(str))){
+export function getString(str) {
+    if (!Boolean(getUsername(str))) {
         let userMatchString = /.+/gs
         let userName = str.match(userMatchString)
         return userName
-    }else{
+    } else {
         let userMatchString = /(?<=>>)(@*).+/gs
-    let userName = str.match(userMatchString)
-    return userName
+        let userName = str.match(userMatchString)
+        return userName
+    }
+}
+
+export async function createNewConversation(val, groupContext, options) {
+    let {has_files, count } = options
+    let configObject = {
+        text: val.toString(),
+        created_at: Date.now(),
+        has_files: has_files,
+        
+        chatroom_id: groupContext.activeGroup.chatroom.id,
+        
+    }
+    if(has_files){
+        configObject['attachment_count'] = count
+    }
+    try {
+        if (val.length != 0) {
+            let createCall = await myClient.onConversationsCreate(configObject)
+            return jsonReturnHandler(createCall, null)
+        }
+    } catch (error) {
+        return jsonReturnHandler(null, error)
+    }
+}
+
+export async function getReportingOptions(){
+    try{
+        let rep = await myClient.getReportTags()
+        return jsonReturnHandler(rep, null)
+    }catch(e){
+        return jsonReturnHandler(null, e)
+    }
+}
+
+// communityId = 50421
+
+export async function addReaction(reaction, convoId, chatId){
+    try {
+        const reactionCall = await myClient.addAction({
+            chatroom_id: chatId,
+            conversation_id: convoId,
+            reaction: reaction
+        })
+        return jsonReturnHandler(reactionCall, null)
+    } catch (error) {
+        return jsonReturnHandler(null, error)
+    }
+}
+
+export async function pushReport(convoId, tagId, reason){
+    try {
+        const pushReportCall = await myClient.pushReport({
+            conversation_id: convoId,
+            tag_id: tagId,
+            reason: reason
+        })
+        return jsonReturnHandler(pushReportCall, null)
+    } catch (error) {
+        return jsonReturnHandler(null, error)
     }
 }
 
 
-// communityId = 50421
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 let user = {
     "success": true,
