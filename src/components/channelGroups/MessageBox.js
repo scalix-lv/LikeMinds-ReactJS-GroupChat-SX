@@ -171,7 +171,7 @@ function TimeBox({ time }) {
   );
 }
 
-function MoreOptions({ convoId }) {
+function MoreOptions({ convoId, userId }) {
   const [anchor, setAnchor] = useState(null);
   const [shouldShow, setShouldShowBlock] = useState(false);
   let open = Boolean(anchor);
@@ -258,6 +258,9 @@ function MoreOptions({ convoId }) {
           convoId={convoId}
           shouldShow={shouldShow}
           onClick={onClickhandlerReport}
+          closeBox={()=>{
+            setShouldShowBlock(false)
+          }}
         />
       </Dialog>
       <Menu
@@ -270,6 +273,7 @@ function MoreOptions({ convoId }) {
             addReaction(e.emoji, convoId, groupContext.activeGroup.id)
               .then((r) => console.log(r))
               .catch((e) => console.log(e));
+              handleCloseEmoji()
           }}
         />
       </Menu>

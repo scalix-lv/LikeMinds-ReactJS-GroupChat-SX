@@ -134,8 +134,16 @@ export async function pushReport(convoId, tagId, reason){
     }
 }
 
-
-
+export async function initiateSDK(is_guest, user_unique_id, user_name){
+    try {
+        let initiateCall = await myClient.initSDK({
+            is_guest, user_unique_id, user_name
+        })
+        return jsonReturnHandler(initiateCall, null)
+    } catch (error) {
+        return jsonReturnHandler(null, error)
+    }
+}
 
 
 

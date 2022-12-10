@@ -18,8 +18,10 @@ import {
   mainPath,
 } from "./routes";
 import DirectMessagesMain from "./components/direct-messages/DirectMessagesMain";
-// import DirectMessagesMain from './components/direct-messages/DirectMessagesMain';
 import "./App.css";
+import { useEffect, useState } from "react";
+import { UserContext } from ".";
+import { initiateSDK } from "./sdkFunctions";
 
 const router = createBrowserRouter([
   {
@@ -70,9 +72,25 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  
+  const [currentUser, setCurrentUser] = useState(null)
+  useEffect(()=>{
+    initiateSDK(false, "707a866a-2d28-4b8d-b34b-382ac76c8b85", "gaurav")
+    .then(res=>{
+      setCurrentUser(res.data)
+    }).catch(error=>{
+      console.log(error)
+      alert("error at " + __dirname + "inside useEffect")
+    })
+  })
   return (
     <div className="App h-full">
+      <UserContext.Provider value={{
+        currentUser: currentUser,
+        setCurrentUser: setCurrentUser
+      }}>
       <RouterProvider router={router} />
+      </UserContext.Provider>
       {/* <Block/> */}
     </div>
   );

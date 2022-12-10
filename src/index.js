@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 // import Typicode from 'likeminds-apis-sdk';
 import LikeMinds from 'likeminds-apis-sdk';
+import { initiateSDK } from './sdkFunctions';
 
 
 export const myClient = new LikeMinds({
@@ -23,6 +24,7 @@ export const userObj = {
   "organisation_name": null,
   "image_url": ""
 }
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
@@ -34,3 +36,8 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+export const UserContext = React.createContext({
+  currentUser: null,
+  setCurrentUser: ()=>{}
+})

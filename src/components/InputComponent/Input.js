@@ -133,7 +133,11 @@ function InputSearchField() {
                 onChange={(event) => {
                     inputContext.setText(event.target.value)
                 }}
-                onKeyUp={() => console.log("hello")}
+                onKeyUp={(e) => {
+                    if(e.key === "Enter"){
+                        handleSendMessage()
+                    }
+                } }
             />
 
         </Box>

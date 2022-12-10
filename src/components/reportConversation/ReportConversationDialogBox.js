@@ -5,7 +5,7 @@ import { myClient } from "../..";
 import { getReportingOptions } from "../../sdkFunctions";
 
 // myClient.onUploadFile
-function ReportConversationDialogBox({ convoId, shouldShow, onClick }) {
+function ReportConversationDialogBox({ convoId, shouldShow, onClick, closeBox }) {
   const [reasonArr, setReasonArr] = useState([]);
   useEffect(() => {
     getReportingOptions()
@@ -16,7 +16,7 @@ function ReportConversationDialogBox({ convoId, shouldShow, onClick }) {
     <div className="bg-white p-4 w-[400px]">
       <div className="flex justify-between p-4">
         <div className="text-base font-bold mt-2">Report Message</div>
-        <IconButton>
+        <IconButton onClick={closeBox}>
           <CloseIcon />
         </IconButton>
       </div>

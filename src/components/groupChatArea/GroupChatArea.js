@@ -81,8 +81,53 @@ function GroupChatArea() {
         console.log(response.errorMessage);
       }
     };
-    fn(groupContext.activeGroup.chatroom?.id, 100);
+    fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
+  
+  // useEffect(()=>{
+  //   const fn = async (chatroomId, pageNo) => {
+  //     let optionObject = {
+  //       chatroomID: chatroomId,
+  //       page: pageNo,
+  //     };
+  //     let response = await getConversationsForGroup(optionObject);
+  //     console.log(response);
+  //     if (!response.error) {
+  //       let conversations = response.data;
+  //       console.log(conversations);
+  //       let conversationToBeSetArray = [];
+  //       let newConversationArray = [];
+  //       let lastDate = "";
+  //       for (let convo of conversations) {
+  //         if (convo.date == lastDate) {
+  //           conversationToBeSetArray.push(convo);
+  //           lastDate = convo.date;
+  //         } else {
+  //           if (conversationToBeSetArray.length != 0) {
+  //             newConversationArray.push(conversationToBeSetArray);
+  //             conversationToBeSetArray = [];
+  //             conversationToBeSetArray.push(convo);
+  //             lastDate = convo.date;
+  //           } else {
+  //             conversationToBeSetArray.push(convo);
+  //             lastDate = convo.date;
+  //           }
+  //         }
+  //       }
+  //       newConversationArray.push(conversationToBeSetArray);
+  //       setConversationArray(newConversationArray);
+  //     } else {
+  //       console.log(response.errorMessage);
+  //     }
+  //   };
+  //   let intervalId = setInterval(()=>{
+  //     fn(groupContext.activeGroup.chatroom?.id, 1000)
+  //   }, 1000)
+
+  //   return () => {
+  //     clearInterval(intervalId)
+  //   }
+  // })
 
   return (
     <ConversationContext.Provider
