@@ -2,21 +2,6 @@ import React from "react";
 import MessageBlock from "./MessageBlock";
 
 function RegularBox({ convoArray }) {
-  const msgBoxes = [
-    {
-      userId: "NASH",
-    },
-    {
-      userId: "NASH",
-    },
-    {
-      userId: "BASH",
-    },
-    {
-      userId: "NASH",
-    },
-  ];
-
   return (
     <div className="pt-6 pr-24 pb-3 pl-6 w-full">
       <DateSpecifier dateString={convoArray[0].date} />

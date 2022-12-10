@@ -32,12 +32,7 @@ function Groups() {
         </div>
 
         <div className="w-full bg-[#f6f6ff] relative">
-          <Tittle
-            headerProps={{
-              title: "Founders Social",
-              memberCount: 5,
-            }}
-          />
+         
 
           <Outlet />
 

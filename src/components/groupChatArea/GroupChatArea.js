@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { myClient } from "../..";
 import { getConversationsForGroup } from "../../sdkFunctions";
 import RegularBox from "../channelGroups/RegularBox";
@@ -20,14 +20,19 @@ export const StyledBox = styled(Box)({
 
 export const ConversationContext = React.createContext({
   conversationsArray: [],
-  setConversationArray: () => {},
+  setConversationArray: () => { },
 });
 
 function GroupChatArea() {
   const [conversationsArray, setConversationArray] = useState([]);
 
   let groupContext = useContext(GroupContext);
+  console.log(groupContext)
 
+  const ref = useRef(null)
+  const scroll = () => {
+    ref.current?.scrollIntoView({behaviour: "smooth"})
+  }
   useEffect(() => {
     const fn = async () => {
       try {
@@ -36,6 +41,7 @@ function GroupChatArea() {
         console.log(error);
       }
     };
+    scroll()
     // fn()
   });
 
@@ -85,6 +91,14 @@ function GroupChatArea() {
         setConversationArray: setConversationArray,
       }}
     >
+      {groupContext.activeGroup.chatroom?.id ?
+        <Tittle
+          headerProps={{
+            title: groupContext.activeGroup.chatroom.header,
+            memberCount: groupContext.activeGroup.conversation_users.length,
+          }}
+        /> : null
+      }
       <div
         className="relative overflow-x-hidden overflow-auto"
         style={{ height: "calc(100vh - 270px)" }}
@@ -101,10 +115,11 @@ function GroupChatArea() {
                 flexGrow: 0.4,
               }}
             />
-
+            <div ref={ref}></div>
             <div
               className="fixed bottom-0 "
               style={{ width: "calc(100% - 544px)" }}
+              
             >
               <Input />
             </div>
