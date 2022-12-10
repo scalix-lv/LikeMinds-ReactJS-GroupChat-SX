@@ -83,7 +83,7 @@ function GroupChatArea() {
     };
     fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
-  
+
   // useEffect(()=>{
   //   const fn = async (chatroomId, pageNo) => {
   //     let optionObject = {
@@ -163,7 +163,7 @@ function GroupChatArea() {
             <div ref={ref}></div>
             <div
               className="fixed bottom-0 "
-              style={{ width: "calc(100% - 544px)" }}
+              style={{ width: "calc(100% - 504px)" }}
             >
               <Input />
             </div>
