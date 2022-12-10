@@ -29,8 +29,8 @@ function Main() {
           <Header />
         </div>
 
-        <div className="w-full flex">
-          <div className="w-[140px] h-full mt-[65px]">
+        <div className="w-full flex h-full customHeight">
+          <div className="w-[140px] h-full mt-[65px] border-r-[1px] border-[#eeeeee]">
             <Sidenav />
           </div>
           <div className="mt-[65px] w-full">

@@ -87,7 +87,7 @@ function GroupChatArea() {
     >
       <div
         className="relative overflow-x-hidden overflow-auto"
-        style={{ height: "calc(100vh - 280px)" }}
+        style={{ height: "calc(100vh - 270px)" }}
       >
         {groupContext.activeGroup.chatroom?.id !== undefined ? (
           <>

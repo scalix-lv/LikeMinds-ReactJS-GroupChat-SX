@@ -10,6 +10,8 @@ import { myClient } from "../../..";
 import { Link, NavLink } from "react-router-dom";
 import { groupMainPath } from "../../../routes";
 import { GroupContext } from "../Groups";
+import cancelIcon from "../../../assets/svg/cancel.svg";
+import acceptIcon from "../../../assets/svg/accept.svg";
 
 function CurrentGroups() {
   const [chatRoomsList, setChatRoomsList] = useState([]);
@@ -110,11 +112,7 @@ function CurrentGroups() {
 function GroupTile({ title, newUnread, getChatRoomData }) {
   return (
     <div
-      className="flex justify-between p-[18px] border border-solid border-[#EEEEEE] bg-inherit"
-      // style={{
-      //     backgroundColor: newUnread > 0 ? "#ECF3FF" : "#FFFFFF",
-
-      // }}
+      className="flex justify-between p-[18px] border-t border-b border-[#EEEEEE] bg-inherit"
       onClick={() => {
         getChatRoomData("none");
       }}
@@ -128,7 +126,7 @@ function GroupTile({ title, newUnread, getChatRoomData }) {
       >
         {title}
         {newUnread <= 0 ? (
-          <span className="bg-[#FFEFC6] p-1 text-[#F6BD2A] text-[10px] font-medium m-1">
+          <span className="bg-[#FFEFC6] rounded-[4px] px-[6px] py-[5px] text-[#F6BD2A] line-height-[12px] text-[10px] font-medium m-1">
             Private
           </span>
         ) : null}
@@ -148,7 +146,7 @@ function GroupTile({ title, newUnread, getChatRoomData }) {
 function GroupInviteTile({ title, groupType, getChatRoomData }) {
   return (
     <div
-      className="bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE]"
+      className="bg-white flex justify-between p-[18px] border-b border-[#EEEEEE]"
       onClick={() => {
         getChatRoomData("none");
       }}
@@ -167,7 +165,7 @@ function GroupInviteTile({ title, groupType, getChatRoomData }) {
         >
           {title}
           {groupType === "private" ? (
-            <span className="bg-[#FFEFC6] p-1 text-[#F6BD2A] text-[10px] font-medium m-1">
+            <span className="bg-[#FFEFC6] rounded-[4px] px-[6px] py-[5px] text-[#F6BD2A] line-height-[12px] text-[10px] font-medium m-1">
               Private
             </span>
           ) : null}
@@ -176,11 +174,13 @@ function GroupInviteTile({ title, groupType, getChatRoomData }) {
 
       <Box>
         <IconButton disableRipple={true}>
-          <CloseIcon className="bg-[#F9F9F9] text-[#ADADAD] p-2 rounder-full" />
+          <img src={cancelIcon} alt="cancel" />
+          {/* <CloseIcon className="bg-[#F9F9F9] text-[#ADADAD] p-2 rounder-full" /> */}
         </IconButton>
 
         <IconButton disableRipple={true}>
-          <DoneIcon className="bg-[#E0FFDF] text-[#83D381] p-2 rounded-full" />
+          <img src={acceptIcon} alt="accept" />
+          {/* <DoneIcon className="bg-[#E0FFDF] text-[#83D381] p-2 rounded-full" /> */}
         </IconButton>
       </Box>
     </div>
@@ -221,7 +221,7 @@ function PublicGroup({ groupTitle, groupList }) {
       </Box>
       <Collapse
         in={shouldOpen}
-        className="border border-solid border-[#EEEEEE]"
+        className="border-b border-solid border-[#EEEEEE]"
       >
         {groupList.map((group, groupIndex) => {
           return (

@@ -20,11 +20,8 @@ function Groups() {
         setActiveGroup: setActiveGroup,
       }}
     >
-      <div
-        className="flex overflow-hidden"
-        style={{ height: "calc(100vh - 72px)" }}
-      >
-        <div className="w-[540px] overflow-auto">
+      <div className="flex overflow-hidden customHeight">
+        <div className="w-[540px] customScroll">
           {/* Search Bar */}
           <SearchbarGroups />
 
