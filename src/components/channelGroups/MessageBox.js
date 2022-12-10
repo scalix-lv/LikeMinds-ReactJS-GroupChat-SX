@@ -58,31 +58,82 @@ function ReactionIndicator({ reaction }) {
 function StringBox({ username, messageString, time, userId, attachments }) {
   const ref = useRef(null);
   return (
-    <Box
-      className="flex justify-between py-4 px-4  w-[282px] rounded-[10px]"
-      sx={{
+    <div
+      className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
+      style={{
         background: userId === userObj.id ? "#ECF3FF" : "#FFFFFF",
       }}
     >
-      <Box>
-        <Typography component={"p"} fontWeight={700} fontSize={12}>
+      <div className="flex w-full justify-between mb-1 clear-both">
+        <div className="text-[12px] leading-[14px] text-[#323232] font-[700]">
           {username}
-        </Typography>
+        </div>
+        <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
+          {time}
+        </div>
+      </div>
+
+      <div className="flex w-full">
         {attachments != null
           ? attachments
               .filter((item, itemIndex) => {
-                console.log(item);
                 return item.type === "image";
               })
               .map((item, itemIndex) => {
-                console.log(item);
-                return <img src={item.url} className="max-w-[100%] h-auto" />;
+                return (
+                  <img src={item.url} alt="" className="max-w-[100%] h-auto" />
+                );
               })
           : null}
+        {attachments != null
+          ? attachments
+              .filter((item, itemIndex) => {
+                return item.type === "audio";
+              })
+              .map((item, itemIndex) => {
+                return (
+                  <audio controls src={item.url} className="w-[230]">
+                    {" "}
+                    <a href={item.url}>Download audio</a>
+                  </audio>
+                );
+              })
+          : null}
+
+        {attachments != null
+          ? attachments
+              .filter((item, itemIndex) => {
+                return item.type === "pdf";
+              })
+              .map((item, itemIndex) => {
+                return (
+                  <a href={item.url} target="_blank">
+                    {item.name}
+                  </a>
+                );
+              })
+          : null}
+
+        {attachments != null
+          ? attachments
+              .filter((item, itemIndex) => {
+                return item.type === "video";
+              })
+              .map((item, itemIndex) => {
+                return (
+                  <video controls className="w-[200] h-max-[200px]">
+                    <source src={item.url} type="video/mp4" />
+                    <source src={item.url} type="video/ogg" />
+                    Your browser does not support the video tag.
+                  </video>
+                );
+              })
+          : null}
+
         <Typography component={"p"} fontWeight={300} fontSize={14}>
           {
             <Link to={"/" + getUserLink(messageString)}>
-              <span className="text-green-500 font-semibold">
+              <span className="text-green-500 text-[12px] font-semibold">
                 {getUsername(messageString)}
               </span>
             </Link>
@@ -97,13 +148,12 @@ function StringBox({ username, messageString, time, userId, attachments }) {
                 return [newDomNode];
               }}
             >
-              {getString(messageString)}
+              ---{getString(messageString)}
             </span>
           }
         </Typography>
-      </Box>
-      <TimeBox time={time} />
-    </Box>
+      </div>
+    </div>
   );
 }
 

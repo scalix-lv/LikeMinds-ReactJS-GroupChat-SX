@@ -20,19 +20,19 @@ export const StyledBox = styled(Box)({
 
 export const ConversationContext = React.createContext({
   conversationsArray: [],
-  setConversationArray: () => { },
+  setConversationArray: () => {},
 });
 
 function GroupChatArea() {
   const [conversationsArray, setConversationArray] = useState([]);
 
   let groupContext = useContext(GroupContext);
-  console.log(groupContext)
+  console.log(groupContext);
 
-  const ref = useRef(null)
+  const ref = useRef(null);
   const scroll = () => {
-    ref.current?.scrollIntoView({behaviour: "smooth"})
-  }
+    ref.current?.scrollIntoView({ behaviour: "smooth" });
+  };
   useEffect(() => {
     const fn = async () => {
       try {
@@ -41,7 +41,7 @@ function GroupChatArea() {
         console.log(error);
       }
     };
-    scroll()
+    scroll();
     // fn()
   });
 
@@ -91,14 +91,14 @@ function GroupChatArea() {
         setConversationArray: setConversationArray,
       }}
     >
-      {groupContext.activeGroup.chatroom?.id ?
+      {groupContext.activeGroup.chatroom?.id ? (
         <Tittle
           headerProps={{
             title: groupContext.activeGroup.chatroom.header,
             memberCount: groupContext.activeGroup.conversation_users.length,
           }}
-        /> : null
-      }
+        />
+      ) : null}
       <div
         className="relative overflow-x-hidden overflow-auto"
         style={{ height: "calc(100vh - 270px)" }}
@@ -119,7 +119,6 @@ function GroupChatArea() {
             <div
               className="fixed bottom-0 "
               style={{ width: "calc(100% - 544px)" }}
-              
             >
               <Input />
             </div>
