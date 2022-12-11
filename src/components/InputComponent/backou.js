@@ -293,7 +293,7 @@ function InputSearchField() {
                                     // part of val string
                                     
                                     // inputContext.setTextVal(newInputValTextArr)
-                                    inputContext.setTextVal(inputContext.textVal + "<<" + member.name + `|route://member_profile/${member.id}?member_id=${member.id}&community_id=${groupContext}>>`)
+                                    inputContext.setTextVal(inputContext.textVal + "<<" + member.name + `|route://member_profile/${member.id}?member_id=${member.id}&community_id=${groupContext.activeGroup?.community.id}>>`)
                                     inputContext.setText(inputContext.text.substring(0,inputContext.text.length-1) + member.name  )
                                 }}
                             >
