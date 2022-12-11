@@ -52,10 +52,10 @@ function GroupChatArea() {
         page: pageNo,
       };
       let response = await getConversationsForGroup(optionObject);
-      console.log(response);
+
       if (!response.error) {
         let conversations = response.data;
-        // console.log(conversations);
+
         let conversationToBeSetArray = [];
         let newConversationArray = [];
         let lastDate = "";
@@ -84,8 +84,8 @@ function GroupChatArea() {
     fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
 
-  const [isSelected, setIsSelected] = useState(false)
-  const [conversationObject, setConversationObject] = useState({})
+  const [isSelected, setIsSelected] = useState(false);
+  const [conversationObject, setConversationObject] = useState({});
   // useEffect(()=>{
   //   const fn = async (chatroomId, pageNo) => {
   //     let optionObject = {
@@ -140,47 +140,48 @@ function GroupChatArea() {
     >
       <CurrentSelectedConversationContext.Provider
         value={{
-          conversationObject, setConversationObject, setIsSelected, isSelected
+          conversationObject,
+          setConversationObject,
+          setIsSelected,
+          isSelected,
         }}
       >
-
-      
-      {groupContext.activeGroup.chatroom?.id ? (
-        <Tittle
-          headerProps={{
-            title: groupContext.activeGroup.chatroom.header,
-            memberCount: groupContext.activeGroup.participant_count,
-          }}
-        />
-      ) : null}
-      <div
-        className="relative overflow-x-hidden overflow-auto"
-        style={{ height: "calc(100vh - 270px)" }}
-      >
-        {groupContext.activeGroup.chatroom?.id !== undefined ? (
-          <>
-            {conversationsArray.map((convoArr, index) => {
-              return (
-                <RegularBox convoArray={convoArr} key={convoArr[0].date} />
-              );
-            })}
-            <div
-              style={{
-                flexGrow: 0.4,
-              }}
-            />
-            <div ref={ref}></div>
-            <div
-              className="fixed bottom-0 "
-              style={{ width: "calc(100% - 504px)" }}
-            >
-              <Input />
-            </div>
-          </>
-        ) : (
-          <>hi</>
-        )}
-      </div>
+        {groupContext.activeGroup.chatroom?.id ? (
+          <Tittle
+            headerProps={{
+              title: groupContext.activeGroup.chatroom.header,
+              memberCount: groupContext.activeGroup.participant_count,
+            }}
+          />
+        ) : null}
+        <div
+          className="relative overflow-x-hidden overflow-auto"
+          style={{ height: "calc(100vh - 270px)" }}
+        >
+          {groupContext.activeGroup.chatroom?.id !== undefined ? (
+            <>
+              {conversationsArray.map((convoArr, index) => {
+                return (
+                  <RegularBox convoArray={convoArr} key={convoArr[0].date} />
+                );
+              })}
+              <div
+                style={{
+                  flexGrow: 0.4,
+                }}
+              />
+              <div ref={ref}></div>
+              <div
+                className="fixed bottom-0 "
+                style={{ width: "calc(100% - 504px)" }}
+              >
+                <Input />
+              </div>
+            </>
+          ) : (
+            <>hi</>
+          )}
+        </div>
       </CurrentSelectedConversationContext.Provider>
     </ConversationContext.Provider>
   );
@@ -188,9 +189,9 @@ function GroupChatArea() {
 
 export const CurrentSelectedConversationContext = React.createContext({
   isSelected: false,
-  setIsSelected: ()=>{},
+  setIsSelected: () => {},
   conversationObject: {},
-  setConversationObject: ()=>{}
-})
+  setConversationObject: () => {},
+});
 
 export default GroupChatArea;
