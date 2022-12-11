@@ -179,7 +179,9 @@ function GroupChatArea() {
               </div>
             </>
           ) : (
-            <>hi</>
+            <div className="h-full flex justify-center items-center text-[#999]">
+              Select a chat room to start messaging
+            </div>
           )}
         </div>
       </CurrentSelectedConversationContext.Provider>
