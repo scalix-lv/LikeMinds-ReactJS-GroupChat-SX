@@ -173,6 +173,18 @@ function InputSearchField() {
           // index?: number,
         };
 
+        let fileType;
+
+        if (filesArray[0].type.split("/")[1] === "pdf") {
+          fileType = "pdf";
+        } else if (filesArray[0].type.split("/")[0] === "audio") {
+          fileType = "audio";
+        } else if (filesArray[0].type.split("/")[0] === "video") {
+          fileType = "video";
+        } else {
+          fileType = "image";
+        }
+
         let fileUploadRes = await myClient.uploadMedia(config);
 
         let onUploadCall = await myClient.onUploadFile({
@@ -180,12 +192,12 @@ function InputSearchField() {
           files_count: 1,
           index: "0",
           meta: {
-            size: "2000",
+            size: filesArray[0].size,
             number_of_page: null,
           },
           thumbnail_url: "",
           name: filesArray[0].name,
-          type: "image",
+          type: fileType,
           url: fileUploadRes.Location,
         });
       } else {
@@ -436,7 +448,7 @@ function InputOptions() {
           accept = "audio/*";
           fileType = "audio";
         } else if (option.title === "camera") {
-          accept = ".jpeg,.jpg,.png";
+          accept = "image/*,video/*";
           fileType = "video";
         } else if (option.title === "attach") {
           accept = ".pdf";
