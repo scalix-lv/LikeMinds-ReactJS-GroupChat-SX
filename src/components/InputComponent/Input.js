@@ -45,7 +45,9 @@ export const InputContext = React.createContext({
     setDocFiles: () => {
     },
     text: "",
-    setText: () => { }
+    setText: () => { },
+    textVal: "",
+    setTextVal: ()=>{}
 })
 
 function Input() {
@@ -53,6 +55,7 @@ function Input() {
     const [mediaFiles, setMediaFiles] = useState("")
     const [docFiles, setDocFiles] = useState("")
     const [text, setText] = useState("")
+    const [textVal, setTextVal] = useState("")
     const data = [
         {
             id: "jack",
@@ -62,7 +65,7 @@ function Input() {
 
     return (
         <Box className='py-3 px-6 bg-white '>
-            <InputContext.Provider value={{ audioFiles, setAudioFiles, mediaFiles, setDocFiles, docFiles, setMediaFiles, text: text, setText: setText }}>
+            <InputContext.Provider value={{ audioFiles, setAudioFiles, mediaFiles, setDocFiles, docFiles, setMediaFiles, text: text, setText: setText, textVal: textVal, setTextVal: setTextVal }}>
                 <InputSearchField />
                 <InputOptions />
             </InputContext.Provider>
@@ -73,6 +76,7 @@ function Input() {
 function InputSearchField() {
     const groupContext = useContext(GroupContext)
     const ref = useRef()
+    
     const conversationContext = useContext(ConversationContext)
     const inputContext = useContext(InputContext)
     const selectedConversationContext = useContext(CurrentSelectedConversationContext)
@@ -116,18 +120,20 @@ function InputSearchField() {
     let handleSendMessage = async () => {
         try {
             let isRepliedConvo = selectedConversationContext.isSelected 
-            let { text, setText } = inputContext
+            let { textVal , setTextVal } = inputContext
             let filesArray = mergeInputFiles(inputContext)
             let res = null
-            if (text.length != 0) {
+            // textValT = textVal.
+            let tv = textVal
+            if (tv.length != 0) {
 
                 if (!filesArray.length) {
-                    res = await fnew(false, 0, text, setText, isRepliedConvo)
+                    res = await fnew(false, 0, tv, setTextVal, isRepliedConvo)
                 } else {
-                    res = await fnew(true, filesArray.length, text, setText, isRepliedConvo)
+                    res = await fnew(true, filesArray.length, tv, setTextVal, isRepliedConvo)
                 }
             } else if (filesArray.length > 0) {
-                res = await fnew(true, filesArray.length, text, setText, isRepliedConvo)
+                res = await fnew(true, filesArray.length, tv, setTextVal, isRepliedConvo)
 
             }
             console.log(filesArray)
@@ -168,10 +174,10 @@ function InputSearchField() {
             }
         }
     }
-    let fnew = async (has_files, attachment_count, text, setText, isRepliedConvo) => {
+    let fnew = async (has_files, attachment_count, tv, setTextVal, isRepliedConvo) => {
         try {
             let config = {
-                text: text.toString(),
+                text: tv.toString(),
                 created_at: Date.now(),
                 has_files: false,
                 // attachment_count: false,
@@ -185,7 +191,8 @@ function InputSearchField() {
             }
             let callRes = await myClient.onConversationsCreate(config)
 
-            setText("")
+            setTextVal("")
+            inputContext.setText("")
             selectedConversationContext.setIsSelected(false)
             selectedConversationContext.setConversationObject(null)
             clearInputFiles(inputContext)
@@ -249,7 +256,9 @@ function InputSearchField() {
         }
     }, [inputContext.text])
     const [openReplyBox, setOpenReplyBox] = useState(false)
-
+    useEffect(()=>{
+        console.log(inputContext)
+    },[inputContext.text, inputContext.textVal])
     
     useEffect(() => {
         setOpenReplyBox(true)
@@ -280,6 +289,13 @@ function InputSearchField() {
                             <div
                                 className='border-t text-base py-2 px-4'
                                 key={member.id}
+                                onClick={()=>{
+                                    // part of val string
+                                    
+                                    // inputContext.setTextVal(newInputValTextArr)
+                                    inputContext.setTextVal(inputContext.textVal + "<<" + member.name + `|route://member_profile/${member.id}?member_id=${member.id}&community_id=${groupContext.activeGroup?.community.id}>>`)
+                                    inputContext.setText(inputContext.text.substring(0,inputContext.text.length-1) + member.name  )
+                                }}
                             >
                                 {member.name}
                             </div>
@@ -349,7 +365,18 @@ function InputSearchField() {
 
                 value={inputContext.text}
                 onChange={(event) => {
-                    inputContext.setText(event.target.value)
+                    // let previousString = inputContext.text
+                    // let newString = event.target.value
+                    // let valArr = inputContext.textVal
+                    // let stringPart = newString.substring(previousString.length)
+                    // valArr.push(stringPart)
+                    // inputContext.setTextVal(valArr)
+                    // inputContext.setText(newString)
+                    let newVal = event.target.value
+                    let newValTexte = inputContext.textVal
+                    newValTexte += newVal.substring(newVal.length-1)
+                    inputContext.setText(newVal)
+                    inputContext.setTextVal(newValTexte)
                 }}
                 onKeyUp={(e) => {
                     if (e.key === "Enter") {
