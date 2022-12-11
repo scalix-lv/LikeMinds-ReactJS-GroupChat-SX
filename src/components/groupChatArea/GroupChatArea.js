@@ -187,7 +187,7 @@ function GroupChatArea() {
 }
 
 export const CurrentSelectedConversationContext = React.createContext({
-  isSelected: Boolean,
+  isSelected: false,
   setIsSelected: ()=>{},
   conversationObject: {},
   setConversationObject: ()=>{}

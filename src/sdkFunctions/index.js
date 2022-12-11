@@ -172,7 +172,11 @@ export function mergeInputFiles(inputContext){
 }
 
 
-
+export function clearInputFiles(inputContext){
+    inputContext.setAudioFiles([])
+    inputContext.setMediaFiles([])
+    inputContext.setDocFiles([])
+}
 
 
 

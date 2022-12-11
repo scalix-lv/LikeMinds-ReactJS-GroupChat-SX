@@ -15,7 +15,7 @@ import paperclip from "./../../assets/paperclip.png"
 import { GroupContext } from '../Groups/Groups';
 import { myClient } from '../..';
 import { ConversationContext, CurrentSelectedConversationContext } from '../groupChatArea/GroupChatArea';
-import { getConversationsForGroup, getString, getUsername, mergeInputFiles } from '../../sdkFunctions';
+import { clearInputFiles, getConversationsForGroup, getString, getUsername, mergeInputFiles } from '../../sdkFunctions';
 import EmojiPicker from 'emoji-picker-react';
 import { MentionsInput, Mention } from 'react-mentions'
 // import Mentions
@@ -49,9 +49,9 @@ export const InputContext = React.createContext({
 })
 
 function Input() {
-    const [audioFiles, setAudioFiles] = useState([])
-    const [mediaFiles, setMediaFiles] = useState([])
-    const [docFiles, setDocFiles] = useState([])
+    const [audioFiles, setAudioFiles] = useState("")
+    const [mediaFiles, setMediaFiles] = useState("")
+    const [docFiles, setDocFiles] = useState("")
     const [text, setText] = useState("")
     const data = [
         {
@@ -75,6 +75,7 @@ function InputSearchField() {
     const ref = useRef()
     const conversationContext = useContext(ConversationContext)
     const inputContext = useContext(InputContext)
+    const selectedConversationContext = useContext(CurrentSelectedConversationContext)
     const fn = async (chatroomId, pageNo, setConversationArray) => {
         let optionObject = {
             chatroomID: chatroomId,
@@ -114,30 +115,45 @@ function InputSearchField() {
     }
     let handleSendMessage = async () => {
         try {
+            let isRepliedConvo = selectedConversationContext.isSelected 
             let { text, setText } = inputContext
             let filesArray = mergeInputFiles(inputContext)
             let res = null
             if (text.length != 0) {
 
                 if (!filesArray.length) {
-                    res = await fnew(false, 0, text, setText)
+                    res = await fnew(false, 0, text, setText, isRepliedConvo)
                 } else {
-                    res = await fnew(true, filesArray.length, text, setText)
+                    res = await fnew(true, filesArray.length, text, setText, isRepliedConvo)
                 }
             } else if (filesArray.length > 0) {
-                res = await fnew(true, filesArray.length, text, setText)
+                res = await fnew(true, filesArray.length, text, setText, isRepliedConvo)
 
             }
-
+            console.log(filesArray)
+            
             if (res != null && filesArray.length > 0) {
                 let config = {
-                    messageId: res.id,
+                    messageId: res.data.id,
                     chatroomId: groupContext.activeGroup.chatroom.id,
                     file: filesArray[0],
                     // index?: number,
                 }
+                console.log(config)
                 let fileUploadRes = await myClient.uploadMedia(config)
                 console.log(fileUploadRes)
+                let onUploadCall = await myClient.onUploadFile({
+                    conversation_id: res.data.id,
+                    files_count: 1,
+                    index: "0",
+                    meta: {
+                        size: filesArray[0]
+                    },
+                    name: filesArray[0].name,
+                    type: filesArray[0].type,
+                    url: fileUploadRes.Location
+                })
+                console.log(onUploadCall)
             } else {
                 return {
                     error: false,
@@ -152,7 +168,7 @@ function InputSearchField() {
             }
         }
     }
-    let fnew = async (has_files, attachment_count, text, setText) => {
+    let fnew = async (has_files, attachment_count, text, setText, isRepliedConvo) => {
         try {
             let config = {
                 text: text.toString(),
@@ -164,9 +180,15 @@ function InputSearchField() {
             if (has_files) {
                 config.attachment_count = attachment_count
             }
+            if(isRepliedConvo){
+                config.replied_conversation_id = selectedConversationContext.conversationObject.id
+            }
             let callRes = await myClient.onConversationsCreate(config)
 
             setText("")
+            selectedConversationContext.setIsSelected(false)
+            selectedConversationContext.setConversationObject(null)
+            clearInputFiles(inputContext)
             fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
             return { error: false, data: callRes }
         } catch (error) {
@@ -228,7 +250,7 @@ function InputSearchField() {
     }, [inputContext.text])
     const [openReplyBox, setOpenReplyBox] = useState(false)
 
-    const selectedConversationContext = useContext(CurrentSelectedConversationContext)
+    
     useEffect(() => {
         setOpenReplyBox(true)
     }, [selectedConversationContext.conversationObject])
@@ -236,6 +258,7 @@ function InputSearchField() {
         <Box sx={{
             position: "relative"
         }}>
+            {/* for tagging */}
             <div
                 style={{
                     display: open ? "block" : "none",
@@ -307,6 +330,10 @@ function InputSearchField() {
 
                 </div>) : null
             }
+            {/* for preview Image */}
+            {
+                <ImagePreview/>
+            }
             <StyledInputWriteComment
                 ref={ref}
                 variant='filled'
@@ -375,7 +402,7 @@ function InputOptions() {
                         accept = "audio/*"
                         fileType = "audio"
                     } else if (option.title === 'camera') {
-                        accept = "audio/*,video/*"
+                        accept = ".jpeg,.jpg,.png"
                         fileType = "video"
                     } else if (option.title === "attach") {
                         accept = ".pdf"
@@ -383,12 +410,12 @@ function InputOptions() {
                     }
                     if (option.title != "GIF" && option.title != "emojis") {
                         return (
-                            <OptionButtonBox key={option.title} option={option} accept={accept} setFile={option.setFile} />
+                            <OptionButtonBox key={option.title} option={option} accept={accept} setFile={option.setFile} file={option.file}/>
                         )
                     }
                     else {
                         return (
-                            <EmojiButton option={option} />
+                            <EmojiButton option={option} key={option.title}/>
                         )
                     }
                 })
@@ -398,10 +425,11 @@ function InputOptions() {
 }
 function OptionButtonBox({ option, accept, file, setFile }) {
     return (
-        <IconButton key={option.title}>
+        <IconButton >
             <label>
-                <input type={'file'} style={{ display: 'none' }} value={file} accept={accept} multiple onChange={(e) => {
-                    setFile(e.target.value)
+                <input type={'file'} style={{ display: 'none' }} multiple  accept={accept} onChange={(e) => {
+                    console.log(e.target.files)
+                    setFile(e.target.files)
                 }} />
                 <img className='w-[20px] h-[20px]' src={option.Icon} />
             </label>
@@ -421,7 +449,7 @@ function EmojiButton({ option }) {
     const inputContext = useContext(InputContext)
     return (
         <div>
-            <IconButton key={option.title} ref={ref} onClick={handleOpen}>
+            <IconButton  ref={ref} onClick={handleOpen}>
                 <img className='w-[20px] h-[20px]' src={option.Icon} />
             </IconButton>
             <Menu
@@ -451,3 +479,30 @@ function MentionBox({ mentionData }) {
     )
 }
 export default Input
+
+function ImagePreview(){
+    const [previewUrl, setPreviewUrl] = useState('')
+    const inputContext = useContext(InputContext)
+    useEffect(()=>{
+        // let {audioFiles, docFiles, mediaFiles} = inputContext
+        console.log("here")
+        let newArr = mergeInputFiles(inputContext)
+        if(newArr.length > 0){
+            setPreviewUrl(URL.createObjectURL(newArr[0]))
+        }else{
+            setPreviewUrl('')
+        }
+    }, [inputContext.audioFiles, inputContext.mediaFiles, inputContext.docFiles])
+    return (
+        <div style={{
+            display: previewUrl.length > 0 ? 'block' : 'none'
+        }}>
+            <img src={previewUrl} alt='preview'/>
+            <IconButton onClick={()=>{
+                clearInputFiles(inputContext)
+            }}>
+                <Close/>
+            </IconButton>
+        </div>
+    )
+}
