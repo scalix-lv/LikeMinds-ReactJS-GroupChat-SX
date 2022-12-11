@@ -149,7 +149,7 @@ function GroupChatArea() {
         <Tittle
           headerProps={{
             title: groupContext.activeGroup.chatroom.header,
-            memberCount: groupContext.activeGroup.conversation_users.length,
+            memberCount: groupContext.activeGroup.participant_count,
           }}
         />
       ) : null}
