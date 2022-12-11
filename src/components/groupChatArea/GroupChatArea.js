@@ -41,9 +41,19 @@ function GroupChatArea() {
         console.log(error);
       }
     };
-    scroll();
+    
     // fn()
   });
+  const chatAreaRef = useRef(null)
+  // useEffect(()=>{
+  //   scroll();
+  //   if(chatAreaRef.current){
+  //     document.addEventListener('s')
+  //     chatAreaRef.current.addEventListener('scroll', ()=>{
+
+  //     })
+  //   }
+  // })
 
   useEffect(() => {
     const fn = async (chatroomId, pageNo) => {
@@ -154,6 +164,7 @@ function GroupChatArea() {
         />
       ) : null}
       <div
+      ref={chatAreaRef}
         className="relative overflow-x-hidden overflow-auto"
         style={{ height: "calc(100vh - 270px)" }}
       >
