@@ -14,6 +14,8 @@ import { IconButton } from "@mui/material";
 import { Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { myClient } from "../..";
+
+import userIcon from "./../../assets/user.png";
 function PersonInfo() {
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
@@ -51,7 +53,13 @@ function PersonInfo() {
       </Box>
       <Box className="ml-3 mt-4">
         <Box>
-          <AccountCircleIcon fontSize="large" />
+          {/* <AccountCircleIcon fontSize="large" /> */}
+
+          <img
+            src={profileDate.image_url || userIcon}
+            className="w-[60px] h-[60px] rounded-[5px]"
+            alt=""
+          />
         </Box>
         <p className="text-base font-bold my-2 mx-0 text-[#323232]">
           {profileDate.name}
@@ -79,10 +87,7 @@ function PersonInfo() {
           color={"#323232"}
           marginTop={2}
         >
-          Founder of{" "}
-          <a href="#./" className="text-[#734AC7]">
-            @Beyond Design
-          </a>
+          {profileDate.custom_title}
         </Typography>
 
         <Box className="py-4 px-0">
