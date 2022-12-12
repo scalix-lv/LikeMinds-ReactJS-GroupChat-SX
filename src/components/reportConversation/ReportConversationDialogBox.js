@@ -5,7 +5,12 @@ import { myClient } from "../..";
 import { getReportingOptions } from "../../sdkFunctions";
 
 // myClient.onUploadFile
-function ReportConversationDialogBox({ convoId, shouldShow, onClick, closeBox }) {
+function ReportConversationDialogBox({
+  convoId,
+  shouldShow,
+  onClick,
+  closeBox,
+}) {
   const [reasonArr, setReasonArr] = useState([]);
   useEffect(() => {
     getReportingOptions()
@@ -42,12 +47,12 @@ function ReportConversationDialogBox({ convoId, shouldShow, onClick, closeBox })
             })}
           </div>
 
-          <button
+          {/* <button
             type="button"
             className="border rounded-[20px] py-2 px-3 m-1 text-sm text=[#fff] bg-[#ccc] w-[90px] mx-auto"
           >
             Report
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

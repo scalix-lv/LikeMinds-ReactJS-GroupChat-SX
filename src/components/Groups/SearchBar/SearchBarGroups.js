@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
+import filterIcon from "../../../assets/svg/menu.svg";
+import searchIcon from "../../../assets/svg/searchBoxIcon.svg";
 
 function SearchbarGroups() {
   const [searchString, setSearchString] = useState("");
@@ -14,7 +16,8 @@ function SearchbarGroups() {
         InputProps={{
           startAdornment: (
             <InputAdornment className="mr-2">
-              <SearchIcon className="text-black" />
+              {/* <SearchIcon className="text-black" /> */}
+              <img src={searchIcon} alt="" />
             </InputAdornment>
           ),
           endAdornment:
@@ -27,24 +30,25 @@ function SearchbarGroups() {
             fontFamily: "Lato",
           },
 
-          className: "bg-[#F5F5F5] w-[310px] text-md leading-3 p-1",
+          className: "bg-[#F5F5F5] w-[270px] text-md leading-3 p-1",
           inputProps: {
             style: {
               padding: "8px",
             },
           },
         }}
+        placeholder="Search for groups"
         value={searchString}
         onChange={(e) => {
           setSearchString(e.target.value);
         }}
       />
-      <IconButton
-        disableRipple={true}
-        className="p-3 border-0.5 border-[#F5F5F5] rounder-[12px] mx-3 my-0"
-      >
-        <FilterListIcon className="text-[32px] text-[#000000]" />
-      </IconButton>
+      <div className="ml-2">
+        <img src={filterIcon} alt="" />
+      </div>
+      {/* <IconButton disableRipple={true} className="p-0 m-0"> */}
+      {/* <FilterListIcon className="text-[32px] text-[#000000]" /> */}
+      {/* </IconButton> */}
     </Box>
   );
 }

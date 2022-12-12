@@ -12,7 +12,7 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { StyledBox } from "./GroupChatArea";
 import { IconButton } from "@mui/material";
 import { Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { myClient } from "../..";
 
 import userIcon from "./../../assets/user.png";
@@ -44,9 +44,11 @@ function PersonInfo() {
       }}
     >
       <Box className="flex items-center">
-        <IconButton>
-          <KeyboardBackspaceIcon />
-        </IconButton>
+        <Link to={"/groups/main"}>
+          <IconButton>
+            <KeyboardBackspaceIcon />
+          </IconButton>
+        </Link>
         <Typography fontSize={"20px"} fontWeight={700} color={"#3884F7"}>
           Group Info / {profileDate.name}
         </Typography>
