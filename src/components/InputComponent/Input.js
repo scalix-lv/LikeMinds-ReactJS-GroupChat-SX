@@ -14,11 +14,11 @@ import GifIcon from "@mui/icons-material/Gif";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import styled from "@emotion/styled";
-import smiley from "./../../assets/smile.png";
-import camera from "./../../assets/camera.png";
-import giffy from "./../../assets/giffy.png";
-import mic from "./../../assets/mic.png";
-import paperclip from "./../../assets/paperclip.png";
+import smiley from "./../../assets/svg/smile.svg";
+import camera from "./../../assets/svg/camera.svg";
+import giffy from "./../../assets/svg/giffy.svg";
+import mic from "./../../assets/svg/mic.svg";
+import paperclip from "./../../assets/svg/paperclip.svg";
 import { GroupContext } from "../Groups/Groups";
 import { myClient } from "../..";
 import {
