@@ -330,24 +330,16 @@ function InputSearchField() {
     >
       {/* for tagging */}
       <div
+        className="max-h-[240px] absolute shadow-sm bg-white w-[250px] p-2 rounded-[10px] overflow-auto"
         style={{
           display: open ? "block" : "none",
-          maxHeight: "240px",
-          position: "absolute",
           transform: "translate(0, -105%)",
-          background: "white",
-          overflow: "auto",
-          width: "50%",
-          borderTopLeftRadius: "10px",
-          borderTopRightRadius: "10px",
-          border: "0.5px solid black",
-          // borderBottom: "none"
         }}
       >
         {groupContext.activeGroup.membersDetail?.map((member, index) => {
           return (
             <div
-              className="border-t text-base py-2 px-4"
+              className="border-b border-[#eee] text-[14px] py-3 px-5 cursor-pointer hover:bg-[#eee]"
               key={member.id}
               onClick={() => {
                 // part of val string
@@ -373,24 +365,14 @@ function InputSearchField() {
       {/* for adding reply */}
       {selectedConversationContext.isSelected ? (
         <div
-          // className='flex'
+          className="w-full justify-between shadow-sm overflow-auto bg-white absolute h-[80px] rounded-[5px]"
           style={{
             display: openReplyBox ? "flex" : "none",
-            height: "80px",
-            position: "absolute",
             transform: "translate(0, -105%)",
-            background: "white",
-            overflow: "auto",
-            width: "50%",
-            borderTopLeftRadius: "10px",
-            borderTopRightRadius: "10px",
-            border: "0.5px solid black",
-            justifyContent: "space-between",
-            // borderBottom: "none"
           }}
         >
-          <div className="border-l-4 border-l-green-500 px-2">
-            <p className="mb-3">
+          <div className="border-l-4 border-l-green-500 px-2 text-[14px]">
+            <p className="mb-3 mt-2 text-green-500">
               {selectedConversationContext.conversationObject?.member.name}
             </p>
             <div>
@@ -411,8 +393,10 @@ function InputSearchField() {
           </div>
         </div>
       ) : null}
+
       {/* for preview Image */}
       {<ImagePreview />}
+
       <StyledInputWriteComment
         ref={ref}
         variant="filled"
@@ -574,7 +558,6 @@ function ImagePreview() {
   const inputContext = useContext(InputContext);
   useEffect(() => {
     // let {audioFiles, docFiles, mediaFiles} = inputContext
-    console.log("here");
     let newArr = mergeInputFiles(inputContext);
     if (newArr.length > 0) {
       setPreviewUrl(URL.createObjectURL(newArr[0]));
@@ -588,14 +571,18 @@ function ImagePreview() {
         display: previewUrl.length > 0 ? "block" : "none",
       }}
     >
-      <img src={previewUrl} alt="preview" />
-      <IconButton
-        onClick={() => {
-          clearInputFiles(inputContext);
-        }}
-      >
-        <Close />
-      </IconButton>
+      <div className="w-full shadow-sm p-3 flex justify-between">
+        <div className="max-w-[120px]">
+          <img src={previewUrl} alt="preview" />
+        </div>
+        <IconButton
+          onClick={() => {
+            clearInputFiles(inputContext);
+          }}
+        >
+          <Close />
+        </IconButton>
+      </div>
     </div>
   );
 }
