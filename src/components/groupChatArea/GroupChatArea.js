@@ -45,15 +45,11 @@ function GroupChatArea() {
     // fn()
   });
   const chatAreaRef = useRef(null)
-  // useEffect(()=>{
-  //   scroll();
-  //   if(chatAreaRef.current){
-  //     document.addEventListener('s')
-  //     chatAreaRef.current.addEventListener('scroll', ()=>{
-
-  //     })
-  //   }
-  // })
+  useEffect(()=>{
+    scroll();
+    
+    
+  })
 
   useEffect(() => {
     const fn = async (chatroomId, pageNo) => {
