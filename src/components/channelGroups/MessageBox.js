@@ -21,7 +21,7 @@ import ReportConversationDialogBox from "../reportConversation/ReportConversatio
 import emojiIcon from "../../assets/emojioption.png";
 import EmojiPicker from "emoji-picker-react";
 import { GroupContext } from "../Groups/Groups";
-import {groupPersonalInfoPath} from './../../routes'
+import { groupPersonalInfoPath } from "./../../routes";
 import { CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
 function MessageBox({
   username,
@@ -31,7 +31,7 @@ function MessageBox({
   attachments,
   convoId,
   conversationReactions,
-  conversationObject
+  conversationObject,
 }) {
   return (
     <div>
@@ -43,7 +43,7 @@ function MessageBox({
           userId={userId}
           attachments={attachments}
         />
-        <MoreOptions convoId={convoId} convoObject={conversationObject}/>
+        <MoreOptions convoId={convoId} convoObject={conversationObject} />
       </Box>
       <div>
         {conversationReactions.map((reactionObject, reactionObjectIndex) => {
@@ -60,7 +60,7 @@ function ReactionIndicator({ reaction }) {
 
 function StringBox({ username, messageString, time, userId, attachments }) {
   const ref = useRef(null);
-  const groupContext = useContext(GroupContext)
+  const groupContext = useContext(GroupContext);
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
@@ -70,15 +70,14 @@ function StringBox({ username, messageString, time, userId, attachments }) {
     >
       <div className="flex w-full justify-between mb-1 clear-both">
         <div className="text-[12px] leading-[14px] text-[#323232] font-[700]">
-          <Link to={
-            groupPersonalInfoPath
-          }
-          state={{
-            communityId: groupContext.activeGroup.community.id,
-            memberId: userId
-          }}
+          <Link
+            to={groupPersonalInfoPath}
+            state={{
+              communityId: groupContext.activeGroup.community.id,
+              memberId: userId,
+            }}
           >
-          {userId === userObj.id ? "You" : username}
+            {userId === userObj.id ? "You" : username}
           </Link>
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
@@ -86,7 +85,7 @@ function StringBox({ username, messageString, time, userId, attachments }) {
         </div>
       </div>
 
-      <div className="flex w-full">
+      <div className="flex w-full flex-col">
         {attachments != null
           ? attachments
               .filter((item, itemIndex) => {
@@ -94,7 +93,7 @@ function StringBox({ username, messageString, time, userId, attachments }) {
               })
               .map((item, itemIndex) => {
                 return (
-                  <img src={item.url} alt="" className="max-w-[100%] h-auto" />
+                  <img src={item.url} alt="" className="max-w-[280px] h-full" />
                 );
               })
           : null}
@@ -151,6 +150,7 @@ function StringBox({ username, messageString, time, userId, attachments }) {
               </span>
             </Link>
           }
+
           {
             <span
               ref={ref}
@@ -222,15 +222,17 @@ function MoreOptions({ convoId, userId, convoObject }) {
       console.log(error);
     }
   }
-  const selectedConversationContext = useContext(CurrentSelectedConversationContext)
+  const selectedConversationContext = useContext(
+    CurrentSelectedConversationContext
+  );
   const options = [
     {
       title: "Reply",
-      clickFunction: (e)=>{
-        selectedConversationContext.setIsSelected(true)
-        console.log(selectedConversationContext)
-        console.log(convoObject)
-        selectedConversationContext.setConversationObject(convoObject)
+      clickFunction: (e) => {
+        selectedConversationContext.setIsSelected(true);
+        console.log(selectedConversationContext);
+        console.log(convoObject);
+        selectedConversationContext.setConversationObject(convoObject);
       },
     },
     {
@@ -244,7 +246,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       },
     },
   ];
-  
+
   return (
     <Box className="flex items-center">
       <IconButton ref={ref2} onClick={handleOpen}>
@@ -278,8 +280,8 @@ function MoreOptions({ convoId, userId, convoObject }) {
           convoId={convoId}
           shouldShow={shouldShow}
           onClick={onClickhandlerReport}
-          closeBox={()=>{
-            setShouldShowBlock(false)
+          closeBox={() => {
+            setShouldShowBlock(false);
           }}
         />
       </Dialog>
@@ -293,7 +295,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
             addReaction(e.emoji, convoId, groupContext.activeGroup.id)
               .then((r) => console.log(r))
               .catch((e) => console.log(e));
-              handleCloseEmoji()
+            handleCloseEmoji();
           }}
         />
       </Menu>
