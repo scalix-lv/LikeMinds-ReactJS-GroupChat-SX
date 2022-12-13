@@ -13,7 +13,7 @@ export const navIconCss = {
 
 export const linkTextCss = {
     fontSize: "14px",
-    fontfamily:"Lato",
+ 
     color: "#323232",
     lineHeight: "17px"
 }

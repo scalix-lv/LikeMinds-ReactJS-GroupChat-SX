@@ -7,6 +7,11 @@ import ChatIcon from '@mui/icons-material/Chat';
 import StarIcon from '@mui/icons-material/Star';
 import { Link } from 'react-router-dom';
 import { linkCss, linkTextCss, navIconCss } from '../../styledAccessories/css';
+import dm from "../../assets/dm.svg"
+import events from "../../assets/events.svg"
+import forum from "../../assets/forum.svg"
+import abm from "../../assets/abm.svg"
+import groups from "../../assets/groups.svg"
 const NavContext = React.createContext({
   currentPath: null,
   setCurrentPath: () => { }
@@ -18,31 +23,31 @@ function Sidenav() {
     {
       title: "Forums",
       path: "forums",
-      Icon: SaveAsIcon
+      Icon: forum
 
     },  
     {
       title: "Groups",
       path: "groups",
-      Icon: GroupsIcon
+      Icon: groups
 
     },
     {
       title: "Events",
       path: "events",
-      Icon: CalendarMonthIcon
+      Icon: events
 
     },
     {
       title: "Direct Messages",
       path: "direct-messages",
-      Icon: ChatIcon
+      Icon: dm
 
     },
     {
       title: "Added By Me",
       path: "added-by-me",
-      Icon: StarIcon
+      Icon: abm
 
     }
 
@@ -79,17 +84,20 @@ function NavBlock({ title, Icon, path }) {
        className='m-auto text-center p-3'
       >
         <Box>
-        {<Icon 
-          
-          sx={{
+        {<img
+          src={Icon}
+          style={{
           ...navIconCss,
           color: useNavContext.currentPath === path ? "#FFFFFF" : "#3884F7",
-          backgroundColor: useNavContext.currentPath === path ? "#3884F7": " #D7E6FD"
+          backgroundColor: useNavContext.currentPath === path ? "#3884F7": " #D7E6FD",
+          marginLeft: 'auto',
+          marginRight: 'auto'
         }}/>}
+        
         </Box>
         <span sx={{
           ...linkTextCss,
-          fontWeight: useNavContext.currentPath === path ? 800 : 300 
+          fontWeight: useNavContext.currentPath === path ? 400 : 300 
         }} variant='p'>
           {title}
         </span>
