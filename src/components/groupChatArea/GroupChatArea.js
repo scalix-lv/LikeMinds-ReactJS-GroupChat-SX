@@ -27,7 +27,6 @@ function GroupChatArea() {
   const [conversationsArray, setConversationArray] = useState([]);
 
   let groupContext = useContext(GroupContext);
-  console.log(groupContext);
 
   const ref = useRef(null);
   const scroll = () => {
@@ -41,15 +40,13 @@ function GroupChatArea() {
         console.log(error);
       }
     };
-    
+
     // fn()
   });
-  const chatAreaRef = useRef(null)
-  useEffect(()=>{
-    scroll();
-    
-    
-  })
+  const chatAreaRef = useRef(null);
+  useEffect(() => {
+    // scroll();
+  });
 
   useEffect(() => {
     const fn = async (chatroomId, pageNo) => {
@@ -60,6 +57,8 @@ function GroupChatArea() {
       let response = await getConversationsForGroup(optionObject);
 
       if (!response.error) {
+        // scroll();
+
         let conversations = response.data;
 
         let conversationToBeSetArray = [];
@@ -90,16 +89,16 @@ function GroupChatArea() {
     fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
 
-  const [isSelected, setIsSelected] = useState(false)
-  const [conversationObject, setConversationObject] = useState({})
-  useEffect(()=>{
+  const [isSelected, setIsSelected] = useState(false);
+  const [conversationObject, setConversationObject] = useState({});
+  useEffect(() => {
     const fn = async (chatroomId, pageNo) => {
       let optionObject = {
         chatroomID: chatroomId,
         page: pageNo,
       };
       let response = await getConversationsForGroup(optionObject);
-      console.log(response);
+      // console.log(response);
       if (!response.error) {
         let conversations = response.data;
         // console.log(conversations);
@@ -128,14 +127,14 @@ function GroupChatArea() {
         console.log(response.errorMessage);
       }
     };
-    let intervalId = setInterval(()=>{
-      fn(groupContext.activeGroup.chatroom?.id, 1000)
-    }, 1000)
+    let intervalId = setInterval(() => {
+      fn(groupContext.activeGroup.chatroom?.id, 1000);
+    }, 1000);
 
     return () => {
-      clearInterval(intervalId)
-    }
-  })
+      clearInterval(intervalId);
+    };
+  });
 
   return (
     <ConversationContext.Provider

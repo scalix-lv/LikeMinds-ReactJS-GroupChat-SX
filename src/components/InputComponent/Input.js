@@ -193,7 +193,7 @@ function InputSearchField() {
         } else {
           fileType = "image";
         }
-        console.log(config);
+        console.log(filesArray[0].size);
         let fileUploadRes = await myClient.uploadMedia(config);
         console.log(fileUploadRes);
         let onUploadCall = await myClient.onUploadFile({
@@ -201,7 +201,7 @@ function InputSearchField() {
           files_count: 1,
           index: "0",
           meta: {
-            size: filesArray[0],
+            size: filesArray[0].size,
           },
           name: filesArray[0].name,
           type: fileType,
