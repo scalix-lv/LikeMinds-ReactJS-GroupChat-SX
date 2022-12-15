@@ -10,7 +10,7 @@ import Tittle from "./tittle/Tittle";
 
 // Exported Styled Box
 export const StyledBox = styled(Box)({
-  backgroundColor: "#FFFBF2",
+  backgroundColor: "#f6f6ff",
   minHeight: "100vh",
   borderTop: "1px solid #EEEEEE",
   display: "flex",
@@ -96,6 +96,7 @@ function GroupChatArea() {
 
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
+
   useEffect(() => {
     const fn = async (chatroomId, pageNo) => {
       let optionObject = {

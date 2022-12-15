@@ -67,12 +67,6 @@ function Input() {
   const [docFiles, setDocFiles] = useState("");
   const [text, setText] = useState("");
   const [textVal, setTextVal] = useState("");
-  const data = [
-    {
-      id: "jack",
-      display: "JASCL",
-    },
-  ];
 
   return (
     <Box className="py-3 px-6 bg-white ">
@@ -120,11 +114,11 @@ function InputSearchField() {
       let newConversationArray = [];
       let lastDate = "";
       for (let convo of conversations) {
-        if (convo.date == lastDate) {
+        if (convo.date === lastDate) {
           conversationToBeSetArray.push(convo);
           lastDate = convo.date;
         } else {
-          if (conversationToBeSetArray.length != 0) {
+          if (conversationToBeSetArray.length !== 0) {
             newConversationArray.push(conversationToBeSetArray);
             conversationToBeSetArray = [];
             conversationToBeSetArray.push(convo);
@@ -447,10 +441,10 @@ function InputOptions() {
       file: fileContext.audioFiles,
       setFile: fileContext.setAudioFiles,
     },
-    {
-      title: "GIF",
-      Icon: giffy,
-    },
+    // {
+    //   title: "GIF",
+    //   Icon: giffy,
+    // },
     {
       title: "camera",
       Icon: camera,
@@ -534,13 +528,9 @@ function EmojiButton({ option }) {
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={handleClose}>
         <EmojiPicker
           onEmojiClick={(e) => {
-            console.log(e);
             let newText = inputContext.text;
-            console.log(newText);
             newText += `${e.emoji}`;
-            console.log(newText);
             inputContext.setText(newText);
-            console.log(e.emoji);
           }}
         />
       </Menu>
