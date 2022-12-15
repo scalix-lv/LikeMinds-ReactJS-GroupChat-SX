@@ -89,6 +89,12 @@ function GroupChatArea() {
     fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
 
+  // Scroll to bottom
+  const updateHeight = () => {
+    const el = document.getElementById("chat");
+    el.scrollTop = el.scrollHeight;
+  };
+
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
   useEffect(() => {
@@ -98,6 +104,7 @@ function GroupChatArea() {
         page: pageNo,
       };
       let response = await getConversationsForGroup(optionObject);
+      updateHeight();
       // console.log(response);
       if (!response.error) {
         let conversations = response.data;
@@ -160,6 +167,7 @@ function GroupChatArea() {
           />
         ) : null}
         <div
+          id="chat"
           className="relative overflow-x-hidden overflow-auto"
           style={{ height: "calc(100vh - 270px)" }}
         >
