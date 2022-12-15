@@ -10,7 +10,6 @@ import { Link } from "react-router-dom";
 const StyledBox = styled(Box)({
   backgroundColor: "#FFFBF2",
   minHeight: "100vh",
-  // borderTop: "1px solid #EEEEEE",
   display: "flex",
   flexDirection: "column",
 });
