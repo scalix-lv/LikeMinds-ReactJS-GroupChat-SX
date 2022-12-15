@@ -44,12 +44,6 @@ function CurrentGroups() {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
       console.log(chatRoomData);
-      // const init = await myClient.initSDK({
-      //     user_unique_id: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
-      //     is_guest: true,
-      //     user_name: "gaurav"
-      // })
-      // console.log(init)
     } catch (error) {
       console.log(error);
     }
@@ -57,7 +51,7 @@ function CurrentGroups() {
 
   useEffect(() => {
 
-    // loading the list of chatrooms 
+    // loading the list of chatrooms (already joined)
     const fn = async () => {
       try {
         const feedCall = await myClient.getHomeFeedData({
@@ -85,6 +79,8 @@ function CurrentGroups() {
 
   return (
     <Box>
+      {<PublicGroup groupList={chatRoomsList} />}
+
       {groupsInfo.map((group, groupIndex) => {
         return (
           <NavLink key={group.title + groupIndex.toString()} to={groupMainPath}>
@@ -109,7 +105,7 @@ function CurrentGroups() {
         );
       })}
 
-      {<PublicGroup groupList={chatRoomsList} />}
+      
     </Box>
   );
 }
@@ -218,7 +214,7 @@ function PublicGroup({ groupTitle, groupList }) {
   }
   return (
     <Box>
-      <Box className="flex justify-between px-3.5 py-[18px]">
+      {/* <Box className="flex justify-between px-3.5 py-[18px]">
         <Typography component={"span"} className="text-4 font-medium">
           All Public Groups
         </Typography>
@@ -226,7 +222,7 @@ function PublicGroup({ groupTitle, groupList }) {
         <IconButton onClick={handleCollapse}>
           {!shouldOpen ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
         </IconButton>
-      </Box>
+      </Box> */}
       <Collapse
         in={shouldOpen}
         className="border-b border-solid border-[#EEEEEE]"
@@ -254,9 +250,17 @@ function PublicGroup({ groupTitle, groupList }) {
 }
 
 function PublicGroupTile({ groupTitle }) {
+  const groupcontext = useContext(GroupContext)
   return (
-    <Box className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b">
-      <Typography component={"span"} className="text-base font-normal">
+    <Box className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b" 
+    sx={{
+      backgroundColor: groupTitle === groupcontext.activeGroup.chatroom?.header ? '#ECF3FF' : "#FFFFFF"
+    }}>
+      <Typography 
+      sx={{
+        color: groupTitle === groupcontext.activeGroup.chatroom?.header ? '#3884f7' : "#000000"
+      }}
+      component={"span"} className="text-base font-normal">
         {groupTitle}
       </Typography>
 
