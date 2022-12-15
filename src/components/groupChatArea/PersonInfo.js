@@ -21,7 +21,7 @@ function PersonInfo() {
   const location = useLocation();
   // location.state
   const [profileDate, setProfileData] = useState({});
-  console.log(profileDate);
+
   useEffect(() => {
     const fn = async () => {
       try {

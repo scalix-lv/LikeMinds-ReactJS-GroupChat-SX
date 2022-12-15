@@ -43,9 +43,15 @@ function GroupChatArea() {
 
     // fn()
   });
+  // Scroll to bottom
+  const updateHeight = () => {
+    const el = document.getElementById("chat");
+    el.scrollTop = el.scrollHeight;
+  };
   const chatAreaRef = useRef(null);
   useEffect(() => {
     // scroll();
+    updateHeight();
   });
 
   useEffect(() => {
@@ -57,15 +63,13 @@ function GroupChatArea() {
       let response = await getConversationsForGroup(optionObject);
 
       if (!response.error) {
-        // scroll();
-
         let conversations = response.data;
 
         let conversationToBeSetArray = [];
         let newConversationArray = [];
         let lastDate = "";
         for (let convo of conversations) {
-          if (convo.date == lastDate) {
+          if (convo.date === lastDate) {
             conversationToBeSetArray.push(convo);
             lastDate = convo.date;
           } else {
@@ -86,7 +90,8 @@ function GroupChatArea() {
         console.log(response.errorMessage);
       }
     };
-    fn(groupContext.activeGroup.chatroom?.id, 1000);
+    if (groupContext.activeGroup.chatroom?.id)
+      fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
 
   const [isSelected, setIsSelected] = useState(false);
@@ -98,10 +103,9 @@ function GroupChatArea() {
         page: pageNo,
       };
       let response = await getConversationsForGroup(optionObject);
-      // console.log(response);
+
       if (!response.error) {
         let conversations = response.data;
-        // console.log(conversations);
         let conversationToBeSetArray = [];
         let newConversationArray = [];
         let lastDate = "";
@@ -128,7 +132,7 @@ function GroupChatArea() {
       }
     };
     let intervalId = setInterval(() => {
-      fn(groupContext.activeGroup.chatroom?.id, 1000);
+      // fn(groupContext.activeGroup.chatroom?.id, 1000);
     }, 1000);
 
     return () => {
@@ -160,6 +164,7 @@ function GroupChatArea() {
           />
         ) : null}
         <div
+          id="chat"
           className="relative overflow-x-hidden overflow-auto"
           style={{ height: "calc(100vh - 270px)" }}
         >
