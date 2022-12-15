@@ -47,7 +47,7 @@ export const getConversationsForGroup = async (optionObject) => {
         return jsonReturnHandler(null, error)
     }
 }
-
+  
 export function parseMessageString(message) {
     let newMessage = " " + message + " ";
 
