@@ -5,7 +5,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import Typicode from "likeminds-apis-sdk";
-import { createNewClient, getChatRoomDetails, getTaggingList } from "../../../sdkFunctions";
+import { createNewClient, getChatRoomDetails, getTaggingList, getUnjoinedRooms } from "../../../sdkFunctions";
 import { myClient } from "../../..";
 import { Link, NavLink } from "react-router-dom";
 import { groupMainPath } from "../../../routes";
@@ -15,7 +15,7 @@ import acceptIcon from "../../../assets/svg/accept.svg";
 
 function CurrentGroups() {
   const [chatRoomsList, setChatRoomsList] = useState([]);
-
+  const [unJoined, setUnjoined] = useState([])
   // content to be deleted
   const groupsInfo = [
     {
@@ -71,11 +71,23 @@ function CurrentGroups() {
         console.log(error);
       }
     };
+    const getUnjoinedList = async (comm_id) => {
+      try {
+        const feedCall = await getUnjoinedRooms(comm_id)
+        console.log(feedCall)
+        setUnjoined(feedCall.data.chatrooms)
+      } catch (error) {
+        console.log(error)
+      }
+    }
     fn();
+    getUnjoinedList(50421)
 
     
     
   }, []);
+
+
 
   return (
     <Box>
@@ -104,6 +116,14 @@ function CurrentGroups() {
           </NavLink>
         );
       })}
+
+      {
+        unJoined.map((group, groupIndex)=>{
+          return (
+            <UnjoinedGroup groupTitle={group.title} key={group.title + groupIndex}/>
+          )
+        })
+      }
 
       
     </Box>
@@ -267,6 +287,30 @@ function PublicGroupTile({ groupTitle }) {
       {/* <Button variant='outlined' className='rounded-[5px]'> 
                 Join
             </Button> */}
+    </Box>
+  );
+}
+
+function UnjoinedGroup({groupTitle}){
+  const groupcontext = useContext(GroupContext)
+  return (
+    <Box className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b" 
+    sx={{
+      backgroundColor: groupTitle === groupcontext.activeGroup.chatroom?.header ? '#ECF3FF' : "#FFFFFF"
+    }}>
+      <Typography 
+      sx={{
+        color: groupTitle === groupcontext.activeGroup.chatroom?.header ? '#3884f7' : "#000000"
+      }}
+      component={"span"} className="text-base font-normal">
+        {groupTitle}
+      </Typography>
+
+      <Button variant='outlined' className='rounded-[5px]'
+        
+      > 
+                Join
+            </Button>
     </Box>
   );
 }

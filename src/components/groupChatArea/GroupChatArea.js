@@ -92,7 +92,7 @@ function GroupChatArea() {
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
   useEffect(() => {
-    const fn = async (chatroomId, pageNo) => {
+    if(Object.keys(groupContext.activeGroup) != 0){const fn = async (chatroomId, pageNo) => {
       let optionObject = {
         chatroomID: chatroomId,
         page: pageNo,
@@ -134,6 +134,7 @@ function GroupChatArea() {
     return () => {
       clearInterval(intervalId);
     };
+  }
   });
 
   return (

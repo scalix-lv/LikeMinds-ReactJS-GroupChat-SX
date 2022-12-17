@@ -178,6 +178,34 @@ export function clearInputFiles(inputContext){
     inputContext.setDocFiles([])
 }
 
+export async function getUnjoinedRooms(community_id){
+    try {
+        let unjoinedGroups = await myClient.fetchFeedData({
+            community_id,
+            order_type: 0,
+            page: 1
+        })
+        return jsonReturnHandler(unjoinedGroups, null)
+    } catch (error) {
+        console.log(error)
+        return jsonReturnHandler(null, error)
+    }
+}
+
+export async function joinNewGroup(collabId, userID, value){
+    try {
+        let joinCall = await myClient.followCR({
+            collabcard_id: collabId,
+            member_id: userID,
+            value: value
+        })
+        return jsonReturnHandler(joinCall, null)
+    } catch (error) {
+        console.log(error)
+        return jsonReturnHandler(null, error)
+    }
+}
+
 
 
 
