@@ -32,6 +32,7 @@ function MessageBox({
   convoId,
   conversationReactions,
   conversationObject,
+  replyConversationObject,
 }) {
   return (
     <div>
@@ -42,6 +43,7 @@ function MessageBox({
           time={time}
           userId={userId}
           attachments={attachments}
+          replyConversationObject={replyConversationObject}
         />
         <MoreOptions convoId={convoId} convoObject={conversationObject} />
       </Box>
@@ -58,7 +60,14 @@ function ReactionIndicator({ reaction }) {
   return <span className="text-normal mx-1">{reaction}</span>;
 }
 
-function StringBox({ username, messageString, time, userId, attachments }) {
+function StringBox({
+  username,
+  messageString,
+  time,
+  userId,
+  attachments,
+  replyConversationObject,
+}) {
   const ref = useRef(null);
   const groupContext = useContext(GroupContext);
   return (
@@ -142,7 +151,18 @@ function StringBox({ username, messageString, time, userId, attachments }) {
               })
           : null}
 
-        <Typography component={"p"} fontWeight={300} fontSize={14}>
+        {replyConversationObject != null ? (
+          <div className="flex flex-col border-[1px] border-l-[5px] border-[#70A9FF] py-1 px-2 rounded-[5px] mb-1">
+            <div className="text-[#70A9FF] font-bold text-[12px]">
+              {replyConversationObject?.member?.name}
+            </div>
+            <div className="text-[#323232] font-[300] text-[12px]">
+              {replyConversationObject?.answer}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="text-[14px] font-[300] text-[#323232]">
           {
             <Link to={"/" + getUserLink(messageString)}>
               <span className="text-green-500 text-[12px] font-semibold">
@@ -164,7 +184,7 @@ function StringBox({ username, messageString, time, userId, attachments }) {
               {getString(messageString)}
             </span>
           }
-        </Typography>
+        </div>
       </div>
     </div>
   );

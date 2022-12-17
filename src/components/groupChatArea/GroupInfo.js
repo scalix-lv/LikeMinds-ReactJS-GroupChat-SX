@@ -1,21 +1,24 @@
 import { Box, IconButton, Typography } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import styled from "@emotion/styled";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Link } from "react-router-dom";
+import { GroupContext } from "../Groups/Groups";
 // import IconButton from '@mui/material';
 
 const StyledBox = styled(Box)({
-  backgroundColor: "#FFFBF2",
+  backgroundColor: "#f6f6ff",
   minHeight: "100vh",
   display: "flex",
   flexDirection: "column",
 });
 
 function GroupInfo() {
-  const participants = Array(5).fill(1);
+  const gc = useContext(GroupContext);
+  console.log(gc);
+  const participants = gc.activeGroup.membersDetail;
   return (
     <StyledBox
       style={{
@@ -57,6 +60,7 @@ function GroupInfo() {
             return (
               <ParticipantTile
                 key={profile + profileIndex}
+                profile={profile}
                 index={profileIndex}
               />
             );
@@ -67,12 +71,14 @@ function GroupInfo() {
   );
 }
 
-function ParticipantTile({ index }) {
+function ParticipantTile({ index, profile }) {
   return (
     <Box className="py-3 px-2  border-gray border flex justify-center items-center bg-white">
       <AccountCircleIcon fontSize="large" className="mr-3" />
 
-      <span className="font-bold text-sm">Person {index}</span>
+      <span className="font-bold text-sm">
+        {profile.name} {index}
+      </span>
       <div className="grow" />
       <IconButton>
         <KeyboardArrowRightIcon />

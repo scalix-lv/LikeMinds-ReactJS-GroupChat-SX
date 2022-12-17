@@ -23,6 +23,7 @@ function MessageBlock({ conversationObject, userId }) {
             ? convoDetails.attachments
             : null
         }
+        replyConversationObject={convoDetails?.reply_conversation_object}
         convoId={conversationObject.id}
         conversationReactions={conversationObject.reactions}
         conversationObject={conversationObject}
