@@ -19,9 +19,8 @@ import userIcon from "./../../assets/user.png";
 function PersonInfo() {
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
-  // location.state
   const [profileDate, setProfileData] = useState({});
-  console.log(profileDate);
+
   useEffect(() => {
     const fn = async () => {
       try {
