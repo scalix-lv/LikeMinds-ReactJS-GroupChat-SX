@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import { Box, Typography } from "@mui/material";
-import React from "react";
+import { Box, Menu, MenuItem, Typography } from "@mui/material";
+import React, { useRef, useState } from "react";
 import Gap from "../../../styledAccessories/Gap";
 
 import SearchBar from "../../../styledAccessories/SearchBar";
@@ -61,5 +61,8 @@ function OptionArea() {
     </Box>
   );
 }
+
+
+
 
 export default Tittle;

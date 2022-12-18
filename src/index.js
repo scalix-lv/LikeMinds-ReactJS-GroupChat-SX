@@ -8,21 +8,28 @@ import LikeMinds from "likeminds-apis-sdk";
 import { initiateSDK } from "./sdkFunctions";
 
 export const myClient = new LikeMinds({
-  apiKey: "45c469dc-06e1-4f05-914e-dd02419eb53f",
+  apiKey: "a6d5aa38-aaa3-4def-95f6-93bb80e1eb24",
   baseUrl: "https://beta.likeminds.community/api",
-  xMemberId: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
+  xMemberId: "6c3e3024-4cfe-4614-9586-b0dbcad7a2e3",
   xPlatformCode: "web",
   xVersionCode: 16,
 });
 export const userObj = {
   id: 3555,
-  name: "Ankit Garg",
+  name: "Gaurav",
   updated_at: 1660911399,
   is_guest: false,
-  user_unique_id: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
+  user_unique_id: "6c3e3024-4cfe-4614-9586-b0dbcad7a2e3",
   organisation_name: null,
   image_url: "",
 };
+
+myClient
+  .getDMFeed({
+    community_id: 50414,
+  })
+  .then((r) => console.log(r))
+  .catch((e) => console.log(e));
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

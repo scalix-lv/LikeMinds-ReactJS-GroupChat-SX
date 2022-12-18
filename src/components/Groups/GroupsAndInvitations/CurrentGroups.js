@@ -5,7 +5,12 @@ import DoneIcon from "@mui/icons-material/Done";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import Typicode from "likeminds-apis-sdk";
-import { createNewClient, getChatRoomDetails, getTaggingList, getUnjoinedRooms } from "../../../sdkFunctions";
+import {
+  createNewClient,
+  getChatRoomDetails,
+  getTaggingList,
+  getUnjoinedRooms,
+} from "../../../sdkFunctions";
 import { myClient } from "../../..";
 import { Link, NavLink } from "react-router-dom";
 import { groupMainPath } from "../../../routes";
@@ -15,7 +20,7 @@ import acceptIcon from "../../../assets/svg/accept.svg";
 
 function CurrentGroups() {
   const [chatRoomsList, setChatRoomsList] = useState([]);
-  const [unJoined, setUnjoined] = useState([])
+  const [unJoined, setUnjoined] = useState([]);
   // content to be deleted
   const groupsInfo = [
     {
@@ -50,18 +55,17 @@ function CurrentGroups() {
   }
 
   useEffect(() => {
-
     // loading the list of chatrooms (already joined)
     const fn = async () => {
       try {
         const feedCall = await myClient.getHomeFeedData({
-          communityId: 50421,
+          communityId: 50414,
           page: 1,
         });
-        
+
         let chatroomlist = feedCall.my_chatrooms;
         let newChatRoomList = [...chatRoomsList];
-        
+
         for (let chatroom of chatroomlist) {
           newChatRoomList.push(chatroom);
         }
@@ -73,37 +77,20 @@ function CurrentGroups() {
     };
     const getUnjoinedList = async (comm_id) => {
       try {
-        const feedCall = await getUnjoinedRooms(comm_id)
-        console.log(feedCall)
-        setUnjoined(feedCall.data.chatrooms)
+        const feedCall = await getUnjoinedRooms(comm_id);
+        console.log(feedCall);
+        setUnjoined(feedCall.data.chatrooms);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
+    };
     fn();
-    getUnjoinedList(50421)
-
-    
-    
+    getUnjoinedList(50421);
   }, []);
-
-
 
   return (
     <Box>
       {<PublicGroup groupList={chatRoomsList} />}
-
-      {groupsInfo.map((group, groupIndex) => {
-        return (
-          <NavLink key={group.title + groupIndex.toString()} to={groupMainPath}>
-            <GroupTile
-              title={group.title}
-              newUnread={group.newUnread}
-              getChatRoomData={getChatRoomData}
-            />
-          </NavLink>
-        );
-      })}
 
       {groupsInviteInfo.map((group, groupIndex) => {
         return (
@@ -117,15 +104,14 @@ function CurrentGroups() {
         );
       })}
 
-      {
-        unJoined.map((group, groupIndex)=>{
-          return (
-            <UnjoinedGroup groupTitle={group.title} key={group.title + groupIndex}/>
-          )
-        })
-      }
-
-      
+      {unJoined.map((group, groupIndex) => {
+        return (
+          <UnjoinedGroup
+            groupTitle={group.title}
+            key={group.title + groupIndex}
+          />
+        );
+      })}
     </Box>
   );
 }
@@ -163,6 +149,130 @@ function GroupTile({ title, newUnread, getChatRoomData }) {
     </div>
   );
 }
+
+function PublicGroup({ groupTitle, groupList }) {
+  const [shouldOpen, setShouldOpen] = useState(true);
+  function handleCollapse() {
+    setShouldOpen(!shouldOpen);
+  }
+
+  const groupContext = useContext(GroupContext);
+
+  // for gettingChatRoom()
+  async function getChatRoomData(chatroomId) {
+    try {
+      const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
+      if (!chatRoomData.error) {
+        const tagCall = await getTaggingList(
+          chatRoomData.data.community.id,
+          chatRoomData.data.chatroom.id
+        );
+        console.log(tagCall);
+        chatRoomData.data.membersDetail = tagCall.data.members;
+        groupContext.setActiveGroup(chatRoomData.data);
+      } else {
+        console.log(chatRoomData.errorMessage);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  return (
+    <Box>
+      <Collapse
+        in={shouldOpen}
+        className="border-b border-solid border-[#EEEEEE]"
+      >
+        {groupList.map((group, groupIndex) => {
+          return (
+            <Link
+              to={groupMainPath}
+              onClick={() => {
+                getChatRoomData(group.chatroom.id);
+              }}
+            >
+              <div>
+                <PublicGroupTile
+                  key={group.chatroom.id + groupIndex}
+                  groupTitle={group.chatroom.header}
+                  group={group}
+                />
+              </div>
+            </Link>
+          );
+        })}
+      </Collapse>
+    </Box>
+  );
+}
+
+function PublicGroupTile({ groupTitle, group = { group } }) {
+  const groupcontext = useContext(GroupContext);
+  return (
+    <Box
+      className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b"
+      sx={{
+        backgroundColor:
+          groupTitle === groupcontext.activeGroup.chatroom?.header
+            ? "#ECF3FF"
+            : "#FFFFFF",
+      }}
+    >
+      <Typography
+        sx={{
+          color:
+            groupTitle === groupcontext.activeGroup.chatroom?.header
+              ? "#3884f7"
+              : "#000000",
+        }}
+        component={"span"}
+        className="text-base font-normal"
+      >
+        {groupTitle}
+      </Typography>
+      {group.unseen_conversation_count > 0 &&
+      group.chatroom.header != groupcontext.activeGroup.chatroom?.header ? (
+        <span className="text-[#3884f7] text-xs">
+          {group.unseen_conversation_count} new messages
+        </span>
+      ) : null}
+    </Box>
+  );
+}
+
+function UnjoinedGroup({ groupTitle }) {
+  const groupcontext = useContext(GroupContext);
+  return (
+    <Box
+      className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b"
+      sx={{
+        backgroundColor:
+          groupTitle === groupcontext.activeGroup.chatroom?.header
+            ? "#ECF3FF"
+            : "#FFFFFF",
+      }}
+    >
+      <Typography
+        sx={{
+          color:
+            groupTitle === groupcontext.activeGroup.chatroom?.header
+              ? "#3884f7"
+              : "#000000",
+        }}
+        component={"span"}
+        className="text-base font-normal"
+      >
+        {groupTitle}
+      </Typography>
+
+      <Button variant="outlined" className="rounded-[5px]">
+        Join
+      </Button>
+    </Box>
+  );
+}
+
+export default CurrentGroups;
 
 function GroupInviteTile({ title, groupType, getChatRoomData }) {
   return (
@@ -207,112 +317,3 @@ function GroupInviteTile({ title, groupType, getChatRoomData }) {
     </div>
   );
 }
-
-function PublicGroup({ groupTitle, groupList }) {
-  const [shouldOpen, setShouldOpen] = useState(true);
-  function handleCollapse() {
-    setShouldOpen(!shouldOpen);
-  }
-
-  const groupContext = useContext(GroupContext);
-
-  // for gettingChatRoom()
-  async function getChatRoomData(chatroomId) {
-    try {
-      const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
-      if (!chatRoomData.error) {
-        const tagCall = await getTaggingList(chatRoomData.data.community.id, chatRoomData.data.chatroom.id)
-        console.log(tagCall)
-        chatRoomData.data.membersDetail = tagCall.data.members
-        groupContext.setActiveGroup(chatRoomData.data);
-      } else {
-        console.log(chatRoomData.errorMessage);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  return (
-    <Box>
-      {/* <Box className="flex justify-between px-3.5 py-[18px]">
-        <Typography component={"span"} className="text-4 font-medium">
-          All Public Groups
-        </Typography>
-
-        <IconButton onClick={handleCollapse}>
-          {!shouldOpen ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
-        </IconButton>
-      </Box> */}
-      <Collapse
-        in={shouldOpen}
-        className="border-b border-solid border-[#EEEEEE]"
-      >
-        {groupList.map((group, groupIndex) => {
-          return (
-            <Link
-              to={groupMainPath}
-              onClick={() => {
-                getChatRoomData(group.chatroom.id);
-              }}
-            >
-              <div>
-                <PublicGroupTile
-                  key={group.chatroom.id + groupIndex}
-                  groupTitle={group.chatroom.header}
-                />
-              </div>
-            </Link>
-          );
-        })}
-      </Collapse>
-    </Box>
-  );
-}
-
-function PublicGroupTile({ groupTitle }) {
-  const groupcontext = useContext(GroupContext)
-  return (
-    <Box className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b" 
-    sx={{
-      backgroundColor: groupTitle === groupcontext.activeGroup.chatroom?.header ? '#ECF3FF' : "#FFFFFF"
-    }}>
-      <Typography 
-      sx={{
-        color: groupTitle === groupcontext.activeGroup.chatroom?.header ? '#3884f7' : "#000000"
-      }}
-      component={"span"} className="text-base font-normal">
-        {groupTitle}
-      </Typography>
-
-      {/* <Button variant='outlined' className='rounded-[5px]'> 
-                Join
-            </Button> */}
-    </Box>
-  );
-}
-
-function UnjoinedGroup({groupTitle}){
-  const groupcontext = useContext(GroupContext)
-  return (
-    <Box className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b" 
-    sx={{
-      backgroundColor: groupTitle === groupcontext.activeGroup.chatroom?.header ? '#ECF3FF' : "#FFFFFF"
-    }}>
-      <Typography 
-      sx={{
-        color: groupTitle === groupcontext.activeGroup.chatroom?.header ? '#3884f7' : "#000000"
-      }}
-      component={"span"} className="text-base font-normal">
-        {groupTitle}
-      </Typography>
-
-      <Button variant='outlined' className='rounded-[5px]'
-        
-      > 
-                Join
-            </Button>
-    </Box>
-  );
-}
-
-export default CurrentGroups;
