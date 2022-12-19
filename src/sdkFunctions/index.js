@@ -221,7 +221,7 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
 export function tagExtracter(str) {
   let newContent = str
     .split("<<")
-    .join('<a href="/user/#" style="color: green;">');
+    .join('<a href="javascript:void(0)" style="color: green;">');
   newContent = newContent.split("|route").join("</a>|route");
   let a = newContent.split("|route");
 
