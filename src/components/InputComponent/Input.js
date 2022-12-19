@@ -440,9 +440,9 @@ function InputSearchField() {
           value={inputContext.text}
           onChange={(event) => inputContext.setText(event.target.value)}
           onKeyUp={(e) => {
-            // if (e.key === "Enter") {
-            //   handleSendMessage();
-            // }
+            if (e.key === "Enter") {
+              handleSendMessage();
+            }
           }}
         >
           <Mention

@@ -16,48 +16,55 @@
   /* border: 1px solid silver; */
   max-height: 50px;
   overflow: auto !important;
-  border: 1px solid #EEEEEE;
+  border: 1px solid #eeeeee;
   background-color: #f9f9f9;
-  border-radius: 10px;
+  border-radius: 10px !important;
 }
 .mentions--multiLine .mentions__highlighter {
-  padding: 9px;
+  padding: 12px 16px;
   max-height: 50px;
   overflow: auto !important;
 }
 .mentions--multiLine .mentions__input {
-  padding: 9px;
+  padding: 12px 16px;
   outline: 0;
   border: 0;
   box-sizing: border-box;
   max-height: 50px;
   overflow: auto !important;
-  
+  line-height: 26px;
+  font-family: "Lato" !important;
 }
 
 .mentions__suggestions__list {
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  font-size: 10pt;
+  background-color: #ecf3ff;
+  border: 1px solid #eeeeee;
   z-index: 10;
-  
+  width: 178px;
+  box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  font-family: Lato;
 }
 
 .mentions__suggestions__item {
-  padding: 5px 15px;
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #323232;
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-  
+  font-family: Lato;
+  background-color: #fff;
+  padding: 10px 20px;
 }
 
 .mentions__suggestions__item--focused {
-  background-color: #cee4e5;
+  background-color: #ecf3ff;
 }
 
 .mentions__mention {
-  background-color: #cee4e5;
+  background-color: #ecf3ff;
 }
 
-.mentions__suggestions{
+.mentions__suggestions {
   position: absolute;
   left: 0px !important;
   top: 0px !important;
