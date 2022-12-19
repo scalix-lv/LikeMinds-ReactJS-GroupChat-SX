@@ -114,11 +114,12 @@ function StringBox({
                   <img
                     src={item.url}
                     alt=""
-                    className="my-2 max-w-[280px] h-full"
+                    className="my-2 max-w-[100px] max-h-[100px] float-left"
                   />
                 );
               })
           : null}
+
         {attachments != null
           ? attachments
               .filter((item, itemIndex) => {
@@ -133,7 +134,6 @@ function StringBox({
                 );
               })
           : null}
-
         {attachments != null
           ? attachments
               .filter((item, itemIndex) => {
@@ -152,7 +152,6 @@ function StringBox({
                 );
               })
           : null}
-
         {attachments != null
           ? attachments
               .filter((item, itemIndex) => {
@@ -168,7 +167,6 @@ function StringBox({
                 );
               })
           : null}
-
         {replyConversationObject != null ? (
           <div className="flex flex-col border-[1px] border-l-[5px] border-[#70A9FF] py-1 px-2 rounded-[5px] mb-1">
             <div className="text-[#70A9FF] font-bold text-[12px]">
@@ -179,7 +177,6 @@ function StringBox({
             </div>
           </div>
         ) : null}
-
         <div className="text-[14px] font-[300] text-[#323232]">
           {/* {
             <Link to={"/" + getUserLink(messageString)}>
@@ -277,7 +274,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       },
     },
     {
-      title: "Reply Privately",
+      title: "Message privately",
       clickFunction: null,
     },
     {
@@ -306,7 +303,9 @@ function MoreOptions({ convoId, userId, convoObject }) {
         {options.map((option, optionIndex) => {
           return (
             <MenuItem key={option.title} onClick={option.clickFunction}>
-              {option.title}
+              <div className="text-[#323232] font-[400] text-[14px]">
+                {option.title}
+              </div>
             </MenuItem>
           );
         })}
