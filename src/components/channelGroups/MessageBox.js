@@ -6,14 +6,16 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { userObj } from "../..";
+import { UserContext, userObj } from "../..";
 import {
   addReaction,
   getString,
   getUserLink,
   getUsername,
+  linkConverter,
+  tagExtracter,
 } from "../../sdkFunctions";
 import { Link } from "react-router-dom";
 import { myClient } from "../..";
@@ -23,6 +25,8 @@ import EmojiPicker from "emoji-picker-react";
 import { GroupContext } from "../Groups/Groups";
 import { groupPersonalInfoPath } from "./../../routes";
 import { CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
+import parse from "html-react-parser";
+
 function MessageBox({
   username,
   messageString,
@@ -70,11 +74,16 @@ function StringBox({
 }) {
   const ref = useRef(null);
   const groupContext = useContext(GroupContext);
+  const userContext = useContext(UserContext);
+  useEffect(() => {
+    console.log(ref.current.innerHTML);
+  });
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
       style={{
-        background: userId === userObj.id ? "#ECF3FF" : "#FFFFFF",
+        background:
+          userId === userContext.currentUser.id ? "#ECF3FF" : "#FFFFFF",
       }}
     >
       <div className="flex w-full justify-between mb-1 clear-both">
@@ -86,7 +95,7 @@ function StringBox({
               memberId: userId,
             }}
           >
-            {userId === userObj.id ? "You" : username}
+            {userId === userContext.currentUser.id ? "You" : username}
           </Link>
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
@@ -102,7 +111,11 @@ function StringBox({
               })
               .map((item, itemIndex) => {
                 return (
-                  <img src={item.url} alt="" className="max-w-[280px] h-full" />
+                  <img
+                    src={item.url}
+                    alt=""
+                    className="my-2 max-w-[280px] h-full"
+                  />
                 );
               })
           : null}
@@ -113,7 +126,7 @@ function StringBox({
               })
               .map((item, itemIndex) => {
                 return (
-                  <audio controls src={item.url} className="w-[230]">
+                  <audio controls src={item.url} className="my-2 w-[230]">
                     {" "}
                     <a href={item.url}>Download audio</a>
                   </audio>
@@ -128,7 +141,12 @@ function StringBox({
               })
               .map((item, itemIndex) => {
                 return (
-                  <a href={item.url} target="_blank">
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="my-2 "
+                  >
                     {item.name}
                   </a>
                 );
@@ -142,7 +160,7 @@ function StringBox({
               })
               .map((item, itemIndex) => {
                 return (
-                  <video controls className="w-[200] h-max-[200px]">
+                  <video controls className="my-2 w-[200] h-max-[200px] ">
                     <source src={item.url} type="video/mp4" />
                     <source src={item.url} type="video/ogg" />
                     Your browser does not support the video tag.
@@ -163,25 +181,28 @@ function StringBox({
         ) : null}
 
         <div className="text-[14px] font-[300] text-[#323232]">
-          {
+          {/* {
             <Link to={"/" + getUserLink(messageString)}>
               <span className="text-green-500 text-[12px] font-semibold">
                 {getUsername(messageString)}
               </span>
             </Link>
-          }
+          } */}
 
           {
-            <span
-              ref={ref}
-              children={() => {
-                let newDomNode = document.createElement("span");
-                let str = getString(messageString);
-                newDomNode.innerHTML = str;
-                return [newDomNode];
-              }}
-            >
-              {getString(messageString)}
+            // <span
+            //   ref={ref}
+            //   children={() => {
+            //     let newDomNode = document.createElement("span");
+            //     let str = getString(messageString);
+            //     newDomNode.innerHTML = str;
+            //     return [newDomNode];
+            //   }}
+            // >
+            //   {getString(messageString)}
+            // </span>
+            <span ref={ref}>
+              {parse(linkConverter(tagExtracter(messageString)))}
             </span>
           }
         </div>
