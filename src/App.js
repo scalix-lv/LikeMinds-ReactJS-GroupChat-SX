@@ -74,7 +74,7 @@ const router = createBrowserRouter([
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   useEffect(() => {
-    initiateSDK(false, "6c3e3024-4cfe-4614-9586-b0dbcad7a2e3", "gaurav")
+    initiateSDK(false, "707a866a-2d28-4b8d-b34b-382ac76c8b85", "Ankit Garg")
       .then((res) => {
         setCurrentUser(res.data.user);
       })
@@ -87,7 +87,7 @@ function App() {
     console.log(currentUser);
   }, [currentUser]);
   return (
-    <div className="App h-full">
+    <div className="App h-[100vh] flex flex-1">
       <UserContext.Provider
         value={{
           currentUser: currentUser,

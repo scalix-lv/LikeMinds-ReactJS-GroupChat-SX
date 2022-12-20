@@ -9,12 +9,10 @@ import { Link } from "react-router-dom";
 import { groupInfoPath } from "../../../routes";
 const TitleBox = styled(Box)({
   display: "flex",
-  borderBottom: "1px solid #ADADAD",
   width: "100%",
-  marginRight: "96px",
-  marginLeft: "24px",
-  padding: "0 0 16px",
-  marginTop: "24px",
+  borderBottom: "1px solid #adadad",
+  margin: "0 120px 0px 28px",
+  padding: "0 0 10px 0px",
 });
 
 function Tittle({ headerProps }) {
@@ -61,8 +59,5 @@ function OptionArea() {
     </Box>
   );
 }
-
-
-
 
 export default Tittle;

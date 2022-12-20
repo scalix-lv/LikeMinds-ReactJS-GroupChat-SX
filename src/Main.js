@@ -24,18 +24,16 @@ const newTheme = createTheme({
 function Main() {
   return (
     <ThemeProvider theme={newTheme}>
-      <div className="h-full w-full">
-        <div className="w-full fixed h-[65px] z-10">
-          <Header />
-        </div>
+      <div className="flex w-[100vw] fixed h-[65px] z-10">
+        <Header />
+      </div>
 
-        <div className="w-full flex h-full customHeight">
-          <div className="w-[140px] h-full mt-[65px] border-r-[1px] border-[#eeeeee]">
-            <Sidenav />
-          </div>
-          <div className="mt-[65px] w-full">
-            <Outlet />
-          </div>
+      <div className="flex flex-1 h-full customHeight mt-[65px]">
+        <div className="flex-[.085] border-r-[1px] border-[#eeeeee]">
+          <Sidenav />
+        </div>
+        <div className="flex-[.915]">
+          <Outlet />
         </div>
       </div>
     </ThemeProvider>

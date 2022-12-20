@@ -25,8 +25,8 @@ function Groups() {
         refreshContextUi: refreshGroups,
       }}
     >
-      <div className="flex overflow-hidden customHeight">
-        <div className="w-[540px] customScroll">
+      <div className="flex overflow-hidden customHeight flex-1">
+        <div className="flex-[.32] customScroll bg-white border-r-[1px] border-[#eeeeee] pt-[20px]">
           {/* Search Bar */}
           <SearchbarGroups />
 
@@ -35,8 +35,7 @@ function Groups() {
 
           {/* All Public Groups */}
         </div>
-
-        <div className="w-full bg-[#f6f6ff] relative">
+        <div className="flex-[.68] bg-[#f9f6ff] relative pt-[42px]">
           <Outlet />
 
           {/* <GroupChatArea/> */}
