@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { myClient } from "../..";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
 import emojiIcon from "../../assets/emojioption.png";
+import pdfIcon from "../../assets/svg/pdf-document.svg";
 import EmojiPicker from "emoji-picker-react";
 import { GroupContext } from "../Groups/Groups";
 import { groupPersonalInfoPath } from "./../../routes";
@@ -104,70 +105,94 @@ function StringBox({
       </div>
 
       <div className="flex w-full flex-col">
-        {attachments != null
-          ? attachments
-              .filter((item, itemIndex) => {
-                return item.type === "image";
-              })
-              .map((item, itemIndex) => {
-                return (
-                  <img
-                    src={item.url}
-                    alt=""
-                    className="my-2 max-w-[280px] h-full"
-                  />
-                );
-              })
-          : null}
-        {attachments != null
-          ? attachments
-              .filter((item, itemIndex) => {
-                return item.type === "audio";
-              })
-              .map((item, itemIndex) => {
-                return (
-                  <audio controls src={item.url} className="my-2 w-[230]">
-                    {" "}
-                    <a href={item.url}>Download audio</a>
-                  </audio>
-                );
-              })
-          : null}
+        <div className="w-full mb-1">
+          {(() => {
+            if (attachments !== null && attachments.length < 2) {
+              return attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "image";
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <img
+                      src={item.url}
+                      alt=""
+                      className="m-1 w-full max-h-[230px]"
+                    />
+                  );
+                });
+            }
+            return null;
+          })()}
+          {attachments != null && attachments.length > 1
+            ? attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "image" && itemIndex < 2;
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <img
+                      src={item.url}
+                      alt=""
+                      className="m-1 max-w-[135px] max-h-[135px] float-left"
+                    />
+                  );
+                })
+            : null}
 
-        {attachments != null
-          ? attachments
-              .filter((item, itemIndex) => {
-                return item.type === "pdf";
-              })
-              .map((item, itemIndex) => {
-                return (
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="my-2 "
-                  >
-                    {item.name}
-                  </a>
-                );
-              })
-          : null}
+          {attachments != null
+            ? attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "audio";
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <audio controls src={item.url} className="my-2 w-[230]">
+                      {" "}
+                      <a href={item.url}>Download audio</a>
+                    </audio>
+                  );
+                })
+            : null}
+          {attachments !== null
+            ? attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "pdf";
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mb-2 w-[200px] flex"
+                    >
+                      <img src={pdfIcon} alt="pdf" className="w-[24px]" />
+                      <span className="text-[#323232] text-[14px] ml-2 mt-1">
+                        {item.name}
+                      </span>
+                      <br />
+                    </a>
+                  );
+                })
+            : null}
 
-        {attachments != null
-          ? attachments
-              .filter((item, itemIndex) => {
-                return item.type === "video";
-              })
-              .map((item, itemIndex) => {
-                return (
-                  <video controls className="my-2 w-[200] h-max-[200px] ">
-                    <source src={item.url} type="video/mp4" />
-                    <source src={item.url} type="video/ogg" />
-                    Your browser does not support the video tag.
-                  </video>
-                );
-              })
-          : null}
+          {attachments != null
+            ? attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "video";
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <video controls className="my-2 w-[200] h-max-[200px] ">
+                      <source src={item.url} type="video/mp4" />
+                      <source src={item.url} type="video/ogg" />
+                      Your browser does not support the video tag.
+                    </video>
+                  );
+                })
+            : null}
+        </div>
 
         {replyConversationObject != null ? (
           <div className="flex flex-col border-[1px] border-l-[5px] border-[#70A9FF] py-1 px-2 rounded-[5px] mb-1">
@@ -180,7 +205,7 @@ function StringBox({
           </div>
         ) : null}
 
-        <div className="text-[14px] font-[300] text-[#323232]">
+        <div className="text-[14px] w-full font-[300] text-[#323232]">
           {/* {
             <Link to={"/" + getUserLink(messageString)}>
               <span className="text-green-500 text-[12px] font-semibold">
@@ -277,7 +302,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       },
     },
     {
-      title: "Reply Privately",
+      title: "Message privately",
       clickFunction: null,
     },
     {
@@ -306,7 +331,9 @@ function MoreOptions({ convoId, userId, convoObject }) {
         {options.map((option, optionIndex) => {
           return (
             <MenuItem key={option.title} onClick={option.clickFunction}>
-              {option.title}
+              <div className="text-[#323232] font-[400] text-[14px]">
+                {option.title}
+              </div>
             </MenuItem>
           );
         })}
