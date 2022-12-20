@@ -54,7 +54,12 @@ function MessageBox({
       </Box>
       <div>
         {conversationReactions.map((reactionObject, reactionObjectIndex) => {
-          return <ReactionIndicator reaction={reactionObject.reaction} />;
+          return (
+            <ReactionIndicator
+              reaction={reactionObject.reaction}
+              key={reactionObjectIndex}
+            />
+          );
         })}
       </div>
     </div>
@@ -76,11 +81,9 @@ function StringBox({
   const ref = useRef(null);
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-  useEffect(() => {
-    console.log(ref.current.innerHTML);
-  });
   const navigate = useNavigate();
-
+  // console.log(userId);
+  // console.log(userContext.currentUser.id);
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
@@ -120,6 +123,7 @@ function StringBox({
                       src={item.url}
                       alt=""
                       className="m-1 w-full max-h-[230px]"
+                      key={item.url}
                     />
                   );
                 });
@@ -137,6 +141,7 @@ function StringBox({
                       src={item.url}
                       alt=""
                       className="m-1 max-w-[135px] max-h-[135px] float-left"
+                      key={item.url}
                     />
                   );
                 })
@@ -149,7 +154,12 @@ function StringBox({
                 })
                 .map((item, itemIndex) => {
                   return (
-                    <audio controls src={item.url} className="my-2 w-[230]">
+                    <audio
+                      controls
+                      src={item.url}
+                      className="my-2 w-[230]"
+                      key={item.url}
+                    >
                       {" "}
                       <a href={item.url}>Download audio</a>
                     </audio>
@@ -168,6 +178,7 @@ function StringBox({
                       target="_blank"
                       rel="noreferrer"
                       className="mb-2 w-[200px] flex"
+                      key={item.url}
                     >
                       <img src={pdfIcon} alt="pdf" className="w-[24px]" />
                       <span className="text-[#323232] text-[14px] ml-2 mt-1">
@@ -186,7 +197,11 @@ function StringBox({
                 })
                 .map((item, itemIndex) => {
                   return (
-                    <video controls className="my-2 w-[200] h-max-[200px] ">
+                    <video
+                      controls
+                      className="my-2 w-[200] h-max-[200px] "
+                      key={item.url}
+                    >
                       <source src={item.url} type="video/mp4" />
                       <source src={item.url} type="video/ogg" />
                       Your browser does not support the video tag.
@@ -208,34 +223,13 @@ function StringBox({
         ) : null}
 
         <div className="text-[14px] w-full font-[300] text-[#323232]">
-          {/* {
-            <Link to={"/" + getUserLink(messageString)}>
-              <span className="text-green-500 text-[12px] font-semibold">
-                {getUsername(messageString)}
-              </span>
-            </Link>
-          } */}
-
-          {
-            // <span
-            //   ref={ref}
-            //   children={() => {
-            //     let newDomNode = document.createElement("span");
-            //     let str = getString(messageString);
-            //     newDomNode.innerHTML = str;
-            //     return [newDomNode];
-            //   }}
-            // >
-            //   {getString(messageString)}
-            // </span>
-            <span className="msgCard" ref={ref}>
-              {parse(
-                linkConverter(
-                  tagExtracter(messageString, groupContext, userId, navigate)
-                )
-              )}
-            </span>
-          }
+          <span className="msgCard" ref={ref}>
+            {parse(
+              linkConverter(
+                tagExtracter(messageString, groupContext, userId, navigate)
+              )
+            )}
+          </span>
         </div>
       </div>
     </div>

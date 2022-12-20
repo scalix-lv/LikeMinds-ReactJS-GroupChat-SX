@@ -231,9 +231,7 @@ export function tagExtracter(str, groupContext, userId, navigate) {
   }
   let newContent = str
     .split("<<")
-    .join(
-      `<span onclick="${nav()}" hl="Sd" style="color: green; cursor:pointer;" >`
-    );
+    .join(`<span hl="Sd" style="color: green; cursor:pointer;">`);
   newContent = newContent.split("|route").join("</span>|route");
   let a = newContent.split("|route");
 
@@ -299,6 +297,7 @@ export async function joinChatRoom(collabId, userId, refreshContext) {
       value: true,
     });
     refreshContext();
+
     return jsonReturnHandler(joinCall, null);
   } catch (error) {
     return jsonReturnHandler(null, error);

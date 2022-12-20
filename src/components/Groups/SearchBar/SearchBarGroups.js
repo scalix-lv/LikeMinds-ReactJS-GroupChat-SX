@@ -15,14 +15,14 @@ function SearchbarGroups() {
         className="mr-4"
         InputProps={{
           startAdornment: (
-            <InputAdornment className="mr-2">
+            <InputAdornment className="mr-2" position="start">
               {/* <SearchIcon className="text-black" /> */}
               <img src={searchIcon} alt="" />
             </InputAdornment>
           ),
           endAdornment:
             searchString.length > 1 ? (
-              <InputAdornment className="mr-8">
+              <InputAdornment className="mr-8" position="end">
                 <CloseIcon />
               </InputAdornment>
             ) : null,

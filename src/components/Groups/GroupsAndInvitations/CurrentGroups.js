@@ -22,6 +22,7 @@ import acceptIcon from "../../../assets/svg/accept.svg";
 function CurrentGroups() {
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
+  const groupContext = useContext(GroupContext);
   // content to be deleted
   const groupsInfo = [
     {
@@ -199,6 +200,7 @@ function PublicGroup({ groupTitle, groupList }) {
               onClick={() => {
                 getChatRoomData(group.chatroom.id);
               }}
+              key={group.chatroom.id + groupIndex}
             >
               <div>
                 <PublicGroupTile
