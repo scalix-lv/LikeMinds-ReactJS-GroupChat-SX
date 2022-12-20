@@ -293,7 +293,7 @@ function seviceWorker() {
 // for joining the group
 export async function joinChatRoom(collabId, userId, refreshContext) {
   try {
-    const joinCall = await myClient.followCR({
+    const joinCall = await myClient.leaveChatroom({
       collabcard_id: collabId,
       member_id: userId,
       value: true,
