@@ -4,19 +4,20 @@ import { IconButton, Menu, MenuItem } from "@mui/material";
 import { leaveChatRoom } from "../sdkFunctions";
 import { GroupContext } from "../components/Groups/Groups";
 import { UserContext } from "..";
+import leaveIcon from "../assets/svg/leave.svg";
 function MoreOptions() {
   const [open, setOpen] = useState(false);
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const [anchor, setAnchor] = useState(null);
+
   function closeMenu() {
-    console.log("close");
+    console.log(1);
     setOpen(false);
     setAnchor(null);
   }
 
   function leaveGroup() {
-    console.log("clicking");
     leaveChatRoom(
       groupContext.activeGroup.chatroom.id,
       userContext.currentUser.id,
@@ -31,9 +32,21 @@ function MoreOptions() {
         closeMenu();
       }}
       open={open}
+      anchorOrigin={{
+        vertical: "0",
+        horizontal: "left",
+      }}
     >
-      <MenuItem>INVITE MEMBER</MenuItem>
-      <MenuItem onClick={leaveGroup}>LEAVE GROUP</MenuItem>
+      <MenuItem
+        onClick={leaveGroup}
+        sx={{
+          fontSize: "14px",
+          color: "#323232",
+        }}
+      >
+        <img src={leaveIcon} alt="leave" className="mr-2" />
+        Leave Channel
+      </MenuItem>
     </Menu>
   );
   return (
@@ -45,18 +58,8 @@ function MoreOptions() {
         }}
       >
         <MoreVertIcon />
-        {MenuBox}
       </IconButton>
-      <Menu
-        anchorEl={anchor}
-        onClose={() => {
-          closeMenu();
-        }}
-        open={open}
-      >
-        <MenuItem>INVITE MEMBER</MenuItem>
-        <MenuItem onClick={leaveGroup}>LEAVE GROUP</MenuItem>
-      </Menu>
+      {MenuBox}
     </span>
   );
 }

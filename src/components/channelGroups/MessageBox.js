@@ -228,7 +228,7 @@ function StringBox({
             // >
             //   {getString(messageString)}
             // </span>
-            <span ref={ref}>
+            <span className="msgCard" ref={ref}>
               {parse(
                 linkConverter(
                   tagExtracter(messageString, groupContext, userId, navigate)
