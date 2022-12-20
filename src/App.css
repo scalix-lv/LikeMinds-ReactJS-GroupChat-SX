@@ -33,3 +33,7 @@
   overflow: scroll;
   overflow-x: hidden;
 }
+
+.msgCard a {
+  color: #007aff;
+}

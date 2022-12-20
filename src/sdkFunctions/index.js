@@ -268,7 +268,7 @@ export function linkConverter(sampleString) {
     if (str.substring(0, 5) === "##$@^") {
       let subStringArr = str.split(" ");
       subStringArr[0] =
-        '<a href="http' +
+        '<a target="_blank" href="http' +
         subStringArr[0].substring(5) +
         '">' +
         "http" +
