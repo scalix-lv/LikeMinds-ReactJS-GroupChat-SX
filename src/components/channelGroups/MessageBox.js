@@ -17,7 +17,7 @@ import {
   linkConverter,
   tagExtracter,
 } from "../../sdkFunctions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { myClient } from "../..";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
 import emojiIcon from "../../assets/emojioption.png";
@@ -79,6 +79,8 @@ function StringBox({
   useEffect(() => {
     console.log(ref.current.innerHTML);
   });
+  const navigate = useNavigate();
+
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
@@ -227,7 +229,11 @@ function StringBox({
             //   {getString(messageString)}
             // </span>
             <span ref={ref}>
-              {parse(linkConverter(tagExtracter(messageString)))}
+              {parse(
+                linkConverter(
+                  tagExtracter(messageString, groupContext, userId, navigate)
+                )
+              )}
             </span>
           }
         </div>

@@ -347,6 +347,10 @@ function InputSearchField() {
       display: "peow",
     },
   ];
+  let keyObj = {
+    enter: false,
+    shift: true,
+  };
   return (
     <Box
       sx={{
@@ -440,9 +444,27 @@ function InputSearchField() {
           placeholder="Write a Comment"
           value={inputContext.text}
           onChange={(event) => inputContext.setText(event.target.value)}
-          onKeyUp={(e) => {
+          onKeyDown={(e) => {
+            // console.log("down");
             if (e.key === "Enter") {
-              handleSendMessage();
+              keyObj.enter = true;
+            }
+            if (e.key === "Shift") {
+              keyObj.shift = true;
+            }
+            if (keyObj.enter && keyObj.shift) {
+              let newStr = inputContext.text;
+              newStr += " \n ";
+              inputContext.setText(newStr);
+            }
+          }}
+          onKeyUp={(e) => {
+            // console.log("up");
+            if (e.key === "Enter") {
+              keyObj.enter = false;
+            }
+            if (e.key === "Shift") {
+              keyObj.shift = false;
             }
           }}
         >

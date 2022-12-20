@@ -1,6 +1,7 @@
 import Typicode from "likeminds-apis-sdk";
 import { json } from "react-router-dom";
 import { myClient } from "..";
+import { groupPersonalInfoPath } from "../routes";
 // import('likeminds-apis-sdk/dist/chatroom/types').ConversationData as conversationData
 // import * as DB from "firebase/database";
 // DB.Da;
@@ -218,10 +219,10 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
   }
 }
 
-export function tagExtracter(str) {
+export function tagExtracter(str, groupContext, userId, navigate) {
   let newContent = str
     .split("<<")
-    .join('<a href="javascript:void(0)" style="color: green;">');
+    .join(`<a href="javascript:void(0)"style="color: green;">`);
   newContent = newContent.split("|route").join("</a>|route");
   let a = newContent.split("|route");
 
@@ -236,8 +237,17 @@ export function tagExtracter(str) {
   }
   na = na.join("");
 
+  // add a new line
+
+  na = na.split(" \n ").join("<br/>");
   na = na.split("http").join("^#$__##$@^");
   return na;
+}
+
+export async function joinThisGroup() {
+  try {
+    // myClient.followCR;
+  } catch (e) {}
 }
 
 export function linkConverter(sampleString) {
@@ -267,4 +277,19 @@ function seviceWorker() {
     // let w = myClient.
     // myClient.
   } catch (error) {}
+}
+
+// for joining the group
+export async function joinChatRoom(collabId, userId, refreshContext) {
+  try {
+    const joinCall = await myClient.followCR({
+      collabcard_id: collabId,
+      member_id: userId,
+      value: true,
+    });
+    refreshContext();
+    return jsonReturnHandler(joinCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
 }
