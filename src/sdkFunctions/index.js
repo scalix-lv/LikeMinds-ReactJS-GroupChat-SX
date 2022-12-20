@@ -220,10 +220,21 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
 }
 
 export function tagExtracter(str, groupContext, userId, navigate) {
+  function nav() {
+    console.log("here");
+    navigate(groupPersonalInfoPath, {
+      state: {
+        communityId: groupContext.activeGroup.community.id,
+        memberId: userId,
+      },
+    });
+  }
   let newContent = str
     .split("<<")
-    .join(`<a href="javascript:void(0)"style="color: green;">`);
-  newContent = newContent.split("|route").join("</a>|route");
+    .join(
+      `<span onclick="${nav()}" hl="Sd" style="color: green; cursor:pointer;" >`
+    );
+  newContent = newContent.split("|route").join("</span>|route");
   let a = newContent.split("|route");
 
   let na = [];
