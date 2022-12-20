@@ -10,8 +10,9 @@ import {
   getChatRoomDetails,
   getTaggingList,
   getUnjoinedRooms,
+  joinChatRoom,
 } from "../../../sdkFunctions";
-import { myClient } from "../../..";
+import { myClient, UserContext } from "../../..";
 import { Link, NavLink } from "react-router-dom";
 import { groupMainPath } from "../../../routes";
 import { GroupContext } from "../Groups";
@@ -106,10 +107,18 @@ function CurrentGroups() {
 
       {unJoined.map((group, groupIndex) => {
         return (
+          // <Link
+          //   to={groupMainPath}
+          //   onClick={() => {
+          //     getChatRoomData(group.chatroom.id);
+          //   }}
+          // >
           <UnjoinedGroup
             groupTitle={group.title}
+            group={group}
             key={group.title + groupIndex}
           />
+          // </Link>
         );
       })}
     </Box>
@@ -240,8 +249,21 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
   );
 }
 
-function UnjoinedGroup({ groupTitle }) {
+function UnjoinedGroup({ groupTitle, group }) {
   const groupcontext = useContext(GroupContext);
+  const userContext = useContext(UserContext);
+  async function joinGroup() {
+    try {
+      let call = await joinChatRoom(
+        group.id,
+        userContext.currentUser.id,
+        groupcontext.refreshContextUi
+      );
+      console.log(call);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <Box
       className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b"
@@ -265,7 +287,7 @@ function UnjoinedGroup({ groupTitle }) {
         {groupTitle}
       </Typography>
 
-      <Button variant="outlined" className="rounded-[5px]">
+      <Button variant="outlined" className="rounded-[5px]" onClick={joinGroup}>
         Join
       </Button>
     </Box>
