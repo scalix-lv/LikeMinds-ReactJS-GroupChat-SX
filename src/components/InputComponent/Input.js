@@ -7,7 +7,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import SendIcon from "@mui/icons-material/Send";
+import SendIcon from "./../../assets/svg/send.svg";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import MicIcon from "@mui/icons-material/Mic";
 import GifIcon from "@mui/icons-material/Gif";
@@ -434,7 +434,8 @@ function InputSearchField() {
             zIndex: 1,
           }}
         >
-          <SendIcon className="text-[#3884F7]" />
+          {/* <SendIcon className="text-[#3884F7]" /> */}
+          <img src={SendIcon} alt="send" />
         </IconButton>
         <MentionsInput
           className="mentions"
