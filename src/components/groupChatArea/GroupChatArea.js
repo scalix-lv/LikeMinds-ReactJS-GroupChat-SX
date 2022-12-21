@@ -191,7 +191,7 @@ function GroupChatArea() {
                 }}
               />
               <div ref={ref}></div>
-              <div className="fixed bottom-0 w-[62%]">
+              <div className="fixed bottom-0 w-[62.1%]">
                 <Input />
               </div>
             </>
