@@ -82,7 +82,7 @@ function StringBox({
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
-  const [displayMediaModal, setDisplayMediaModel] = useState(null);
+  const [displayMediaModal, setDisplayMediaModel] = useState(false);
   // let shouldOPenModel = Boolean(displayMediaModal);
   const [mediaData, setMediaData] = useState(null);
   // console.log(userId);
@@ -133,6 +133,7 @@ function StringBox({
                       className="m-1 w-full max-h-[230px]"
                       key={item.url}
                       onClick={() => {
+                        console.log("clicked");
                         setMediaData(item.url);
                         setDisplayMediaModel(true);
                       }}
@@ -155,6 +156,7 @@ function StringBox({
                       className="m-1 max-w-[135px] max-h-[135px] float-left"
                       key={item.url}
                       onClick={() => {
+                        console.log("clicked");
                         setMediaData(item.url);
                         setDisplayMediaModel(true);
                       }}
@@ -388,7 +390,11 @@ function MoreOptions({ convoId, userId, convoObject }) {
 }
 
 function DialogBoxMediaDisplay({ onClose, shouldOpen, mediaData }) {
-  return <Dialog>The data for dialog is in mediaData prop</Dialog>;
+  return (
+    <Dialog open={shouldOpen} onClose={onClose}>
+      The data for dialog is in mediaData prop
+    </Dialog>
+  );
 }
 
 export default MessageBox;
