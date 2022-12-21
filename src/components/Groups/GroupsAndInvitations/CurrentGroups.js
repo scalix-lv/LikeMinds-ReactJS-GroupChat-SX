@@ -61,7 +61,7 @@ function CurrentGroups() {
     const fn = async () => {
       try {
         const feedCall = await myClient.getHomeFeedData({
-          communityId: 50414,
+          communityId: 50421,
           page: 1,
         });
 

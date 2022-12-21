@@ -392,7 +392,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
 function DialogBoxMediaDisplay({ onClose, shouldOpen, mediaData }) {
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
-      The data for dialog is in mediaData prop
+      <img src={mediaData} alt="img" className="max-w-[500px]" />
     </Dialog>
   );
 }
