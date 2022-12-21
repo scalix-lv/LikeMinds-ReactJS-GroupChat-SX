@@ -37,7 +37,7 @@ function PersonInfo() {
     fn();
   }, []);
   return (
-    <div>
+    <div className="overflow-auto w-full h-full">
       {/* Title Header */}
       {gc.activeGroup.chatroom?.id ? (
         <Tittle
@@ -64,51 +64,41 @@ function PersonInfo() {
           </div>
         </div>
 
-        <Box className="ml-3 mt-4">
-          <Box>
-            {/* <AccountCircleIcon fontSize="large" /> */}
-
-            <img
-              src={profileDate.image_url || userIcon}
-              className="w-[60px] h-[60px] rounded-[5px]"
-              alt=""
-            />
-          </Box>
-          <p className="text-base font-bold my-2 mx-0 text-[#323232]">
+        <Box className="ml-3 mt-4 text-[#323232]">
+          <div className="w-[60px] h-[60px] border-[1px] border-[#eeeeee] text-[30px] mr-2.5 rounded-[5px] flex justify-center items-center">
+            {profileDate.image_url ? (
+              <img src={profileDate.image_url} className="w-full h-full" />
+            ) : (
+              profileDate?.name[0]
+            )}
+          </div>
+          <div className="text-[16px] font-[700] mt-[20px] ">
             {profileDate.name}
-          </p>
-          <Box className="my-2 mx-0">
+          </div>
+
+          <div className="mt-[20px]">
             {mediaArray.map((MediaIcon, mediaIconIndex) => {
               return <MediaIcon className="m-1 text-4xl" fontSize="medium" />;
             })}
-          </Box>
-          <Typography
-            fontSize={"14px"}
-            fontWeight={400}
-            color={"#323232"}
-            marginTop={2}
-          >
+          </div>
+
+          <div className="text-[14px] font-[400]  mt-[20px]">
             An organized and enthusiastic designer, whose life has been nothing
             but a series of unplanned and unexpected events. I enjoy working on
             topics that are out of the box and that would let me come up with
             innovative ideas.
-          </Typography>
+          </div>
 
-          <Typography
-            fontSize={"16px"}
-            fontWeight={700}
-            color={"#323232"}
-            marginTop={2}
-          >
+          <div className="text-[16px] font-[700]  my-[20px]">
             {profileDate.custom_title}
-          </Typography>
+          </div>
 
-          <Box className="py-4 px-0">
-            <p className="font-bold text-2xl">Find them in</p>
+          <div className="">
+            <div className="text-[16px] font-[700] mb-[20px]">Find them in</div>
 
             <InfoTile title={"Hiring Techniques"} buttontitle={"Forum"} />
             <InfoTile title={"Beyond Design"} buttontitle={"Group"} />
-          </Box>
+          </div>
         </Box>
       </div>
     </div>

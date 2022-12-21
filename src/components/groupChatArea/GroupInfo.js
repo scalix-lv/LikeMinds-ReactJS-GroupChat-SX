@@ -15,7 +15,7 @@ function GroupInfo() {
   const gc = useContext(GroupContext);
   const participants = gc.activeGroup.membersDetail;
   return (
-    <StyledBox>
+    <div className="overflow-auto w-full h-full">
       {/* Title Header */}
       {gc.activeGroup.chatroom?.id ? (
         <Tittle
@@ -56,7 +56,7 @@ function GroupInfo() {
         </div>
         {/* Member list */}
       </div>
-    </StyledBox>
+    </div>
   );
 }
 
