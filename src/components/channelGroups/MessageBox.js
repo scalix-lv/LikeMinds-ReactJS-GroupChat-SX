@@ -42,7 +42,7 @@ function MessageBox({
 }) {
   return (
     <div>
-      <Box className="flex">
+      <Box className="flex mb-4">
         <StringBox
           username={username}
           messageString={messageString}
