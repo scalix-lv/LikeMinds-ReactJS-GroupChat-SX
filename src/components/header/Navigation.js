@@ -31,20 +31,20 @@ function Navigation() {
       >
         {navArr.map((block, blockIndex) => {
           return (
-            <a
+            <Link
               style={{
                 padding: "0 24px",
                 textDecoration: "none",
                 color: "black",
               }}
-              href="javascript:void(0)"
+              to={block.link}
               key={blockIndex + block.title}
-              onClick={() => {
-                Navigate(block.link);
+              onClick={(e) => {
+                e.preventDefault();
               }}
             >
               {block.title}
-            </a>
+            </Link>
           );
         })}
       </Box>
