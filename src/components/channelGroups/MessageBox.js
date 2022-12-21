@@ -20,7 +20,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { myClient } from "../..";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
-import emojiIcon from "../../assets/emojioption.png";
+import emojiIcon from "../../assets/svg/smile.svg";
+import moreIcon from "../../assets/svg/more-vertical.svg";
 import pdfIcon from "../../assets/svg/pdf-document.svg";
 import EmojiPicker from "emoji-picker-react";
 import { GroupContext } from "../Groups/Groups";
@@ -343,15 +344,30 @@ function MoreOptions({ convoId, userId, convoObject }) {
         }}
         className="my-auto"
       >
-        <MoreVertIcon />
+        {/* <MoreVertIcon /> */}
+        <img src={moreIcon} alt="More vertical icon" />
+        {/* <MoreVertIcon /> */}
       </IconButton>
-      <Menu open={open} anchorEl={anchor}>
+      <Menu
+        sx={{
+          width: "250px",
+        }}
+        open={open}
+        anchorEl={anchor}
+      >
         {options.map((option, optionIndex) => {
           return (
-            <MenuItem key={option.title} onClick={option.clickFunction}>
-              <div className="text-[#323232] font-[400] text-[14px]">
-                {option.title}
-              </div>
+            <MenuItem
+              key={option.title}
+              onClick={option.clickFunction}
+              sx={{
+                padding: "10px 20px",
+                color: "#323232",
+                borderBottom: "1px solid #eeeeee",
+                fontSize: "14px",
+              }}
+            >
+              {option.title}
             </MenuItem>
           );
         })}
@@ -392,7 +408,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
 function DialogBoxMediaDisplay({ onClose, shouldOpen, mediaData }) {
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
-      The data for dialog is in mediaData prop
+      <img src={mediaData} alt="img" className="max-w-[500px]" />
     </Dialog>
   );
 }

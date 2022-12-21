@@ -17,7 +17,7 @@ export const myClient = new LikeMinds({
 
 myClient
   .getDMFeed({
-    community_id: 50414,
+    community_id: 50421,
   })
   .then((r) => console.log(r))
   .catch((e) => console.log(e));

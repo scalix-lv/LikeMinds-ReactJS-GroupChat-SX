@@ -61,7 +61,7 @@ function CurrentGroups() {
     const fn = async () => {
       try {
         const feedCall = await myClient.getHomeFeedData({
-          communityId: 50414,
+          communityId: 50421,
           page: 1,
         });
 
@@ -221,7 +221,7 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
   const groupcontext = useContext(GroupContext);
   return (
     <Box
-      className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px]"
+      className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
       sx={{
         backgroundColor:
           groupTitle === groupcontext.activeGroup.chatroom?.header
