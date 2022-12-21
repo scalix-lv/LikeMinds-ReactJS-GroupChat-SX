@@ -33,7 +33,7 @@ function MoreOptions() {
       }}
       open={open}
       anchorOrigin={{
-        vertical: "top",
+        vertical: "bottom",
         horizontal: "left",
       }}
     >
