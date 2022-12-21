@@ -74,7 +74,7 @@ const router = createBrowserRouter([
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   useEffect(() => {
-    initiateSDK(false, "707a866a-2d28-4b8d-b34b-382ac76c8b85", "Ankit Garg")
+    initiateSDK(false, "707a866a-2d28-4b8d-b34b-382ac76c8b85", "gaurav")
       .then((res) => {
         setCurrentUser(res.data.user);
       })

@@ -20,7 +20,7 @@ function SearchbarGroups() {
           ),
           endAdornment:
             searchString.length > 1 ? (
-              <InputAdornment className="mr-8">
+              <InputAdornment className="mr-8" position="end">
                 <CloseIcon />
               </InputAdornment>
             ) : null,

@@ -15,6 +15,7 @@ function Groups() {
   const [activeGroup, setActiveGroup] = useState({});
   const [refreshState, setRefreshState] = useState(true);
   function refreshGroups() {
+    console.log("hello refreshing the state");
     setRefreshState(!refreshState);
   }
   return (

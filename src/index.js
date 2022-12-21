@@ -14,15 +14,6 @@ export const myClient = new LikeMinds({
   xPlatformCode: "web",
   xVersionCode: 16,
 });
-export const userObj = {
-  id: 3555,
-  name: "Anki Garg",
-  updated_at: 1660911399,
-  is_guest: false,
-  user_unique_id: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
-  organisation_name: null,
-  image_url: "",
-};
 
 myClient
   .getDMFeed({

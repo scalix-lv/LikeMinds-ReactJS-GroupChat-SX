@@ -289,6 +289,7 @@ function InputSearchField() {
           id: member.id,
           display: member.name,
           community: groupContext.activeGroup.community.id,
+          imageUrl: member.image_url,
         });
       }
     }
@@ -349,7 +350,7 @@ function InputSearchField() {
   ];
   let keyObj = {
     enter: false,
-    shift: true,
+    shift: false,
   };
   return (
     <Box
@@ -452,10 +453,15 @@ function InputSearchField() {
             if (e.key === "Shift") {
               keyObj.shift = true;
             }
-            if (keyObj.enter && keyObj.shift) {
+            if (keyObj.enter === true && keyObj.shift === true) {
+              console.log("here");
               let newStr = inputContext.text;
               newStr += " \n ";
               inputContext.setText(newStr);
+            } else if (keyObj.enter == true && keyObj.shift == false) {
+              console.log("hello");
+              e.preventDefault();
+              handleSendMessage();
             }
           }}
           onKeyUp={(e) => {
@@ -477,6 +483,66 @@ function InputSearchField() {
             }}
             // onAdd={(id) => setActorIds((actorIds) => [...actorIds, id])}
             appendSpaceOnAdd={true}
+            renderSuggestion={(
+              suggestion,
+              search,
+              highlightedDisplay,
+              index,
+              focused
+            ) => {
+              console.log([
+                suggestion,
+                search,
+                highlightedDisplay,
+                index,
+                focused,
+              ]);
+              return (
+                <div className={`user ${focused ? "focused" : ""}`}>
+                  {suggestion.imageUrl.length > 0 ? (
+                    <img
+                      src={suggestion.image_url.length}
+                      alt="profile_image"
+                      style={{
+                        borderRadius: "50%",
+                        height: "20px",
+                        width: "20px",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        height: "20px",
+                        width: "20px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "16px",
+                        }}
+                      >
+                        {suggestion.display.split(" ")[0]}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "16px",
+                        }}
+                      >
+                        {suggestion.display.split(" ")[1]}
+                      </span>
+                    </div>
+                  )}
+                  <span
+                    style={{
+                      color: "green",
+                    }}
+                  >
+                    {suggestion.display}
+                  </span>
+                </div>
+              );
+            }}
           />
         </MentionsInput>
       </div>
