@@ -254,6 +254,7 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
 function UnjoinedGroup({ groupTitle, group }) {
   const groupcontext = useContext(GroupContext);
   const userContext = useContext(UserContext);
+  console.log(group);
   async function joinGroup() {
     try {
       let call = await joinChatRoom(
@@ -262,6 +263,9 @@ function UnjoinedGroup({ groupTitle, group }) {
         groupcontext.refreshContextUi
       );
       console.log(call);
+      if (call.data.success) {
+        groupcontext.setActiveGroup(group);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -288,10 +292,15 @@ function UnjoinedGroup({ groupTitle, group }) {
       >
         {groupTitle}
       </Typography>
-
-      <Button variant="outlined" className="rounded-[5px]" onClick={joinGroup}>
-        Join
-      </Button>
+      {group.state == 0 ? (
+        <Button
+          variant="outlined"
+          className="rounded-[5px]"
+          onClick={joinGroup}
+        >
+          Join
+        </Button>
+      ) : null}
     </Box>
   );
 }
