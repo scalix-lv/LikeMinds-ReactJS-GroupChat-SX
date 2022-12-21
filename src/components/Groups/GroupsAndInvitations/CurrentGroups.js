@@ -221,7 +221,7 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
   const groupcontext = useContext(GroupContext);
   return (
     <Box
-      className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b"
+      className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px]"
       sx={{
         backgroundColor:
           groupTitle === groupcontext.activeGroup.chatroom?.header
@@ -237,12 +237,18 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
               : "#000000",
         }}
         component={"span"}
-        className="text-base font-normal"
+        className="text-4 text-[#323232] leading-[17px]"
       >
         {groupTitle}
+        {group.chatroom?.is_secret === true ? (
+          <span className="bg-[#FFEFC6] rounded-[4px] px-[6px] py-[5px] text-[#F6BD2A] line-height-[12px] text-[10px] font-medium m-1">
+            Private
+          </span>
+        ) : null}
       </Typography>
+
       {group.unseen_conversation_count > 0 &&
-      group.chatroom.header != groupcontext.activeGroup.chatroom?.header ? (
+      group.chatroom.header !== groupcontext.activeGroup.chatroom?.header ? (
         <span className="text-[#3884f7] text-xs">
           {group.unseen_conversation_count} new messages
         </span>
@@ -272,7 +278,7 @@ function UnjoinedGroup({ groupTitle, group }) {
   }
   return (
     <Box
-      className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b"
+      className="flex justify-between leading-5 py-4 px-5 border-[#EEEEEE] border-t-[1px]"
       sx={{
         backgroundColor:
           groupTitle === groupcontext.activeGroup.chatroom?.header
@@ -282,6 +288,7 @@ function UnjoinedGroup({ groupTitle, group }) {
     >
       <Typography
         sx={{
+          marginTop: "6px",
           color:
             groupTitle === groupcontext.activeGroup.chatroom?.header
               ? "#3884f7"
@@ -339,12 +346,10 @@ function GroupInviteTile({ title, groupType, getChatRoomData }) {
       <Box>
         <IconButton disableRipple={true}>
           <img src={cancelIcon} alt="cancel" />
-          {/* <CloseIcon className="bg-[#F9F9F9] text-[#ADADAD] p-2 rounder-full" /> */}
         </IconButton>
 
         <IconButton disableRipple={true}>
           <img src={acceptIcon} alt="accept" />
-          {/* <DoneIcon className="bg-[#E0FFDF] text-[#83D381] p-2 rounded-full" /> */}
         </IconButton>
       </Box>
     </div>

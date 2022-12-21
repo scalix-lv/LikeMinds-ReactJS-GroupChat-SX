@@ -191,10 +191,7 @@ function GroupChatArea() {
                 }}
               />
               <div ref={ref}></div>
-              <div
-                className="fixed bottom-0 "
-                style={{ width: "calc(100% - 504px)" }}
-              >
+              <div className="fixed bottom-0 w-[62%]">
                 <Input />
               </div>
             </>

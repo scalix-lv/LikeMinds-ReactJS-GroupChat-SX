@@ -87,7 +87,7 @@ function App() {
     console.log(currentUser);
   }, [currentUser]);
   return (
-    <div className="App h-full">
+    <div className="App h-[100vh] flex flex-1">
       <UserContext.Provider
         value={{
           currentUser: currentUser,

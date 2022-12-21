@@ -70,7 +70,7 @@ function Input() {
   const [textVal, setTextVal] = useState("");
 
   return (
-    <Box className="py-3 px-6 bg-white ">
+    <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
       <InputContext.Provider
         value={{
           audioFiles,
@@ -431,7 +431,7 @@ function InputSearchField() {
             position: "absolute",
             top: "9.5%",
             bottom: "9.5%",
-            right: "2%",
+            right: "1%",
             zIndex: 1,
           }}
         >
@@ -442,7 +442,7 @@ function InputSearchField() {
           className="mentions"
           inputRef={ref}
           spellCheck="false"
-          placeholder="Write a Comment"
+          placeholder="Write a Comment..."
           value={inputContext.text}
           onChange={(event) => inputContext.setText(event.target.value)}
           onKeyDown={(e) => {
