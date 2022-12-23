@@ -5,6 +5,8 @@ import { leaveChatRoom } from "../sdkFunctions";
 import { GroupContext } from "../Main";
 import { UserContext } from "..";
 import leaveIcon from "../assets/svg/leave.svg";
+import { useNavigate } from "react-router-dom";
+
 function MoreOptions() {
   const [open, setOpen] = useState(false);
   const groupContext = useContext(GroupContext);
@@ -12,17 +14,18 @@ function MoreOptions() {
   const [anchor, setAnchor] = useState(null);
 
   function closeMenu() {
-    console.log(1);
     setOpen(false);
     setAnchor(null);
   }
 
+  let navigate = useNavigate();
   function leaveGroup() {
     leaveChatRoom(
       groupContext.activeGroup.chatroom.id,
       userContext.currentUser.id,
       groupContext.refreshContextUi
     );
+    navigate("/groups/");
   }
 
   const MenuBox = (
