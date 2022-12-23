@@ -500,42 +500,17 @@ function InputSearchField() {
               return (
                 <div className={`user ${focused ? "focused" : ""}`}>
                   {suggestion.imageUrl.length > 0 ? (
-                    <img
-                      src={suggestion.imageUrl?.length}
-                      alt="profile_image"
-                      style={{
-                        borderRadius: "50%",
-                        height: "20px",
-                        width: "20px",
-                      }}
-                    />
+                    <div className="imgBlock">
+                      <img src={suggestion.imageUrl} alt="profile_image" />
+                    </div>
                   ) : (
-                    <div
-                      style={{
-                        height: "20px",
-                        width: "20px",
-                        borderRadius: "50%",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: "16px",
-                        }}
-                      >
-                        {suggestion.display.split(" ")[0]}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "16px",
-                        }}
-                      >
-                        {suggestion.display.split(" ")[1]}
-                      </span>
+                    <div className="imgBlock">
+                      <span>{suggestion.display[0]}</span>
                     </div>
                   )}
                   <span
                     style={{
-                      color: "green",
+                      color: "#323232",
                     }}
                   >
                     {suggestion.display}
