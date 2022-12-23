@@ -11,6 +11,7 @@ import {
   getTaggingList,
   getUnjoinedRooms,
   joinChatRoom,
+  markRead,
 } from "../../../sdkFunctions";
 import { myClient, UserContext } from "../../..";
 import { Link, NavLink } from "react-router-dom";
@@ -23,6 +24,21 @@ function CurrentGroups() {
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const groupContext = useContext(GroupContext);
+  useEffect(() => {
+    console.log(sessionStorage);
+    if (Object.keys(groupContext.activeGroup).length == 0) {
+      if (sessionStorage.getItem("groupContext")) {
+        groupContext.setActiveGroup(
+          JSON.parse(sessionStorage.getItem("groupContext"))
+        );
+      }
+    } else {
+      sessionStorage.setItem(
+        "groupContext",
+        JSON.stringify(groupContext.activeGroup)
+      );
+    }
+  }, [groupContext.activeGroup]);
   // content to be deleted
   const groupsInfo = [
     {
@@ -219,10 +235,14 @@ function PublicGroup({ groupTitle, groupList }) {
 
 function PublicGroupTile({ groupTitle, group = { group } }) {
   const groupcontext = useContext(GroupContext);
+  console.log(group);
   return (
-    <Box
+    <div
+      onClick={() => {
+        markRead(group.chatroom.id);
+      }}
       className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
-      sx={{
+      style={{
         backgroundColor:
           groupTitle === groupcontext.activeGroup.chatroom?.header
             ? "#ECF3FF"
@@ -253,44 +273,66 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
           {group.unseen_conversation_count} new messages
         </span>
       ) : null}
-    </Box>
+    </div>
   );
 }
 
 function UnjoinedGroup({ groupTitle, group }) {
-  const groupcontext = useContext(GroupContext);
+  const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-  console.log(group);
+  console.log(group.id);
+  async function getChatRoomData(chatroomId) {
+    try {
+      const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
+      if (!chatRoomData.error) {
+        const tagCall = await getTaggingList(
+          chatRoomData.data.community.id,
+          chatRoomData.data.chatroom.id
+        );
+        console.log(tagCall);
+        chatRoomData.data.membersDetail = tagCall.data.members;
+        groupContext.setActiveGroup(chatRoomData.data);
+      } else {
+        console.log(chatRoomData.errorMessage);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async function joinGroup() {
     try {
       let call = await joinChatRoom(
         group.id,
         userContext.currentUser.id,
-        groupcontext.refreshContextUi
+        groupContext.refreshContextUi
       );
       console.log(call);
       if (call.data.success) {
-        groupcontext.setActiveGroup(group);
+        groupContext.setActiveGroup(group);
       }
     } catch (error) {
       console.log(error);
     }
   }
   return (
-    <Box
+    <div
+      onClick={() => {
+        getChatRoomData(group.id);
+      }}
       className="flex justify-between leading-5 py-4 px-5 border-[#EEEEEE] border-t-[1px]"
-      sx={{
+      style={{
         backgroundColor:
-          groupTitle === groupcontext.activeGroup.chatroom?.header
-            ? "#ECF3FF"
+          groupTitle === groupContext.activeGroup.chatroom?.header
+            ? "#FFFFFF"
             : "#FFFFFF",
+        cursor: "pointer",
       }}
     >
       <Typography
         sx={{
           marginTop: "6px",
           color:
-            groupTitle === groupcontext.activeGroup.chatroom?.header
+            groupTitle === groupContext.activeGroup.chatroom?.header
               ? "#3884f7"
               : "#000000",
         }}
@@ -308,7 +350,7 @@ function UnjoinedGroup({ groupTitle, group }) {
           Join
         </Button>
       ) : null}
-    </Box>
+    </div>
   );
 }
 

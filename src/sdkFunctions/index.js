@@ -303,3 +303,14 @@ export async function joinChatRoom(collabId, userId, refreshContext) {
     return jsonReturnHandler(null, error);
   }
 }
+
+export async function markRead(chatroomId) {
+  try {
+    const markCall = await myClient.markReadFn({
+      chatroom_id: chatroomId,
+    });
+    return jsonReturnHandler(markCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
