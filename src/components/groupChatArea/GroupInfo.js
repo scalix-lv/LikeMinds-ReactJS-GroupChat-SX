@@ -1,7 +1,7 @@
 import { Box, IconButton } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GroupContext } from "../../Main";
 import Tittle from "./tittle/Tittle";
 import backIcon from "../../assets/svg/arrow-left.svg";
@@ -9,6 +9,7 @@ import rightArrow from "../../assets/svg/right-arrow.svg";
 import { getAllChatroomMember } from "../../sdkFunctions";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { myClient } from "../..";
+import { groupPersonalInfoPath } from "../../routes";
 const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
 });
@@ -17,6 +18,7 @@ function GroupInfo() {
   const gc = useContext(GroupContext);
   const [participantList, setParticipantList] = useState([]);
   const [loadMode, setLoadMore] = useState(true);
+
   let callFn = () => {
     getAllChatroomMember(
       gc.activeGroup?.chatroom?.id,
@@ -37,7 +39,7 @@ function GroupInfo() {
         setLoadMore(res);
       });
   };
-  myClient.fb(gc.activeGroup.chatroom.id);
+  // myClient.fb(gc.activeGroup.chatroom.id);
   useEffect(() => {
     if (Object.keys(gc.activeGroup).length > 0) {
       callFn();
@@ -99,8 +101,21 @@ function GroupInfo() {
 }
 
 function ParticipantTile({ index, profile }) {
+  console.log(profile);
+  const navigate = useNavigate();
+  const groupContext = useContext(GroupContext);
   return (
-    <div className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center">
+    <div
+      className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center"
+      onClick={() => {
+        navigate(groupPersonalInfoPath, {
+          state: {
+            memberId: profile.id,
+            communityId: groupContext.activeGroup.community?.id,
+          },
+        });
+      }}
+    >
       <div className="flex items-center">
         <div className="w-[36px] h-[36px] border-[1px] border-[#eeeeee] mr-2.5 rounded-[5px] flex justify-center items-center">
           {profile?.name[0]}

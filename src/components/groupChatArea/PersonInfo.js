@@ -20,6 +20,7 @@ function PersonInfo() {
   const gc = useContext(GroupContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
+  console.log(location);
   const [profileDate, setProfileData] = useState({});
 
   useEffect(() => {
