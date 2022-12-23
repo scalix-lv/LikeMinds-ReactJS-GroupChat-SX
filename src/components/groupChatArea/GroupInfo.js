@@ -1,19 +1,51 @@
 import { Box, IconButton } from "@mui/material";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
-import { GroupContext } from "../Groups/Groups";
+import { GroupContext } from "../../Main";
 import Tittle from "./tittle/Tittle";
 import backIcon from "../../assets/svg/arrow-left.svg";
 import rightArrow from "../../assets/svg/right-arrow.svg";
-
+import { getAllChatroomMember } from "../../sdkFunctions";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { myClient } from "../..";
 const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
 });
 
 function GroupInfo() {
   const gc = useContext(GroupContext);
-  const participants = gc.activeGroup.membersDetail;
+  const [participantList, setParticipantList] = useState([]);
+  const [loadMode, setLoadMore] = useState(true);
+  let callFn = () => {
+    getAllChatroomMember(
+      gc.activeGroup?.chatroom?.id,
+      gc.activeGroup?.community?.id,
+      participantList,
+      setParticipantList
+    )
+      .then((res) => {
+        console.log(res);
+        if (res) {
+          setLoadMore(true);
+        } else {
+          setLoadMore(false);
+        }
+      })
+      .catch((res) => {
+        console.log("here");
+        setLoadMore(res);
+      });
+  };
+  myClient.fb(gc.activeGroup.chatroom.id);
+  useEffect(() => {
+    if (Object.keys(gc.activeGroup).length > 0) {
+      callFn();
+    }
+  }, [gc.activeGroup]);
+  useEffect(() => {
+    console.log(participantList);
+  });
   return (
     <div className="overflow-auto w-full h-full">
       {/* Title Header */}
@@ -43,15 +75,21 @@ function GroupInfo() {
         <div className="ml-1 pl-[5px]">
           <div className="text-4 font-[700] text-[#323232]">Participants</div>
           <div className="py-[18px]">
-            {participants.map((profile, profileIndex) => {
-              return (
-                <ParticipantTile
-                  key={profile + profileIndex}
-                  profile={profile}
-                  index={profileIndex}
-                />
-              );
-            })}
+            <InfiniteScroll
+              next={callFn}
+              hasMore={loadMode}
+              dataLength={participantList.length}
+            >
+              {participantList?.map((profile, profileIndex) => {
+                return (
+                  <ParticipantTile
+                    key={profile.id + profileIndex}
+                    profile={profile}
+                    index={profileIndex}
+                  />
+                );
+              })}
+            </InfiniteScroll>
           </div>
         </div>
         {/* Member list */}

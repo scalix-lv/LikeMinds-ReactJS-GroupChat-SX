@@ -2,7 +2,7 @@ import React, { useContext, useRef, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { leaveChatRoom } from "../sdkFunctions";
-import { GroupContext } from "../components/Groups/Groups";
+import { GroupContext } from "../Main";
 import { UserContext } from "..";
 import leaveIcon from "../assets/svg/leave.svg";
 function MoreOptions() {

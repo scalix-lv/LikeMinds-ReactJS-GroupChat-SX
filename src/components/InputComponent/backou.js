@@ -19,7 +19,7 @@ import camera from "./../../assets/camera.png";
 import giffy from "./../../assets/giffy.png";
 import mic from "./../../assets/mic.png";
 import paperclip from "./../../assets/paperclip.png";
-import { GroupContext } from "../Groups/Groups";
+import { GroupContext } from "../../Main";
 import { myClient } from "../..";
 import {
   ConversationContext,
