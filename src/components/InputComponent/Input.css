@@ -75,3 +75,7 @@
   margin-top: 0px !important;
   z-index: 100 !important;
 }
+
+.mentions__highlighter > strong{
+  background-color: transparent !important;
+}

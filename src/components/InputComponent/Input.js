@@ -19,7 +19,7 @@ import camera from "./../../assets/svg/camera.svg";
 import giffy from "./../../assets/svg/giffy.svg";
 import mic from "./../../assets/svg/mic.svg";
 import paperclip from "./../../assets/svg/paperclip.svg";
-import { GroupContext } from "../Groups/Groups";
+import { GroupContext } from "../../Main";
 import { myClient } from "../..";
 import {
   ConversationContext,
@@ -501,7 +501,7 @@ function InputSearchField() {
                 <div className={`user ${focused ? "focused" : ""}`}>
                   {suggestion.imageUrl.length > 0 ? (
                     <img
-                      src={suggestion.image_url.length}
+                      src={suggestion.imageUrl?.length}
                       alt="profile_image"
                       style={{
                         borderRadius: "50%",
@@ -546,32 +546,6 @@ function InputSearchField() {
           />
         </MentionsInput>
       </div>
-      {/* <StyledInputWriteComment
-        ref={ref}
-        variant="filled"
-        placeholder="Write a comment"
-        fullWidth
-        InputProps={{
-          endAdornment: (
-            <IconButton onClick={handleSendMessage}>
-              <SendIcon className="text-[#3884F7]" />
-            </IconButton>
-          ),
-        }}
-        value={inputContext.text}
-        onChange={(event) => {
-          let newVal = event.target.value;
-          let newValTexte = inputContext.textVal;
-          newValTexte += newVal.substring(newVal.length - 1);
-          inputContext.setText(newVal);
-          inputContext.setTextVal(newValTexte);
-        }}
-        onKeyUp={(e) => {
-          if (e.key === "Enter") {
-            handleSendMessage();
-          }
-        }}
-      /> */}
     </Box>
   );
 }
