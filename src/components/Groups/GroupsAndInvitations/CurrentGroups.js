@@ -16,29 +16,16 @@ import {
 import { myClient, UserContext } from "../../..";
 import { Link, NavLink } from "react-router-dom";
 import { groupMainPath } from "../../../routes";
-import { GroupContext } from "../Groups";
+// import { GroupContext } from "../Groups";
 import cancelIcon from "../../../assets/svg/cancel.svg";
 import acceptIcon from "../../../assets/svg/accept.svg";
+import { GroupContext } from "../../../Main";
 
 function CurrentGroups() {
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const groupContext = useContext(GroupContext);
-  useEffect(() => {
-    console.log(sessionStorage);
-    if (Object.keys(groupContext.activeGroup).length == 0) {
-      if (sessionStorage.getItem("groupContext")) {
-        groupContext.setActiveGroup(
-          JSON.parse(sessionStorage.getItem("groupContext"))
-        );
-      }
-    } else {
-      sessionStorage.setItem(
-        "groupContext",
-        JSON.stringify(groupContext.activeGroup)
-      );
-    }
-  }, [groupContext.activeGroup]);
+
   // content to be deleted
   const groupsInfo = [
     {
@@ -280,7 +267,7 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
 function UnjoinedGroup({ groupTitle, group }) {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-  console.log(group.id);
+  // console.log(group.id);
   async function getChatRoomData(chatroomId) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);

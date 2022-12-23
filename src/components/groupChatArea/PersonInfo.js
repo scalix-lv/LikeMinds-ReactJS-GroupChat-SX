@@ -13,7 +13,7 @@ import { myClient } from "../..";
 import backIcon from "../../assets/svg/arrow-left.svg";
 
 import userIcon from "./../../assets/user.png";
-import { GroupContext } from "../Groups/Groups";
+import { GroupContext } from "../../Main";
 import Tittle from "./tittle/Tittle";
 
 function PersonInfo() {

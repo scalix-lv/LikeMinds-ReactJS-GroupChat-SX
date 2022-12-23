@@ -2,12 +2,14 @@ import { Box } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { myClient } from "../..";
-import { getConversationsForGroup } from "../../sdkFunctions";
+import { config, getConversationsForGroup } from "../../sdkFunctions";
 import RegularBox from "../channelGroups/RegularBox";
-import { GroupContext } from "../Groups/Groups";
+import { GroupContext } from "../../Main";
 import Input from "../InputComponent/Input";
 import Tittle from "./tittle/Tittle";
-
+import { getDatabase } from "firebase/database";
+import { onValue, ref as REF } from "firebase/database";
+import { initializeApp } from "firebase/app";
 // Exported Styled Box
 export const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
@@ -27,7 +29,8 @@ function GroupChatArea() {
   const [conversationsArray, setConversationArray] = useState([]);
 
   let groupContext = useContext(GroupContext);
-
+  const app = initializeApp(config);
+  const db = getDatabase(app);
   const ref = useRef(null);
   const scroll = () => {
     ref.current?.scrollIntoView({ behaviour: "smooth" });
@@ -53,43 +56,42 @@ function GroupChatArea() {
     // scroll();
     updateHeight();
   });
+  const fn = async (chatroomId, pageNo) => {
+    let optionObject = {
+      chatroomID: chatroomId,
+      page: pageNo,
+    };
+    let response = await getConversationsForGroup(optionObject);
 
-  useEffect(() => {
-    const fn = async (chatroomId, pageNo) => {
-      let optionObject = {
-        chatroomID: chatroomId,
-        page: pageNo,
-      };
-      let response = await getConversationsForGroup(optionObject);
+    if (!response.error) {
+      let conversations = response.data;
 
-      if (!response.error) {
-        let conversations = response.data;
-
-        let conversationToBeSetArray = [];
-        let newConversationArray = [];
-        let lastDate = "";
-        for (let convo of conversations) {
-          if (convo.date === lastDate) {
+      let conversationToBeSetArray = [];
+      let newConversationArray = [];
+      let lastDate = "";
+      for (let convo of conversations) {
+        if (convo.date === lastDate) {
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
+        } else {
+          if (conversationToBeSetArray.length != 0) {
+            newConversationArray.push(conversationToBeSetArray);
+            conversationToBeSetArray = [];
             conversationToBeSetArray.push(convo);
             lastDate = convo.date;
           } else {
-            if (conversationToBeSetArray.length != 0) {
-              newConversationArray.push(conversationToBeSetArray);
-              conversationToBeSetArray = [];
-              conversationToBeSetArray.push(convo);
-              lastDate = convo.date;
-            } else {
-              conversationToBeSetArray.push(convo);
-              lastDate = convo.date;
-            }
+            conversationToBeSetArray.push(convo);
+            lastDate = convo.date;
           }
         }
-        newConversationArray.push(conversationToBeSetArray);
-        setConversationArray(newConversationArray);
-      } else {
-        console.log(response.errorMessage);
       }
-    };
+      newConversationArray.push(conversationToBeSetArray);
+      setConversationArray(newConversationArray);
+    } else {
+      console.log(response.errorMessage);
+    }
+  };
+  useEffect(() => {
     if (groupContext.activeGroup.chatroom?.id)
       fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
@@ -149,7 +151,19 @@ function GroupChatArea() {
       };
     }
   });
-
+  useEffect(() => {
+    const query = REF(db, "collabcards");
+    return onValue(query, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      if (
+        snapshot.exists() &&
+        groupContext.activeGroup.chatroom !== undefined
+      ) {
+        fn(groupContext.activeGroup.chatroom?.id, 500);
+      }
+    });
+  }, []);
   return (
     <ConversationContext.Provider
       value={{
