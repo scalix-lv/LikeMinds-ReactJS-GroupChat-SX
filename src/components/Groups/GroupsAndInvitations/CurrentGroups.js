@@ -83,7 +83,6 @@ function CurrentGroups() {
     const getUnjoinedList = async (comm_id) => {
       try {
         const feedCall = await getUnjoinedRooms(comm_id);
-        console.log(feedCall);
         setUnjoined(feedCall.data.chatrooms);
       } catch (error) {
         console.log(error);
@@ -187,7 +186,7 @@ function PublicGroup({ groupTitle, groupList }) {
           chatRoomData.data.community.id,
           chatRoomData.data.chatroom.id
         );
-        console.log(tagCall);
+
         chatRoomData.data.membersDetail = tagCall.data.members;
         groupContext.setActiveGroup(chatRoomData.data);
       } else {
@@ -229,7 +228,7 @@ function PublicGroup({ groupTitle, groupList }) {
 
 function PublicGroupTile({ groupTitle, group = { group } }) {
   const groupcontext = useContext(GroupContext);
-  console.log(group);
+
   return (
     <div
       onClick={() => {
@@ -274,7 +273,7 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
 function UnjoinedGroup({ groupTitle, group }) {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-  // console.log(group.id);
+
   async function getChatRoomData(chatroomId) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
@@ -283,7 +282,7 @@ function UnjoinedGroup({ groupTitle, group }) {
           chatRoomData.data.community.id,
           chatRoomData.data.chatroom.id
         );
-        console.log(tagCall);
+
         chatRoomData.data.membersDetail = tagCall.data.members;
         groupContext.setActiveGroup(chatRoomData.data);
       } else {
@@ -300,7 +299,7 @@ function UnjoinedGroup({ groupTitle, group }) {
         userContext.currentUser.id,
         groupContext.refreshContextUi
       );
-      console.log(call);
+
       if (call.data.success) {
         groupContext.setActiveGroup(group);
       }

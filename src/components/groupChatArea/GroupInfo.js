@@ -106,7 +106,7 @@ function ParticipantTile({ index, profile }) {
   const groupContext = useContext(GroupContext);
   return (
     <div
-      className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center"
+      className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center cursor-pointer"
       onClick={() => {
         navigate(groupPersonalInfoPath, {
           state: {
@@ -117,10 +117,10 @@ function ParticipantTile({ index, profile }) {
       }}
     >
       <div className="flex items-center">
-        <div className="w-[36px] h-[36px] border-[1px] border-[#eeeeee] mr-2.5 rounded-[5px] flex justify-center items-center">
+        <div className="w-[36px] h-[36px] uppercase border-[1px] border-[#eeeeee] bg-[#eeeeee] mr-2.5 rounded-[5px] flex justify-center items-center">
           {profile?.name[0]}
         </div>
-        <div className="font-bold text-sm">{profile.name}</div>
+        <div className="font-bold text-sm capitalize">{profile.name}</div>
       </div>
 
       <IconButton className="w-[32px] h-[32px]">
