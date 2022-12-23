@@ -24,7 +24,21 @@ function CurrentGroups() {
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const groupContext = useContext(GroupContext);
-
+  useEffect(() => {
+    console.log(sessionStorage);
+    if (Object.keys(groupContext.activeGroup).length == 0) {
+      if (sessionStorage.getItem("groupContext")) {
+        groupContext.setActiveGroup(
+          JSON.parse(sessionStorage.getItem("groupContext"))
+        );
+      }
+    } else {
+      sessionStorage.setItem(
+        "groupContext",
+        JSON.stringify(groupContext.activeGroup)
+      );
+    }
+  }, [groupContext.activeGroup]);
   // content to be deleted
   const groupsInfo = [
     {
