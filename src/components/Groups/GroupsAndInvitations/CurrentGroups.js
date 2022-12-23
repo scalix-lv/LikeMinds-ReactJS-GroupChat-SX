@@ -25,7 +25,7 @@ function CurrentGroups() {
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const groupContext = useContext(GroupContext);
-
+  const [shouldOpenPublicCard, setShouldPublicCard] = useState(false);
   // content to be deleted
   const groupsInfo = [
     {
@@ -108,23 +108,30 @@ function CurrentGroups() {
           </NavLink>
         );
       })}
-
-      {unJoined.map((group, groupIndex) => {
-        return (
-          // <Link
-          //   to={groupMainPath}
-          //   onClick={() => {
-          //     getChatRoomData(group.chatroom.id);
-          //   }}
-          // >
-          <UnjoinedGroup
-            groupTitle={group.title}
-            group={group}
-            key={group.title + groupIndex}
-          />
-          // </Link>
-        );
-      })}
+      <div className="border-b border-solid border-[#EEEEEE] flex justify-between py-4 px-5">
+        <span>All Public Groups</span>
+        <IconButton onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}>
+          {shouldOpenPublicCard ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
+        </IconButton>
+      </div>
+      <Collapse in={shouldOpenPublicCard}>
+        {unJoined.map((group, groupIndex) => {
+          return (
+            // <Link
+            //   to={groupMainPath}
+            //   onClick={() => {
+            //     getChatRoomData(group.chatroom.id);
+            //   }}
+            // >
+            <UnjoinedGroup
+              groupTitle={group.title}
+              group={group}
+              key={group.title + groupIndex}
+            />
+            // </Link>
+          );
+        })}
+      </Collapse>
     </Box>
   );
 }
