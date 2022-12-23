@@ -31,7 +31,7 @@ function Groups() {
   });
   return (
     <div>
-      <Button
+      {/* <Button
         fullWidth
         onClick={() => {
           console.log(groupContext);
@@ -39,7 +39,7 @@ function Groups() {
         }}
       >
         LOAD
-      </Button>
+      </Button> */}
       <div className="flex overflow-hidden customHeight flex-1">
         <div className="flex-[.32] customScroll bg-white border-r-[1px] border-[#eeeeee] pt-[20px]">
           {/* Search Bar */}

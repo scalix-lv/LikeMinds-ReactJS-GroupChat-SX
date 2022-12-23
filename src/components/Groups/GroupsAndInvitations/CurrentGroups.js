@@ -335,7 +335,7 @@ function UnjoinedGroup({ groupTitle, group }) {
       >
         {groupTitle}
       </Typography>
-      {group.state == 0 ? (
+      {!group.follow_status ? (
         <Button
           variant="outlined"
           className="rounded-[5px]"
