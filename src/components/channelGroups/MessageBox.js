@@ -135,8 +135,7 @@ function StringBox({
                       className="m-1 w-full max-h-[230px]"
                       key={item.url}
                       onClick={() => {
-                        console.log("clicked");
-                        setMediaData(item.url);
+                        setMediaData({ url: item.url, type: item.type });
                         setDisplayMediaModel(true);
                       }}
                     />
@@ -158,8 +157,7 @@ function StringBox({
                       className="m-1 max-w-[135px] max-h-[135px] float-left"
                       key={item.url}
                       onClick={() => {
-                        console.log("clicked");
-                        setMediaData(item.url);
+                        setMediaData({ url: item.url, type: item.type });
                         setDisplayMediaModel(true);
                       }}
                     />
@@ -218,9 +216,14 @@ function StringBox({
                 .map((item, itemIndex) => {
                   return (
                     <video
-                      controls
+                      controls="controls"
+                      preload="none"
                       className="my-2 w-[200] h-max-[200px] "
                       key={item.url}
+                      onClick={() => {
+                        setMediaData({ url: item.url, type: item.type });
+                        setDisplayMediaModel(true);
+                      }}
                     >
                       <source src={item.url} type="video/mp4" />
                       <source src={item.url} type="video/ogg" />
@@ -409,7 +412,15 @@ function MoreOptions({ convoId, userId, convoObject }) {
 function DialogBoxMediaDisplay({ onClose, shouldOpen, mediaData }) {
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
-      <img src={mediaData} alt="img" className="max-w-[500px]" />
+      {mediaData?.type === "image" ? (
+        <img src={mediaData?.url} alt="img" className="max-w-[700px]" />
+      ) : (
+        <video className="w-[500] h-max-[200px]" controls key={mediaData?.url}>
+          <source src={mediaData?.url} type="video/mp4" />
+          <source src={mediaData?.url} type="video/ogg" />
+          Your browser does not support the video tag.
+        </video>
+      )}
     </Dialog>
   );
 }
