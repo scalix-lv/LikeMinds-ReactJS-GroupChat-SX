@@ -103,7 +103,7 @@ function StringBox({
         mediaData={mediaData}
       />
       <div className="flex w-full justify-between mb-1 clear-both">
-        <div className="text-[12px] leading-[14px] text-[#323232] font-[700]">
+        <div className="text-[12px] leading-[14px] text-[#323232] font-[700] capitalize">
           <Link
             to={groupPersonalInfoPath}
             state={{
@@ -111,7 +111,7 @@ function StringBox({
               memberId: userId,
             }}
           >
-            {userId === userContext.currentUser.id ? "You" : username}
+            {userId === userContext.currentUser.id ? "you" : username}
           </Link>
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
