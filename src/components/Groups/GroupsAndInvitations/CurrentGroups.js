@@ -108,7 +108,7 @@ function CurrentGroups() {
           </NavLink>
         );
       })}
-      <div className="border-b border-solid border-[#EEEEEE] flex justify-between py-4 px-5">
+      <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
         <span>All Public Groups</span>
         <IconButton onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}>
           {shouldOpenPublicCard ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
