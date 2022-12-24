@@ -1,5 +1,5 @@
 import { Box, Button, Collapse, IconButton, Typography } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -20,11 +20,11 @@ import { groupMainPath } from "../../../routes";
 import cancelIcon from "../../../assets/svg/cancel.svg";
 import acceptIcon from "../../../assets/svg/accept.svg";
 import { GroupContext } from "../../../Main";
+import { ChatRoomContext } from "../Groups";
 
 function CurrentGroups() {
-  const [chatRoomsList, setChatRoomsList] = useState([]);
-  const [unJoined, setUnjoined] = useState([]);
   const groupContext = useContext(GroupContext);
+  const userContext = useContext(UserContext);
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(false);
   // content to be deleted
   const groupsInfo = [
@@ -58,43 +58,11 @@ function CurrentGroups() {
       console.log(error);
     }
   }
-
-  useEffect(() => {
-    // loading the list of chatrooms (already joined)
-    const fn = async () => {
-      try {
-        const feedCall = await myClient.getHomeFeedData({
-          communityId: 50421,
-          page: 1,
-        });
-
-        let chatroomlist = feedCall.my_chatrooms;
-        let newChatRoomList = [...chatRoomsList];
-
-        for (let chatroom of chatroomlist) {
-          newChatRoomList.push(chatroom);
-        }
-        console.log(newChatRoomList);
-        setChatRoomsList(newChatRoomList);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    const getUnjoinedList = async (comm_id) => {
-      try {
-        const feedCall = await getUnjoinedRooms(comm_id);
-        setUnjoined(feedCall.data.chatrooms);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fn();
-    getUnjoinedList(50421);
-  }, []);
+  const chatroomContext = useContext(ChatRoomContext);
 
   return (
     <Box>
-      {<PublicGroup groupList={chatRoomsList} />}
+      {<PublicGroup groupList={chatroomContext.chatRoomsList} />}
 
       {groupsInviteInfo.map((group, groupIndex) => {
         return (
@@ -114,7 +82,7 @@ function CurrentGroups() {
         </IconButton>
       </div>
       <Collapse in={shouldOpenPublicCard}>
-        {unJoined.map((group, groupIndex) => {
+        {chatroomContext.unJoined.map((group, groupIndex) => {
           return (
             // <Link
             //   to={groupMainPath}
@@ -174,7 +142,7 @@ function PublicGroup({ groupTitle, groupList }) {
   function handleCollapse() {
     setShouldOpen(!shouldOpen);
   }
-
+  const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
 
   // for gettingChatRoom()
@@ -202,7 +170,7 @@ function PublicGroup({ groupTitle, groupList }) {
         in={shouldOpen}
         className="border-b border-solid border-[#EEEEEE]"
       >
-        {groupList.map((group, groupIndex) => {
+        {chatroomContext.chatRoomList.map((group, groupIndex) => {
           return (
             <Link
               to={groupMainPath}
@@ -273,7 +241,7 @@ function PublicGroupTile({ groupTitle, group = { group } }) {
 function UnjoinedGroup({ groupTitle, group }) {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-
+  const chatroomContext = useContext(ChatRoomContext);
   async function getChatRoomData(chatroomId) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
@@ -299,14 +267,17 @@ function UnjoinedGroup({ groupTitle, group }) {
         userContext.currentUser.id,
         groupContext.refreshContextUi
       );
+      chatroomContext.refreshChatroomContext();
 
       if (call.data.success) {
         groupContext.setActiveGroup(group);
+        groupContext.refreshContextUi();
       }
     } catch (error) {
       console.log(error);
     }
   }
+
   return (
     <div
       onClick={() => {

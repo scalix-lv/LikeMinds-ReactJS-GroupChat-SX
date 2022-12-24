@@ -6,13 +6,14 @@ import { GroupContext } from "../Main";
 import { UserContext } from "..";
 import leaveIcon from "../assets/svg/leave.svg";
 import { useNavigate } from "react-router-dom";
+import { ChatRoomContext } from "../components/Groups/Groups";
 
 function MoreOptions() {
   const [open, setOpen] = useState(false);
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const [anchor, setAnchor] = useState(null);
-
+  const chatroomContext = useContext(ChatRoomContext);
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
@@ -24,7 +25,17 @@ function MoreOptions() {
       groupContext.activeGroup.chatroom.id,
       userContext.currentUser.id,
       groupContext.refreshContextUi
-    );
+    )
+      .then((r) => {
+        // alert("s");
+        groupContext.refreshContextUi();
+        chatroomContext.refreshChatroomContext();
+      })
+      .catch((r) => {
+        // alert("e");
+        console.log(r);
+      });
+
     navigate("/groups/");
   }
 
