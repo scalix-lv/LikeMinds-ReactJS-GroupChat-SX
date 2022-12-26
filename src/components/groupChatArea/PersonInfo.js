@@ -8,7 +8,12 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { StyledBox } from "./GroupChatArea";
 import { IconButton } from "@mui/material";
 import { Typography } from "@mui/material";
-import { Link, useLocation } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
 import { myClient } from "../..";
 import backIcon from "../../assets/svg/arrow-left.svg";
 
@@ -22,7 +27,8 @@ function PersonInfo() {
   const location = useLocation();
   console.log(location);
   const [profileDate, setProfileData] = useState({});
-
+  const navigate = useNavigate();
+  // console.log(navigate);
   useEffect(() => {
     const fn = async () => {
       try {
@@ -52,11 +58,14 @@ function PersonInfo() {
 
       <div className="mr-[120px] ml-[20px] mt-[10px]">
         <div className="flex">
-          <Link to={"/groups/main"}>
-            <IconButton>
-              <img src={backIcon} alt="back icon" />
-            </IconButton>
-          </Link>
+          <IconButton
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <img src={backIcon} alt="back icon" />
+          </IconButton>
+
           <div className="text-[20px] mt-[8px] font-[400] leading-[24px]">
             Group Info /{" "}
             <span className="font-[700] text-[#3884F7]">
