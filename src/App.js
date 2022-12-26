@@ -76,15 +76,18 @@ function App() {
   useEffect(() => {
     initiateSDK(false, "707a866a-2d28-4b8d-b34b-382ac76c8b85", "gaurav")
       .then((res) => {
-        setCurrentUser(res.data);
+        setCurrentUser(res.data.user);
       })
       .catch((error) => {
         console.log(error);
         alert("error at " + __dirname + "inside useEffect");
       });
-  },[]);
+  }, []);
+  useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
   return (
-    <div className="App h-full">
+    <div className="App h-[100vh] flex flex-1">
       <UserContext.Provider
         value={{
           currentUser: currentUser,

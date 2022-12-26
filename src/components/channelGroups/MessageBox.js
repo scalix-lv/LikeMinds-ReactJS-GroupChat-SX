@@ -6,23 +6,30 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { userObj } from "../..";
+import { UserContext, userObj } from "../..";
 import {
   addReaction,
   getString,
   getUserLink,
   getUsername,
+  linkConverter,
+  tagExtracter,
 } from "../../sdkFunctions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { myClient } from "../..";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
-import emojiIcon from "../../assets/emojioption.png";
+import emojiIcon from "../../assets/svg/smile.svg";
+import moreIcon from "../../assets/svg/more-vertical.svg";
+import pdfIcon from "../../assets/svg/pdf-document.svg";
 import EmojiPicker from "emoji-picker-react";
-import { GroupContext } from "../Groups/Groups";
+// import { GroupContext } from "../Groups/Groups";
+import { GroupContext } from "../../Main";
 import { groupPersonalInfoPath } from "./../../routes";
 import { CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
+import parse from "html-react-parser";
+
 function MessageBox({
   username,
   messageString,
@@ -32,22 +39,29 @@ function MessageBox({
   convoId,
   conversationReactions,
   conversationObject,
+  replyConversationObject,
 }) {
   return (
     <div>
-      <Box className="flex">
+      <Box className="flex mb-4">
         <StringBox
           username={username}
           messageString={messageString}
           time={time}
           userId={userId}
           attachments={attachments}
+          replyConversationObject={replyConversationObject}
         />
         <MoreOptions convoId={convoId} convoObject={conversationObject} />
       </Box>
       <div>
         {conversationReactions.map((reactionObject, reactionObjectIndex) => {
-          return <ReactionIndicator reaction={reactionObject.reaction} />;
+          return (
+            <ReactionIndicator
+              reaction={reactionObject.reaction}
+              key={reactionObjectIndex}
+            />
+          );
         })}
       </div>
     </div>
@@ -58,18 +72,38 @@ function ReactionIndicator({ reaction }) {
   return <span className="text-normal mx-1">{reaction}</span>;
 }
 
-function StringBox({ username, messageString, time, userId, attachments }) {
+function StringBox({
+  username,
+  messageString,
+  time,
+  userId,
+  attachments,
+  replyConversationObject,
+}) {
   const ref = useRef(null);
   const groupContext = useContext(GroupContext);
+  const userContext = useContext(UserContext);
+  const navigate = useNavigate();
+  const [displayMediaModal, setDisplayMediaModel] = useState(false);
+  // let shouldOPenModel = Boolean(displayMediaModal);
+  const [mediaData, setMediaData] = useState(null);
+  // console.log(userId);
+  // console.log(userContext.currentUser.id);
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
       style={{
-        background: userId === userObj.id ? "#ECF3FF" : "#FFFFFF",
+        background:
+          userId === userContext.currentUser.id ? "#ECF3FF" : "#FFFFFF",
       }}
     >
+      <DialogBoxMediaDisplay
+        shouldOpen={displayMediaModal}
+        onClose={() => setDisplayMediaModel(false)}
+        mediaData={mediaData}
+      />
       <div className="flex w-full justify-between mb-1 clear-both">
-        <div className="text-[12px] leading-[14px] text-[#323232] font-[700]">
+        <div className="text-[12px] leading-[14px] text-[#323232] font-[700] capitalize">
           <Link
             to={groupPersonalInfoPath}
             state={{
@@ -77,7 +111,7 @@ function StringBox({ username, messageString, time, userId, attachments }) {
               memberId: userId,
             }}
           >
-            {userId === userObj.id ? "You" : username}
+            {userId === userContext.currentUser.id ? "you" : username}
           </Link>
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
@@ -86,85 +120,140 @@ function StringBox({ username, messageString, time, userId, attachments }) {
       </div>
 
       <div className="flex w-full flex-col">
-        {attachments != null
-          ? attachments
-              .filter((item, itemIndex) => {
-                return item.type === "image";
-              })
-              .map((item, itemIndex) => {
-                return (
-                  <img src={item.url} alt="" className="max-w-[280px] h-full" />
-                );
-              })
-          : null}
-        {attachments != null
-          ? attachments
-              .filter((item, itemIndex) => {
-                return item.type === "audio";
-              })
-              .map((item, itemIndex) => {
-                return (
-                  <audio controls src={item.url} className="w-[230]">
-                    {" "}
-                    <a href={item.url}>Download audio</a>
-                  </audio>
-                );
-              })
-          : null}
+        <div className="w-full mb-1">
+          {(() => {
+            if (attachments !== null && attachments.length < 2) {
+              return attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "image";
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <img
+                      src={item.url}
+                      alt=""
+                      className="m-1 w-full max-h-[230px]"
+                      key={item.url}
+                      onClick={() => {
+                        setMediaData({ url: item.url, type: item.type });
+                        setDisplayMediaModel(true);
+                      }}
+                    />
+                  );
+                });
+            }
+            return null;
+          })()}
+          {attachments != null && attachments.length > 1
+            ? attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "image" && itemIndex < 2;
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <img
+                      src={item.url}
+                      alt=""
+                      className="m-1 max-w-[135px] max-h-[135px] float-left"
+                      key={item.url}
+                      onClick={() => {
+                        setMediaData({ url: item.url, type: item.type });
+                        setDisplayMediaModel(true);
+                      }}
+                    />
+                  );
+                })
+            : null}
 
-        {attachments != null
-          ? attachments
-              .filter((item, itemIndex) => {
-                return item.type === "pdf";
-              })
-              .map((item, itemIndex) => {
-                return (
-                  <a href={item.url} target="_blank">
-                    {item.name}
-                  </a>
-                );
-              })
-          : null}
+          {attachments != null
+            ? attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "audio";
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <audio
+                      controls
+                      src={item.url}
+                      className="my-2 w-[230]"
+                      key={item.url}
+                    >
+                      {" "}
+                      <a href={item.url}>Download audio</a>
+                    </audio>
+                  );
+                })
+            : null}
+          {attachments !== null
+            ? attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "pdf";
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mb-2 w-[200px] flex"
+                      key={item.url}
+                    >
+                      <img src={pdfIcon} alt="pdf" className="w-[24px]" />
+                      <span className="text-[#323232] text-[14px] ml-2 mt-1">
+                        {item.name}
+                      </span>
+                      <br />
+                    </a>
+                  );
+                })
+            : null}
 
-        {attachments != null
-          ? attachments
-              .filter((item, itemIndex) => {
-                return item.type === "video";
-              })
-              .map((item, itemIndex) => {
-                return (
-                  <video controls className="w-[200] h-max-[200px]">
-                    <source src={item.url} type="video/mp4" />
-                    <source src={item.url} type="video/ogg" />
-                    Your browser does not support the video tag.
-                  </video>
-                );
-              })
-          : null}
+          {attachments != null
+            ? attachments
+                .filter((item, itemIndex) => {
+                  return item.type === "video";
+                })
+                .map((item, itemIndex) => {
+                  return (
+                    <video
+                      controls="controls"
+                      preload="none"
+                      className="my-2 w-[200] h-max-[200px] "
+                      key={item.url}
+                      onClick={() => {
+                        setMediaData({ url: item.url, type: item.type });
+                        setDisplayMediaModel(true);
+                      }}
+                    >
+                      <source src={item.url} type="video/mp4" />
+                      <source src={item.url} type="video/ogg" />
+                      Your browser does not support the video tag.
+                    </video>
+                  );
+                })
+            : null}
+        </div>
 
-        <Typography component={"p"} fontWeight={300} fontSize={14}>
-          {
-            <Link to={"/" + getUserLink(messageString)}>
-              <span className="text-green-500 text-[12px] font-semibold">
-                {getUsername(messageString)}
-              </span>
-            </Link>
-          }
+        {replyConversationObject != null ? (
+          <div className="flex flex-col border-[1px] border-l-[5px] border-[#70A9FF] py-1 px-2 rounded-[5px] mb-1">
+            <div className="text-[#70A9FF] font-bold text-[12px]">
+              {replyConversationObject?.member?.name}
+            </div>
+            <div className="text-[#323232] font-[300] text-[12px]">
+              {replyConversationObject?.answer}
+            </div>
+          </div>
+        ) : null}
 
-          {
-            <span
-              ref={ref}
-              children={() => {
-                let newDomNode = document.createElement("span");
-                let str = getString(messageString);
-                newDomNode.innerHTML = str;
-                return [newDomNode];
-              }}
-            >
-              {getString(messageString)}
-            </span>
-          }
-        </Typography>
+        <div className="text-[14px] w-full font-[300] text-[#323232]">
+          <span className="msgCard" ref={ref}>
+            {parse(
+              linkConverter(
+                tagExtracter(messageString, groupContext, userId, navigate)
+              )
+            )}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -236,7 +325,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       },
     },
     {
-      title: "Reply Privately",
+      title: "Message privately",
       clickFunction: null,
     },
     {
@@ -259,12 +348,29 @@ function MoreOptions({ convoId, userId, convoObject }) {
         }}
         className="my-auto"
       >
-        <MoreVertIcon />
+        {/* <MoreVertIcon /> */}
+        <img src={moreIcon} alt="More vertical icon" />
+        {/* <MoreVertIcon /> */}
       </IconButton>
-      <Menu open={open} anchorEl={anchor}>
+      <Menu
+        sx={{
+          width: "250px",
+        }}
+        open={open}
+        anchorEl={anchor}
+      >
         {options.map((option, optionIndex) => {
           return (
-            <MenuItem key={option.title} onClick={option.clickFunction}>
+            <MenuItem
+              key={option.title}
+              onClick={option.clickFunction}
+              sx={{
+                padding: "10px 20px",
+                color: "#323232",
+                borderBottom: "1px solid #eeeeee",
+                fontSize: "14px",
+              }}
+            >
               {option.title}
             </MenuItem>
           );
@@ -300,6 +406,22 @@ function MoreOptions({ convoId, userId, convoObject }) {
         />
       </Menu>
     </Box>
+  );
+}
+
+function DialogBoxMediaDisplay({ onClose, shouldOpen, mediaData }) {
+  return (
+    <Dialog open={shouldOpen} onClose={onClose}>
+      {mediaData?.type === "image" ? (
+        <img src={mediaData?.url} alt="img" className="max-w-[700px]" />
+      ) : (
+        <video className="w-[500] h-max-[200px]" controls key={mediaData?.url}>
+          <source src={mediaData?.url} type="video/mp4" />
+          <source src={mediaData?.url} type="video/ogg" />
+          Your browser does not support the video tag.
+        </video>
+      )}
+    </Dialog>
   );
 }
 

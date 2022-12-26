@@ -1,11 +1,12 @@
 import { Box } from "@mui/material";
-import React, { useState } from "react";
-import { userObj } from "../..";
+import React, { useContext, useState } from "react";
+import { UserContext, userObj } from "../..";
 import MessageBox from "./MessageBox";
 
 function MessageBlock({ conversationObject, userId }) {
   const [convoDetails, setConvoDetails] = useState(conversationObject);
-  const currentUser = userObj.id;
+  const userContext = useContext(UserContext);
+  const currentUser = userContext.currentUser.id;
   return (
     <Box
       className="flex py-2 px-0 h-full overflow-auto"
@@ -23,6 +24,7 @@ function MessageBlock({ conversationObject, userId }) {
             ? convoDetails.attachments
             : null
         }
+        replyConversationObject={convoDetails?.reply_conversation_object}
         convoId={conversationObject.id}
         conversationReactions={conversationObject.reactions}
         conversationObject={conversationObject}

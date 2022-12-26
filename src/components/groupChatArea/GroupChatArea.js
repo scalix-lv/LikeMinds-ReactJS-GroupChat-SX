@@ -2,15 +2,17 @@ import { Box } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { myClient } from "../..";
-import { getConversationsForGroup } from "../../sdkFunctions";
+import { config, getConversationsForGroup } from "../../sdkFunctions";
 import RegularBox from "../channelGroups/RegularBox";
-import { GroupContext } from "../Groups/Groups";
+import { GroupContext } from "../../Main";
 import Input from "../InputComponent/Input";
 import Tittle from "./tittle/Tittle";
-
+import { getDatabase } from "firebase/database";
+import { onValue, ref as REF } from "firebase/database";
+import { initializeApp } from "firebase/app";
 // Exported Styled Box
 export const StyledBox = styled(Box)({
-  backgroundColor: "#FFFBF2",
+  backgroundColor: "#f6f6ff",
   minHeight: "100vh",
   borderTop: "1px solid #EEEEEE",
   display: "flex",
@@ -27,7 +29,8 @@ function GroupChatArea() {
   const [conversationsArray, setConversationArray] = useState([]);
 
   let groupContext = useContext(GroupContext);
-
+  const app = initializeApp(config);
+  const db = getDatabase(app);
   const ref = useRef(null);
   const scroll = () => {
     ref.current?.scrollIntoView({ behaviour: "smooth" });
@@ -43,99 +46,124 @@ function GroupChatArea() {
 
     // fn()
   });
+  // Scroll to bottom
+  const updateHeight = () => {
+    const el = document.getElementById("chat");
+    el.scrollTop = el.scrollHeight;
+  };
   const chatAreaRef = useRef(null);
   useEffect(() => {
     // scroll();
+    updateHeight();
   });
+  const fn = async (chatroomId, pageNo) => {
+    let optionObject = {
+      chatroomID: chatroomId,
+      page: pageNo,
+    };
+    let response = await getConversationsForGroup(optionObject);
 
-  useEffect(() => {
-    const fn = async (chatroomId, pageNo) => {
-      let optionObject = {
-        chatroomID: chatroomId,
-        page: pageNo,
-      };
-      let response = await getConversationsForGroup(optionObject);
+    if (!response.error) {
+      let conversations = response.data;
 
-      if (!response.error) {
-        // scroll();
-
-        let conversations = response.data;
-
-        let conversationToBeSetArray = [];
-        let newConversationArray = [];
-        let lastDate = "";
-        for (let convo of conversations) {
-          if (convo.date == lastDate) {
+      let conversationToBeSetArray = [];
+      let newConversationArray = [];
+      let lastDate = "";
+      for (let convo of conversations) {
+        if (convo.date === lastDate) {
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
+        } else {
+          if (conversationToBeSetArray.length != 0) {
+            newConversationArray.push(conversationToBeSetArray);
+            conversationToBeSetArray = [];
             conversationToBeSetArray.push(convo);
             lastDate = convo.date;
           } else {
-            if (conversationToBeSetArray.length != 0) {
-              newConversationArray.push(conversationToBeSetArray);
-              conversationToBeSetArray = [];
-              conversationToBeSetArray.push(convo);
-              lastDate = convo.date;
-            } else {
-              conversationToBeSetArray.push(convo);
-              lastDate = convo.date;
-            }
+            conversationToBeSetArray.push(convo);
+            lastDate = convo.date;
           }
         }
-        newConversationArray.push(conversationToBeSetArray);
-        setConversationArray(newConversationArray);
-      } else {
-        console.log(response.errorMessage);
       }
-    };
-    fn(groupContext.activeGroup.chatroom?.id, 1000);
+      newConversationArray.push(conversationToBeSetArray);
+      setConversationArray(newConversationArray);
+    } else {
+      console.log(response.errorMessage);
+    }
+  };
+  useEffect(() => {
+    if (groupContext.activeGroup.chatroom?.id)
+      fn(groupContext.activeGroup.chatroom?.id, 1000);
   }, [groupContext.activeGroup]);
 
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
+
   useEffect(() => {
-    const fn = async (chatroomId, pageNo) => {
-      let optionObject = {
-        chatroomID: chatroomId,
-        page: pageNo,
-      };
-      let response = await getConversationsForGroup(optionObject);
-      // console.log(response);
-      if (!response.error) {
-        let conversations = response.data;
-        // console.log(conversations);
-        let conversationToBeSetArray = [];
-        let newConversationArray = [];
-        let lastDate = "";
-        for (let convo of conversations) {
-          if (convo.date == lastDate) {
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          } else {
-            if (conversationToBeSetArray.length != 0) {
-              newConversationArray.push(conversationToBeSetArray);
-              conversationToBeSetArray = [];
+    if (Object.keys(groupContext.activeGroup) != 0) {
+      const fn = async (chatroomId, pageNo) => {
+        let optionObject = {
+          chatroomID: chatroomId,
+          page: pageNo,
+        };
+        let response = await getConversationsForGroup(optionObject);
+
+        if (!response.error) {
+          let conversations = response.data;
+          let conversationToBeSetArray = [];
+          let newConversationArray = [];
+          let lastDate = "";
+          for (let convo of conversations) {
+            if (convo.date == lastDate) {
               conversationToBeSetArray.push(convo);
               lastDate = convo.date;
             } else {
-              conversationToBeSetArray.push(convo);
-              lastDate = convo.date;
+              if (conversationToBeSetArray.length != 0) {
+                newConversationArray.push(conversationToBeSetArray);
+                conversationToBeSetArray = [];
+                conversationToBeSetArray.push(convo);
+                lastDate = convo.date;
+              } else {
+                conversationToBeSetArray.push(convo);
+                lastDate = convo.date;
+              }
             }
           }
+          newConversationArray.push(conversationToBeSetArray);
+          let oldLength = conversationsArray.length;
+          let newLength = newConversationArray.length;
+          if (
+            newConversationArray[newLength - 1]?.length !=
+            conversationsArray[oldLength - 1].length
+          ) {
+            setConversationArray(newConversationArray);
+          }
+        } else {
+          console.log(response.errorMessage);
         }
-        newConversationArray.push(conversationToBeSetArray);
-        setConversationArray(newConversationArray);
-      } else {
-        console.log(response.errorMessage);
-      }
-    };
-    let intervalId = setInterval(() => {
-      fn(groupContext.activeGroup.chatroom?.id, 1000);
-    }, 1000);
+      };
+      let intervalId = setInterval(() => {
+        // fn(groupContext.activeGroup.chatroom?.id, 1000);
+      }, 1000);
 
-    return () => {
-      clearInterval(intervalId);
-    };
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
   });
-
+  useEffect(() => {
+    const query = REF(db, "collabcards");
+    return onValue(query, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      if (
+        snapshot.exists() &&
+        groupContext.activeGroup.chatroom !== undefined
+      ) {
+        fn(groupContext.activeGroup.chatroom?.id, 500);
+      }
+    });
+  }, []);
   return (
     <ConversationContext.Provider
       value={{
@@ -160,6 +188,7 @@ function GroupChatArea() {
           />
         ) : null}
         <div
+          id="chat"
           className="relative overflow-x-hidden overflow-auto"
           style={{ height: "calc(100vh - 270px)" }}
         >
@@ -176,10 +205,7 @@ function GroupChatArea() {
                 }}
               />
               <div ref={ref}></div>
-              <div
-                className="fixed bottom-0 "
-                style={{ width: "calc(100% - 504px)" }}
-              >
+              <div className="fixed bottom-0 w-[62.1%]">
                 <Input />
               </div>
             </>

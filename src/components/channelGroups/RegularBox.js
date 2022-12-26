@@ -3,7 +3,7 @@ import MessageBlock from "./MessageBlock";
 
 function RegularBox({ convoArray }) {
   return (
-    <div className="pt-6 pr-24 pb-3 pl-6 w-full">
+    <div className="ml-[28px] mr-[114px] pt-5">
       <DateSpecifier dateString={convoArray[0].date} />
 
       {convoArray.map((conversation, conversationIndex) => {
@@ -21,10 +21,10 @@ function RegularBox({ convoArray }) {
 
 function DateSpecifier({ dateString }) {
   return (
-    <div className="border border-solid border-[#EEEEEE] relative mb-3">
-      <span className="border-[#EEEEEE] border-solid border py-1 px-3 text-[10px] line-height-[12px] font-normal rounded-[20px] absolute left-[50%] translate-y-[-50%] bg-white">
+    <div className="border-b border-solid border-[#EEEEEE] relative my-5 flex justify-center items-center">
+      <div className="border-[#EEEEEE] border-solid border py-1 px-3 text-[10px] line-height-[12px] font-normal rounded-[20px] absolute bg-white">
         {dateString}
-      </span>
+      </div>
     </div>
   );
 }
