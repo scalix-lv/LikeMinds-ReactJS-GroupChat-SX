@@ -1,61 +1,62 @@
-import { Grid } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import AcceptTheirInviteFirst from "./AcceptTheirInviteFirst";
-import ChatArea from "./ChatArea";
-import { profileListSample } from "./constantsDirectMessages";
-import LetThemAcceptInvite from "./LetThemAcceptInvite";
+import React, { useContext, useState } from "react";
+import { Outlet } from "react-router-dom";
+import { UserContext } from "../..";
 
 import CurrentDms from "./searchbar/CurrentDms";
 import SearchBarDirectMessages from "./searchbar/SearchBarDirectMessages";
 
 function DirectMessagesMain() {
-  const [currentProfile, setCurrentProfile] = useState({
-    name: "",
-    isAdded: "",
-    isInvitationPending: "",
-    hasInvitationSent: "",
-    hasRecievedInvitation: "",
-    hasUnreadMessages: "",
-    totalUnread: "",
-    isFriends: "",
-  });
-  const [profileList, setProfileList] = useState([]);
+  const userContext = useContext(UserContext);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setProfileList(profileListSample);
-    });
-  }, []);
-  useEffect(() => {
-    console.log(currentProfile);
-  }, [currentProfile]);
+  const [currentProfile, setCurrentProfile] = useState({});
+  const [currentChatroomConversations, setCurrentChatroomConversations] =
+    useState([]);
+  const [homeFeed, setHomeFeed] = useState([]);
+  const [membersFeed, setMembersFeed] = useState([]);
+  const [currentChatroom, setCurrentChatroom] = useState({});
+  const [messageText, setMessageText] = useState("");
+  const [audioAttachments, setAudioAttachments] = useState([]);
+  const [mediaAttachments, setMediaAttachments] = useState([]);
+  const [documentAttachments, setDocumentAttachments] = useState([]);
+  const [isConversationSelected, setIsConversationSelected] = useState(false);
+  const [conversationObject, setConversationObject] = useState({});
+
   return (
     <DmContext.Provider
       value={{
-        currentSelectedProfile: currentProfile,
-        profileList: profileList,
-        setCurrentProfile: setCurrentProfile,
+        currentProfile,
+        setCurrentProfile,
+        homeFeed,
+        setHomeFeed,
+        membersFeed,
+        setMembersFeed,
+        currentChatroom,
+        setCurrentChatroom,
+        currentChatroomConversations,
+        setCurrentChatroomConversations,
+        messageText,
+        setMessageText,
+        audioAttachments,
+        setAudioAttachments,
+        mediaAttachments,
+        setMediaAttachments,
+        documentAttachments,
+        setDocumentAttachments,
+        isConversationSelected,
+        setIsConversationSelected,
+        conversationObject,
+        setConversationObject,
       }}
     >
-      <Grid container className="h-full">
-        <Grid item xs={4}>
+      <div className="flex overflow-hidden customHeight flex-1">
+        <div className="flex-[.32] customScroll bg-white border-r-[1px] border-[#eeeeee] pt-[20px]">
           <SearchBarDirectMessages />
           <CurrentDms />
-        </Grid>
-        <Grid xs={8} className="h-full bg-[#f6f6ff]">
-          {currentProfile.isAdded ? (
-            currentProfile.isFriend ? (
-              <ChatArea profile={currentProfile} />
-            ) : currentProfile.isInvitationPending ? (
-              currentProfile.hasRecievedInvitation ? (
-                <AcceptTheirInviteFirst title={currentProfile.name} />
-              ) : (
-                <LetThemAcceptInvite title={currentProfile.name} />
-              )
-            ) : null
-          ) : null}
-        </Grid>
-      </Grid>
+        </div>
+        <div className="flex-[.68] bg-[#f9f6ff] relative">
+          <Outlet />
+        </div>
+      </div>
     </DmContext.Provider>
   );
 }
@@ -63,16 +64,26 @@ function DirectMessagesMain() {
 export default DirectMessagesMain;
 
 export const DmContext = React.createContext({
-  currentSelectedProfile: {
-    name: String,
-    isAdded: Boolean,
-    hasUnreadMessages: Boolean,
-    isInvitationPending: Boolean,
-    hasInvitationSent: Boolean,
-    hasRecievedInvitation: Boolean,
-    totalUnread: String,
-    isFriends: Boolean,
-  },
-  profileList: [],
+  currentProfile: {},
   setCurrentProfile: function () {},
+  homeFeed: [],
+  setHomeFeed: () => {},
+  membersFeed: [],
+  setMembersFeed: () => {},
+  currentChatroom: {},
+  setCurrentChatroom: () => {},
+  currentChatroomConversations: [],
+  setCurrentChatroomConversations: () => {},
+  messageText: String,
+  setMessageText: () => {},
+  audioAttachments: [],
+  setAudioAttachments: () => {},
+  mediaAttachments: [],
+  setMediaAttachments: () => {},
+  documentAttachments: [],
+  setDocumentAttachments: () => {},
+  isConversationSelected: false,
+  setIsConversationSelected: () => {},
+  conversationObject: {},
+  setConversationObject: () => {},
 });

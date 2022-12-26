@@ -51,7 +51,7 @@ function GroupChatArea() {
     const el = document.getElementById("chat");
     el.scrollTop = el.scrollHeight;
   };
-  const chatAreaRef = useRef(null);
+
   useEffect(() => {
     // scroll();
     updateHeight();
@@ -99,58 +99,6 @@ function GroupChatArea() {
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
 
-  useEffect(() => {
-    if (Object.keys(groupContext.activeGroup) != 0) {
-      const fn = async (chatroomId, pageNo) => {
-        let optionObject = {
-          chatroomID: chatroomId,
-          page: pageNo,
-        };
-        let response = await getConversationsForGroup(optionObject);
-
-        if (!response.error) {
-          let conversations = response.data;
-          let conversationToBeSetArray = [];
-          let newConversationArray = [];
-          let lastDate = "";
-          for (let convo of conversations) {
-            if (convo.date == lastDate) {
-              conversationToBeSetArray.push(convo);
-              lastDate = convo.date;
-            } else {
-              if (conversationToBeSetArray.length != 0) {
-                newConversationArray.push(conversationToBeSetArray);
-                conversationToBeSetArray = [];
-                conversationToBeSetArray.push(convo);
-                lastDate = convo.date;
-              } else {
-                conversationToBeSetArray.push(convo);
-                lastDate = convo.date;
-              }
-            }
-          }
-          newConversationArray.push(conversationToBeSetArray);
-          let oldLength = conversationsArray.length;
-          let newLength = newConversationArray.length;
-          if (
-            newConversationArray[newLength - 1]?.length !=
-            conversationsArray[oldLength - 1].length
-          ) {
-            setConversationArray(newConversationArray);
-          }
-        } else {
-          console.log(response.errorMessage);
-        }
-      };
-      let intervalId = setInterval(() => {
-        // fn(groupContext.activeGroup.chatroom?.id, 1000);
-      }, 1000);
-
-      return () => {
-        clearInterval(intervalId);
-      };
-    }
-  });
   useEffect(() => {
     const query = REF(db, "collabcards");
     return onValue(query, (snapshot) => {

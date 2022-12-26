@@ -1,6 +1,7 @@
 import { createTheme, Grid, ThemeProvider } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { UserContext } from ".";
 import Header from "./components/header/Header";
 import Sidenav from "./components/sidenav/Sidenav";
 const newTheme = createTheme({
@@ -27,11 +28,24 @@ export const GroupContext = React.createContext({
 });
 function Main() {
   const [activeGroup, setActiveGroup] = useState({});
+  const userContext = useContext(UserContext);
   const [refreshState, setRefreshState] = useState(true);
   function refreshGroups() {
     console.log("hello refreshing the state");
     setRefreshState(!refreshState);
   }
+  useEffect(() => {
+    if (sessionStorage.getItem("userContext") !== null) {
+      if (Object.keys(userContext.currentUser).length) {
+        sessionStorage.setItem("userContext", JSON.stringify(userContext));
+      } else {
+        let c = JSON.parse(sessionStorage.getItem("userContext"));
+        userContext.setCurrentUser(c.currentUser);
+      }
+    } else {
+      sessionStorage.setItem("userContext", JSON.stringify(userContext));
+    }
+  });
   return (
     <GroupContext.Provider
       value={{

@@ -7,6 +7,8 @@ import AcceptInvite from "./components/groupChatArea/AcceptInvite";
 import PersonInfo from "./components/groupChatArea/PersonInfo";
 import {
   addedByMePath,
+  directMessageChatPath,
+  directMessageInfoPath,
   directMessagePath,
   eventsPath,
   forumPath,
@@ -22,6 +24,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import { UserContext } from ".";
 import { initiateSDK } from "./sdkFunctions";
+import ChatArea from "./components/direct-messages/ChatArea";
 
 const router = createBrowserRouter([
   {
@@ -60,8 +63,17 @@ const router = createBrowserRouter([
       },
       {
         path: directMessagePath,
-        // element: <DirectMessagesMain/>,
         element: <DirectMessagesMain />,
+        children: [
+          {
+            path: directMessageChatPath,
+            element: <ChatArea />,
+          },
+          {
+            path: directMessageInfoPath,
+            element: <PersonInfo />,
+          },
+        ],
       },
       {
         path: addedByMePath,
@@ -72,7 +84,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState({});
   useEffect(() => {
     initiateSDK(false, "707a866a-2d28-4b8d-b34b-382ac76c8b85", "gaurav")
       .then((res) => {
@@ -83,9 +95,11 @@ function App() {
         alert("error at " + __dirname + "inside useEffect");
       });
   }, []);
+
   useEffect(() => {
     console.log(currentUser);
   }, [currentUser]);
+
   return (
     <div className="App h-[100vh] flex flex-1">
       <UserContext.Provider

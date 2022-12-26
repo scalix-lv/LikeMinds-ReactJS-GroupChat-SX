@@ -1,3 +1,4 @@
+import { async } from "@firebase/util";
 import Typicode from "likeminds-apis-sdk";
 import { json } from "react-router-dom";
 import { myClient } from "..";
@@ -246,16 +247,7 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
   }
 }
 
-export function tagExtracter(str, groupContext, userId, navigate) {
-  function nav() {
-    console.log("here");
-    navigate(groupPersonalInfoPath, {
-      state: {
-        communityId: groupContext.activeGroup.community.id,
-        memberId: userId,
-      },
-    });
-  }
+export function tagExtracter(str) {
   let newContent = str
     .split("<<")
     .join(`<span hl="Sd" style="color: green; cursor:pointer;">`);
@@ -342,6 +334,39 @@ export async function markRead(chatroomId) {
   }
 }
 
+export async function getDmHomeFeed(communityId) {
+  try {
+    let dmFeedCall = await myClient.getDMFeed({
+      community_id: communityId,
+    });
+    return jsonReturnHandler(dmFeedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function canDmHomeFeed(communityId) {
+  try {
+    let dmFeedCall = await myClient.canDMFeed({
+      community_id: communityId,
+    });
+    return jsonReturnHandler(dmFeedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function dmChatFeed(communityId, pageNo) {
+  try {
+    let dmFeedCall = await myClient.DmChatroom({
+      community_id: communityId,
+      page: pageNo,
+    });
+    return jsonReturnHandler(dmFeedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
 export const config = {
   apiKey: "AIzaSyBWjDQEiYKdQbQNvoiVvvOn_cbufQzvWuo",
   authDomain: "collabmates-beta.firebaseapp.com",
