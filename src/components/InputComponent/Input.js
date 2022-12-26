@@ -7,7 +7,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import SendIcon from "@mui/icons-material/Send";
+import SendIcon from "./../../assets/svg/send.svg";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import MicIcon from "@mui/icons-material/Mic";
 import GifIcon from "@mui/icons-material/Gif";
@@ -19,7 +19,7 @@ import camera from "./../../assets/svg/camera.svg";
 import giffy from "./../../assets/svg/giffy.svg";
 import mic from "./../../assets/svg/mic.svg";
 import paperclip from "./../../assets/svg/paperclip.svg";
-import { GroupContext } from "../Groups/Groups";
+import { GroupContext } from "../../Main";
 import { myClient } from "../..";
 import {
   ConversationContext,
@@ -38,6 +38,7 @@ import { MentionsInput, Mention } from "react-mentions";
 import m from "./m";
 import MessageBox from "../channelGroups/MessageBox";
 import { Close } from "@mui/icons-material";
+import "./Input.css";
 const StyledInputWriteComment = styled(TextField)({
   background: "#F9F9F9",
   borderRadius: "20px",
@@ -67,15 +68,9 @@ function Input() {
   const [docFiles, setDocFiles] = useState("");
   const [text, setText] = useState("");
   const [textVal, setTextVal] = useState("");
-  const data = [
-    {
-      id: "jack",
-      display: "JASCL",
-    },
-  ];
 
   return (
-    <Box className="py-3 px-6 bg-white ">
+    <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
       <InputContext.Provider
         value={{
           audioFiles,
@@ -120,11 +115,11 @@ function InputSearchField() {
       let newConversationArray = [];
       let lastDate = "";
       for (let convo of conversations) {
-        if (convo.date == lastDate) {
+        if (convo.date === lastDate) {
           conversationToBeSetArray.push(convo);
           lastDate = convo.date;
         } else {
-          if (conversationToBeSetArray.length != 0) {
+          if (conversationToBeSetArray.length !== 0) {
             newConversationArray.push(conversationToBeSetArray);
             conversationToBeSetArray = [];
             conversationToBeSetArray.push(convo);
@@ -146,68 +141,65 @@ function InputSearchField() {
   let handleSendMessage = async () => {
     try {
       let isRepliedConvo = selectedConversationContext.isSelected;
-      let { textVal, setTextVal } = inputContext;
+      let { text, setText } = inputContext;
       let filesArray = mergeInputFiles(inputContext);
       let res = null;
       // textValT = textVal.
-      let tv = textVal;
+      let tv = text;
       if (tv.length != 0) {
         if (!filesArray.length) {
-          res = await fnew(false, 0, tv, setTextVal, isRepliedConvo);
+          res = await fnew(false, 0, tv, setText, isRepliedConvo);
         } else {
           res = await fnew(
             true,
             filesArray.length,
             tv,
-            setTextVal,
+            setText,
             isRepliedConvo
           );
         }
       } else if (filesArray.length > 0) {
-        res = await fnew(
-          true,
-          filesArray.length,
-          tv,
-          setTextVal,
-          isRepliedConvo
-        );
+        res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
       }
       console.log(filesArray);
 
       if (res != null && filesArray.length > 0) {
-        let config = {
-          messageId: res.data.id,
-          chatroomId: groupContext.activeGroup.chatroom.id,
-          file: filesArray[0],
-          // index?: number,
-        };
+        let index = 0;
+        for (let newFile of filesArray) {
+          let config = {
+            messageId: res.data.id,
+            chatroomId: groupContext.activeGroup.chatroom.id,
+            file: newFile,
+            // index?: number,
+          };
 
-        let fileType;
+          let fileType;
 
-        if (filesArray[0].type.split("/")[1] === "pdf") {
-          fileType = "pdf";
-        } else if (filesArray[0].type.split("/")[0] === "audio") {
-          fileType = "audio";
-        } else if (filesArray[0].type.split("/")[0] === "video") {
-          fileType = "video";
-        } else {
-          fileType = "image";
+          if (filesArray[0].type.split("/")[1] === "pdf") {
+            fileType = "pdf";
+          } else if (filesArray[0].type.split("/")[0] === "audio") {
+            fileType = "audio";
+          } else if (filesArray[0].type.split("/")[0] === "video") {
+            fileType = "video";
+          } else {
+            fileType = "image";
+          }
+          console.log(newFile.size);
+          let fileUploadRes = await myClient.uploadMedia(config);
+          console.log(fileUploadRes);
+          let onUploadCall = await myClient.onUploadFile({
+            conversation_id: res.data.id,
+            files_count: 1,
+            index: index++,
+            meta: {
+              size: newFile.size,
+            },
+            name: newFile.name,
+            type: fileType,
+            url: fileUploadRes.Location,
+          });
+          console.log(onUploadCall);
         }
-        console.log(filesArray[0].size);
-        let fileUploadRes = await myClient.uploadMedia(config);
-        console.log(fileUploadRes);
-        let onUploadCall = await myClient.onUploadFile({
-          conversation_id: res.data.id,
-          files_count: 1,
-          index: "0",
-          meta: {
-            size: filesArray[0].size,
-          },
-          name: filesArray[0].name,
-          type: fileType,
-          url: fileUploadRes.Location,
-        });
-        console.log(onUploadCall);
       } else {
         return {
           error: false,
@@ -262,43 +254,6 @@ function InputSearchField() {
     }
   };
 
-  // let handleSendMessage = (event) => {
-  //     let { text, setText } = inputContext
-  //     let filesArray = mergeInputFiles(inputContext)
-  //     if (text.length != 0) {
-  //         if (!filesArray.length) {
-  //             myClient.onConversationsCreate({
-  //                 text: text.toString(),
-  //                 created_at: Date.now(),
-  //                 has_files: false,
-  //                 // attachment_count: false,
-  //                 chatroom_id: groupContext.activeGroup.chatroom.id
-  //             }).then(res => console.log(res)).catch(e => console.log(e))
-  //             setText("")
-  //             fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
-  //         } else {
-  //             myClient.onConversationsCreate({
-  //                 text: text.toString(),
-  //                 created_at: Date.now(),
-  //                 has_files: true,
-  //                 attachment_count: filesArray.length,
-  //                 chatroom_id: groupContext.activeGroup.chatroom.id
-  //             }).then(res => console.log(res)).catch(e => console.log(e))
-  //             setText("")
-  //             fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
-  //         }
-  //     } else if (filesArray.length > 0) {
-  //         myClient.onConversationsCreate({
-  //             text: text.toString(),
-  //             created_at: Date.now(),
-  //             has_files: true,
-  //             attachment_count: filesArray.length,
-  //             chatroom_id: groupContext.activeGroup.chatroom.id
-  //         }).then(res => console.log(res)).catch(e => console.log(e))
-  //         setText("")
-  //         fn(groupContext.activeGroup.chatroom.id, 100, conversationContext.setConversationArray)
-  //     }
-  // }
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   useEffect(() => {
@@ -322,6 +277,81 @@ function InputSearchField() {
   useEffect(() => {
     setOpenReplyBox(true);
   }, [selectedConversationContext.conversationObject]);
+
+  const [memberDetailsArray, setMemberDetailsArray] = useState([]);
+  useEffect(() => {
+    console.log(groupContext);
+    let memberArr = [];
+
+    if (groupContext.activeGroup.membersDetail?.length > 0) {
+      for (let member of groupContext.activeGroup?.membersDetail) {
+        memberArr.push({
+          id: member.id,
+          display: member.name,
+          community: groupContext.activeGroup.community.id,
+          imageUrl: member.image_url,
+        });
+      }
+    }
+    console.log(memberArr);
+    setMemberDetailsArray(memberArr);
+  }, [groupContext.activeGroup]);
+
+  // async function savePost(e) {
+  //   e.preventDefault();
+
+  //   let newContent = content;
+
+  //   newContent = newContent.split("@@@__").join('<a href="/user/');
+  //   newContent = newContent.split("^^^__").join(`">@`);
+  //   newContent = newContent.split("@@@^^^").join("</a>");
+
+  //   newContent = newContent.split("$$$__").join('<a href="/tag/');
+  //   newContent = newContent.split("~~~__").join(`">#`);
+  //   newContent = newContent.split("$$$~~~").join("</a>");
+  //   if (newContent !== "") {
+  //     let body = newContent.trim();
+  //     //Call to your DataBase like backendModule.savePost(body,  along_with_other_params);
+  //     tagNames.map(async (tag) => {
+  //       try {
+  //         await APIservice.post("/tag", {
+  //           name: tag,
+  //         });
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     });
+  //     console.log(body);
+  //     try {
+  //       await APIservice.post("/post", {
+  //         title,
+  //         content: body,
+  //         createdAt: new Date().getTime(),
+  //       });
+  //       history.push("/");
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  // }
+  let newD = [
+    {
+      id: "hel",
+      display: "peo",
+    },
+    {
+      id: "hela",
+      display: "peos",
+    },
+    {
+      id: "hels",
+      display: "peow",
+    },
+  ];
+  let keyObj = {
+    enter: false,
+    shift: false,
+  };
   return (
     <Box
       sx={{
@@ -329,7 +359,7 @@ function InputSearchField() {
       }}
     >
       {/* for tagging */}
-      <div
+      {/* <div
         className="max-h-[240px] absolute shadow-sm bg-white w-[250px] p-2 rounded-[10px] overflow-auto"
         style={{
           display: open ? "block" : "none",
@@ -342,9 +372,6 @@ function InputSearchField() {
               className="border-b border-[#eee] text-[14px] py-3 px-5 cursor-pointer hover:bg-[#eee]"
               key={member.id}
               onClick={() => {
-                // part of val string
-
-                // inputContext.setTextVal(newInputValTextArr)
                 inputContext.setTextVal(
                   inputContext.textVal +
                     "<<" +
@@ -361,7 +388,7 @@ function InputSearchField() {
             </div>
           );
         })}
-      </div>
+      </div> */}
       {/* for adding reply */}
       {selectedConversationContext.isSelected ? (
         <div
@@ -396,40 +423,104 @@ function InputSearchField() {
 
       {/* for preview Image */}
       {<ImagePreview />}
-
-      <StyledInputWriteComment
-        ref={ref}
-        variant="filled"
-        placeholder="Write a comment"
-        fullWidth
-        InputProps={{
-          endAdornment: (
-            <IconButton onClick={handleSendMessage}>
-              <SendIcon className="text-[#3884F7]" />
-            </IconButton>
-          ),
-        }}
-        value={inputContext.text}
-        onChange={(event) => {
-          // let previousString = inputContext.text
-          // let newString = event.target.value
-          // let valArr = inputContext.textVal
-          // let stringPart = newString.substring(previousString.length)
-          // valArr.push(stringPart)
-          // inputContext.setTextVal(valArr)
-          // inputContext.setText(newString)
-          let newVal = event.target.value;
-          let newValTexte = inputContext.textVal;
-          newValTexte += newVal.substring(newVal.length - 1);
-          inputContext.setText(newVal);
-          inputContext.setTextVal(newValTexte);
-        }}
-        onKeyUp={(e) => {
-          if (e.key === "Enter") {
-            handleSendMessage();
-          }
-        }}
-      />
+      <div className="relative">
+        <IconButton
+          onClick={handleSendMessage}
+          className="absolute right-[8.6%] top-[9.5%] "
+          sx={{
+            position: "absolute",
+            top: "9.5%",
+            bottom: "9.5%",
+            right: "1%",
+            zIndex: 1,
+          }}
+        >
+          {/* <SendIcon className="text-[#3884F7]" /> */}
+          <img src={SendIcon} alt="send" />
+        </IconButton>
+        <MentionsInput
+          className="mentions"
+          inputRef={ref}
+          spellCheck="false"
+          placeholder="Write a Comment..."
+          value={inputContext.text}
+          onChange={(event) => inputContext.setText(event.target.value)}
+          onKeyDown={(e) => {
+            // console.log("down");
+            if (e.key === "Enter") {
+              keyObj.enter = true;
+            }
+            if (e.key === "Shift") {
+              keyObj.shift = true;
+            }
+            if (keyObj.enter === true && keyObj.shift === true) {
+              console.log("here");
+              let newStr = inputContext.text;
+              newStr += " \n ";
+              inputContext.setText(newStr);
+            } else if (keyObj.enter == true && keyObj.shift == false) {
+              console.log("hello");
+              e.preventDefault();
+              handleSendMessage();
+            }
+          }}
+          onKeyUp={(e) => {
+            // console.log("up");
+            if (e.key === "Enter") {
+              keyObj.enter = false;
+            }
+            if (e.key === "Shift") {
+              keyObj.shift = false;
+            }
+          }}
+        >
+          <Mention
+            trigger="@"
+            data={memberDetailsArray}
+            markup="<<__display__|route://member_profile/__id__?member_id=__id__&community_id=__community__>>"
+            style={{
+              backgroundColor: "#daf4fa",
+            }}
+            // onAdd={(id) => setActorIds((actorIds) => [...actorIds, id])}
+            appendSpaceOnAdd={true}
+            renderSuggestion={(
+              suggestion,
+              search,
+              highlightedDisplay,
+              index,
+              focused
+            ) => {
+              console.log([
+                suggestion,
+                search,
+                highlightedDisplay,
+                index,
+                focused,
+              ]);
+              return (
+                <div className={`user ${focused ? "focused" : ""}`}>
+                  {suggestion.imageUrl.length > 0 ? (
+                    <div className="imgBlock">
+                      <img src={suggestion.imageUrl} alt="profile_image" />
+                    </div>
+                  ) : (
+                    <div className="imgBlock">
+                      <span>{suggestion.display[0]}</span>
+                    </div>
+                  )}
+                  <span
+                    style={{
+                      color: "#323232",
+                    }}
+                  >
+                    {suggestion.display}
+                  </span>
+                </div>
+              );
+            }}
+          />
+        </MentionsInput>
+      </div>
     </Box>
   );
 }
@@ -446,10 +537,6 @@ function InputOptions() {
       Icon: mic,
       file: fileContext.audioFiles,
       setFile: fileContext.setAudioFiles,
-    },
-    {
-      title: "GIF",
-      Icon: giffy,
     },
     {
       title: "camera",
@@ -505,7 +592,11 @@ function OptionButtonBox({ option, accept, file, setFile }) {
           style={{ display: "none" }}
           multiple
           accept={accept}
+          onClick={() => {
+            console.log("clicking");
+          }}
           onChange={(e) => {
+            console.log("yo");
             console.log(e.target.files);
             setFile(e.target.files);
           }}
@@ -534,13 +625,9 @@ function EmojiButton({ option }) {
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={handleClose}>
         <EmojiPicker
           onEmojiClick={(e) => {
-            console.log(e);
             let newText = inputContext.text;
-            console.log(newText);
             newText += `${e.emoji}`;
-            console.log(newText);
             inputContext.setText(newText);
-            console.log(e.emoji);
           }}
         />
       </Menu>
@@ -556,25 +643,44 @@ export default Input;
 function ImagePreview() {
   const [previewUrl, setPreviewUrl] = useState("");
   const inputContext = useContext(InputContext);
+  const [mediaArray, setMediaArray] = useState([]);
   useEffect(() => {
     // let {audioFiles, docFiles, mediaFiles} = inputContext
-    let newArr = mergeInputFiles(inputContext);
-    if (newArr.length > 0) {
-      setPreviewUrl(URL.createObjectURL(newArr[0]));
-    } else {
-      setPreviewUrl("");
+    // let newArr = mergeInputFiles(inputContext);
+    let newArr = [];
+    // if (newArr.length > 0) {
+    //   // setPreviewUrl(URL.createObjectURL(newArr[0]));
+    //   setMediaArray(newArr)
+    // } else {
+    //   setPreviewUrl("");
+    // }
+    for (let nf of inputContext.mediaFiles) {
+      if (nf.type.split("/")[0] === "image") {
+        newArr.push(nf);
+      }
     }
+    setMediaArray(newArr);
   }, [inputContext.audioFiles, inputContext.mediaFiles, inputContext.docFiles]);
   return (
     <div
       style={{
-        display: previewUrl.length > 0 ? "block" : "none",
+        display: mediaArray.length > 0 ? "block" : "none",
       }}
     >
       <div className="w-full shadow-sm p-3 flex justify-between">
-        <div className="max-w-[120px]">
-          <img src={previewUrl} alt="preview" />
-        </div>
+        {mediaArray.map((file, fileIndex) => {
+          const fileTypeInitial = file.type.split("/")[0];
+          console.log(fileTypeInitial);
+          if (fileTypeInitial === "image") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <img src={URL.createObjectURL(file)} alt="preview" />
+              </div>
+            );
+          } else {
+            return null;
+          }
+        })}
         <IconButton
           onClick={() => {
             clearInputFiles(inputContext);

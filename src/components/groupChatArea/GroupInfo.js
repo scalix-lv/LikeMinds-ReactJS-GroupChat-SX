@@ -1,84 +1,132 @@
-import { Box, IconButton, Typography } from "@mui/material";
-import React from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { Box, IconButton } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { Link } from "react-router-dom";
-// import IconButton from '@mui/material';
-
+import { Link, useNavigate } from "react-router-dom";
+import { GroupContext } from "../../Main";
+import Tittle from "./tittle/Tittle";
+import backIcon from "../../assets/svg/arrow-left.svg";
+import rightArrow from "../../assets/svg/right-arrow.svg";
+import { getAllChatroomMember } from "../../sdkFunctions";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { myClient } from "../..";
+import { groupPersonalInfoPath } from "../../routes";
 const StyledBox = styled(Box)({
-  backgroundColor: "#FFFBF2",
-  minHeight: "100vh",
-  // borderTop: "1px solid #EEEEEE",
-  display: "flex",
-  flexDirection: "column",
+  backgroundColor: "#f6f6ff",
 });
 
 function GroupInfo() {
-  const participants = Array(5).fill(1);
+  const gc = useContext(GroupContext);
+  const [participantList, setParticipantList] = useState([]);
+  const [loadMode, setLoadMore] = useState(true);
+
+  let callFn = () => {
+    getAllChatroomMember(
+      gc.activeGroup?.chatroom?.id,
+      gc.activeGroup?.community?.id,
+      participantList,
+      setParticipantList
+    )
+      .then((res) => {
+        console.log(res);
+        if (res) {
+          setLoadMore(true);
+        } else {
+          setLoadMore(false);
+        }
+      })
+      .catch((res) => {
+        console.log("here");
+        setLoadMore(res);
+      });
+  };
+  // myClient.fb(gc.activeGroup.chatroom.id);
+  useEffect(() => {
+    if (Object.keys(gc.activeGroup).length > 0) {
+      callFn();
+    }
+  }, [gc.activeGroup]);
+  useEffect(() => {
+    console.log(participantList);
+  });
   return (
-    <StyledBox
-      style={{
-        marginTop: "none",
-        padding: "0px 96px 0px 12px",
-      }}
-    >
-      <Box className="flex items-center">
-        <Link to={"/groups/main"}>
-          <IconButton>
-            <KeyboardBackspaceIcon
-              sx={{
-                color: "#3884F7",
-              }}
-            />
-          </IconButton>
-        </Link>
-        <Typography fontSize={"20px"} fontWeight={700} color={"#3884F7"}>
-          Group Info
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          marginLeft: "12px",
-        }}
-      >
-        This group is a community of people working in start- ups coming
-        together to help each other.
-        <Typography
-          fontSize={"16px"}
-          fontWeight={700}
-          color={"#323232"}
-          marginTop={2}
-        >
-          Participants
-        </Typography>
-        <Box className="py-6">
-          {participants.map((profile, profileIndex) => {
-            return (
-              <ParticipantTile
-                key={profile + profileIndex}
-                index={profileIndex}
-              />
-            );
-          })}
-        </Box>
-      </Box>
-    </StyledBox>
+    <div className="overflow-auto w-full h-full">
+      {/* Title Header */}
+      {gc.activeGroup.chatroom?.id ? (
+        <Tittle
+          headerProps={{
+            title: gc.activeGroup.chatroom.header,
+            memberCount: gc.activeGroup.participant_count,
+          }}
+        />
+      ) : null}
+      {/* Title Header */}
+
+      <div className="mr-[120px] ml-[20px] mt-[10px]">
+        <div className="flex">
+          <Link to={"/groups/main"}>
+            <IconButton>
+              <img src={backIcon} alt="back icon" />
+            </IconButton>
+          </Link>
+          <div className="text-[20px] mt-[8px] font-[700] leading-[24px] text-[#3884F7]">
+            Group Info
+          </div>
+        </div>
+
+        {/* Member list */}
+        <div className="ml-1 pl-[5px]">
+          <div className="text-4 font-[700] text-[#323232]">Participants</div>
+          <div className="py-[18px]">
+            <InfiniteScroll
+              next={callFn}
+              hasMore={loadMode}
+              dataLength={participantList.length}
+            >
+              {participantList?.map((profile, profileIndex) => {
+                return (
+                  <ParticipantTile
+                    key={profile.id + profileIndex}
+                    profile={profile}
+                    index={profileIndex}
+                  />
+                );
+              })}
+            </InfiniteScroll>
+          </div>
+        </div>
+        {/* Member list */}
+      </div>
+    </div>
   );
 }
 
-function ParticipantTile({ index }) {
+function ParticipantTile({ index, profile }) {
+  console.log(profile);
+  const navigate = useNavigate();
+  const groupContext = useContext(GroupContext);
   return (
-    <Box className="py-3 px-2  border-gray border flex justify-center items-center bg-white">
-      <AccountCircleIcon fontSize="large" className="mr-3" />
+    <div
+      className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center cursor-pointer"
+      onClick={() => {
+        navigate(groupPersonalInfoPath, {
+          state: {
+            memberId: profile.id,
+            communityId: groupContext.activeGroup.community?.id,
+          },
+        });
+      }}
+    >
+      <div className="flex items-center">
+        <div className="w-[36px] h-[36px] uppercase border-[1px] border-[#eeeeee] bg-[#eeeeee] mr-2.5 rounded-[5px] flex justify-center items-center">
+          {profile?.name[0]}
+        </div>
+        <div className="font-bold text-sm capitalize">{profile.name}</div>
+      </div>
 
-      <span className="font-bold text-sm">Person {index}</span>
-      <div className="grow" />
-      <IconButton>
-        <KeyboardArrowRightIcon />
+      <IconButton className="w-[32px] h-[32px]">
+        <img src={rightArrow} alt="arrow icon" />
       </IconButton>
-    </Box>
+    </div>
   );
 }
 export default GroupInfo;

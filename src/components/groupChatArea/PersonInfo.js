@@ -1,27 +1,28 @@
 // import { AccountCircleIcon } from '@mui/icons-material'
 import { Box, Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-// import styled from '@emotion/styled';
-// import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { StyledBox } from "./GroupChatArea";
 import { IconButton } from "@mui/material";
 import { Typography } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import { myClient } from "../..";
+import backIcon from "../../assets/svg/arrow-left.svg";
 
 import userIcon from "./../../assets/user.png";
+import { GroupContext } from "../../Main";
+import Tittle from "./tittle/Tittle";
+
 function PersonInfo() {
+  const gc = useContext(GroupContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
-  // location.state
+  console.log(location);
   const [profileDate, setProfileData] = useState({});
-  console.log(profileDate);
+
   useEffect(() => {
     const fn = async () => {
       try {
@@ -37,69 +38,71 @@ function PersonInfo() {
     fn();
   }, []);
   return (
-    <StyledBox
-      style={{
-        marginTop: "none",
-        padding: "0px 96px 0px 12px",
-      }}
-    >
-      <Box className="flex items-center">
-        <Link to={"/groups/main"}>
-          <IconButton>
-            <KeyboardBackspaceIcon />
-          </IconButton>
-        </Link>
-        <Typography fontSize={"20px"} fontWeight={700} color={"#3884F7"}>
-          Group Info / {profileDate.name}
-        </Typography>
-      </Box>
-      <Box className="ml-3 mt-4">
-        <Box>
-          {/* <AccountCircleIcon fontSize="large" /> */}
+    <div className="overflow-auto w-full h-full">
+      {/* Title Header */}
+      {gc.activeGroup.chatroom?.id ? (
+        <Tittle
+          headerProps={{
+            title: gc.activeGroup.chatroom.header,
+            memberCount: gc.activeGroup.participant_count,
+          }}
+        />
+      ) : null}
+      {/* Title Header */}
 
-          <img
-            src={profileDate.image_url || userIcon}
-            className="w-[60px] h-[60px] rounded-[5px]"
-            alt=""
-          />
+      <div className="mr-[120px] ml-[20px] mt-[10px]">
+        <div className="flex">
+          <Link to={"/groups/main"}>
+            <IconButton>
+              <img src={backIcon} alt="back icon" />
+            </IconButton>
+          </Link>
+          <div className="text-[20px] mt-[8px] font-[400] leading-[24px]">
+            Group Info /{" "}
+            <span className="font-[700] text-[#3884F7]">
+              {profileDate.name}
+            </span>
+          </div>
+        </div>
+
+        <Box className="ml-3 mt-4 text-[#323232]">
+          <div className="w-[60px] h-[60px] border-[1px] border-[#eeeeee] bg-[#eeeeee] text-[30px] mr-2.5 rounded-[5px] flex justify-center items-center">
+            {profileDate.image_url !== "" ? (
+              <img src={profileDate.image_url} className="w-full h-full" />
+            ) : (
+              profileDate?.name[0]
+            )}
+          </div>
+          <div className="text-[16px] font-[700] mt-[20px] ">
+            {profileDate.name}
+          </div>
+
+          <div className="mt-[20px]">
+            {mediaArray.map((MediaIcon, mediaIconIndex) => {
+              return <MediaIcon className="m-1 text-4xl" fontSize="medium" />;
+            })}
+          </div>
+
+          <div className="text-[14px] font-[400]  mt-[20px]">
+            An organized and enthusiastic designer, whose life has been nothing
+            but a series of unplanned and unexpected events. I enjoy working on
+            topics that are out of the box and that would let me come up with
+            innovative ideas.
+          </div>
+
+          <div className="text-[16px] font-[700]  my-[20px]">
+            {profileDate.custom_title}
+          </div>
+
+          <div className="">
+            <div className="text-[16px] font-[700] mb-[20px]">Find them in</div>
+
+            <InfoTile title={"Hiring Techniques"} buttontitle={"Forum"} />
+            <InfoTile title={"Beyond Design"} buttontitle={"Group"} />
+          </div>
         </Box>
-        <p className="text-base font-bold my-2 mx-0 text-[#323232]">
-          {profileDate.name}
-        </p>
-        <Box className="my-2 mx-0">
-          {mediaArray.map((MediaIcon, mediaIconIndex) => {
-            return <MediaIcon className="m-1 text-4xl" fontSize="medium" />;
-          })}
-        </Box>
-        <Typography
-          fontSize={"14px"}
-          fontWeight={400}
-          color={"#323232"}
-          marginTop={2}
-        >
-          An organized and enthusiastic designer, whose life has been nothing
-          but a series of unplanned and unexpected events. I enjoy working on
-          topics that are out of the box and that would let me come up with
-          innovative ideas.
-        </Typography>
-
-        <Typography
-          fontSize={"16px"}
-          fontWeight={700}
-          color={"#323232"}
-          marginTop={2}
-        >
-          {profileDate.custom_title}
-        </Typography>
-
-        <Box className="py-4 px-0">
-          <p className="font-bold text-2xl">Find them in</p>
-
-          <InfoTile title={"Hiring Techniques"} buttontitle={"Forum"} />
-          <InfoTile title={"Beyond Design"} buttontitle={"Group"} />
-        </Box>
-      </Box>
-    </StyledBox>
+      </div>
+    </div>
   );
 }
 
