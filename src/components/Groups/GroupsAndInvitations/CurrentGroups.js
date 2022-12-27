@@ -98,40 +98,6 @@ function CurrentGroups() {
   );
 }
 
-function GroupTile({ title, newUnread, getChatRoomData }) {
-  return (
-    <div
-      className="flex justify-between p-[18px] border-t border-b border-[#EEEEEE] bg-inherit"
-      onClick={() => {
-        getChatRoomData("none");
-      }}
-    >
-      <Typography
-        component={"span"}
-        className="text-base font-normal"
-        sx={{
-          color: newUnread > 0 ? "#3884F7" : "#323232",
-        }}
-      >
-        {title}
-        {newUnread <= 0 ? (
-          <span className="bg-[#FFEFC6] rounded-[4px] px-[6px] py-[5px] text-[#F6BD2A] line-height-[12px] text-[10px] font-medium m-1">
-            Private
-          </span>
-        ) : null}
-      </Typography>
-      <span
-        className="text-xs font-light"
-        style={{
-          color: newUnread > 0 ? "#3884F7" : "#323232",
-        }}
-      >
-        {newUnread > 0 ? <>{newUnread} new messages</> : null}
-      </span>
-    </div>
-  );
-}
-
 function PublicGroup({ groupTitle, groupList }) {
   const [shouldOpen, setShouldOpen] = useState(true);
   function handleCollapse() {
@@ -189,13 +155,18 @@ function PublicGroup({ groupTitle, groupList }) {
   );
 }
 
-function PublicGroupTile({ groupTitle, group = { group } }) {
+function PublicGroupTile({ groupTitle, group }) {
   const groupcontext = useContext(GroupContext);
-
+  const chatroomContext = useContext(ChatRoomContext);
   return (
     <div
       onClick={() => {
-        markRead(group.chatroom.id);
+        markRead(group.chatroom.id)
+          .then((res) => {
+            chatroomContext.refreshChatroomContext();
+          })
+          .catch((e) => console.log(e));
+        // groupcontext.refreshContextUi();
       }}
       className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
       style={{

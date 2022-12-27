@@ -109,8 +109,9 @@ function GroupChatArea() {
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        fn(groupContext.activeGroup.chatroom?.id, 500);
-        chatRoomContext.refreshChatroomContext();
+        fn(groupContext.activeGroup.chatroom?.id, 500).then((e) =>
+          chatRoomContext.refreshChatroomContext()
+        );
       }
     });
   }, []);

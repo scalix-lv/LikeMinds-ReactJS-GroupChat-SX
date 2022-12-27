@@ -10,7 +10,7 @@ import pdfIcon from "../../assets/svg/pdf-document.svg";
 import EmojiPicker from "emoji-picker-react";
 import parse from "html-react-parser";
 import { addReaction, linkConverter, tagExtracter } from "../../sdkFunctions";
-import { directMessageInfoPath } from "../../routes";
+import { directMessageInfoPath, directMessagePath } from "../../routes";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 function MessageBoxDM({
   username,
@@ -274,7 +274,7 @@ function TimeBox({ time }) {
 
 function MoreOptions({ convoId, userId, convoObject }) {
   const dmContext = useContext(DmContext);
-
+  const navigate = useNavigate();
   const [anchor, setAnchor] = useState(null);
   const [shouldShow, setShouldShowBlock] = useState(false);
   let open = Boolean(anchor);
@@ -319,10 +319,6 @@ function MoreOptions({ convoId, userId, convoObject }) {
         dmContext.setIsConversationSelected(true);
         dmContext.setConversationObject(convoObject);
       },
-    },
-    {
-      title: "Message privately",
-      clickFunction: null,
     },
     {
       title: "Report",
