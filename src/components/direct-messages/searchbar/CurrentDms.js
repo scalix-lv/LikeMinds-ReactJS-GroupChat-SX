@@ -20,9 +20,7 @@ function CurrentDms() {
       let feedCall = await dmChatFeed(50421, 1);
       let newFeedArray = feedCall.data.dm_chatrooms;
       dmContext.setHomeFeed(newFeedArray);
-      console.log("dm homefeed loaded successfully");
     } catch (error) {
-      console.log("error at dm homefeed load");
       console.log(error);
     }
   }
@@ -30,7 +28,6 @@ function CurrentDms() {
   async function loadAllDmMembers() {
     try {
       let call = await allChatroomMembersDm(50421);
-
       dmContext.setMembersFeed(call.data.members);
     } catch (error) {
       console.log(error);
@@ -59,19 +56,19 @@ function CurrentDms() {
 
   return (
     <Box>
-      <Button
+      {/* <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button>
+      </Button> */}
       {dmContext.homeFeed.map((feed, feedIndex) => {
         return <DmTile profile={feed} key={feedIndex} />;
       })}
       <div className="py-4 px-5 flex justify-between text-center h-[56px]">
-        <span className="leading-6 text-xl  ">All Members</span>
+        <span className="leading-6 text-xl">All Members</span>
         <IconButton
           onClick={() => setOpenAllUsers(!openAllUsers)}
           disableRipple
@@ -123,7 +120,7 @@ function DmTile({ profile }) {
               profile.unseen_conversation_count > 0 ? "#3884F7" : "#323232",
           }}
         >
-          {profile.chatroom.header}
+          {profile.chatroom.member.name}
         </Typography>
         <Typography
           component={"span"}
@@ -197,7 +194,7 @@ function MemberTile({ groupTitle }) {
   const publicGroups = Array(10).fill({
     groupTitle: "Person",
   });
-  // console.log(publicGroups)
+
   return (
     <Box>
       <Box className="flex justify-between px-3.5 py-[18px] border border-gray">

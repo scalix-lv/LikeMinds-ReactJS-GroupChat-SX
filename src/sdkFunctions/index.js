@@ -381,6 +381,7 @@ export async function allChatroomMembersDm(communityId) {
 }
 
 export async function requestDM(memberId) {
+  console.log(memberId);
   try {
     let call = await myClient.reqDmFeed({
       community_id: communityId,

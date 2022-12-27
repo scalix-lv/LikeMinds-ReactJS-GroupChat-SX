@@ -12,7 +12,6 @@ import { onValue, ref } from "firebase/database";
 export const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
   minHeight: "100vh",
-  borderTop: "1px solid #EEEEEE",
   display: "flex",
   flexDirection: "column",
   height: "100%",

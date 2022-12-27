@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 import RegularBox from "../channelGroups/RegularBox";
-import Input from "../InputComponent/Input";
 import { getConversationsForGroup } from "../../sdkFunctions";
 import InputDM from "./InputDM";
 function ChatRoomAreaDM() {
@@ -43,7 +42,6 @@ function ChatRoomAreaDM() {
         }
       }
       newConversationArray.push(conversationToBeSetArray);
-      // setConversationArray(newConversationArray);
       dmContext.setCurrentChatroomConversations(newConversationArray);
     } else {
       console.log(response.errorMessage);
