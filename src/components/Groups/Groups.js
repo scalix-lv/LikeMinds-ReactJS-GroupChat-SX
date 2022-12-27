@@ -77,15 +77,6 @@ function Groups() {
   }, []);
   return (
     <div>
-      {/* <Button
-        fullWidth
-        onClick={() => {
-          console.log(groupContext);
-          console.log(sessionStorage);
-        }}
-      >
-        LOAD
-      </Button> */}
       <ChatRoomContext.Provider
         value={{
           chatRoomList: chatRoomsList,

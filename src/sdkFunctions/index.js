@@ -367,6 +367,18 @@ export async function dmChatFeed(communityId, pageNo) {
     return jsonReturnHandler(null, error);
   }
 }
+
+export async function allChatroomMembersDm(communityId) {
+  try {
+    let feedCall = await myClient.dmAllMembers({
+      community_id: communityId,
+      page: 1,
+    });
+    return jsonReturnHandler(feedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
 export const config = {
   apiKey: "AIzaSyBWjDQEiYKdQbQNvoiVvvOn_cbufQzvWuo",
   authDomain: "collabmates-beta.firebaseapp.com",

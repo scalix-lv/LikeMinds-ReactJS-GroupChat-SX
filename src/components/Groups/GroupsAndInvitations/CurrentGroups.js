@@ -59,7 +59,9 @@ function CurrentGroups() {
     }
   }
   const chatroomContext = useContext(ChatRoomContext);
-
+  useEffect(() => {
+    console.log("CHAT ROOM LIST HORI H REFRESH");
+  }, [chatroomContext.chatRoomList, chatroomContext.unJoined]);
   return (
     <Box>
       {<PublicGroup groupList={chatroomContext.chatRoomsList} />}
@@ -84,18 +86,11 @@ function CurrentGroups() {
       <Collapse in={shouldOpenPublicCard}>
         {chatroomContext.unJoined.map((group, groupIndex) => {
           return (
-            // <Link
-            //   to={groupMainPath}
-            //   onClick={() => {
-            //     getChatRoomData(group.chatroom.id);
-            //   }}
-            // >
             <UnjoinedGroup
               groupTitle={group.title}
               group={group}
               key={group.title + groupIndex}
             />
-            // </Link>
           );
         })}
       </Collapse>

@@ -10,6 +10,7 @@ import Tittle from "./tittle/Tittle";
 import { getDatabase } from "firebase/database";
 import { onValue, ref as REF } from "firebase/database";
 import { initializeApp } from "firebase/app";
+import { ChatRoomContext } from "../Groups/Groups";
 // Exported Styled Box
 export const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
@@ -27,7 +28,7 @@ export const ConversationContext = React.createContext({
 
 function GroupChatArea() {
   const [conversationsArray, setConversationArray] = useState([]);
-
+  const chatRoomContext = useContext(ChatRoomContext);
   let groupContext = useContext(GroupContext);
   const app = initializeApp(config);
   const db = getDatabase(app);
@@ -109,6 +110,7 @@ function GroupChatArea() {
         groupContext.activeGroup.chatroom !== undefined
       ) {
         fn(groupContext.activeGroup.chatroom?.id, 500);
+        chatRoomContext.refreshChatroomContext();
       }
     });
   }, []);
