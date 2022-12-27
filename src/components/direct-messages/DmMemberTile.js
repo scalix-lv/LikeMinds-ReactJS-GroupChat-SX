@@ -1,10 +1,14 @@
 import { Margin } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import React, { useContext } from "react";
+import { requestDM } from "../../sdkFunctions";
 import { DmContext } from "./DirectMessagesMain";
 
 function DmMemberTile({ profile, profileIndex }) {
   console.log(profile);
+  function reqDM() {
+    requestDM(profile.id);
+  }
   return (
     <div className="flex justify-between py-[10px] px-[20px] border border-solid border-[#EEEEEE] cursor-pointer">
       <span className="text-base font-normal">{profile.name}</span>
@@ -20,6 +24,7 @@ function DmMemberTile({ profile, profileIndex }) {
             background: "grey",
           },
         }}
+        onClick={reqDM}
         variant="filled"
       >
         Message
