@@ -26,8 +26,20 @@ function DmMemberTile({ profile, profileIndex }) {
     );
   }
   return (
-    <div className="flex justify-between py-[10px] px-[20px] border border-solid border-[#EEEEEE] cursor-pointer">
-      <span className="text-base font-normal">{profile.name}</span>
+    <div className="flex justify-between items-center py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer">
+      <div className="flex flex-col">
+        <div className="text-[#323232] text-[16px] capitalize">
+          {profile.name}
+        </div>
+        {profile.custom_title ? (
+          <div className="text-[12px] text-[#ADADAD]">
+            {profile.custom_title}
+          </div>
+        ) : (
+          <div className="text-[12px] text-[#ADADAD]">Other</div>
+        )}
+      </div>
+
       <div style={{ flexGrow: 1 }} />
       <Button
         sx={{

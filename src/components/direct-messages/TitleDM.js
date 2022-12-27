@@ -14,6 +14,7 @@ const TitleBox = styled(Box)({
   borderBottom: "1px solid #adadad",
   margin: "0 120px 0px 28px",
   padding: "0 0 10px 0px",
+  boxShadow: "none",
 });
 
 function TittleDm({ title }) {
