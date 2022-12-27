@@ -1,4 +1,5 @@
 import { async } from "@firebase/util";
+import { data } from "autoprefixer";
 import Typicode from "likeminds-apis-sdk";
 import { json } from "react-router-dom";
 import { communityId, myClient } from "..";
@@ -392,6 +393,18 @@ export async function requestDM(memberId) {
     console.log(error);
   }
 }
+
+export async function canDirectMessage() {
+  try {
+    let call = await myClient.canDmFeed({
+      community_id: communityId,
+    });
+    return jsonReturnHandler(call, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
 export const config = {
   apiKey: "AIzaSyBWjDQEiYKdQbQNvoiVvvOn_cbufQzvWuo",
   authDomain: "collabmates-beta.firebaseapp.com",
