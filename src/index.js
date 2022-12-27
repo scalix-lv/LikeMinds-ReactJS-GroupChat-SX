@@ -14,10 +14,10 @@ export const myClient = new LikeMinds({
   xPlatformCode: "web",
   xVersionCode: 16,
 });
-
+export const communityId = 50421;
 myClient
   .getDMFeed({
-    community_id: 50421,
+    community_id: communityId,
   })
   .then((r) => console.log(r))
   .catch((e) => console.log(e));

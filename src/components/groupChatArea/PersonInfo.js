@@ -13,8 +13,9 @@ import {
   useLocation,
   useNavigate,
   useNavigation,
+  useParams,
 } from "react-router-dom";
-import { myClient } from "../..";
+import { communityId, myClient } from "../..";
 import backIcon from "../../assets/svg/arrow-left.svg";
 
 import userIcon from "./../../assets/user.png";
@@ -28,13 +29,15 @@ function PersonInfo() {
   console.log(location);
   const [profileDate, setProfileData] = useState({});
   const navigate = useNavigate();
+  let { memberId } = useParams();
+  console.log(memberId);
   // console.log(navigate);
   useEffect(() => {
     const fn = async () => {
       try {
         const memberCall = await myClient.profileData({
-          community_id: location.state.communityId,
-          member_id: location.state.memberId,
+          community_id: communityId,
+          member_id: memberId,
         });
         setProfileData(memberCall?.member);
       } catch (error) {
@@ -42,7 +45,7 @@ function PersonInfo() {
       }
     };
     fn();
-  }, []);
+  });
   return (
     <div className="overflow-auto w-full h-full">
       {/* Title Header */}

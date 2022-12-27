@@ -1,7 +1,7 @@
 import { async } from "@firebase/util";
 import Typicode from "likeminds-apis-sdk";
 import { json } from "react-router-dom";
-import { myClient } from "..";
+import { communityId, myClient } from "..";
 import { groupPersonalInfoPath } from "../routes";
 // import('likeminds-apis-sdk/dist/chatroom/types').ConversationData as conversationData
 // import * as DB from "firebase/database";
@@ -365,6 +365,30 @@ export async function dmChatFeed(communityId, pageNo) {
     return jsonReturnHandler(dmFeedCall, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
+  }
+}
+
+export async function allChatroomMembersDm(communityId) {
+  try {
+    let feedCall = await myClient.dmAllMembers({
+      community_id: communityId,
+      page: 1,
+    });
+    return jsonReturnHandler(feedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function requestDM(memberId) {
+  try {
+    let call = await myClient.reqDmFeed({
+      community_id: communityId,
+      member_id: memberId,
+    });
+    console.log(call);
+  } catch (error) {
+    console.log(error);
   }
 }
 export const config = {

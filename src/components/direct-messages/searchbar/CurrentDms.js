@@ -6,10 +6,14 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { DmContext } from "../DirectMessagesMain";
 import { Link } from "react-router-dom";
-import { dmChatFeed } from "../../../sdkFunctions";
+import { allChatroomMembersDm, dmChatFeed } from "../../../sdkFunctions";
 import { directMessageChatPath } from "../../../routes";
+import DmMemberTile from "../DmMemberTile";
+
 function CurrentDms() {
   const dmContext = useContext(DmContext);
+
+  const [openAllUsers, setOpenAllUsers] = useState(true);
 
   async function loadHomeFeed() {
     try {
@@ -19,6 +23,16 @@ function CurrentDms() {
       console.log("dm homefeed loaded successfully");
     } catch (error) {
       console.log("error at dm homefeed load");
+      console.log(error);
+    }
+  }
+
+  async function loadAllDmMembers() {
+    try {
+      let call = await allChatroomMembersDm(50421);
+
+      dmContext.setMembersFeed(call.data.members);
+    } catch (error) {
       console.log(error);
     }
   }
@@ -40,21 +54,42 @@ function CurrentDms() {
 
   useEffect(() => {
     loadHomeFeed();
+    loadAllDmMembers();
   }, []);
 
   return (
     <Box>
-      {/* <Button
+      <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button> */}
+      </Button>
       {dmContext.homeFeed.map((feed, feedIndex) => {
         return <DmTile profile={feed} key={feedIndex} />;
       })}
+      <div className="py-4 px-5 flex justify-between text-center h-[56px]">
+        <span className="leading-6 text-xl  ">All Members</span>
+        <IconButton
+          onClick={() => setOpenAllUsers(!openAllUsers)}
+          disableRipple
+        >
+          {!openAllUsers ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
+        </IconButton>
+      </div>
+      <Collapse in={openAllUsers}>
+        {dmContext.membersFeed.map((feed, feedIndex) => {
+          return (
+            <DmMemberTile
+              profile={feed}
+              profileIndex={feedIndex}
+              key={feed.id}
+            />
+          );
+        })}
+      </Collapse>
     </Box>
   );
 }
