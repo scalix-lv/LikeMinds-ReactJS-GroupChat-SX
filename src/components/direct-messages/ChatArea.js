@@ -70,7 +70,7 @@ function ChatArea() {
     <div>
       <StyledBox>
         {Object.keys(dmContext.currentChatroom).length > 0 ? (
-          <TittleDm title={dmContext.currentChatroom.member.name} />
+          <TittleDm title={dmContext.currentChatroom.chatroom_with_user.name} />
         ) : null}
         <ChatRoomAreaDM />
       </StyledBox>

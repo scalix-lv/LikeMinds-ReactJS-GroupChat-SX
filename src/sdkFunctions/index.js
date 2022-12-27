@@ -389,8 +389,9 @@ export async function requestDM(memberId) {
       member_id: memberId,
     });
     console.log(call);
+    return jsonReturnHandler(call, null);
   } catch (error) {
-    console.log(error);
+    return jsonReturnHandler(null, error);
   }
 }
 
