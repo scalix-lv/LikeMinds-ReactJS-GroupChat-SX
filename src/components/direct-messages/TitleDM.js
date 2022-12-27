@@ -10,12 +10,10 @@ import { directMessageInfoPath } from "../../routes";
 import { DmContext } from "./DirectMessagesMain";
 const TitleBox = styled(Box)({
   display: "flex",
-  borderBottom: "1px solid #ADADAD",
   width: "100%",
-  marginRight: "96px",
-  marginLeft: "24px",
-  padding: "0 0 16px",
-  marginTop: "24px",
+  borderBottom: "1px solid #adadad",
+  margin: "0 120px 0px 28px",
+  padding: "0 0 10px 0px",
 });
 
 function TittleDm({ title }) {
@@ -36,7 +34,7 @@ function TitleArea({ title }) {
   const dmContext = useContext(DmContext);
   return (
     <div
-      className="text-left decoration-none"
+      className="text-left"
       onClick={() => {
         navigate(directMessageInfoPath, {
           state: {
@@ -50,7 +48,9 @@ function TitleArea({ title }) {
         {title ? title : null}
       </span>
       <div />
-      <span className="text-xs font-medium text-[#ADADAD]">member</span>
+      <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD]">
+        Member
+      </span>
     </div>
   );
 }
