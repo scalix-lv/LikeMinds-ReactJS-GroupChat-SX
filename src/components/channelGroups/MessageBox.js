@@ -26,7 +26,7 @@ import pdfIcon from "../../assets/svg/pdf-document.svg";
 import EmojiPicker from "emoji-picker-react";
 // import { GroupContext } from "../Groups/Groups";
 import { GroupContext } from "../../Main";
-import { groupPersonalInfoPath } from "./../../routes";
+import { directMessagePath, groupPersonalInfoPath } from "./../../routes";
 import { CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
 import parse from "html-react-parser";
 
@@ -297,6 +297,7 @@ function TimeBox({ time }) {
 function MoreOptions({ convoId, userId, convoObject }) {
   const [anchor, setAnchor] = useState(null);
   const [shouldShow, setShouldShowBlock] = useState(false);
+  const navigate = useNavigate();
   let open = Boolean(anchor);
   const [anchorEl, setAnchorEl] = useState(null);
   const ref2 = useRef(null);
@@ -347,7 +348,9 @@ function MoreOptions({ convoId, userId, convoObject }) {
     },
     {
       title: "Message privately",
-      clickFunction: null,
+      clickFunction: () => {
+        navigate(directMessagePath);
+      },
     },
     {
       title: "Report",

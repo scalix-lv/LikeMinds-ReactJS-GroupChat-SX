@@ -39,7 +39,7 @@ function TitleArea({ title }) {
       onClick={() => {
         navigate(directMessageInfoPath, {
           state: {
-            memberId: dmContext.currentChatroom.member.id,
+            memberId: dmContext.currentChatroom.chatroom_with_user.id,
             communityId: dmContext.currentProfile.community.id,
           },
         });
