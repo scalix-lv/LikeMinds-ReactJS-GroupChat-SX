@@ -10,7 +10,7 @@ function ChatRoomAreaDM() {
 
   // Scroll to bottom
   const updateHeight = () => {
-    const el = document.getElementById("chat");
+    const el = document.getElementById("dmChat");
     el.scrollTop = el.scrollHeight;
   };
 
@@ -31,7 +31,7 @@ function ChatRoomAreaDM() {
           conversationToBeSetArray.push(convo);
           lastDate = convo.date;
         } else {
-          if (conversationToBeSetArray.length != 0) {
+          if (conversationToBeSetArray.length !== 0) {
             newConversationArray.push(conversationToBeSetArray);
             conversationToBeSetArray = [];
             conversationToBeSetArray.push(convo);
@@ -61,7 +61,7 @@ function ChatRoomAreaDM() {
 
   return (
     <div
-      id="chat"
+      id="dmChat"
       className="relative overflow-x-hidden overflow-auto"
       style={{ height: "calc(100vh - 270px)" }}
     >

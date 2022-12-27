@@ -109,7 +109,7 @@ function StringBox({
                 .filter((item, itemIndex) => {
                   return item.type === "image";
                 })
-                .map((item, itemIndex) => {
+                .map((item, itemIndex, dataObj) => {
                   return (
                     <img
                       src={item.url}
@@ -117,7 +117,7 @@ function StringBox({
                       className="m-1 w-full max-h-[230px]"
                       key={item.url}
                       onClick={() => {
-                        setMediaData({ url: item.url, type: item.type });
+                        setMediaData({ mediaObj: dataObj, type: "image" });
                         setDisplayMediaModel(true);
                       }}
                     />
@@ -126,25 +126,41 @@ function StringBox({
             }
             return null;
           })()}
+
           {attachments != null && attachments.length > 1
             ? attachments
-                .filter((item, itemIndex) => {
+                .filter((item, itemIndex, obj) => {
                   return item.type === "image";
                   // Why was the limit for only two photos made here
                   // && itemIndex < 2;
                 })
-                .map((item, itemIndex) => {
+                .map((item, itemIndex, dataObj) => {
                   return (
-                    <img
-                      src={item.url}
-                      alt=""
-                      className="m-1 max-w-[135px] max-h-[135px] float-left"
-                      key={item.url}
-                      onClick={() => {
-                        setMediaData({ url: item.url, type: item.type });
-                        setDisplayMediaModel(true);
-                      }}
-                    />
+                    <>
+                      {itemIndex <= 3 ? (
+                        <div className="m-1 w-[146px] h-[146px] float-left rounded-md overflow-hidden relative">
+                          <img
+                            src={item.url}
+                            alt=""
+                            className="w-full h-full"
+                            key={item.url}
+                            onClick={() => {
+                              setMediaData({
+                                mediaObj: dataObj,
+                                type: "image",
+                              });
+                              setDisplayMediaModel(true);
+                            }}
+                          />
+
+                          {itemIndex === 3 && dataObj.length > 4 ? (
+                            <div className="absolute text-white text-4 font-700 top-0 left-0 w-[146px] h-[146px] customBg flex justify-center items-center">
+                              + {dataObj.length - (itemIndex + 1)}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </>
                   );
                 })
             : null}
@@ -194,10 +210,10 @@ function StringBox({
 
           {attachments != null
             ? attachments
-                .filter((item, itemIndex) => {
+                .filter((item, itemIndex, obj) => {
                   return item.type === "video";
                 })
-                .map((item, itemIndex) => {
+                .map((item, itemIndex, dataObj) => {
                   return (
                     <video
                       controls="controls"
@@ -205,7 +221,10 @@ function StringBox({
                       className="my-2 w-[200] h-max-[200px] "
                       key={item.url}
                       onClick={() => {
-                        setMediaData({ url: item.url, type: item.type });
+                        setMediaData({
+                          mediaObj: dataObj,
+                          type: "video",
+                        });
                         setDisplayMediaModel(true);
                       }}
                     >
@@ -389,15 +408,29 @@ function MoreOptions({ convoId, userId, convoObject }) {
 function DialogBoxMediaDisplay({ onClose, shouldOpen, mediaData }) {
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
-      {mediaData?.type === "image" ? (
-        <img src={mediaData?.url} alt="img" className="max-w-[700px]" />
-      ) : (
-        <video className="w-[500] h-max-[200px]" controls key={mediaData?.url}>
-          <source src={mediaData?.url} type="video/mp4" />
-          <source src={mediaData?.url} type="video/ogg" />
-          Your browser does not support the video tag.
-        </video>
-      )}
+      {mediaData !== null && mediaData.type === "image"
+        ? mediaData?.mediaObj.map((item, itemIndex) => {
+            return (
+              <>
+                <img src={item?.url} alt="img" className="max-w-[700px]" />
+              </>
+            );
+          })
+        : mediaData?.mediaObj.map((item, itemIndex) => {
+            return (
+              <>
+                <video
+                  className="w-[500] h-max-[200px]"
+                  controls
+                  key={item?.url}
+                >
+                  <source src={item?.url} type="video/mp4" />
+                  <source src={item?.url} type="video/ogg" />
+                  Your browser does not support the video tag.
+                </video>
+              </>
+            );
+          })}
     </Dialog>
   );
 }

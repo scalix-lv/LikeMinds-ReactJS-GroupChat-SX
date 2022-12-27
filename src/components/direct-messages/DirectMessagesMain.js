@@ -22,42 +22,44 @@ function DirectMessagesMain() {
   const [conversationObject, setConversationObject] = useState({});
 
   return (
-    <DmContext.Provider
-      value={{
-        currentProfile,
-        setCurrentProfile,
-        homeFeed,
-        setHomeFeed,
-        membersFeed,
-        setMembersFeed,
-        currentChatroom,
-        setCurrentChatroom,
-        currentChatroomConversations,
-        setCurrentChatroomConversations,
-        messageText,
-        setMessageText,
-        audioAttachments,
-        setAudioAttachments,
-        mediaAttachments,
-        setMediaAttachments,
-        documentAttachments,
-        setDocumentAttachments,
-        isConversationSelected,
-        setIsConversationSelected,
-        conversationObject,
-        setConversationObject,
-      }}
-    >
-      <div className="flex overflow-hidden customHeight flex-1">
-        <div className="flex-[.32] customScroll bg-white border-r-[1px] border-[#eeeeee] pt-[20px]">
-          <SearchBarDirectMessages />
-          <CurrentDms />
+    <div>
+      <DmContext.Provider
+        value={{
+          currentProfile,
+          setCurrentProfile,
+          homeFeed,
+          setHomeFeed,
+          membersFeed,
+          setMembersFeed,
+          currentChatroom,
+          setCurrentChatroom,
+          currentChatroomConversations,
+          setCurrentChatroomConversations,
+          messageText,
+          setMessageText,
+          audioAttachments,
+          setAudioAttachments,
+          mediaAttachments,
+          setMediaAttachments,
+          documentAttachments,
+          setDocumentAttachments,
+          isConversationSelected,
+          setIsConversationSelected,
+          conversationObject,
+          setConversationObject,
+        }}
+      >
+        <div className="flex overflow-hidden customHeight flex-1">
+          <div className="flex-[.32] customScroll bg-white border-r-[1px] border-[#eeeeee] pt-[20px]">
+            <SearchBarDirectMessages />
+            <CurrentDms />
+          </div>
+          <div className="flex-[.68] bg-[#f9f6ff] relative pt-[42px]">
+            <Outlet />
+          </div>
         </div>
-        <div className="flex-[.68] bg-[#f9f6ff] relative">
-          <Outlet />
-        </div>
-      </div>
-    </DmContext.Provider>
+      </DmContext.Provider>
+    </div>
   );
 }
 

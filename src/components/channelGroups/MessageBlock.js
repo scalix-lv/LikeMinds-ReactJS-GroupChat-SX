@@ -19,7 +19,7 @@ function MessageBlock({ conversationObject, userId }) {
         flexDirection: userId === currentUser ? "row-reverse" : "row",
       }}
     >
-      {location.pathname.split("/")[1] == "direct-messages" ? (
+      {location.pathname.split("/")[1] === "direct-messages" ? (
         <MessageBoxDM
           userId={userId}
           username={convoDetails.member.name}
