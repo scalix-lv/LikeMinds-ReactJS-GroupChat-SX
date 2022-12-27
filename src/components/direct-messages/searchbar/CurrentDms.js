@@ -106,7 +106,7 @@ function DmTile({ profile }) {
     >
       <div
         onClick={setProfile}
-        className="flex justify-between p-[18px] border border-solid border-[#EEEEEE] cursor-pointer"
+        className="flex justify-between py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
         style={{
           backgroundColor:
             profile.unseen_conversation_count > 0 ? "#ECF3FF" : "#FFFFFF",
@@ -120,7 +120,7 @@ function DmTile({ profile }) {
               profile.unseen_conversation_count > 0 ? "#3884F7" : "#323232",
           }}
         >
-          {profile.chatroom.member.name}
+          {profile.chatroom.chatroom_with_user.name}
         </Typography>
         <Typography
           component={"span"}
@@ -148,7 +148,7 @@ function DmInviteTile({ title, handleCurrentProfile, profile }) {
       onClick={() => {
         handleCurrentProfile(profile);
       }}
-      className="bg-white flex justify-between p-[18px] border border-solid border-[#EEEEEE] cursor-pointer"
+      className="bg-white flex justify-between py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
     >
       <Box>
         <Typography
@@ -225,7 +225,7 @@ function MemberTile({ groupTitle }) {
 
 function NotAddedMemberTile({ groupTitle }) {
   return (
-    <Box className="flex justify-between px-3.5 py-[18px] border-t-0 text-center border-b">
+    <Box className="flex justify-between px-3.5 py-[16px] px-[20px] border-t-0 text-center border-b">
       <Typography component={"span"} className="text-base font-normal">
         {groupTitle}
       </Typography>
