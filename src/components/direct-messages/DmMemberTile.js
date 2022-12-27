@@ -1,13 +1,29 @@
 import { Margin } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { communityId } from "../..";
+import { directMessageInfoPath } from "../../routes";
 import { requestDM } from "../../sdkFunctions";
 import { DmContext } from "./DirectMessagesMain";
 
 function DmMemberTile({ profile, profileIndex }) {
+  const navigate = useNavigate();
   console.log(profile);
   function reqDM() {
     requestDM(profile.id);
+  }
+  function routeToProfile() {
+    navigate(
+      directMessageInfoPath +
+        `?memberId=${profile.id}&communityId=${communityId}`,
+      {
+        state: {
+          communityId: communityId,
+          memberId: profile.id,
+        },
+      }
+    );
   }
   return (
     <div className="flex justify-between py-[10px] px-[20px] border border-solid border-[#EEEEEE] cursor-pointer">
@@ -29,15 +45,24 @@ function DmMemberTile({ profile, profileIndex }) {
       >
         Message
       </Button>
-      <Button
-        sx={{
-          width: "107px",
-          height: "34px",
+      <Link
+        to={directMessageInfoPath + `/${profile.id}`}
+        state={{
+          communityId: communityId,
+          memberId: profile.id,
         }}
-        variant="outlined"
       >
-        View Profile
-      </Button>
+        <Button
+          sx={{
+            width: "107px",
+            height: "34px",
+          }}
+          variant="outlined"
+          // onClick={routeToProfile}
+        >
+          View Profile
+        </Button>
+      </Link>
     </div>
   );
 }

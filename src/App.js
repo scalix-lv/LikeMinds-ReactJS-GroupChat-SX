@@ -70,7 +70,7 @@ const router = createBrowserRouter([
             element: <ChatArea />,
           },
           {
-            path: directMessageInfoPath,
+            path: directMessageInfoPath + "/:memberId",
             element: <PersonInfo />,
           },
         ],
