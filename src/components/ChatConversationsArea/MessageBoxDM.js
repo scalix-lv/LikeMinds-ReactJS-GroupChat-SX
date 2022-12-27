@@ -1,7 +1,7 @@
 import { Box, Dialog, IconButton, Menu, MenuItem } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { myClient, UserContext } from "../..";
+import { communityId, myClient, UserContext } from "../..";
 import { GroupContext } from "../../Main";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
 import emojiIcon from "../../assets/svg/smile.svg";
@@ -89,7 +89,7 @@ function StringBox({
           <Link
             to={directMessageInfoPath}
             state={{
-              communityId: dmContext.currentProfile.community.id,
+              communityId: communityId,
               memberId: userId,
             }}
           >

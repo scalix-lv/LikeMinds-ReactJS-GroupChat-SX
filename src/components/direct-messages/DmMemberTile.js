@@ -10,7 +10,7 @@ import { DmContext } from "./DirectMessagesMain";
 function DmMemberTile({ profile, profileIndex }) {
   const navigate = useNavigate();
   let dmContext = useContext(DmContext);
-  console.log(profile);
+  // console.log(profile);
   async function reqDM() {
     try {
       let call = await requestDM(profile.id);
@@ -18,26 +18,22 @@ function DmMemberTile({ profile, profileIndex }) {
         myClient,
         call.data.chatroom_id
       );
+      console.log(profileData);
       dmContext.setCurrentProfile(profileData.data);
       dmContext.setCurrentChatroom(profileData.data.chatroom);
     } catch (error) {
       console.log(error);
     }
   }
-  function routeToProfile() {
-    navigate(
-      directMessageInfoPath +
-        `?memberId=${profile.id}&communityId=${communityId}`,
-      {
-        state: {
-          communityId: communityId,
-          memberId: profile.id,
-        },
-      }
-    );
-  }
+
   return (
-    <div className="flex justify-between items-center py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer">
+    <div
+      className="flex justify-between items-center py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
+      style={{
+        backgroundColor:
+          dmContext.currentChatroom.id === profile.id ? "#ECF3FF" : "#FFFFFF",
+      }}
+    >
       <div className="flex flex-col">
         <div className="text-[#323232] text-[16px] capitalize">
           {profile.name}
@@ -69,7 +65,7 @@ function DmMemberTile({ profile, profileIndex }) {
         Message
       </Button>
       <Link
-        to={directMessageInfoPath + `/${profile.id}`}
+        to={directMessageInfoPath}
         state={{
           communityId: communityId,
           memberId: profile.id,

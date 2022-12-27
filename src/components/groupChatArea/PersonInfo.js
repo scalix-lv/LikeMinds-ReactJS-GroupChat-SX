@@ -37,8 +37,10 @@ function PersonInfo() {
       try {
         const memberCall = await myClient.profileData({
           community_id: communityId,
-          member_id: memberId,
+          member_id: location.state.memberId,
         });
+        console.log(location.state);
+        console.log(memberCall);
         setProfileData(memberCall?.member);
       } catch (error) {
         console.log(error);

@@ -36,7 +36,11 @@ function CurrentDms() {
 
   useEffect(() => {
     if (sessionStorage.getItem("dmContext") !== null) {
-      if (Object.keys(dmContext.currentProfile).length) {
+      console.log(dmContext);
+      if (
+        dmContext.currentProfile != undefined &&
+        Object.keys(dmContext.currentProfile)?.length
+      ) {
         sessionStorage.setItem("dmContext", JSON.stringify(dmContext));
       } else {
         let c = JSON.parse(sessionStorage.getItem("dmContext"));
@@ -56,14 +60,14 @@ function CurrentDms() {
 
   return (
     <Box>
-      {/* <Button
+      <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button> */}
+      </Button>
       {dmContext.homeFeed.map((feed, feedIndex) => {
         return <DmTile profile={feed} key={feedIndex} />;
       })}
@@ -97,6 +101,7 @@ function DmTile({ profile }) {
     dmContext.setCurrentProfile(profile);
     dmContext.setCurrentChatroom(profile.chatroom);
   }
+  console.log(profile);
   return (
     <Link
       to={directMessageChatPath}
@@ -109,7 +114,9 @@ function DmTile({ profile }) {
         className="flex justify-between py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
         style={{
           backgroundColor:
-            profile.unseen_conversation_count > 0 ? "#ECF3FF" : "#FFFFFF",
+            dmContext.currentChatroom.id === profile.chatroom.id
+              ? "#ECF3FF"
+              : "#FFFFFF",
         }}
       >
         <Typography
