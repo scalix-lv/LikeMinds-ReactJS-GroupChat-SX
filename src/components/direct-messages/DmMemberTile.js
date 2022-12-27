@@ -2,16 +2,27 @@ import { Margin } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { communityId } from "../..";
+import { communityId, myClient } from "../..";
 import { directMessageInfoPath } from "../../routes";
-import { requestDM } from "../../sdkFunctions";
+import { getChatRoomDetails, requestDM } from "../../sdkFunctions";
 import { DmContext } from "./DirectMessagesMain";
 
 function DmMemberTile({ profile, profileIndex }) {
   const navigate = useNavigate();
+  let dmContext = useContext(DmContext);
   console.log(profile);
-  function reqDM() {
-    requestDM(profile.id);
+  async function reqDM() {
+    try {
+      let call = await requestDM(profile.id);
+      let profileData = await getChatRoomDetails(
+        myClient,
+        call.data.chatroom_id
+      );
+      dmContext.setCurrentProfile(profileData.data);
+      dmContext.setCurrentChatroom(profileData.data.chatroom);
+    } catch (error) {
+      console.log(error);
+    }
   }
   function routeToProfile() {
     navigate(
