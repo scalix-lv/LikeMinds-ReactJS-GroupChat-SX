@@ -10,7 +10,6 @@ function MessageBlock({ conversationObject, userId }) {
   const userContext = useContext(UserContext);
   const currentUser = userContext.currentUser.id;
   const location = useLocation();
-  // console.log(location);
 
   return (
     <Box

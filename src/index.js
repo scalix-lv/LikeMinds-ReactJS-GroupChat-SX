@@ -9,7 +9,7 @@ import { initiateSDK } from "./sdkFunctions";
 export const myClient = new LikeMinds({
   apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
   baseUrl: "https://auth.likeminds.community",
-  xMemberId: "53208f29-5d15-473e-ab70-5fd77605be0f",
+  xMemberId: "f661a53c-48bf-4791-b74b-4ecc4bdb934f",
   xPlatformCode: "web",
   xVersionCode: 16,
 });

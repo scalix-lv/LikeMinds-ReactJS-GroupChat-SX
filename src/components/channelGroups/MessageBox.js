@@ -85,10 +85,8 @@ function StringBox({
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
   const [displayMediaModal, setDisplayMediaModel] = useState(false);
-  // let shouldOPenModel = Boolean(displayMediaModal);
   const [mediaData, setMediaData] = useState(null);
-  // console.log(userId);
-  // console.log(userContext.currentUser.id);
+
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
@@ -328,7 +326,6 @@ function MoreOptions({ convoId, userId, convoObject }) {
         conversation_id: convoid,
       });
       setShouldShowBlock(!shouldShow);
-      console.log(deleteCall);
     } catch (error) {
       console.log(error);
     }
@@ -341,8 +338,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       title: "Reply",
       clickFunction: (e) => {
         selectedConversationContext.setIsSelected(true);
-        console.log(selectedConversationContext);
-        console.log(convoObject);
+
         selectedConversationContext.setConversationObject(convoObject);
       },
     },
@@ -423,8 +419,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
         <EmojiPicker
           onEmojiClick={(e) => {
             addReaction(e.emoji, convoId, groupContext.activeGroup.id)
-              .then((r) => console.log(r))
-              .catch((e) => console.log(e));
+              
             handleCloseEmoji();
           }}
         />

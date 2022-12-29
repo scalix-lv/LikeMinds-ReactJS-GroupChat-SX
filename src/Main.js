@@ -31,7 +31,6 @@ function Main() {
   const userContext = useContext(UserContext);
   const [refreshState, setRefreshState] = useState(true);
   function refreshGroups() {
-    console.log("hello refreshing the state");
     setRefreshState(!refreshState);
   }
   useEffect(() => {

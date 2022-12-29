@@ -55,21 +55,7 @@ function SearchBarContainer() {
 }
 
 function MatchFoundContainer({ matchArray }) {
-  return (
-    // matchArray.map((matchObject, matchIndex) => {
-    //     console.log(matchObject)
-    //     if (matchObject.matchType === 0) {
-    //         return (
-    //             // <MatchTileHead matchHeading={matchObject.title} key={matchObject.title+matchIndex}/>
-    //         )
-    //     } else {
-    //         return (
-    //             null
-    //         )
-    //     }
-    // })
-    <MatchTileHead matchObject={matchArray} />
-  );
+  return <MatchTileHead matchObject={matchArray} />;
 }
 
 function MatchTileHead({ matchObject }) {

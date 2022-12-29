@@ -101,10 +101,10 @@ function InputSearchField() {
       page: pageNo,
     };
     let response = await getConversationsForGroup(optionObject);
-    console.log(response);
+
     if (!response.error) {
       let conversations = response.data;
-      console.log(conversations);
+
       let conversationToBeSetArray = [];
       let newConversationArray = [];
       let lastDate = "";
@@ -125,12 +125,11 @@ function InputSearchField() {
         }
       }
       newConversationArray.push(conversationToBeSetArray);
-      console.log(newConversationArray);
+
       setConversationArray(newConversationArray);
     } else {
       console.log(response.errorMessage);
     }
-    // console.log(response)
   };
   let handleSendMessage = async () => {
     try {
@@ -155,7 +154,6 @@ function InputSearchField() {
       } else if (filesArray.length > 0) {
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
       }
-      console.log(filesArray);
 
       if (res != null && filesArray.length > 0) {
         let index = 0;
@@ -178,9 +176,9 @@ function InputSearchField() {
           } else {
             fileType = "image";
           }
-          console.log(newFile.size);
+
           let fileUploadRes = await myClient.uploadMedia(config);
-          console.log(fileUploadRes);
+
           let onUploadCall = await myClient.onUploadFile({
             conversation_id: res.data.id,
             files_count: 1,
@@ -192,7 +190,6 @@ function InputSearchField() {
             type: fileType,
             url: fileUploadRes.Location,
           });
-          console.log(onUploadCall);
         }
       } else {
         return {
@@ -231,7 +228,7 @@ function InputSearchField() {
           selectedConversationContext.conversationObject.id;
       }
       let callRes = await myClient.onConversationsCreate(config);
-      console.log(callRes);
+
       let oldConversationArr = conversationContext.conversationsArray;
       let oldLength = oldConversationArr.length;
       let newConvoArr = [...oldConversationArr];
@@ -239,11 +236,9 @@ function InputSearchField() {
       if (
         callRes.conversation.date === oldConversationArr[oldLength - 1][0].date
       ) {
-        console.log(userContext.currentUser);
         callRes.conversation.member = userContext.currentUser;
         newConvoArr[oldLength - 1].push(callRes.conversation);
       } else {
-        console.log(userContext.currentUser);
         callRes.conversation.member = userContext.currentUser;
         newConvoArr.push([...callRes.conversation]);
       }
@@ -253,36 +248,14 @@ function InputSearchField() {
       selectedConversationContext.setIsSelected(false);
       selectedConversationContext.setConversationObject(null);
       clearInputFiles(inputContext);
-      // fn(
-      //   groupContext.activeGroup.chatroom.id,
-      //   100,
-      //   conversationContext.setConversationArray
-      // );
+
       return { error: false, data: callRes };
     } catch (error) {
       return { error: true, errorMessage: error };
     }
   };
 
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  useEffect(() => {
-    const textString = inputContext.text;
-    const inputStrArr = textString.split(" ");
-    let l = inputStrArr.length - 1;
-    console.log("hehe");
-    if (inputStrArr[l] === "@") {
-      setOpen(true);
-      setAnchorEl(ref);
-    } else {
-      setOpen(false);
-      setAnchorEl(ref);
-    }
-  }, [inputContext.text]);
   const [openReplyBox, setOpenReplyBox] = useState(false);
-  useEffect(() => {
-    console.log(inputContext);
-  }, [inputContext.text, inputContext.textVal]);
 
   useEffect(() => {
     setOpenReplyBox(true);
@@ -290,7 +263,6 @@ function InputSearchField() {
 
   const [memberDetailsArray, setMemberDetailsArray] = useState([]);
   useEffect(() => {
-    console.log(groupContext);
     let memberArr = [];
 
     if (groupContext.activeGroup.membersDetail?.length > 0) {
@@ -303,7 +275,7 @@ function InputSearchField() {
         });
       }
     }
-    console.log(memberArr);
+
     setMemberDetailsArray(memberArr);
   }, [groupContext.activeGroup]);
 
@@ -374,7 +346,6 @@ function InputSearchField() {
           value={inputContext.text}
           onChange={(event) => inputContext.setText(event.target.value)}
           onKeyDown={(e) => {
-            // console.log("down");
             if (e.key === "Enter") {
               keyObj.enter = true;
             }
@@ -382,18 +353,15 @@ function InputSearchField() {
               keyObj.shift = true;
             }
             if (keyObj.enter === true && keyObj.shift === true) {
-              console.log("here");
               let newStr = inputContext.text;
               newStr += " \n ";
               inputContext.setText(newStr);
             } else if (keyObj.enter == true && keyObj.shift == false) {
-              console.log("hello");
               e.preventDefault();
               handleSendMessage();
             }
           }}
           onKeyUp={(e) => {
-            // console.log("up");
             if (e.key === "Enter") {
               keyObj.enter = false;
             }
@@ -520,12 +488,7 @@ function OptionButtonBox({ option, accept, file, setFile }) {
           style={{ display: "none" }}
           multiple
           accept={accept}
-          onClick={() => {
-            console.log("clicking");
-          }}
           onChange={(e) => {
-            console.log("yo");
-            console.log(e.target.files);
             setFile(e.target.files);
           }}
         />
@@ -586,7 +549,7 @@ function ImagePreview() {
       <div className="w-full shadow-sm p-3 flex justify-between">
         {mediaArray.map((file, fileIndex) => {
           const fileTypeInitial = file.type.split("/")[0];
-          console.log(fileTypeInitial);
+
           if (fileTypeInitial === "image") {
             return (
               <div className="max-w-[120px]" key={file.name + fileIndex}>

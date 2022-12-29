@@ -26,10 +26,8 @@ export const createNewClient = (key) => {
 
 export const getChatRoomDetails = async (myClient: Typicode, chatRoomId) => {
   try {
-    console.log(chatRoomId);
-
     const chatRoomResponse = await myClient.getChatroom(chatRoomId);
-    // console.log(chatRoomResponse);
+
     return jsonReturnHandler(chatRoomResponse, null);
   } catch (error) {
     console.log(error);
@@ -40,7 +38,7 @@ export const getChatRoomDetails = async (myClient: Typicode, chatRoomId) => {
 export const getConversationsForGroup = async (optionObject) => {
   try {
     let conversationCall = await myClient.getConversations(optionObject);
-    // console.log(conversationCall)
+
     return jsonReturnHandler(conversationCall.conversations, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
@@ -167,12 +165,12 @@ export async function getAllChatroomMember(
       community_id: communityId,
       page: pageNoToCall,
     });
-    console.log(allMemberCall);
+
     let shouldLoadMore = allMemberCall.members.length < 10 ? false : true;
     let newList = [...list];
 
     newList = [...list, ...allMemberCall.members];
-    console.log(newList);
+
     setFunction(newList);
     return shouldLoadMore;
   } catch (error) {
@@ -186,11 +184,8 @@ export async function getAllChatroomMember(
 // userContext.
 
 export function mergeInputFiles(inputContext) {
-  console.log(inputContext);
   let { mediaFiles, audioFiles, docFiles } = inputContext;
-  console.log(mediaFiles);
-  console.log(audioFiles);
-  console.log(docFiles);
+
   let newArr = [...mediaFiles, ...audioFiles, ...docFiles];
   return newArr;
 }
@@ -377,13 +372,12 @@ export async function allChatroomMembersDm(communityId) {
 }
 
 export async function requestDM(memberId) {
-  console.log(memberId);
   try {
     let call = await myClient.reqDmFeed({
       community_id: communityId,
       member_id: memberId,
     });
-    console.log(call);
+
     return jsonReturnHandler(call, null);
   } catch (error) {
     return jsonReturnHandler(null, error);

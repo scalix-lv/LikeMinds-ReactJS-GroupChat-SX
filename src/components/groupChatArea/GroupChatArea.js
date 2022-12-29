@@ -142,39 +142,31 @@ function GroupChatArea() {
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
-    console.log(groupContext.activeGroup.chatroom?.id);
     const query = REF(
       db,
       `/collabcards/${groupContext.activeGroup.chatroom?.id}`
     );
     return onValue(query, (snapshot) => {
-      const data = snapshot.val();
-      console.log(data);
-      console.log(groupContext.activeGroup);
+      // const data = snapshot.val();
+
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
         chatRoomContext.refreshChatroomContext();
-        // let c = myClient.fbListener(Object.keys(data)[0]);
-        // console.log(c());
       }
     });
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
-    console.log(groupContext.activeGroup.chatroom?.id);
     const query = REF(db, `users/${userContext.currentUser.id}`);
     return onValue(query, (snapshot) => {
-      const data = snapshot.val();
-      console.log(data);
-      console.log(groupContext.activeGroup);
+      // const data = snapshot.val();
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
         chatRoomContext.refreshChatroomContext();
-        // console.log(data);
       }
     });
   }, []);
@@ -208,16 +200,6 @@ function GroupChatArea() {
       >
         {groupContext.activeGroup.chatroom?.id !== undefined ? (
           <>
-            {/* <InfiniteScroll
-              inverse={true}
-              dataLength={conversationContext.conversationsArray.length}
-              hasMore={shouldLoadMoreConversations}
-              next={() =>
-                fnPagination(groupContext.activeGroup.chatroom.id, 50)
-              }
-              loader={<div>LOADING</div>}
-            > */}
-            {/* <div ref={scrollTop} onScroll={() => {}}> */}
             {conversationContext.conversationsArray.map((convoArr, index) => {
               return (
                 <RegularBox
@@ -226,8 +208,7 @@ function GroupChatArea() {
                 />
               );
             })}
-            {/* </div> */}
-            {/* </InfiniteScroll> */}
+
             <div
               style={{
                 flexGrow: 0.4,
