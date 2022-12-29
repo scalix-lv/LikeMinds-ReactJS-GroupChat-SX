@@ -11,8 +11,6 @@ import Tittle from "./tittle/Tittle";
 import { onValue, ref as REF } from "firebase/database";
 // import { initializeApp } from "firebase/app";
 import { ChatRoomContext } from "../Groups/Groups";
-import InfiniteScroll from "react-infinite-scroll-component";
-import InfiniteScrollReverse from "react-infinite-scroll-reverse/dist/InfiniteScrollReverse";
 // Exported Styled Box
 
 export const StyledBox = styled(Box)({

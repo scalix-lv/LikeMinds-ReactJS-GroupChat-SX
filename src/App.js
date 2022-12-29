@@ -87,10 +87,11 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [community, setCommunity] = useState({});
   useEffect(() => {
-    initiateSDK(false, "53208f29-5d15-473e-ab70-5fd77605be0f", "gaurav")
+    initiateSDK(false, "13630c87-9128-42b1-8108-434a90cf649b", "gaurav")
       .then((res) => {
-        setCommunity(res.data.community);
-        setCurrentUser(res.data.user);
+        console.log(res);
+        setCommunity(res.data.data.community);
+        setCurrentUser(res.data.data.user);
       })
       .catch((error) => {
         console.log(error);
@@ -100,6 +101,7 @@ function App() {
 
   useEffect(() => {
     console.log(currentUser);
+    console.log(community);
   }, [currentUser]);
 
   return (
@@ -112,7 +114,9 @@ function App() {
           setCommunity: setCommunity,
         }}
       >
-        <RouterProvider router={router} />
+        {Object.keys(currentUser).length > 0 ? (
+          <RouterProvider router={router} />
+        ) : null}
       </UserContext.Provider>
       {/* <Block/> */}
     </div>
