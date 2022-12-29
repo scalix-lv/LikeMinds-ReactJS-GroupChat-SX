@@ -85,9 +85,11 @@ const router = createBrowserRouter([
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
+  const [community, setCommunity] = useState({});
   useEffect(() => {
     initiateSDK(false, "53208f29-5d15-473e-ab70-5fd77605be0f", "gaurav")
       .then((res) => {
+        setCommunity(res.data.community);
         setCurrentUser(res.data.user);
       })
       .catch((error) => {
@@ -106,6 +108,8 @@ function App() {
         value={{
           currentUser: currentUser,
           setCurrentUser: setCurrentUser,
+          community: community,
+          setCommunity: setCommunity,
         }}
       >
         <RouterProvider router={router} />

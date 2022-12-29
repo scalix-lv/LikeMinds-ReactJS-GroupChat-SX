@@ -15,7 +15,7 @@ import {
   useNavigation,
   useParams,
 } from "react-router-dom";
-import { communityId, myClient } from "../..";
+import { communityId, myClient, UserContext } from "../..";
 import backIcon from "../../assets/svg/arrow-left.svg";
 
 import userIcon from "./../../assets/user.png";
@@ -24,6 +24,7 @@ import Tittle from "./tittle/Tittle";
 
 function PersonInfo() {
   const gc = useContext(GroupContext);
+  const userContext = useContext(UserContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
 
@@ -35,7 +36,7 @@ function PersonInfo() {
     const fn = async () => {
       try {
         const memberCall = await myClient.profileData({
-          community_id: communityId,
+          community_id: userContext.community.id,
           member_id: location.state.memberId,
         });
         setProfileData(memberCall?.member);

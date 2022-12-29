@@ -89,7 +89,7 @@ function StringBox({
           <Link
             to={directMessageInfoPath}
             state={{
-              communityId: communityId,
+              communityId: userContext.community.id,
               memberId: userId,
             }}
           >

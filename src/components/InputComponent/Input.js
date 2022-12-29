@@ -14,7 +14,7 @@ import camera from "./../../assets/svg/camera.svg";
 import mic from "./../../assets/svg/mic.svg";
 import paperclip from "./../../assets/svg/paperclip.svg";
 import { GroupContext } from "../../Main";
-import { myClient } from "../..";
+import { myClient, UserContext } from "../..";
 import {
   ConversationContext,
   CurrentSelectedConversationContext,
@@ -88,7 +88,9 @@ function Input() {
 
 function InputSearchField() {
   const groupContext = useContext(GroupContext);
+  const userContext = useContext(UserContext);
   const ref = useRef();
+  const conversationContext = useContext(ConversationContext);
   const inputContext = useContext(InputContext);
   const selectedConversationContext = useContext(
     CurrentSelectedConversationContext
@@ -229,7 +231,23 @@ function InputSearchField() {
           selectedConversationContext.conversationObject.id;
       }
       let callRes = await myClient.onConversationsCreate(config);
-
+      console.log(callRes);
+      let oldConversationArr = conversationContext.conversationsArray;
+      let oldLength = oldConversationArr.length;
+      let newConvoArr = [...oldConversationArr];
+      // newConvoArr.push(callRes.conversation);
+      if (
+        callRes.conversation.date === oldConversationArr[oldLength - 1][0].date
+      ) {
+        console.log(userContext.currentUser);
+        callRes.conversation.member = userContext.currentUser;
+        newConvoArr[oldLength - 1].push(callRes.conversation);
+      } else {
+        console.log(userContext.currentUser);
+        callRes.conversation.member = userContext.currentUser;
+        newConvoArr.push([...callRes.conversation]);
+      }
+      conversationContext.setConversationArray(newConvoArr);
       setTextVal("");
       inputContext.setText("");
       selectedConversationContext.setIsSelected(false);

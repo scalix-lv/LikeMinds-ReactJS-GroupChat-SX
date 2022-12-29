@@ -4,9 +4,6 @@ import Typicode from "likeminds-apis-sdk";
 import { json } from "react-router-dom";
 import { communityId, myClient } from "..";
 import { groupPersonalInfoPath } from "../routes";
-// import('likeminds-apis-sdk/dist/chatroom/types').ConversationData as conversationData
-// import * as DB from "firebase/database";
-// DB.Da;
 export const jsonReturnHandler = (data, error) => {
   let returnObject = {
     error: false,
@@ -105,8 +102,6 @@ export async function getReportingOptions() {
     return jsonReturnHandler(null, e);
   }
 }
-
-// communityId = 50421
 
 export async function addReaction(reaction, convoId, chatId) {
   try {
@@ -405,14 +400,3 @@ export async function canDirectMessage() {
     return jsonReturnHandler(null, error);
   }
 }
-
-export const config = {
-  apiKey: "AIzaSyBWjDQEiYKdQbQNvoiVvvOn_cbufQzvWuo",
-  authDomain: "collabmates-beta.firebaseapp.com",
-  databaseURL: "https://collabmates-beta.firebaseio.com",
-  projectId: "collabmates-beta",
-  storageBucket: "collabmates-beta.appspot.com",
-  messagingSenderId: "983690302378",
-  appId: "1:983690302378:web:b2fa2c58f2351d5c1b91d3",
-  measurementId: "G-R2PXYC9F4S",
-};
