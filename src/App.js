@@ -89,20 +89,13 @@ function App() {
   useEffect(() => {
     initiateSDK(false, "f661a53c-48bf-4791-b74b-4ecc4bdb934f", "Gaurav")
       .then((res) => {
-        console.log(res);
         setCommunity(res.data.data.community);
         setCurrentUser(res.data.data.user);
       })
       .catch((error) => {
         console.log(error);
-        alert("error at " + __dirname + "inside useEffect");
       });
   }, []);
-
-  useEffect(() => {
-    console.log(currentUser);
-    console.log(community);
-  }, [currentUser]);
 
   return (
     <div className="App h-[100vh] flex flex-1">

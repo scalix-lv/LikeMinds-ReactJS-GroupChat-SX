@@ -30,7 +30,6 @@ function PersonInfo() {
 
   const [profileDate, setProfileData] = useState({});
   const navigate = useNavigate();
-  let { memberId } = useParams();
 
   useEffect(() => {
     const fn = async () => {
@@ -80,7 +79,11 @@ function PersonInfo() {
         <Box className="ml-3 mt-4 text-[#323232]">
           <div className="w-[60px] h-[60px] border-[1px] border-[#eeeeee] bg-[#eeeeee] text-[30px] mr-2.5 rounded-[5px] flex justify-center items-center">
             {profileDate.image_url !== "" ? (
-              <img src={profileDate.image_url} className="w-full h-full" />
+              <img
+                src={profileDate.image_url}
+                className="w-full h-full"
+                alt="h"
+              />
             ) : (
               profileDate?.name[0]
             )}

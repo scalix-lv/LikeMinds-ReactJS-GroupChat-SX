@@ -27,7 +27,6 @@ function GroupInfo() {
       setParticipantList
     )
       .then((res) => {
-        console.log(res);
         if (res) {
           setLoadMore(true);
         } else {
@@ -35,7 +34,6 @@ function GroupInfo() {
         }
       })
       .catch((res) => {
-        console.log("here");
         setLoadMore(res);
       });
   };
@@ -45,9 +43,7 @@ function GroupInfo() {
       callFn();
     }
   }, [gc.activeGroup]);
-  useEffect(() => {
-    console.log(participantList);
-  });
+
   return (
     <div className="overflow-auto w-full h-full">
       {/* Title Header */}
@@ -101,7 +97,6 @@ function GroupInfo() {
 }
 
 function ParticipantTile({ index, profile }) {
-  console.log(profile);
   const navigate = useNavigate();
   const groupContext = useContext(GroupContext);
   return (

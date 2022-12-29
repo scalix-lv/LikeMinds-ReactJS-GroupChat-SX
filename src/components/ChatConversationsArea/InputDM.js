@@ -83,10 +83,10 @@ function InputSearchField({ updateHeight }) {
       page: pageNo,
     };
     let response = await getConversationsForGroup(optionObject);
-    console.log(response);
+
     if (!response.error) {
       let conversations = response.data;
-      console.log(conversations);
+
       let conversationToBeSetArray = [];
       let newConversationArray = [];
       let lastDate = "";
@@ -107,7 +107,7 @@ function InputSearchField({ updateHeight }) {
         }
       }
       newConversationArray.push(conversationToBeSetArray);
-      console.log(newConversationArray);
+
       setConversationArray(newConversationArray);
     } else {
       console.log(response.errorMessage);
@@ -143,7 +143,7 @@ function InputSearchField({ updateHeight }) {
       } else if (filesArray.length > 0) {
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
       }
-      console.log(filesArray);
+
       updateHeight();
       if (res != null && filesArray.length > 0) {
         let index = 0;
@@ -166,9 +166,9 @@ function InputSearchField({ updateHeight }) {
           } else {
             fileType = "image";
           }
-          console.log(newFile.size);
+
           let fileUploadRes = await myClient.uploadMedia(config);
-          console.log(fileUploadRes);
+
           let onUploadCall = await myClient.onUploadFile({
             conversation_id: res.data.id,
             files_count: 1,
@@ -180,7 +180,7 @@ function InputSearchField({ updateHeight }) {
             type: fileType,
             url: fileUploadRes.Location,
           });
-          console.log(onUploadCall);
+
           updateHeight();
         }
       } else {
@@ -253,23 +253,6 @@ function InputSearchField({ updateHeight }) {
   }, [dmContext.conversationObject]);
 
   const [memberDetailsArray, setMemberDetailsArray] = useState([]);
-  //   useEffect(() => {
-  //     // console.log(groupContext);
-  //     let memberArr = [];
-
-  //     if (groupContext.activeGroup.membersDetail?.length > 0) {
-  //       for (let member of groupContext.activeGroup?.membersDetail) {
-  //         memberArr.push({
-  //           id: member.id,
-  //           display: member.name,
-  //           community: groupContext.activeGroup.community.id,
-  //           imageUrl: member.image_url,
-  //         });
-  //       }
-  //     }
-  //     console.log(memberArr);
-  //     setMemberDetailsArray(memberArr);
-  //   }, [groupContext.activeGroup]);
 
   let keyObj = {
     enter: false,
@@ -334,7 +317,6 @@ function InputSearchField({ updateHeight }) {
           value={dmContext.messageText ? dmContext.messageText : ""}
           onChange={(event) => dmContext.setMessageText(event.target.value)}
           onKeyDown={(e) => {
-            // console.log("down");
             if (e.key === "Enter") {
               keyObj.enter = true;
             }
@@ -342,18 +324,15 @@ function InputSearchField({ updateHeight }) {
               keyObj.shift = true;
             }
             if (keyObj.enter === true && keyObj.shift === true) {
-              console.log("here");
               let newStr = dmContext.messageText;
               newStr += " \n ";
               dmContext.setMessageText(newStr);
             } else if (keyObj.enter == true && keyObj.shift == false) {
-              console.log("hello");
               e.preventDefault();
               handleSendMessage();
             }
           }}
           onKeyUp={(e) => {
-            // console.log("up");
             if (e.key === "Enter") {
               keyObj.enter = false;
             }
@@ -480,12 +459,7 @@ function OptionButtonBox({ option, accept, file, setFile }) {
           style={{ display: "none" }}
           multiple
           accept={accept}
-          onClick={() => {
-            console.log("clicking");
-          }}
           onChange={(e) => {
-            console.log("yo");
-            console.log(e.target.files);
             setFile(e.target.files);
           }}
         />

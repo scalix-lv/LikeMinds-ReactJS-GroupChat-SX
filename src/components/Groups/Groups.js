@@ -26,7 +26,12 @@ export const ChatRoomContext = createContext({
 });
 
 // for getting the list  of chatroom
-export const fn = async (chatroomList, setChatRoomsList, setShouldLoadMore, communityId) => {
+export const fn = async (
+  chatroomList,
+  setChatRoomsList,
+  setShouldLoadMore,
+  communityId
+) => {
   try {
     const pageNoToCall = Math.floor(chatroomList.length / 10) + 1;
     const feedCall = await myClient.getHomeFeedData({
@@ -34,8 +39,6 @@ export const fn = async (chatroomList, setChatRoomsList, setShouldLoadMore, comm
       page: pageNoToCall,
     });
     let newChatRoomList = chatroomList.concat(feedCall.my_chatrooms);
-
-    console.log(newChatRoomList);
     setChatRoomsList(newChatRoomList);
     if (feedCall.my_chatrooms.length < 10) {
       setShouldLoadMore(false);
@@ -67,7 +70,7 @@ export const getUnjoinedList = async (
 
 function Groups() {
   const groupContext = useContext(GroupContext);
-  const userContext = useContext(UserContext)
+  const userContext = useContext(UserContext);
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const [shouldLoadMoreHomeFeed, setShouldLoadMoreHomeFeed] = useState(true);
@@ -81,13 +84,11 @@ function Groups() {
   useEffect(() => {
     if (Object.keys(groupContext.activeGroup).length == 0) {
       if (sessionStorage.getItem("groupContext")) {
-        console.log("here");
         let c = JSON.parse(sessionStorage.getItem("groupContext"));
-        console.log(c);
+
         groupContext.setActiveGroup(c);
       }
     } else {
-      console.log("idhar bhi aa agye");
       sessionStorage.setItem(
         "groupContext",
         JSON.stringify(groupContext.activeGroup)
@@ -101,8 +102,18 @@ function Groups() {
   useEffect(() => {
     // loading the list of chatrooms (already joined)
 
-    fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed, userContext.community.id);
-    getUnjoinedList(unJoined, setUnjoined, setShouldLoadMoreUnjoinedFeed, userContext.community.id);
+    fn(
+      chatRoomsList,
+      setChatRoomsList,
+      setShouldLoadMoreHomeFeed,
+      userContext.community.id
+    );
+    getUnjoinedList(
+      unJoined,
+      setUnjoined,
+      setShouldLoadMoreUnjoinedFeed,
+      userContext.community.id
+    );
   }, []);
   return (
     <div>

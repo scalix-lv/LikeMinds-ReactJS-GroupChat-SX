@@ -42,15 +42,12 @@ function CurrentGroups() {
   async function getChatRoomData(chatroomId) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
-      console.log(chatRoomData);
     } catch (error) {
       console.log(error);
     }
   }
   const chatroomContext = useContext(ChatRoomContext);
-  useEffect(() => {
-    console.log("CHAT ROOM LIST HORI H REFRESH");
-  }, [chatroomContext.chatRoomList, chatroomContext.unJoined]);
+  useEffect(() => {}, [chatroomContext.chatRoomList, chatroomContext.unJoined]);
   return (
     <Box>
       {<PublicGroup groupList={chatroomContext.chatRoomsList} />}
