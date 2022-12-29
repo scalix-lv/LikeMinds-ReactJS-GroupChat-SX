@@ -7,6 +7,8 @@ import AcceptInvite from "./components/groupChatArea/AcceptInvite";
 import PersonInfo from "./components/groupChatArea/PersonInfo";
 import {
   addedByMePath,
+  directMessageChatPath,
+  directMessageInfoPath,
   directMessagePath,
   eventsPath,
   forumPath,
@@ -22,6 +24,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import { UserContext } from ".";
 import { initiateSDK } from "./sdkFunctions";
+import ChatArea from "./components/direct-messages/ChatArea";
 
 const router = createBrowserRouter([
   {
@@ -60,8 +63,17 @@ const router = createBrowserRouter([
       },
       {
         path: directMessagePath,
-        // element: <DirectMessagesMain/>,
         element: <DirectMessagesMain />,
+        children: [
+          {
+            path: directMessageChatPath,
+            element: <ChatArea />,
+          },
+          {
+            path: directMessageInfoPath,
+            element: <PersonInfo />,
+          },
+        ],
       },
       {
         path: addedByMePath,
@@ -72,29 +84,32 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState({});
+  const [community, setCommunity] = useState({});
   useEffect(() => {
-    initiateSDK(false, "707a866a-2d28-4b8d-b34b-382ac76c8b85", "gaurav")
+    initiateSDK(false, "f661a53c-48bf-4791-b74b-4ecc4bdb934f", "Gaurav")
       .then((res) => {
-        setCurrentUser(res.data.user);
+        setCommunity(res.data.data.community);
+        setCurrentUser(res.data.data.user);
       })
       .catch((error) => {
         console.log(error);
-        alert("error at " + __dirname + "inside useEffect");
       });
   }, []);
-  useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
+
   return (
     <div className="App h-[100vh] flex flex-1">
       <UserContext.Provider
         value={{
           currentUser: currentUser,
           setCurrentUser: setCurrentUser,
+          community: community,
+          setCommunity: setCommunity,
         }}
       >
-        <RouterProvider router={router} />
+        {Object.keys(currentUser).length > 0 ? (
+          <RouterProvider router={router} />
+        ) : null}
       </UserContext.Provider>
       {/* <Block/> */}
     </div>

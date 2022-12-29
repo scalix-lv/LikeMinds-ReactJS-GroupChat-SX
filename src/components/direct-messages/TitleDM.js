@@ -1,18 +1,20 @@
 import styled from "@emotion/styled";
 import { Box, Typography } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import Gap from "../../styledAccessories/Gap";
 
 import SearchBar from "../../styledAccessories/SearchBar";
 import MoreOptions from "../../styledAccessories/MoreOptions";
+import { Link, useNavigate } from "react-router-dom";
+import { directMessageInfoPath } from "../../routes";
+import { DmContext } from "./DirectMessagesMain";
 const TitleBox = styled(Box)({
   display: "flex",
-  borderBottom: "1px solid #ADADAD",
   width: "100%",
-  marginRight: "96px",
-  marginLeft: "24px",
-  padding: "0 0 16px",
-  marginTop: "24px",
+  borderBottom: "1px solid #adadad",
+  margin: "0 120px 0px 28px",
+  padding: "0 0 10px 0px",
+  boxShadow: "none",
 });
 
 function TittleDm({ title }) {
@@ -29,23 +31,28 @@ function TittleDm({ title }) {
 }
 
 function TitleArea({ title }) {
+  const navigate = useNavigate();
+  const dmContext = useContext(DmContext);
   return (
-    <Box className="text-left">
-      {/* For Group Title */}
+    <div
+      className="text-left"
+      onClick={() => {
+        navigate(directMessageInfoPath, {
+          state: {
+            memberId: dmContext.currentChatroom.chatroom_with_user.id,
+            communityId: dmContext.currentProfile.community.id,
+          },
+        });
+      }}
+    >
       <span component={"p"} className="font-semibold text-xl leading-6">
         {title ? title : null}
       </span>
       <div />
-      <span className="text-xs font-medium text-[#ADADAD]">member</span>
-
-      {/* For Group Members */}
-
-      {/* <Typography component={'p'}
-            className="text-sm font-normal leading-[14.5px]"
-            sx={{
-                fontFamily: "Lato",
-            }}>{memberCount ? memberCount : null} members</Typography> */}
-    </Box>
+      <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD]">
+        Member
+      </span>
+    </div>
   );
 }
 

@@ -1,20 +1,12 @@
-import {
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  MenuList,
-  TextField,
-} from "@mui/material";
+import { Box, IconButton, Menu, MenuList } from "@mui/material";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import SendIcon from "./../../assets/svg/send.svg";
-import styled from "@emotion/styled";
 import smiley from "./../../assets/svg/smile.svg";
 import camera from "./../../assets/svg/camera.svg";
 import mic from "./../../assets/svg/mic.svg";
 import paperclip from "./../../assets/svg/paperclip.svg";
 import { GroupContext } from "../../Main";
-import { myClient, UserContext } from "../..";
+import { myClient } from "../..";
 import {
   ConversationContext,
   CurrentSelectedConversationContext,
@@ -29,19 +21,10 @@ import {
 import EmojiPicker from "emoji-picker-react";
 import { MentionsInput, Mention } from "react-mentions";
 // import Mentions
-import m from "./m";
-import MessageBox from "../channelGroups/MessageBox";
+
 import { Close } from "@mui/icons-material";
 import "./Input.css";
-const StyledInputWriteComment = styled(TextField)({
-  background: "#F9F9F9",
-  borderRadius: "20px",
-  ".MuiInputBase-input.MuiFilledInput-input": {
-    padding: "16px",
-    borderBottom: "none",
-    borderRadius: "20px",
-  },
-});
+import { DmContext } from "../direct-messages/DirectMessagesMain";
 
 export const InputContext = React.createContext({
   audioFiles: [],
@@ -56,7 +39,7 @@ export const InputContext = React.createContext({
   setTextVal: () => {},
 });
 
-function Input() {
+function InputDM({ updateHeight }) {
   const [audioFiles, setAudioFiles] = useState("");
   const [mediaFiles, setMediaFiles] = useState("");
   const [docFiles, setDocFiles] = useState("");
@@ -79,23 +62,22 @@ function Input() {
           setTextVal: setTextVal,
         }}
       >
-        <InputSearchField />
+        <InputSearchField updateHeight={updateHeight} />
         <InputOptions />
       </InputContext.Provider>
     </Box>
   );
 }
 
-function InputSearchField() {
-  const groupContext = useContext(GroupContext);
-  const userContext = useContext(UserContext);
+function InputSearchField({ updateHeight }) {
+  const dmContext = useContext(DmContext);
   const ref = useRef();
-  const conversationContext = useContext(ConversationContext);
-  const inputContext = useContext(InputContext);
-  const selectedConversationContext = useContext(
-    CurrentSelectedConversationContext
-  );
-  const fn = async (chatroomId, pageNo, setConversationArray) => {
+
+  const getChatroomConversations = async (
+    chatroomId,
+    pageNo,
+    setConversationArray
+  ) => {
     let optionObject = {
       chatroomID: chatroomId,
       page: pageNo,
@@ -133,11 +115,17 @@ function InputSearchField() {
   };
   let handleSendMessage = async () => {
     try {
-      let isRepliedConvo = selectedConversationContext.isSelected;
-      let { text, setText } = inputContext;
+      let isRepliedConvo = dmContext.isConversationSelected;
+      //   let { text, setText } = inputContext;
+      let { messageText, setMessageText } = dmContext;
+      let [text, setText] = [messageText, setMessageText];
+      let inputContext = {
+        mediaFiles: dmContext.mediaAttachments,
+        audioFiles: dmContext.audioAttachments,
+        docFiles: dmContext.documentAttachments,
+      };
       let filesArray = mergeInputFiles(inputContext);
       let res = null;
-      // textValT = textVal.
       let tv = text;
       if (tv.length != 0) {
         if (!filesArray.length) {
@@ -151,16 +139,18 @@ function InputSearchField() {
             isRepliedConvo
           );
         }
+        updateHeight();
       } else if (filesArray.length > 0) {
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
       }
 
+      updateHeight();
       if (res != null && filesArray.length > 0) {
         let index = 0;
         for (let newFile of filesArray) {
           let config = {
             messageId: res.data.id,
-            chatroomId: groupContext.activeGroup.chatroom.id,
+            chatroomId: dmContext.currentChatroom.id,
             file: newFile,
             // index?: number,
           };
@@ -190,8 +180,11 @@ function InputSearchField() {
             type: fileType,
             url: fileUploadRes.Location,
           });
+
+          updateHeight();
         }
       } else {
+        updateHeight();
         return {
           error: false,
           data: res,
@@ -217,67 +210,49 @@ function InputSearchField() {
         created_at: Date.now(),
         has_files: false,
         // attachment_count: false,
-        chatroom_id: groupContext.activeGroup.chatroom.id,
+        chatroom_id: dmContext.currentChatroom.id,
       };
       if (has_files) {
         config.attachment_count = attachment_count;
         config.has_files = true;
       }
       if (isRepliedConvo) {
-        config.replied_conversation_id =
-          selectedConversationContext.conversationObject.id;
+        config.replied_conversation_id = dmContext.conversationObject.id;
       }
       let callRes = await myClient.onConversationsCreate(config);
 
-      let oldConversationArr = conversationContext.conversationsArray;
-      let oldLength = oldConversationArr.length;
-      let newConvoArr = [...oldConversationArr];
-      // newConvoArr.push(callRes.conversation);
-      if (
-        callRes.conversation.date === oldConversationArr[oldLength - 1][0].date
-      ) {
-        callRes.conversation.member = userContext.currentUser;
-        newConvoArr[oldLength - 1].push(callRes.conversation);
-      } else {
-        callRes.conversation.member = userContext.currentUser;
-        newConvoArr.push([...callRes.conversation]);
-      }
-      conversationContext.setConversationArray(newConvoArr);
       setTextVal("");
-      inputContext.setText("");
-      selectedConversationContext.setIsSelected(false);
-      selectedConversationContext.setConversationObject(null);
-      clearInputFiles(inputContext);
-
+      //   inputContext.setText("");
+      dmContext.setMessageText();
+      //   selectedConversationContext.setIsSelected(false);
+      dmContext.setIsConversationSelected(false);
+      //   selectedConversationContext.setConversationObject(null);
+      dmContext.setConversationObject(null);
+      dmContext.setAudioAttachments([]);
+      dmContext.setMediaAttachments([]);
+      dmContext.setDocumentAttachments([]);
+      getChatroomConversations(
+        dmContext.currentChatroom.id,
+        1000,
+        dmContext.setCurrentChatroomConversations
+      );
+      updateHeight();
       return { error: false, data: callRes };
     } catch (error) {
       return { error: true, errorMessage: error };
     }
   };
 
+  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
   const [openReplyBox, setOpenReplyBox] = useState(false);
 
   useEffect(() => {
     setOpenReplyBox(true);
-  }, [selectedConversationContext.conversationObject]);
+  }, [dmContext.conversationObject]);
 
   const [memberDetailsArray, setMemberDetailsArray] = useState([]);
-  useEffect(() => {
-    let memberArr = [];
-
-    if (groupContext.activeGroup.membersDetail?.length > 0) {
-      for (let member of groupContext.activeGroup?.membersDetail) {
-        memberArr.push({
-          id: member.id,
-          display: member.name,
-          community: groupContext.activeGroup.community.id,
-          imageUrl: member.image_url,
-        });
-      }
-    }
-
-    setMemberDetailsArray(memberArr);
-  }, [groupContext.activeGroup]);
 
   let keyObj = {
     enter: false,
@@ -290,7 +265,7 @@ function InputSearchField() {
       }}
     >
       {/* for adding reply */}
-      {selectedConversationContext.isSelected ? (
+      {dmContext.isConversationSelected ? (
         <div
           className="w-full justify-between shadow-sm overflow-auto bg-white absolute h-[80px] rounded-[5px]"
           style={{
@@ -300,19 +275,15 @@ function InputSearchField() {
         >
           <div className="border-l-4 border-l-green-500 px-2 text-[14px]">
             <p className="mb-3 mt-2 text-green-500">
-              {selectedConversationContext.conversationObject?.member.name}
+              {dmContext.conversationObject?.member.name}
             </p>
-            <div>
-              {getString(
-                selectedConversationContext.conversationObject?.answer
-              )}
-            </div>
+            <div>{getString(dmContext.conversationObject?.answer)}</div>
           </div>
           <div>
             <IconButton
               onClick={() => {
-                selectedConversationContext.setIsSelected(false);
-                selectedConversationContext.setConversationObject(null);
+                dmContext.setIsConversationSelected(false);
+                dmContext.setConversationObject(null);
               }}
             >
               <Close />
@@ -343,8 +314,8 @@ function InputSearchField() {
           inputRef={ref}
           spellCheck="false"
           placeholder="Write a Comment..."
-          value={inputContext.text}
-          onChange={(event) => inputContext.setText(event.target.value)}
+          value={dmContext.messageText ? dmContext.messageText : ""}
+          onChange={(event) => dmContext.setMessageText(event.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               keyObj.enter = true;
@@ -353,9 +324,9 @@ function InputSearchField() {
               keyObj.shift = true;
             }
             if (keyObj.enter === true && keyObj.shift === true) {
-              let newStr = inputContext.text;
+              let newStr = dmContext.messageText;
               newStr += " \n ";
-              inputContext.setText(newStr);
+              dmContext.setMessageText(newStr);
             } else if (keyObj.enter == true && keyObj.shift == false) {
               e.preventDefault();
               handleSendMessage();
@@ -422,7 +393,7 @@ function InputSearchField() {
 }
 
 function InputOptions() {
-  const fileContext = useContext(InputContext);
+  const dmContext = useContext(DmContext);
   const optionArr = [
     {
       title: "emojis",
@@ -431,20 +402,20 @@ function InputOptions() {
     {
       title: "audio",
       Icon: mic,
-      file: fileContext.audioFiles,
-      setFile: fileContext.setAudioFiles,
+      file: dmContext.audioAttachments,
+      setFile: dmContext.setAudioAttachments,
     },
     {
       title: "camera",
       Icon: camera,
-      file: fileContext.mediaFiles,
-      setFile: fileContext.setMediaFiles,
+      file: dmContext.mediaAttachments,
+      setFile: dmContext.setMediaAttachments,
     },
     {
       title: "attach",
       Icon: paperclip,
-      file: fileContext.docFiles,
-      setFile: fileContext.setDocFiles,
+      file: dmContext.documentAttachments,
+      setFile: dmContext.setDocumentAttachments,
     },
   ];
   return (
@@ -507,7 +478,7 @@ function EmojiButton({ option }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const inputContext = useContext(InputContext);
+  const dmContext = useContext(DmContext);
   return (
     <div>
       <IconButton ref={ref} onClick={handleOpen}>
@@ -516,9 +487,9 @@ function EmojiButton({ option }) {
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={handleClose}>
         <EmojiPicker
           onEmojiClick={(e) => {
-            let newText = inputContext.text;
+            let newText = dmContext.messageText;
             newText += `${e.emoji}`;
-            inputContext.setText(newText);
+            dmContext.setMessageText(newText);
           }}
         />
       </Menu>
@@ -526,20 +497,37 @@ function EmojiButton({ option }) {
   );
 }
 
-export default Input;
+function MentionBox({ mentionData }) {
+  return <MenuList>Hello</MenuList>;
+}
+export default InputDM;
 
 function ImagePreview() {
-  const inputContext = useContext(InputContext);
+  const [previewUrl, setPreviewUrl] = useState("");
+  //   const inputContext = useContext(InputContext);
+  const dmContext = useContext(DmContext);
   const [mediaArray, setMediaArray] = useState([]);
   useEffect(() => {
+    // let {audioFiles, docFiles, mediaFiles} = inputContext
+    // let newArr = mergeInputFiles(inputContext);
     let newArr = [];
-    for (let nf of inputContext.mediaFiles) {
+    // if (newArr.length > 0) {
+    //   // setPreviewUrl(URL.createObjectURL(newArr[0]));
+    //   setMediaArray(newArr)
+    // } else {
+    //   setPreviewUrl("");
+    // }
+    for (let nf of dmContext.mediaAttachments) {
       if (nf.type.split("/")[0] === "image") {
         newArr.push(nf);
       }
     }
     setMediaArray(newArr);
-  }, [inputContext.audioFiles, inputContext.mediaFiles, inputContext.docFiles]);
+  }, [
+    dmContext.mediaAttachments,
+    dmContext.audioAttachments,
+    dmContext.documentAttachments,
+  ]);
   return (
     <div
       style={{
@@ -549,7 +537,7 @@ function ImagePreview() {
       <div className="w-full shadow-sm p-3 flex justify-between">
         {mediaArray.map((file, fileIndex) => {
           const fileTypeInitial = file.type.split("/")[0];
-
+          console.log(fileTypeInitial);
           if (fileTypeInitial === "image") {
             return (
               <div className="max-w-[120px]" key={file.name + fileIndex}>
@@ -562,7 +550,9 @@ function ImagePreview() {
         })}
         <IconButton
           onClick={() => {
-            clearInputFiles(inputContext);
+            dmContext.setAudioAttachments([]);
+            dmContext.setMediaAttachments([]);
+            dmContext.setDocumentAttachments([]);
           }}
         >
           <Close />

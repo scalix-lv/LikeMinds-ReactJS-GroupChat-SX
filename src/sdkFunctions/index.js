@@ -1,10 +1,9 @@
+import { async } from "@firebase/util";
+import { data } from "autoprefixer";
 import Typicode from "likeminds-apis-sdk";
 import { json } from "react-router-dom";
-import { myClient } from "..";
+import { communityId, myClient } from "..";
 import { groupPersonalInfoPath } from "../routes";
-// import('likeminds-apis-sdk/dist/chatroom/types').ConversationData as conversationData
-// import * as DB from "firebase/database";
-// DB.Da;
 export const jsonReturnHandler = (data, error) => {
   let returnObject = {
     error: false,
@@ -27,10 +26,8 @@ export const createNewClient = (key) => {
 
 export const getChatRoomDetails = async (myClient: Typicode, chatRoomId) => {
   try {
-    console.log(chatRoomId);
-
     const chatRoomResponse = await myClient.getChatroom(chatRoomId);
-    // console.log(chatRoomResponse);
+
     return jsonReturnHandler(chatRoomResponse, null);
   } catch (error) {
     console.log(error);
@@ -41,7 +38,7 @@ export const getChatRoomDetails = async (myClient: Typicode, chatRoomId) => {
 export const getConversationsForGroup = async (optionObject) => {
   try {
     let conversationCall = await myClient.getConversations(optionObject);
-    // console.log(conversationCall)
+
     return jsonReturnHandler(conversationCall.conversations, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
@@ -103,8 +100,6 @@ export async function getReportingOptions() {
     return jsonReturnHandler(null, e);
   }
 }
-
-// communityId = 50421
 
 export async function addReaction(reaction, convoId, chatId) {
   try {
@@ -170,12 +165,12 @@ export async function getAllChatroomMember(
       community_id: communityId,
       page: pageNoToCall,
     });
-    console.log(allMemberCall);
+
     let shouldLoadMore = allMemberCall.members.length < 10 ? false : true;
     let newList = [...list];
 
     newList = [...list, ...allMemberCall.members];
-    console.log(newList);
+
     setFunction(newList);
     return shouldLoadMore;
   } catch (error) {
@@ -189,11 +184,8 @@ export async function getAllChatroomMember(
 // userContext.
 
 export function mergeInputFiles(inputContext) {
-  console.log(inputContext);
   let { mediaFiles, audioFiles, docFiles } = inputContext;
-  console.log(mediaFiles);
-  console.log(audioFiles);
-  console.log(docFiles);
+
   let newArr = [...mediaFiles, ...audioFiles, ...docFiles];
   return newArr;
 }
@@ -204,12 +196,12 @@ export function clearInputFiles(inputContext) {
   inputContext.setDocFiles([]);
 }
 
-export async function getUnjoinedRooms(community_id) {
+export async function getUnjoinedRooms(community_id, pageNo) {
   try {
     let unjoinedGroups = await myClient.fetchFeedData({
       community_id,
       order_type: 0,
-      page: 1,
+      page: pageNo ? pageNo : 1,
     });
     return jsonReturnHandler(unjoinedGroups, null);
   } catch (error) {
@@ -246,16 +238,7 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
   }
 }
 
-export function tagExtracter(str, groupContext, userId, navigate) {
-  function nav() {
-    console.log("here");
-    navigate(groupPersonalInfoPath, {
-      state: {
-        communityId: groupContext.activeGroup.community.id,
-        memberId: userId,
-      },
-    });
-  }
+export function tagExtracter(str) {
   let newContent = str
     .split("<<")
     .join(`<span hl="Sd" style="color: green; cursor:pointer;">`);
@@ -342,13 +325,72 @@ export async function markRead(chatroomId) {
   }
 }
 
-export const config = {
-  apiKey: "AIzaSyBWjDQEiYKdQbQNvoiVvvOn_cbufQzvWuo",
-  authDomain: "collabmates-beta.firebaseapp.com",
-  databaseURL: "https://collabmates-beta.firebaseio.com",
-  projectId: "collabmates-beta",
-  storageBucket: "collabmates-beta.appspot.com",
-  messagingSenderId: "983690302378",
-  appId: "1:983690302378:web:b2fa2c58f2351d5c1b91d3",
-  measurementId: "G-R2PXYC9F4S",
-};
+export async function getDmHomeFeed(communityId) {
+  try {
+    let dmFeedCall = await myClient.getDMFeed({
+      community_id: communityId,
+    });
+    return jsonReturnHandler(dmFeedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function canDmHomeFeed(communityId) {
+  try {
+    let dmFeedCall = await myClient.canDMFeed({
+      community_id: communityId,
+    });
+    return jsonReturnHandler(dmFeedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function dmChatFeed(communityId, pageNo) {
+  try {
+    let dmFeedCall = await myClient.DmChatroom({
+      community_id: communityId,
+      page: pageNo,
+    });
+    return jsonReturnHandler(dmFeedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function allChatroomMembersDm(communityId) {
+  try {
+    let feedCall = await myClient.dmAllMembers({
+      community_id: communityId,
+      page: 1,
+    });
+    return jsonReturnHandler(feedCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function requestDM(memberId) {
+  try {
+    let call = await myClient.reqDmFeed({
+      community_id: communityId,
+      member_id: memberId,
+    });
+
+    return jsonReturnHandler(call, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function canDirectMessage() {
+  try {
+    let call = await myClient.canDmFeed({
+      community_id: communityId,
+    });
+    return jsonReturnHandler(call, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}

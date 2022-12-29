@@ -20,23 +20,13 @@ import { groupMainPath } from "../../../routes";
 import cancelIcon from "../../../assets/svg/cancel.svg";
 import acceptIcon from "../../../assets/svg/accept.svg";
 import { GroupContext } from "../../../Main";
-import { ChatRoomContext } from "../Groups";
+import { ChatRoomContext, fn, getUnjoinedList } from "../Groups";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 function CurrentGroups() {
-  const groupContext = useContext(GroupContext);
-  const userContext = useContext(UserContext);
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(false);
+
   // content to be deleted
-  const groupsInfo = [
-    {
-      title: "Founders Social",
-      newUnread: 3,
-    },
-    {
-      title: "Socialize and Stratagize",
-      newUnread: 0,
-    },
-  ];
 
   const groupsInviteInfo = [
     {
@@ -48,18 +38,16 @@ function CurrentGroups() {
       groupType: "private",
     },
   ];
-
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
-      console.log(chatRoomData);
     } catch (error) {
       console.log(error);
     }
   }
   const chatroomContext = useContext(ChatRoomContext);
-
+  useEffect(() => {}, [chatroomContext.chatRoomList, chatroomContext.unJoined]);
   return (
     <Box>
       {<PublicGroup groupList={chatroomContext.chatRoomsList} />}
@@ -81,64 +69,42 @@ function CurrentGroups() {
           {shouldOpenPublicCard ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
         </IconButton>
       </div>
-      <Collapse in={shouldOpenPublicCard}>
-        {chatroomContext.unJoined.map((group, groupIndex) => {
-          return (
-            // <Link
-            //   to={groupMainPath}
-            //   onClick={() => {
-            //     getChatRoomData(group.chatroom.id);
-            //   }}
-            // >
-            <UnjoinedGroup
-              groupTitle={group.title}
-              group={group}
-              key={group.title + groupIndex}
-            />
-            // </Link>
-          );
-        })}
+      <Collapse
+        in={shouldOpenPublicCard}
+        sx={{
+          maxHeight: "400px",
+          overflowY: "auto",
+        }}
+      >
+        <InfiniteScroll
+          hasMore={false}
+          next={() => {
+            getUnjoinedList(
+              chatroomContext.unJoined,
+              chatroomContext.setUnjoined,
+              chatroomContext.setShouldLoadMoreUnjoinedFeed
+            );
+          }}
+          dataLength={chatroomContext.unJoined.length}
+        >
+          {chatroomContext.unJoined.map((group, groupIndex) => {
+            return (
+              <UnjoinedGroup
+                groupTitle={group.title}
+                group={group}
+                key={group.title + groupIndex}
+              />
+            );
+          })}
+        </InfiniteScroll>
       </Collapse>
     </Box>
   );
 }
 
-function GroupTile({ title, newUnread, getChatRoomData }) {
-  return (
-    <div
-      className="flex justify-between p-[18px] border-t border-b border-[#EEEEEE] bg-inherit"
-      onClick={() => {
-        getChatRoomData("none");
-      }}
-    >
-      <Typography
-        component={"span"}
-        className="text-base font-normal"
-        sx={{
-          color: newUnread > 0 ? "#3884F7" : "#323232",
-        }}
-      >
-        {title}
-        {newUnread <= 0 ? (
-          <span className="bg-[#FFEFC6] rounded-[4px] px-[6px] py-[5px] text-[#F6BD2A] line-height-[12px] text-[10px] font-medium m-1">
-            Private
-          </span>
-        ) : null}
-      </Typography>
-      <span
-        className="text-xs font-light"
-        style={{
-          color: newUnread > 0 ? "#3884F7" : "#323232",
-        }}
-      >
-        {newUnread > 0 ? <>{newUnread} new messages</> : null}
-      </span>
-    </div>
-  );
-}
-
 function PublicGroup({ groupTitle, groupList }) {
   const [shouldOpen, setShouldOpen] = useState(true);
+  const [loadMoreGroups, shouldLoadMoreGroups] = useState(true);
   function handleCollapse() {
     setShouldOpen(!shouldOpen);
   }
@@ -169,38 +135,59 @@ function PublicGroup({ groupTitle, groupList }) {
       <Collapse
         in={shouldOpen}
         className="border-b border-solid border-[#EEEEEE]"
+        sx={{
+          maxHeight: "400px",
+          overflowY: "auto",
+        }}
       >
-        {chatroomContext.chatRoomList.map((group, groupIndex) => {
-          return (
-            <Link
-              to={groupMainPath}
-              onClick={() => {
-                getChatRoomData(group.chatroom.id);
-              }}
-              key={group.chatroom.id + groupIndex}
-            >
-              <div>
-                <PublicGroupTile
-                  key={group.chatroom.id + groupIndex}
-                  groupTitle={group.chatroom.header}
-                  group={group}
-                />
-              </div>
-            </Link>
-          );
-        })}
+        <InfiniteScroll
+          hasMore={chatroomContext.shouldLoadMoreHomeFeed}
+          next={() => {
+            fn(
+              chatroomContext.chatRoomList,
+              chatroomContext.setChatRoomList,
+              chatroomContext.setShouldLoadMoreHomeFeed
+            );
+          }}
+          dataLength={chatroomContext.chatRoomList.length}
+        >
+          {chatroomContext.chatRoomList.map((group, groupIndex) => {
+            return (
+              <Link
+                to={groupMainPath}
+                onClick={() => {
+                  getChatRoomData(group.chatroom.id);
+                }}
+                key={group.chatroom.id + groupIndex + group.chatroom.header}
+              >
+                <div>
+                  <PublicGroupTile
+                    key={group.chatroom.id + groupIndex}
+                    groupTitle={group.chatroom.header}
+                    group={group}
+                  />
+                </div>
+              </Link>
+            );
+          })}
+        </InfiniteScroll>
       </Collapse>
     </Box>
   );
 }
 
-function PublicGroupTile({ groupTitle, group = { group } }) {
+function PublicGroupTile({ groupTitle, group }) {
   const groupcontext = useContext(GroupContext);
-
+  const chatroomContext = useContext(ChatRoomContext);
   return (
     <div
       onClick={() => {
-        markRead(group.chatroom.id);
+        markRead(group.chatroom.id)
+          .then((res) => {
+            chatroomContext.refreshChatroomContext();
+          })
+          .catch((e) => console.log(e));
+        // groupcontext.refreshContextUi();
       }}
       className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
       style={{

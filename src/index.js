@@ -3,24 +3,17 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-// import Typicode from 'likeminds-apis-sdk';
 import LikeMinds from "likeminds-apis-sdk";
 import { initiateSDK } from "./sdkFunctions";
 
 export const myClient = new LikeMinds({
-  apiKey: "45c469dc-06e1-4f05-914e-dd02419eb53f",
-  baseUrl: "https://beta.likeminds.community/api",
-  xMemberId: "707a866a-2d28-4b8d-b34b-382ac76c8b85",
+  apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
+  baseUrl: "https://auth.likeminds.community",
+  xMemberId: "f661a53c-48bf-4791-b74b-4ecc4bdb934f",
   xPlatformCode: "web",
   xVersionCode: 16,
 });
-
-myClient
-  .getDMFeed({
-    community_id: 50421,
-  })
-  .then((r) => console.log(r))
-  .catch((e) => console.log(e));
+export const communityId = 50421;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -37,4 +30,6 @@ reportWebVitals();
 export const UserContext = React.createContext({
   currentUser: null,
   setCurrentUser: () => {},
+  community: {},
+  setCommunity: () => {},
 });

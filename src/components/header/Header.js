@@ -63,11 +63,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function Header() {
   const userContext = useContext(UserContext);
 
-  // console.log(userContext.currentUser);
-  // let groupContext = useContext(GroupContext);
-  // React.useEffect(() => {
-  //   userContext.currentUser;
-  // });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -101,7 +96,6 @@ export default function Header() {
       }}
       id={menuId}
       keepMounted
-      
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
@@ -172,30 +166,6 @@ export default function Header() {
           {/* === {userContext.currentUser} */}
           <Box className="grow" />
           <Box className="xs:hidden md:flex">
-            {/* <IconButton
-              size="large"
-              aria-label="show 4 new mails"
-              color="inherit"
-            >
-              <Badge className="bg-gray-500 rounded-full p-1" badgeContent={4}>
-                <MailIcon
-                  style={{
-                    fontSize: "18px",
-                  }}
-                />
-              </Badge>
-            </IconButton> */}
-
-            {/* <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
-            >
-              <Badge badgeContent={4} className="bg-gray-500 rounded-full p-1">
-                <NotificationsIcon className="text-lg" />
-              </Badge>
-            </IconButton> */}
-
             <div className="w-[40px] h-[40px] rounded-[50% flex justify-center items-center mt-2 font-bold">
               <img src="./../assets/bell.svg" alt="" />
             </div>
