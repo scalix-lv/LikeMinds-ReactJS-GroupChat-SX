@@ -4,10 +4,10 @@ import React, { useContext, useEffect } from "react";
 import ChatRoomAreaDM from "../ChatConversationsArea/ChatRoomAreaDM";
 import { DmContext } from "./DirectMessagesMain";
 import TittleDm from "./TitleDM";
-import { config, getConversationsForGroup } from "../../sdkFunctions";
-import { getDatabase } from "firebase/database";
-import { initializeApp } from "firebase/app";
+import { getConversationsForGroup } from "../../sdkFunctions";
+
 import { onValue, ref } from "firebase/database";
+import { myClient } from "../..";
 // Exported Styled Box
 export const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
@@ -18,8 +18,7 @@ export const StyledBox = styled(Box)({
 });
 function ChatArea() {
   const dmContext = useContext(DmContext);
-  const app = initializeApp(config);
-  const db = getDatabase(app);
+  let db = myClient.fbInstance;
 
   const getChatroomConversations = async (chatroomId, pageNo) => {
     let optionObject = {

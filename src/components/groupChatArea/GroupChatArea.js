@@ -1,17 +1,18 @@
 import { Box, Button } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { myClient } from "../..";
+import { myClient, UserContext } from "../..";
 import { config, getConversationsForGroup } from "../../sdkFunctions";
 import RegularBox from "../channelGroups/RegularBox";
 import { GroupContext } from "../../Main";
 import Input from "../InputComponent/Input";
 import Tittle from "./tittle/Tittle";
-import { getDatabase } from "firebase/database";
+// import { getDatabase } from "firebase/database";
 import { onValue, ref as REF } from "firebase/database";
-import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
 import { ChatRoomContext } from "../Groups/Groups";
 // Exported Styled Box
+
 export const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
   minHeight: "100vh",
@@ -31,12 +32,8 @@ function GroupChatArea() {
   const chatRoomContext = useContext(ChatRoomContext);
   const conversationContext = useContext(ConversationContext);
   let groupContext = useContext(GroupContext);
-
-  const [shouldLoadMoreChats, setShouldLoadMoreChats] = useState(true);
-  // const [lastMessageId, setLastMessageId] = useState(null);
-  let [msgId, setMsgId] = useState(null);
-  const app = initializeApp(config);
-  const db = getDatabase(app);
+  const userContext = useContext(UserContext);
+  let db = myClient.fbInstance();
   const ref = useRef(null);
 
   // Scroll to bottom
@@ -54,25 +51,14 @@ function GroupChatArea() {
     // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
     let optionObject = {
       chatroomID: chatroomId,
+      page: pageNo,
     };
-    let msgID = sessionStorage.getItem("last_message_id");
-    console.log(msgID);
-    if (msgID !== null) {
-      optionObject.conversation_id = parseInt(msgID);
-      optionObject.scroll_direction = 0;
-      optionObject.page = 50;
-    } else {
-      optionObject.page = 100;
-      // optionObject.scroll_direction = 1;
-    }
 
     let response = await getConversationsForGroup(optionObject);
 
     if (!response.error) {
       let conversations = response.data;
-      if (conversations.length < 50) {
-        setShouldLoadMoreChats(false);
-      }
+
       let conversationToBeSetArray = [];
       let newConversationArray = [];
       let lastDate = "";
@@ -93,7 +79,7 @@ function GroupChatArea() {
         }
       }
       // console.log();
-      sessionStorage.setItem("last_message_id", response.data[0].id);
+
       newConversationArray.push(conversationToBeSetArray);
       conversationContext.setConversationArray(newConversationArray);
     } else {
@@ -106,7 +92,11 @@ function GroupChatArea() {
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
-    const query = REF(db, "collabcards");
+    console.log(groupContext.activeGroup.chatroom?.id);
+    const query = REF(
+      db,
+      `/collabcards/${groupContext.activeGroup.chatroom?.id}`
+    );
     return onValue(query, (snapshot) => {
       const data = snapshot.val();
       console.log(data);
@@ -115,12 +105,26 @@ function GroupChatArea() {
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        fn(groupContext.activeGroup.chatroom?.id, 110).then((e) =>
-          // chatRoomContext.refreshChatroomContext()
-          {
-            console.log("ASDFD");
-          }
-        );
+        chatRoomContext.refreshChatroomContext();
+        // let c = myClient.fbListener(Object.keys(data)[0]);
+        // console.log(c());
+      }
+    });
+  }, [groupContext.activeGroup]);
+
+  useEffect(() => {
+    console.log(groupContext.activeGroup.chatroom?.id);
+    const query = REF(db, `users/${userContext.currentUser.id}`);
+    return onValue(query, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      console.log(groupContext.activeGroup);
+      if (
+        snapshot.exists() &&
+        groupContext.activeGroup.chatroom !== undefined
+      ) {
+        chatRoomContext.refreshChatroomContext();
+        // console.log(data);
       }
     });
   }, []);

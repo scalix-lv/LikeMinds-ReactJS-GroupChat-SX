@@ -11,7 +11,7 @@ import {
 import "./Groups.css";
 import { Button } from "@mui/material";
 import { GroupContext } from "../../Main";
-import { communityId, myClient } from "../..";
+import { communityId, myClient, UserContext } from "../..";
 import { getUnjoinedRooms } from "../../sdkFunctions";
 export const ChatRoomContext = createContext({
   chatRoomList: [],
@@ -26,7 +26,7 @@ export const ChatRoomContext = createContext({
 });
 
 // for getting the list  of chatroom
-export const fn = async (chatroomList, setChatRoomsList, setShouldLoadMore) => {
+export const fn = async (chatroomList, setChatRoomsList, setShouldLoadMore, communityId) => {
   try {
     const pageNoToCall = Math.floor(chatroomList.length / 10) + 1;
     const feedCall = await myClient.getHomeFeedData({
@@ -49,7 +49,8 @@ export const fn = async (chatroomList, setChatRoomsList, setShouldLoadMore) => {
 export const getUnjoinedList = async (
   unJoined,
   setUnjoined,
-  setShouldLoadMore
+  setShouldLoadMore,
+  communityId
 ) => {
   try {
     let pageNoToCall = Math.floor(unJoined.length / 5) + 1;
@@ -66,7 +67,7 @@ export const getUnjoinedList = async (
 
 function Groups() {
   const groupContext = useContext(GroupContext);
-
+  const userContext = useContext(UserContext)
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const [shouldLoadMoreHomeFeed, setShouldLoadMoreHomeFeed] = useState(true);
@@ -100,8 +101,8 @@ function Groups() {
   useEffect(() => {
     // loading the list of chatrooms (already joined)
 
-    fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed);
-    getUnjoinedList(unJoined, setUnjoined, setShouldLoadMoreUnjoinedFeed);
+    fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed, userContext.community.id);
+    getUnjoinedList(unJoined, setUnjoined, setShouldLoadMoreUnjoinedFeed, userContext.community.id);
   }, []);
   return (
     <div>
