@@ -206,12 +206,12 @@ export function clearInputFiles(inputContext) {
   inputContext.setDocFiles([]);
 }
 
-export async function getUnjoinedRooms(community_id) {
+export async function getUnjoinedRooms(community_id, pageNo) {
   try {
     let unjoinedGroups = await myClient.fetchFeedData({
       community_id,
       order_type: 0,
-      page: 1,
+      page: pageNo ? pageNo : 1,
     });
     return jsonReturnHandler(unjoinedGroups, null);
   } catch (error) {

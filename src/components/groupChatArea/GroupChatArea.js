@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { myClient } from "../..";
@@ -27,26 +27,18 @@ export const ConversationContext = React.createContext({
 });
 
 function GroupChatArea() {
-  const [conversationsArray, setConversationArray] = useState([]);
+  // const [conversationContext.conversationsArray, conversationContext.setConversationArray] = useState([]);
   const chatRoomContext = useContext(ChatRoomContext);
+  const conversationContext = useContext(ConversationContext);
   let groupContext = useContext(GroupContext);
+
+  const [shouldLoadMoreChats, setShouldLoadMoreChats] = useState(true);
+  // const [lastMessageId, setLastMessageId] = useState(null);
+  let [msgId, setMsgId] = useState(null);
   const app = initializeApp(config);
   const db = getDatabase(app);
   const ref = useRef(null);
-  const scroll = () => {
-    ref.current?.scrollIntoView({ behaviour: "smooth" });
-  };
-  useEffect(() => {
-    const fn = async () => {
-      try {
-        const chatRoomResponse = await myClient.getChatroom();
-      } catch (error) {
-        console.log(error);
-      }
-    };
 
-    // fn()
-  });
   // Scroll to bottom
   const updateHeight = () => {
     const el = document.getElementById("chat");
@@ -57,16 +49,28 @@ function GroupChatArea() {
     // scroll();
     updateHeight();
   });
+
   const fn = async (chatroomId, pageNo) => {
+    // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
     let optionObject = {
       chatroomID: chatroomId,
-      page: pageNo,
     };
+    console.log(msgId);
+    if (msgId !== null) {
+      optionObject.conversation_id = parseInt(msgId);
+      optionObject.scroll_direction = 0;
+      optionObject.page = 50;
+    } else {
+      optionObject.page = 100;
+    }
+
     let response = await getConversationsForGroup(optionObject);
 
     if (!response.error) {
       let conversations = response.data;
-
+      if (conversations.length < 50) {
+        setShouldLoadMoreChats(false);
+      }
       let conversationToBeSetArray = [];
       let newConversationArray = [];
       let lastDate = "";
@@ -86,88 +90,92 @@ function GroupChatArea() {
           }
         }
       }
+      console.log(response.data[0].id);
+      setMsgId(response.data[0].id);
       newConversationArray.push(conversationToBeSetArray);
-      setConversationArray(newConversationArray);
+      conversationContext.setConversationArray(newConversationArray);
     } else {
       console.log(response.errorMessage);
     }
   };
   useEffect(() => {
     if (groupContext.activeGroup.chatroom?.id)
-      fn(groupContext.activeGroup.chatroom?.id, 1000);
+      fn(groupContext.activeGroup.chatroom?.id, 100);
   }, [groupContext.activeGroup]);
-
-  const [isSelected, setIsSelected] = useState(false);
-  const [conversationObject, setConversationObject] = useState({});
 
   useEffect(() => {
     const query = REF(db, "collabcards");
     return onValue(query, (snapshot) => {
       const data = snapshot.val();
       console.log(data);
+      console.log(groupContext.activeGroup);
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        fn(groupContext.activeGroup.chatroom?.id, 500).then((e) =>
-          chatRoomContext.refreshChatroomContext()
+        fn(groupContext.activeGroup.chatroom?.id, 110).then((e) =>
+          // chatRoomContext.refreshChatroomContext()
+          {
+            console.log("ASDFD");
+            console.log(msgId);
+          }
         );
       }
     });
   }, []);
+  useEffect(() => {
+    console.warn("here we are");
+  }, []);
+  useEffect(() => {
+    console.log("the last message is" + msgId);
+  }, [msgId]);
   return (
-    <ConversationContext.Provider
-      value={{
-        conversationsArray: conversationsArray,
-        setConversationArray: setConversationArray,
-      }}
-    >
-      <CurrentSelectedConversationContext.Provider
-        value={{
-          conversationObject,
-          setConversationObject,
-          setIsSelected,
-          isSelected,
+    <div>
+      <Button
+        fullWidth
+        onClick={() => {
+          console.log(msgId);
         }}
       >
-        {groupContext.activeGroup.chatroom?.id ? (
-          <Tittle
-            headerProps={{
-              title: groupContext.activeGroup.chatroom.header,
-              memberCount: groupContext.activeGroup.participant_count,
-            }}
-          />
-        ) : null}
-        <div
-          id="chat"
-          className="relative overflow-x-hidden overflow-auto"
-          style={{ height: "calc(100vh - 270px)" }}
-        >
-          {groupContext.activeGroup.chatroom?.id !== undefined ? (
-            <>
-              {conversationsArray.map((convoArr, index) => {
-                return (
-                  <RegularBox convoArray={convoArr} key={convoArr[0].date} />
-                );
-              })}
-              <div
-                style={{
-                  flexGrow: 0.4,
-                }}
-              />
-              <div ref={ref}></div>
-              <div className="fixed bottom-0 w-[62.1%]">
-                <Input />
-              </div>
-            </>
-          ) : (
-            <div className="h-full flex justify-center items-center text-[#999]">
-              Select a chat room to start messaging
+        SEE TO IT
+      </Button>
+      {groupContext.activeGroup.chatroom?.id ? (
+        <Tittle
+          headerProps={{
+            title: groupContext.activeGroup.chatroom.header,
+            memberCount: groupContext.activeGroup.participant_count,
+          }}
+        />
+      ) : null}
+      <div
+        id="chat"
+        className="relative overflow-x-hidden overflow-auto"
+        style={{ height: "calc(100vh - 270px)" }}
+      >
+        {groupContext.activeGroup.chatroom?.id !== undefined ? (
+          <>
+            {conversationContext.conversationsArray.map((convoArr, index) => {
+              return (
+                <RegularBox convoArray={convoArr} key={convoArr[0].date} />
+              );
+            })}
+            <div
+              style={{
+                flexGrow: 0.4,
+              }}
+            />
+            <div ref={ref}></div>
+            <div className="fixed bottom-0 w-[62.1%]">
+              <Input />
             </div>
-          )}
-        </div>
-      </CurrentSelectedConversationContext.Provider>
-    </ConversationContext.Provider>
+          </>
+        ) : (
+          <div className="h-full flex justify-center items-center text-[#999]">
+            Select a chat room to start messaging
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
