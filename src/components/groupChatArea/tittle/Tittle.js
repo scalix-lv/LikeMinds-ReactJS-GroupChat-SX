@@ -43,7 +43,6 @@ function TitleArea({ title, memberCount }) {
       <div />
       <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD]">
         <Link to={groupInfoPath}>
-          {/* {" "} */}
           {memberCount ? memberCount : null} members
         </Link>
       </span>

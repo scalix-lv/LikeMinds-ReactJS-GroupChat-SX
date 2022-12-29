@@ -14,7 +14,7 @@ function SearchbarGroups() {
       <TextField
         InputProps={{
           startAdornment: (
-            <InputAdornment className="mr-[16px]">
+            <InputAdornment className="mr-[16px]" position="start">
               <img src={searchIcon} alt="Search Icon" />
             </InputAdornment>
           ),

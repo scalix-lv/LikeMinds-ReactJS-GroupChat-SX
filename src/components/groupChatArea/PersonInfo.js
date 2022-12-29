@@ -8,8 +8,14 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { StyledBox } from "./GroupChatArea";
 import { IconButton } from "@mui/material";
 import { Typography } from "@mui/material";
-import { Link, useLocation } from "react-router-dom";
-import { myClient } from "../..";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useNavigation,
+  useParams,
+} from "react-router-dom";
+import { communityId, myClient, UserContext } from "../..";
 import backIcon from "../../assets/svg/arrow-left.svg";
 
 import userIcon from "./../../assets/user.png";
@@ -18,16 +24,18 @@ import Tittle from "./tittle/Tittle";
 
 function PersonInfo() {
   const gc = useContext(GroupContext);
+  const userContext = useContext(UserContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
-  console.log(location);
+
   const [profileDate, setProfileData] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fn = async () => {
       try {
         const memberCall = await myClient.profileData({
-          community_id: location.state.communityId,
+          community_id: userContext.community.id,
           member_id: location.state.memberId,
         });
         setProfileData(memberCall?.member);
@@ -36,7 +44,7 @@ function PersonInfo() {
       }
     };
     fn();
-  }, []);
+  });
   return (
     <div className="overflow-auto w-full h-full">
       {/* Title Header */}
@@ -50,13 +58,16 @@ function PersonInfo() {
       ) : null}
       {/* Title Header */}
 
-      <div className="mr-[120px] ml-[20px] mt-[10px]">
+      <div className="mr-[120px] ml-[20px]">
         <div className="flex">
-          <Link to={"/groups/main"}>
-            <IconButton>
-              <img src={backIcon} alt="back icon" />
-            </IconButton>
-          </Link>
+          <IconButton
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <img src={backIcon} alt="back icon" />
+          </IconButton>
+
           <div className="text-[20px] mt-[8px] font-[400] leading-[24px]">
             Group Info /{" "}
             <span className="font-[700] text-[#3884F7]">
@@ -68,7 +79,11 @@ function PersonInfo() {
         <Box className="ml-3 mt-4 text-[#323232]">
           <div className="w-[60px] h-[60px] border-[1px] border-[#eeeeee] bg-[#eeeeee] text-[30px] mr-2.5 rounded-[5px] flex justify-center items-center">
             {profileDate.image_url !== "" ? (
-              <img src={profileDate.image_url} className="w-full h-full" />
+              <img
+                src={profileDate.image_url}
+                className="w-full h-full"
+                alt="h"
+              />
             ) : (
               profileDate?.name[0]
             )}

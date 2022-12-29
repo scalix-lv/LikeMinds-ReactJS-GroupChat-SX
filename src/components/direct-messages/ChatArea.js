@@ -1,32 +1,79 @@
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
-import React from "react";
-import GroupChatArea from "../groupChatArea/GroupChatArea";
-// import RegularBox from '../channelGroups/RegularBox'
-import Input from "../InputComponent/Input";
-
-import RegularBox from "./../channelGroups/RegularBox";
+import React, { useContext, useEffect } from "react";
+import ChatRoomAreaDM from "../ChatConversationsArea/ChatRoomAreaDM";
+import { DmContext } from "./DirectMessagesMain";
 import TittleDm from "./TitleDM";
+import { getConversationsForGroup } from "../../sdkFunctions";
 
+import { onValue, ref } from "firebase/database";
+import { myClient } from "../..";
 // Exported Styled Box
 export const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
   minHeight: "100vh",
-  borderTop: "1px solid #EEEEEE",
   display: "flex",
   flexDirection: "column",
   height: "100%",
 });
-function ChatArea({ profile }) {
-  return (
-    <StyledBox>
-      <TittleDm title={profile.name} />
-      {/* <RegularBox/> */}
-      {/* <div className='grow'/> */}
-      <GroupChatArea />
+function ChatArea() {
+  const dmContext = useContext(DmContext);
+  let db = myClient.fbInstance;
 
-      {/* <Input/> */}
-    </StyledBox>
+  const getChatroomConversations = async (chatroomId, pageNo) => {
+    let optionObject = {
+      chatroomID: chatroomId,
+      page: pageNo,
+    };
+    let response = await getConversationsForGroup(optionObject);
+    if (!response.error) {
+      let conversations = response.data;
+      let conversationToBeSetArray = [];
+      let newConversationArray = [];
+      let lastDate = "";
+      for (let convo of conversations) {
+        if (convo.date === lastDate) {
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
+        } else {
+          if (conversationToBeSetArray.length != 0) {
+            newConversationArray.push(conversationToBeSetArray);
+            conversationToBeSetArray = [];
+            conversationToBeSetArray.push(convo);
+            lastDate = convo.date;
+          } else {
+            conversationToBeSetArray.push(convo);
+            lastDate = convo.date;
+          }
+        }
+      }
+      newConversationArray.push(conversationToBeSetArray);
+      dmContext.setCurrentChatroomConversations(newConversationArray);
+    } else {
+      console.log(response.errorMessage);
+    }
+  };
+
+  useEffect(() => {
+    const query = ref(db, "collabcards");
+    return onValue(query, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      if (snapshot.exists() && Object.keys(dmContext.currentChatroom).length) {
+        getChatroomConversations(dmContext.currentChatroom?.id, 500);
+      }
+    });
+  }, []);
+
+  return (
+    <div>
+      <StyledBox>
+        {Object.keys(dmContext.currentChatroom).length > 0 ? (
+          <TittleDm title={dmContext.currentChatroom.chatroom_with_user.name} />
+        ) : null}
+        <ChatRoomAreaDM />
+      </StyledBox>
+    </div>
   );
 }
 
