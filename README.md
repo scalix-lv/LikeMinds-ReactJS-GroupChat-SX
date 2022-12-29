@@ -15,6 +15,8 @@
 - [Available Scripts](#project-setup)
 - [File Structure](#file-structure)
 
+## Getting Started
+
 ## Clone repo
 
 ```shell
