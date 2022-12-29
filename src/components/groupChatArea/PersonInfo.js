@@ -26,12 +26,11 @@ function PersonInfo() {
   const gc = useContext(GroupContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
-  console.log(location);
+
   const [profileDate, setProfileData] = useState({});
   const navigate = useNavigate();
   let { memberId } = useParams();
-  console.log(memberId);
-  // console.log(navigate);
+
   useEffect(() => {
     const fn = async () => {
       try {
@@ -39,8 +38,6 @@ function PersonInfo() {
           community_id: communityId,
           member_id: location.state.memberId,
         });
-        console.log(location.state);
-        console.log(memberCall);
         setProfileData(memberCall?.member);
       } catch (error) {
         console.log(error);
@@ -61,7 +58,7 @@ function PersonInfo() {
       ) : null}
       {/* Title Header */}
 
-      <div className="mr-[120px] ml-[20px] mt-[10px]">
+      <div className="mr-[120px] ml-[20px]">
         <div className="flex">
           <IconButton
             onClick={() => {

@@ -60,14 +60,14 @@ function CurrentDms() {
 
   return (
     <Box>
-      <Button
+      {/* <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button>
+      </Button> */}
       {dmContext.homeFeed.map((feed, feedIndex) => {
         return <DmTile profile={feed} key={feedIndex} />;
       })}
@@ -124,11 +124,14 @@ function DmTile({ profile }) {
           className="text-base font-normal"
           sx={{
             color:
-              profile.unseen_conversation_count > 0 ? "#3884F7" : "#323232",
+              dmContext.currentChatroom.id === profile.chatroom.id
+                ? "#3884F7"
+                : "#323232",
           }}
         >
           {profile.chatroom.chatroom_with_user.name}
         </Typography>
+
         <Typography
           component={"span"}
           className="text-sm font-light"
