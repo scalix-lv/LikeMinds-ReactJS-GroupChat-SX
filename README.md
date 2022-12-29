@@ -1,5 +1,5 @@
 <h1 align="center">
-  Official JavaScript SDK for LikeMinds App 👨🏼‍💻
+  Web Group Chat SX 👨🏼‍💻
 </h1>
 
 ## About LikeMinds
