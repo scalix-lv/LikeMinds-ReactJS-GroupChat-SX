@@ -12,11 +12,10 @@
 
 - [Getting Started](#getting-started)
 - [Prerequisites](#Prerequisites)
-- [VS Code Plugins](#vs-code-plugins)
 - [Available Scripts](#project-setup)
 - [File Structure](#file-structure)
 
-## Clone this repo
+## Clone repo
 
 ```shell
 git clone git@github.com:NateshR/LikeMinds-Web-GroupChat-SX.git
@@ -28,7 +27,9 @@ git clone git@github.com:NateshR/LikeMinds-Web-GroupChat-SX.git
 npm install likeminds-apis-sdk
 ```
 
+```shell
 Run `npm install` and then `npm start`.
+```
 
 ## 🤔 Prerequisites
 
@@ -67,44 +68,9 @@ Folder structure is based on productivity and some personal preferences:
 src
 ├── assets                  * Assets that are imported into your components(images, custom svg, etc).
 ├── App.css                 * Main app styles.
-├── App.jsx                 * Main app component.
-├── api                     * Abstractions for making API requests
-│   └── ...
+├── App.js                  * Main app component.
 ├── components              * Components of the projects that are not the main views.
-│   └── ui                  * Generic and reusable across the whole app. Presentational components eg. Buttons, Inputs, Checkboxes.
-│   └── layout              * Unique and one time use components that will help with app structure.
-│   └── <domain component>  * Belong to a specific domain. Reusable in different pages.
-│   └── ...
-├── plugins                 * Init and config plugins(moment, material-ui, adal, etc).
-│   └── ...
-├── index.jsx               * Entry point of the application.
-├── services                * All the common services. e.g. Authentication, hubs, etc.
-├── store                   * The Redux action types in action-type.js, reducers, selectors and main store in the sub-folders.
-│   ├── index.js
-│   └── middlewares         * Store middlewares.
-│   └── sagas               * Saga files in case of redux-saga.
-│   └── modules             * Store modules/ducks structure.
-│       └── smallModule.js  * Small modules can contain actions, action types, reducers and selectors in the same file.
-│       └── bigModule       * Big modules should be composed by separated files for actions, action types, reducer and selectors.
-│           └── index.js
-│           └── actions.js
-│           └── ...
-├── styles/theme            * All common styles (css) or theme (sass, styled-components).
-├── utils                   * Functions (for tests, for regex value testing, constants or filters.)
-│   └── ...
-├── pages                   * Routed components that represents pages(Presentational Components Only).
-│   └── ...
-└── .vscode                 * VS Code workspace settings to work with ESLint rules and formatting
-                              (you can also lint or fix on save 😉).
-```
-
-**Some important root files**
-
-```text
-.
-├── .editorconfig           * Coding styles (also by programming language).
-├── .env                    * Environment variables (env.production, env.local, env.uat, etc).
-├── .eslintrc.json          * ESLint configuration and rules.
-├── .prettierrc             * Formatting Prettier options.
-└── jsconfig.json           * JS compiler configurations (eg. set the root folder for roots when import files).
+│   └── ui                  * Generic and reusable across the whole app. Presentational components eg. Buttons, Inputs,
+├── sdkFunctions            * All the common services. e.g. Authentication, hubs, etc.
+├── index.js                * Entry point of the application.
 ```
