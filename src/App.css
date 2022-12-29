@@ -41,3 +41,7 @@
 .customBg {
   background-color: rgba(0, 0, 0, 0.5);
 }
+
+.feed-panel::-webkit-scrollbar {
+  display: none;
+}

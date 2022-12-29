@@ -20,23 +20,13 @@ import { groupMainPath } from "../../../routes";
 import cancelIcon from "../../../assets/svg/cancel.svg";
 import acceptIcon from "../../../assets/svg/accept.svg";
 import { GroupContext } from "../../../Main";
-import { ChatRoomContext } from "../Groups";
+import { ChatRoomContext, fn, getUnjoinedList } from "../Groups";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 function CurrentGroups() {
-  const groupContext = useContext(GroupContext);
-  const userContext = useContext(UserContext);
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(false);
+
   // content to be deleted
-  const groupsInfo = [
-    {
-      title: "Founders Social",
-      newUnread: 3,
-    },
-    {
-      title: "Socialize and Stratagize",
-      newUnread: 0,
-    },
-  ];
 
   const groupsInviteInfo = [
     {
@@ -48,7 +38,6 @@ function CurrentGroups() {
       groupType: "private",
     },
   ];
-
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
@@ -83,16 +72,34 @@ function CurrentGroups() {
           {shouldOpenPublicCard ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
         </IconButton>
       </div>
-      <Collapse in={shouldOpenPublicCard}>
-        {chatroomContext.unJoined.map((group, groupIndex) => {
-          return (
-            <UnjoinedGroup
-              groupTitle={group.title}
-              group={group}
-              key={group.title + groupIndex}
-            />
-          );
-        })}
+      <Collapse
+        in={shouldOpenPublicCard}
+        sx={{
+          maxHeight: "400px",
+          overflowY: "auto",
+        }}
+      >
+        <InfiniteScroll
+          hasMore={false}
+          next={() => {
+            getUnjoinedList(
+              chatroomContext.unJoined,
+              chatroomContext.setUnjoined,
+              chatroomContext.setShouldLoadMoreUnjoinedFeed
+            );
+          }}
+          dataLength={chatroomContext.unJoined.length}
+        >
+          {chatroomContext.unJoined.map((group, groupIndex) => {
+            return (
+              <UnjoinedGroup
+                groupTitle={group.title}
+                group={group}
+                key={group.title + groupIndex}
+              />
+            );
+          })}
+        </InfiniteScroll>
       </Collapse>
     </Box>
   );
@@ -100,6 +107,7 @@ function CurrentGroups() {
 
 function PublicGroup({ groupTitle, groupList }) {
   const [shouldOpen, setShouldOpen] = useState(true);
+  const [loadMoreGroups, shouldLoadMoreGroups] = useState(true);
   function handleCollapse() {
     setShouldOpen(!shouldOpen);
   }
@@ -130,26 +138,42 @@ function PublicGroup({ groupTitle, groupList }) {
       <Collapse
         in={shouldOpen}
         className="border-b border-solid border-[#EEEEEE]"
+        sx={{
+          maxHeight: "400px",
+          overflowY: "auto",
+        }}
       >
-        {chatroomContext.chatRoomList.map((group, groupIndex) => {
-          return (
-            <Link
-              to={groupMainPath}
-              onClick={() => {
-                getChatRoomData(group.chatroom.id);
-              }}
-              key={group.chatroom.id + groupIndex}
-            >
-              <div>
-                <PublicGroupTile
-                  key={group.chatroom.id + groupIndex}
-                  groupTitle={group.chatroom.header}
-                  group={group}
-                />
-              </div>
-            </Link>
-          );
-        })}
+        <InfiniteScroll
+          hasMore={chatroomContext.shouldLoadMoreHomeFeed}
+          next={() => {
+            fn(
+              chatroomContext.chatRoomList,
+              chatroomContext.setChatRoomList,
+              chatroomContext.setShouldLoadMoreHomeFeed
+            );
+          }}
+          dataLength={chatroomContext.chatRoomList.length}
+        >
+          {chatroomContext.chatRoomList.map((group, groupIndex) => {
+            return (
+              <Link
+                to={groupMainPath}
+                onClick={() => {
+                  getChatRoomData(group.chatroom.id);
+                }}
+                key={group.chatroom.id + groupIndex + group.chatroom.header}
+              >
+                <div>
+                  <PublicGroupTile
+                    key={group.chatroom.id + groupIndex}
+                    groupTitle={group.chatroom.header}
+                    group={group}
+                  />
+                </div>
+              </Link>
+            );
+          })}
+        </InfiniteScroll>
       </Collapse>
     </Box>
   );

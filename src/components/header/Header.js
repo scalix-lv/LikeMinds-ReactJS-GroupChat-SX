@@ -101,7 +101,6 @@ export default function Header() {
       }}
       id={menuId}
       keepMounted
-      
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
