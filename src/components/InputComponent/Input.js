@@ -89,8 +89,6 @@ function Input() {
 function InputSearchField() {
   const groupContext = useContext(GroupContext);
   const ref = useRef();
-
-  const conversationContext = useContext(ConversationContext);
   const inputContext = useContext(InputContext);
   const selectedConversationContext = useContext(
     CurrentSelectedConversationContext
@@ -237,11 +235,11 @@ function InputSearchField() {
       selectedConversationContext.setIsSelected(false);
       selectedConversationContext.setConversationObject(null);
       clearInputFiles(inputContext);
-      fn(
-        groupContext.activeGroup.chatroom.id,
-        100,
-        conversationContext.setConversationArray
-      );
+      // fn(
+      //   groupContext.activeGroup.chatroom.id,
+      //   100,
+      //   conversationContext.setConversationArray
+      // );
       return { error: false, data: callRes };
     } catch (error) {
       return { error: true, errorMessage: error };
@@ -291,57 +289,6 @@ function InputSearchField() {
     setMemberDetailsArray(memberArr);
   }, [groupContext.activeGroup]);
 
-  // async function savePost(e) {
-  //   e.preventDefault();
-
-  //   let newContent = content;
-
-  //   newContent = newContent.split("@@@__").join('<a href="/user/');
-  //   newContent = newContent.split("^^^__").join(`">@`);
-  //   newContent = newContent.split("@@@^^^").join("</a>");
-
-  //   newContent = newContent.split("$$$__").join('<a href="/tag/');
-  //   newContent = newContent.split("~~~__").join(`">#`);
-  //   newContent = newContent.split("$$$~~~").join("</a>");
-  //   if (newContent !== "") {
-  //     let body = newContent.trim();
-  //     //Call to your DataBase like backendModule.savePost(body,  along_with_other_params);
-  //     tagNames.map(async (tag) => {
-  //       try {
-  //         await APIservice.post("/tag", {
-  //           name: tag,
-  //         });
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     });
-  //     console.log(body);
-  //     try {
-  //       await APIservice.post("/post", {
-  //         title,
-  //         content: body,
-  //         createdAt: new Date().getTime(),
-  //       });
-  //       history.push("/");
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  // }
-  let newD = [
-    {
-      id: "hel",
-      display: "peo",
-    },
-    {
-      id: "hela",
-      display: "peos",
-    },
-    {
-      id: "hels",
-      display: "peow",
-    },
-  ];
   let keyObj = {
     enter: false,
     shift: false,
@@ -352,37 +299,6 @@ function InputSearchField() {
         position: "relative",
       }}
     >
-      {/* for tagging */}
-      {/* <div
-        className="max-h-[240px] absolute shadow-sm bg-white w-[250px] p-2 rounded-[10px] overflow-auto"
-        style={{
-          display: open ? "block" : "none",
-          transform: "translate(0, -105%)",
-        }}
-      >
-        {groupContext.activeGroup.membersDetail?.map((member, index) => {
-          return (
-            <div
-              className="border-b border-[#eee] text-[14px] py-3 px-5 cursor-pointer hover:bg-[#eee]"
-              key={member.id}
-              onClick={() => {
-                inputContext.setTextVal(
-                  inputContext.textVal +
-                    "<<" +
-                    member.name +
-                    `|route://member_profile/${member.id}?member_id=${member.id}&community_id=${groupContext}>>`
-                );
-                inputContext.setText(
-                  inputContext.text.substring(0, inputContext.text.length - 1) +
-                    member.name
-                );
-              }}
-            >
-              {member.name}
-            </div>
-          );
-        })}
-      </div> */}
       {/* for adding reply */}
       {selectedConversationContext.isSelected ? (
         <div
@@ -629,25 +545,13 @@ function EmojiButton({ option }) {
   );
 }
 
-function MentionBox({ mentionData }) {
-  return <MenuList>Hello</MenuList>;
-}
 export default Input;
 
 function ImagePreview() {
-  const [previewUrl, setPreviewUrl] = useState("");
   const inputContext = useContext(InputContext);
   const [mediaArray, setMediaArray] = useState([]);
   useEffect(() => {
-    // let {audioFiles, docFiles, mediaFiles} = inputContext
-    // let newArr = mergeInputFiles(inputContext);
     let newArr = [];
-    // if (newArr.length > 0) {
-    //   // setPreviewUrl(URL.createObjectURL(newArr[0]));
-    //   setMediaArray(newArr)
-    // } else {
-    //   setPreviewUrl("");
-    // }
     for (let nf of inputContext.mediaFiles) {
       if (nf.type.split("/")[0] === "image") {
         newArr.push(nf);
