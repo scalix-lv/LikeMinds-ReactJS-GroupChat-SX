@@ -78,8 +78,6 @@ function Groups() {
   const [conversationObject, setConversationObject] = useState({});
 
   useEffect(() => {
-    console.log(sessionStorage);
-    console.log(groupContext);
     if (Object.keys(groupContext.activeGroup).length == 0) {
       if (sessionStorage.getItem("groupContext")) {
         console.log("here");
@@ -94,7 +92,10 @@ function Groups() {
         JSON.stringify(groupContext.activeGroup)
       );
     }
-  });
+  }, [groupContext.activeGroup]);
+  useEffect(() => {
+    sessionStorage.removeItem("last_message_id");
+  }, [groupContext.activeGroup]);
 
   useEffect(() => {
     // loading the list of chatrooms (already joined)

@@ -55,13 +55,15 @@ function GroupChatArea() {
     let optionObject = {
       chatroomID: chatroomId,
     };
-    console.log(msgId);
-    if (msgId !== null) {
-      optionObject.conversation_id = parseInt(msgId);
+    let msgID = sessionStorage.getItem("last_message_id");
+    console.log(msgID);
+    if (msgID !== null) {
+      optionObject.conversation_id = parseInt(msgID);
       optionObject.scroll_direction = 0;
       optionObject.page = 50;
     } else {
       optionObject.page = 100;
+      // optionObject.scroll_direction = 1;
     }
 
     let response = await getConversationsForGroup(optionObject);
@@ -90,8 +92,8 @@ function GroupChatArea() {
           }
         }
       }
-      console.log(response.data[0].id);
-      setMsgId(response.data[0].id);
+      // console.log();
+      sessionStorage.setItem("last_message_id", response.data[0].id);
       newConversationArray.push(conversationToBeSetArray);
       conversationContext.setConversationArray(newConversationArray);
     } else {
@@ -117,28 +119,14 @@ function GroupChatArea() {
           // chatRoomContext.refreshChatroomContext()
           {
             console.log("ASDFD");
-            console.log(msgId);
           }
         );
       }
     });
   }, []);
-  useEffect(() => {
-    console.warn("here we are");
-  }, []);
-  useEffect(() => {
-    console.log("the last message is" + msgId);
-  }, [msgId]);
+
   return (
     <div>
-      <Button
-        fullWidth
-        onClick={() => {
-          console.log(msgId);
-        }}
-      >
-        SEE TO IT
-      </Button>
       {groupContext.activeGroup.chatroom?.id ? (
         <Tittle
           headerProps={{
