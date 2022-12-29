@@ -62,15 +62,22 @@ https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-f
 
 ## 😎 File Structure
 
-Folder structure is based on productivity and some personal preferences:
-
 ```text
 src
 ├── assets                  * Assets that are imported into your components(images, custom svg, etc).
 ├── App.css                 * Main app styles.
 ├── App.js                  * Main app component.
 ├── components              * Components of the projects that are not the main views.
-│   └── ui                  * Generic and reusable across the whole app. Presentational components eg. Buttons, Inputs,
-├── sdkFunctions            * All the common services. e.g. Authentication, hubs, etc.
+│   └── channelGroups
+│   └── ChatConversationsArea
+│   └── direct-messages
+│   └── groupChatArea
+│   └── Groups
+│   └── header
+│   └── InputComponent
+│   └── reportConversation
+│   └── SearchBar
+│   └── sidenav
+├── sdkFunctions            * All the common services.
 ├── index.js                * Entry point of the application.
 ```
