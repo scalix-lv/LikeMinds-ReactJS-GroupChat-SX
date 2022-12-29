@@ -26,10 +26,6 @@ git clone git@github.com:NateshR/LikeMinds-Web-GroupChat-SX.git
 ## NPM
 
 ```shell
-npm install likeminds-apis-sdk
-```
-
-```shell
 Run `npm install` and then `npm start`.
 ```
 
