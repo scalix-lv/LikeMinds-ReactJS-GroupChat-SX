@@ -7,9 +7,9 @@ import LikeMinds from "likeminds-apis-sdk";
 import { initiateSDK } from "./sdkFunctions";
 
 export const myClient = new LikeMinds({
-  apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
-  baseUrl: "https://auth.likeminds.community",
-  xMemberId: "f661a53c-48bf-4791-b74b-4ecc4bdb934f",
+  apiKey: "45c469dc-06e1-4f05-914e-dd02419eb53f",
+  baseUrl: "https://betaauth.likeminds.community",
+  xMemberId: "6c3e3024-4cfe-4614-9586-b0dbcad7a2e3",
   xPlatformCode: "web",
   xVersionCode: 16,
 });
