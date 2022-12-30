@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import { allChatroomMembersDm, dmChatFeed } from "../../../sdkFunctions";
 import { directMessageChatPath } from "../../../routes";
 import DmMemberTile from "../DmMemberTile";
+import { push } from "firebase/database";
+import { myClient } from "../../..";
 
 function CurrentDms() {
   const dmContext = useContext(DmContext);
@@ -34,6 +36,53 @@ function CurrentDms() {
     }
   }
 
+  async function showAnkit() {
+    let pageCount = 1;
+    let show = true;
+    let resMem = [];
+    try {
+      while (show) {
+        let call = await dmChatFeed(50421, pageCount++);
+        if (call.data.dm_chatrooms.length < 10) {
+          show = false;
+        }
+        for (let m of call.data.dm_chatrooms) {
+          resMem.push(m);
+        }
+      }
+      console.log(resMem);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function showMemberTOAnkit() {
+    let pageCount = 1;
+    let show = true;
+    let resMem = [];
+    try {
+      while (show) {
+        let call = await myClient.dmAllMembers({
+          community_id: 50421,
+          page: pageCount++,
+        });
+        // console.log(call);
+        if (call.members.length < 10) {
+          show = false;
+        }
+        for (let m of call.members) {
+          resMem.push(m);
+        }
+      }
+      console.log(resMem);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    showAnkit();
+    showMemberTOAnkit();
+  }, []);
   useEffect(() => {
     if (sessionStorage.getItem("dmContext") !== null) {
       console.log(dmContext);
@@ -101,7 +150,7 @@ function DmTile({ profile }) {
     dmContext.setCurrentProfile(profile);
     dmContext.setCurrentChatroom(profile.chatroom);
   }
-  console.log(profile);
+  // console.log(profile);
   return (
     <Link
       to={directMessageChatPath}
