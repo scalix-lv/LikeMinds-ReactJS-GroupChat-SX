@@ -4,14 +4,10 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import LikeMinds from "likeminds-apis-sdk";
-import { initiateSDK } from "./sdkFunctions";
-console.log(process.env);
+
 export const myClient = new LikeMinds({
   apiKey: process.env.REACT_APP_API_KEY,
-  baseUrl: process.env.REACT_APP_BASE_URL,
-  xMemberId: process.env.REACT_APP_X_MEMBER_ID,
-  xPlatformCode: process.env.REACT_APP_X_PLATFORM_CODE,
-  xVersionCode: process.env.REACT_APP_X_VERSION_CODE,
+  // userId: process.env.REACT_APP_X_MEMBER_ID,
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
