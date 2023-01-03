@@ -7,7 +7,6 @@ import LikeMinds from "likeminds-apis-sdk";
 
 export const myClient = new LikeMinds({
   apiKey: process.env.REACT_APP_API_KEY,
-  // userId: process.env.REACT_APP_X_MEMBER_ID,
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
