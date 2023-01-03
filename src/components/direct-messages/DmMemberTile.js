@@ -2,7 +2,7 @@ import { Margin } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { communityId, myClient } from "../..";
+import { myClient, UserContext } from "../..";
 import { directMessageInfoPath } from "../../routes";
 import { getChatRoomDetails, requestDM } from "../../sdkFunctions";
 import { DmContext } from "./DirectMessagesMain";
@@ -10,10 +10,11 @@ import { DmContext } from "./DirectMessagesMain";
 function DmMemberTile({ profile, profileIndex }) {
   const navigate = useNavigate();
   let dmContext = useContext(DmContext);
+  let userContext = useContext(UserContext);
   // console.log(profile);
   async function reqDM() {
     try {
-      let call = await requestDM(profile.id);
+      let call = await requestDM(profile.id, userContext.community.id);
       let profileData = await getChatRoomDetails(
         myClient,
         call.data.chatroom_id
@@ -67,7 +68,7 @@ function DmMemberTile({ profile, profileIndex }) {
       <Link
         to={directMessageInfoPath}
         state={{
-          communityId: communityId,
+          communityId: userContext.community.id,
           memberId: profile.id,
         }}
       >
