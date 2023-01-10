@@ -2,7 +2,7 @@ import { async } from "@firebase/util";
 import { data } from "autoprefixer";
 import Typicode from "likeminds-apis-sdk";
 import { json } from "react-router-dom";
-import { communityId, myClient } from "..";
+import { myClient } from "..";
 import { groupPersonalInfoPath } from "../routes";
 export const jsonReturnHandler = (data, error) => {
   let returnObject = {
@@ -371,7 +371,7 @@ export async function allChatroomMembersDm(communityId) {
   }
 }
 
-export async function requestDM(memberId) {
+export async function requestDM(memberId, communityId) {
   try {
     let call = await myClient.reqDmFeed({
       community_id: communityId,
@@ -384,7 +384,7 @@ export async function requestDM(memberId) {
   }
 }
 
-export async function canDirectMessage() {
+export async function canDirectMessage(communityId) {
   try {
     let call = await myClient.canDmFeed({
       community_id: communityId,
