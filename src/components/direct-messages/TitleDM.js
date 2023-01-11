@@ -10,6 +10,7 @@ import MoreOptions, {
 import { Link, useNavigate } from "react-router-dom";
 import { directMessageInfoPath } from "../../routes";
 import { DmContext } from "./DirectMessagesMain";
+import { UserContext } from "../..";
 const TitleBox = styled(Box)({
   display: "flex",
   width: "100%",
@@ -35,14 +36,18 @@ function TittleDm({ title }) {
 function TitleArea({ title }) {
   const navigate = useNavigate();
   const dmContext = useContext(DmContext);
+  const userContext = useContext(UserContext)
   return (
     <div
       className="text-left"
       onClick={() => {
         navigate(directMessageInfoPath, {
           state: {
-            memberId: dmContext.currentChatroom.chatroom_with_user.id,
-            communityId: dmContext.currentProfile.community.id,
+            memberId: userContext.currentUser.id ===
+            dmContext.currentChatroom.member.id
+              ? dmContext.currentChatroom.chatroom_with_user.id
+              : dmContext.currentChatroom.member.id,
+            communityId: userContext.community.id,
           },
         });
       }}

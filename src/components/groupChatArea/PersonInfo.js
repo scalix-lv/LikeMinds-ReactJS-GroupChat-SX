@@ -19,13 +19,16 @@ import { communityId, myClient, UserContext } from "../..";
 import backIcon from "../../assets/svg/arrow-left.svg";
 
 import userIcon from "./../../assets/user.png";
-import { GroupContext } from "../../Main";
+import { GroupContext, RouteContext } from "../../Main";
 import Tittle from "./tittle/Tittle";
 import { getChatRoomDetails, requestDM } from "../../sdkFunctions";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 import { reqDM } from "../direct-messages/DmMemberTile";
+import { directMessagePath, groupPath } from "../../routes";
+import TittleDm from "../direct-messages/TitleDM";
 
 function PersonInfo() {
+  const routeContext = useContext(RouteContext)
   const gc = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
@@ -48,6 +51,9 @@ function PersonInfo() {
           community_id: userContext.community.id,
           member_id: location.state.memberId,
         });
+        if(memberCall?.member.id === profileDate.id){
+          return
+        }
         setProfileData(memberCall?.member);
       } catch (error) {
         console.log(error);
@@ -58,14 +64,17 @@ function PersonInfo() {
   return (
     <div className="overflow-auto w-full h-full">
       {/* Title Header */}
-      {gc.activeGroup.chatroom?.id ? (
+      { routeContext.currentRoute === groupPath   ? (
         <Tittle
-          headerProps={{
-            title: gc.activeGroup.chatroom.header,
-            memberCount: gc.activeGroup.participant_count,
-          }}
+          
+            title={gc.activeGroup.chatroom.header}
+            memberCount= {gc.activeGroup.participant_count}
+          
         />
-      ) : null}
+      ) : 
+      routeContext.currentRoute === directMessagePath && !location.state.isFromAllMembers ? (
+        <TittleDm title={"hello"}/>
+      ): null}
       {/* Title Header */}
 
       <div className="mr-[120px] ml-[20px]">
