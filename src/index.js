@@ -4,16 +4,10 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import LikeMinds from "likeminds-apis-sdk";
-import { initiateSDK } from "./sdkFunctions";
 
 export const myClient = new LikeMinds({
-  apiKey: "45c469dc-06e1-4f05-914e-dd02419eb53f",
-  baseUrl: "https://betaauth.likeminds.community",
-  xMemberId: "6c3e3024-4cfe-4614-9586-b0dbcad7a2e3",
-  xPlatformCode: "web",
-  xVersionCode: 16,
+  apiKey: process.env.REACT_APP_API_KEY,
 });
-export const communityId = 50421;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
