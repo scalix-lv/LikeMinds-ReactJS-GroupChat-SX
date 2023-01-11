@@ -4,7 +4,9 @@ import React, { useContext } from "react";
 import Gap from "../../styledAccessories/Gap";
 
 import SearchBar from "../../styledAccessories/SearchBar";
-import MoreOptions from "../../styledAccessories/MoreOptions";
+import MoreOptions, {
+  MoreOptionsDM,
+} from "../../styledAccessories/MoreOptions";
 import { Link, useNavigate } from "react-router-dom";
 import { directMessageInfoPath } from "../../routes";
 import { DmContext } from "./DirectMessagesMain";
@@ -60,7 +62,7 @@ function OptionArea() {
   return (
     <Box>
       <SearchBar />
-      <MoreOptions />
+      <MoreOptionsDM />
     </Box>
   );
 }

@@ -6,17 +6,20 @@ import camera from "./../../assets/svg/camera.svg";
 import mic from "./../../assets/svg/mic.svg";
 import paperclip from "./../../assets/svg/paperclip.svg";
 import { GroupContext } from "../../Main";
-import { myClient } from "../..";
+import { myClient, UserContext } from "../..";
 import {
   ConversationContext,
   CurrentSelectedConversationContext,
 } from "../groupChatArea/GroupChatArea";
 import {
   clearInputFiles,
+  dmAction,
+  getChatRoomDetails,
   getConversationsForGroup,
   getString,
   getUsername,
   mergeInputFiles,
+  requestDM,
 } from "../../sdkFunctions";
 import EmojiPicker from "emoji-picker-react";
 import { MentionsInput, Mention } from "react-mentions";
@@ -25,19 +28,6 @@ import { MentionsInput, Mention } from "react-mentions";
 import { Close } from "@mui/icons-material";
 import "./Input.css";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
-
-export const InputContext = React.createContext({
-  audioFiles: [],
-  setAudioFiles: () => {},
-  mediaFiles: [],
-  setMediaFiles: () => {},
-  docFiles: [],
-  setDocFiles: () => {},
-  text: "",
-  setText: () => {},
-  textVal: "",
-  setTextVal: () => {},
-});
 
 function InputDM({ updateHeight }) {
   const [audioFiles, setAudioFiles] = useState("");
@@ -48,29 +38,15 @@ function InputDM({ updateHeight }) {
 
   return (
     <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
-      <InputContext.Provider
-        value={{
-          audioFiles,
-          setAudioFiles,
-          mediaFiles,
-          setDocFiles,
-          docFiles,
-          setMediaFiles,
-          text: text,
-          setText: setText,
-          textVal: textVal,
-          setTextVal: setTextVal,
-        }}
-      >
-        <InputSearchField updateHeight={updateHeight} />
-        <InputOptions />
-      </InputContext.Provider>
+      <InputSearchField updateHeight={updateHeight} />
+      <InputOptions />
     </Box>
   );
 }
 
 function InputSearchField({ updateHeight }) {
   const dmContext = useContext(DmContext);
+  const userContext = useContext(UserContext);
   const ref = useRef();
 
   const getChatroomConversations = async (
@@ -115,8 +91,22 @@ function InputSearchField({ updateHeight }) {
   };
   let handleSendMessage = async () => {
     try {
+      console.log(dmContext.currentChatroom.chat_request_state);
+      if (dmContext.currentChatroom.chat_request_state === null) {
+        console.log("sending request");
+        let textMessage = dmContext.messageText;
+        dmContext.setMessageText("");
+        let call = await dmAction(0, dmContext.currentChatroom.id, textMessage);
+        console.log(call);
+        let chatroomCall = await getChatRoomDetails(
+          myClient,
+          dmContext.currentChatroom.id
+        );
+        dmContext.setCurrentChatroom(chatroomCall.data.chatroom);
+        dmContext.setCurrentProfile(chatroomCall.data);
+        return;
+      }
       let isRepliedConvo = dmContext.isConversationSelected;
-      //   let { text, setText } = inputContext;
       let { messageText, setMessageText } = dmContext;
       let [text, setText] = [messageText, setMessageText];
       let inputContext = {
@@ -313,7 +303,14 @@ function InputSearchField({ updateHeight }) {
           className="mentions"
           inputRef={ref}
           spellCheck="false"
-          placeholder="Write a Comment..."
+          placeholder={
+            dmContext.currentChatroom?.chat_request_state === 0
+              ? userContext.currentUser.id.toString() ===
+                dmContext.currentChatroom?.chat_requested_by
+                ? "Show Connection request pending. Messaging would be enabled once your request is approved."
+                : "Approve and Reject"
+              : "Write a Comment..."
+          }
           value={dmContext.messageText ? dmContext.messageText : ""}
           onChange={(event) => dmContext.setMessageText(event.target.value)}
           onKeyDown={(e) => {
@@ -340,6 +337,9 @@ function InputSearchField({ updateHeight }) {
               keyObj.shift = false;
             }
           }}
+          disabled={
+            dmContext.currentChatroom?.chat_request_state === 0 ? true : false
+          }
         >
           <Mention
             trigger="@"

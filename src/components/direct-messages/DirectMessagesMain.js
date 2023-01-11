@@ -20,7 +20,7 @@ function DirectMessagesMain() {
   const [documentAttachments, setDocumentAttachments] = useState([]);
   const [isConversationSelected, setIsConversationSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
-
+  const [refreshContext, setRefreshContext] = useState(null);
   return (
     <div>
       <DmContext.Provider
@@ -47,10 +47,12 @@ function DirectMessagesMain() {
           setIsConversationSelected,
           conversationObject,
           setConversationObject,
+          refreshContext,
+          setRefreshContext,
         }}
       >
         <div className="flex overflow-hidden customHeight flex-1">
-          <div className="flex-[.32] customScroll bg-white border-r-[1px] border-[#eeeeee] pt-[20px]">
+          <div className="flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel">
             <SearchBarDirectMessages />
             <CurrentDms />
           </div>
@@ -88,4 +90,6 @@ export const DmContext = React.createContext({
   setIsConversationSelected: () => {},
   conversationObject: {},
   setConversationObject: () => {},
+  refreshContext: () => {},
+  setRefreshContext: () => {},
 });

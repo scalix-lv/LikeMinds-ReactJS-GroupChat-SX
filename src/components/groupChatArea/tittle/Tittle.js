@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import Gap from "../../../styledAccessories/Gap";
 
 import SearchBar from "../../../styledAccessories/SearchBar";
-import MoreOptions from "../../../styledAccessories/MoreOptions";
+import { MoreOptions } from "../../../styledAccessories/MoreOptions";
 import { Link } from "react-router-dom";
 import { groupInfoPath } from "../../../routes";
 const TitleBox = styled(Box)({
@@ -15,14 +15,11 @@ const TitleBox = styled(Box)({
   padding: "0 0 10px 0px",
 });
 
-function Tittle({ headerProps }) {
+function Tittle({ title, memberCount }) {
   return (
     <Box className="flex">
       <TitleBox>
-        <TitleArea
-          title={headerProps.title}
-          memberCount={headerProps.memberCount}
-        />
+        <TitleArea title={title} memberCount={memberCount} />
         <Gap />
         <OptionArea />
       </TitleBox>

@@ -1,9 +1,5 @@
-import { async } from "@firebase/util";
-import { data } from "autoprefixer";
-import Typicode from "likeminds-apis-sdk";
-import { json } from "react-router-dom";
+import LikeMinds from "likeminds-apis-sdk";
 import { myClient } from "..";
-import { groupPersonalInfoPath } from "../routes";
 export const jsonReturnHandler = (data, error) => {
   let returnObject = {
     error: false,
@@ -18,16 +14,21 @@ export const jsonReturnHandler = (data, error) => {
 };
 
 export const createNewClient = (key) => {
-  const client = new Typicode({
+  const client = new LikeMinds({
     apiKey: key,
   });
   return client;
 };
 
-export const getChatRoomDetails = async (myClient: Typicode, chatRoomId) => {
+export const getChatRoomDetails = async (myClient: LikeMinds, chatRoomId) => {
   try {
-    const chatRoomResponse = await myClient.getChatroom(chatRoomId);
-
+    console.log(chatRoomId);
+    const params = {
+      chatroom_id: chatRoomId,
+      page: 1,
+    };
+    const chatRoomResponse = await myClient.getChatroom(params);
+    console.log(chatRoomResponse);
     return jsonReturnHandler(chatRoomResponse, null);
   } catch (error) {
     console.log(error);
@@ -38,7 +39,6 @@ export const getChatRoomDetails = async (myClient: Typicode, chatRoomId) => {
 export const getConversationsForGroup = async (optionObject) => {
   try {
     let conversationCall = await myClient.getConversations(optionObject);
-
     return jsonReturnHandler(conversationCall.conversations, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
@@ -231,7 +231,9 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
       member_id: userId,
       value: false,
     });
-    refreshContext();
+    if (refreshContext !== null) {
+      refreshContext();
+    }
     return jsonReturnHandler(leaveCall, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
@@ -359,11 +361,12 @@ export async function dmChatFeed(communityId, pageNo) {
   }
 }
 
-export async function allChatroomMembersDm(communityId) {
+export async function allChatroomMembersDm(communityId, page) {
   try {
     let feedCall = await myClient.dmAllMembers({
       community_id: communityId,
-      page: 1,
+      page: page,
+      member_state: 4,
     });
     return jsonReturnHandler(feedCall, null);
   } catch (error) {
@@ -384,13 +387,48 @@ export async function requestDM(memberId, communityId) {
   }
 }
 
-export async function canDirectMessage(communityId) {
+export async function canDirectMessage(chatroomId) {
   try {
+    console.log(chatroomId);
     let call = await myClient.canDmFeed({
-      community_id: communityId,
+      community_id: sessionStorage.getItem("communityId"),
+      req_from: chatroomId,
     });
     return jsonReturnHandler(call, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
   }
+}
+
+export async function createDM(memberId) {
+  try {
+    let call = await myClient.onCreateDM({
+      community_id: sessionStorage.getItem("communityId"),
+      member_id: memberId,
+    });
+    return jsonReturnHandler(call, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export async function dmAction(requestState, chatroomId, text) {
+  try {
+    let config = {
+      chatroom_id: chatroomId,
+      chat_request_state: requestState,
+    };
+    if (text != null) {
+      config.text = text;
+    }
+    let call = await myClient.requestDmAction(config);
+    return jsonReturnHandler(call, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
+export function getFromSessionStorage(key) {
+  let sessionStorageObject = sessionStorage.getItem(key);
+  return sessionStorageObject;
 }

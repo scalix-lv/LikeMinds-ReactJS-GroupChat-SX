@@ -115,6 +115,7 @@ function PublicGroup({ groupTitle, groupList }) {
   async function getChatRoomData(chatroomId) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
+      console.log(chatRoomData);
       if (!chatRoomData.error) {
         const tagCall = await getTaggingList(
           chatRoomData.data.community.id,

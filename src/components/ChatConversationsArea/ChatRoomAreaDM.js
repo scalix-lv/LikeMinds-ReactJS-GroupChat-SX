@@ -3,8 +3,13 @@ import { DmContext } from "../direct-messages/DirectMessagesMain";
 import RegularBox from "../channelGroups/RegularBox";
 import { getConversationsForGroup } from "../../sdkFunctions";
 import InputDM from "./InputDM";
+import { UserContext } from "../..";
+import { Button } from "@mui/material";
+import LetThemAcceptInvite from "../direct-messages/LetThemAcceptInvite";
+import AcceptTheirInviteFirst from "../direct-messages/AcceptTheirInviteFirst";
 function ChatRoomAreaDM() {
   const dmContext = useContext(DmContext);
+  const userContext = useContext(UserContext);
   const ref = useRef(null);
 
   // Scroll to bottom
@@ -64,20 +69,64 @@ function ChatRoomAreaDM() {
       style={{ height: "calc(100vh - 270px)" }}
     >
       {Object.keys(dmContext.currentChatroom).length > 0 ? (
-        <>
-          {dmContext.currentChatroomConversations.map((convoArr) => {
-            return <RegularBox convoArray={convoArr} key={convoArr[0].date} />;
-          })}
-          <div
-            style={{
-              flexGrow: 0.4,
-            }}
-          />
-          <div ref={ref}></div>
-          <div className="fixed bottom-0 w-[62.1%]">
-            <InputDM updateHeight={updateHeight} />
-          </div>
-        </>
+        dmContext.currentChatroom.chat_request_state === 0 ? (
+          userContext.currentUser.id ==
+          dmContext.currentChatroom.chat_requested_by[0].id ? (
+            <LetThemAcceptInvite
+              title={
+                userContext.currentUser.id ===
+                dmContext.currentChatroom.member.id
+                  ? dmContext.currentChatroom.chatroom_with_user.name
+                  : dmContext.currentChatroom.member.name
+              }
+            />
+          ) : (
+            <AcceptTheirInviteFirst
+              title={
+                userContext.currentUser.id ===
+                dmContext.currentChatroom.member.id
+                  ? dmContext.currentChatroom.chatroom_with_user.name
+                  : dmContext.currentChatroom.member.name
+              }
+            />
+          )
+        ) : (
+          <>
+            {dmContext.currentChatroomConversations.map((convoArr) => {
+              return (
+                <RegularBox convoArray={convoArr} key={convoArr[0].date} />
+              );
+            })}
+
+            <div ref={ref}></div>
+            {dmContext.currentChatroom.chat_request_state == 0 ? (
+              <>
+                {/* {userContext.currentUser.id ==
+                dmContext.currentChatroom.chat_requested_by[0].id ? (
+                  <div className="flex justify-center items-center fixed bottom-0 w-[62.1%] py-4">
+                    Connection request pending. Messaging would be enabled once
+                    your request is approved.
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex justify-center items-center">
+                      <Button variant="filled" className="mx-2">
+                        Approve
+                      </Button>
+                      <Button variant="filled" className="mx-2">
+                        Reject
+                      </Button>
+                    </div>
+                  </>
+                )} */}
+              </>
+            ) : dmContext.currentChatroom.chat_request_state !== 2 ? (
+              <div className="fixed bottom-0 w-[62.1%]">
+                <InputDM updateHeight={updateHeight} />
+              </div>
+            ) : null}
+          </>
+        )
       ) : (
         <div className="h-full flex justify-center items-center text-[#999]">
           Select a chat room to start messaging

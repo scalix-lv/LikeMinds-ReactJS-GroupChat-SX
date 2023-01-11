@@ -1,6 +1,6 @@
 // import { AccountCircleIcon } from '@mui/icons-material'
 import { Box, Button } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -21,16 +21,26 @@ import backIcon from "../../assets/svg/arrow-left.svg";
 import userIcon from "./../../assets/user.png";
 import { GroupContext } from "../../Main";
 import Tittle from "./tittle/Tittle";
+import { getChatRoomDetails, requestDM } from "../../sdkFunctions";
+import { DmContext } from "../direct-messages/DirectMessagesMain";
+import { reqDM } from "../direct-messages/DmMemberTile";
 
 function PersonInfo() {
   const gc = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
-
+  console.log(location);
   const [profileDate, setProfileData] = useState({});
   const navigate = useNavigate();
+  const ref = useRef();
+  let dmContext = useContext(DmContext);
 
+  // useEffect(()=>{
+  //   if(location.pathname.split("/")[1] == "direct-message"){
+  //     let c =
+  //   }
+  // })
   useEffect(() => {
     const fn = async () => {
       try {
@@ -60,7 +70,7 @@ function PersonInfo() {
 
       <div className="mr-[120px] ml-[20px]">
         <div className="flex">
-          <IconButton
+          { !location.state.isFromAllMembers ? (<><IconButton
             onClick={() => {
               navigate(-1);
             }}
@@ -73,7 +83,23 @@ function PersonInfo() {
             <span className="font-[700] text-[#3884F7]">
               {profileDate.name}
             </span>
-          </div>
+          </div></>):null}
+          <div className="grow" />
+          {location.state.isFromAllMembers ? (
+            <Button
+              variant="filled"
+              sx={{
+                background: "#3884F7",
+                color: "white",
+              }}
+              onClick={() =>
+                reqDM(profileDate, userContext, dmContext, navigate)
+              }
+              startIcon={<img src={require("./../../assets/message.png")} />}
+            >
+              Message
+            </Button>
+          ) : null}
         </div>
 
         <Box className="ml-3 mt-4 text-[#323232]">

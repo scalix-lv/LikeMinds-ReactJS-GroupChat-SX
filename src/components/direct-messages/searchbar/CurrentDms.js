@@ -6,20 +6,34 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { DmContext } from "../DirectMessagesMain";
 import { Link } from "react-router-dom";
-import { allChatroomMembersDm, dmChatFeed } from "../../../sdkFunctions";
+import {
+  allChatroomMembersDm,
+  canDirectMessage,
+  dmChatFeed,
+  getChatRoomDetails,
+  markRead,
+} from "../../../sdkFunctions";
 import { directMessageChatPath } from "../../../routes";
 import DmMemberTile from "../DmMemberTile";
-import { push } from "firebase/database";
-import { myClient } from "../../..";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { myClient, UserContext } from "../../..";
 
 function CurrentDms() {
   const dmContext = useContext(DmContext);
-
+  const userContext = useContext(UserContext);
   const [openAllUsers, setOpenAllUsers] = useState(true);
+  const [totalMembersFiltered, setTotalMembersFiltered] = useState(null);
+  const [lastCaughtPageAllMembers, setLastCaughtPageAllMembers] = useState(1);
+  const [
+    shouldContinuePaginateMembersFeed,
+    setShouldContinuePaginateMembersFeed,
+  ] = useState(true);
 
-  async function loadHomeFeed() {
+  const [lastPageHomeFeed, setLastPageHomeFeed] = useState(1);
+
+  async function loadHomeFeed(pageNo) {
     try {
-      let feedCall = await dmChatFeed(50421, 1);
+      let feedCall = await dmChatFeed(userContext.community.id, pageNo);
       let newFeedArray = feedCall.data.dm_chatrooms;
       dmContext.setHomeFeed(newFeedArray);
     } catch (error) {
@@ -29,60 +43,48 @@ function CurrentDms() {
 
   async function loadAllDmMembers() {
     try {
-      let call = await allChatroomMembersDm(50421);
-      dmContext.setMembersFeed(call.data.members);
+      let arr = [];
+      let page = 1;
+      let call;
+      while (arr.length < 10) {
+        call = await allChatroomMembersDm(50421, page++);
+        arr = [...arr, ...call.data.members];
+      }
+      setLastCaughtPageAllMembers(page);
+      dmContext.setMembersFeed(arr);
+      setTotalMembersFiltered(call.data.total_members);
     } catch (error) {
       console.log(error);
     }
   }
 
-  async function showAnkit() {
-    let pageCount = 1;
-    let show = true;
-    let resMem = [];
+  async function paginateAllMembers() {
     try {
-      while (show) {
-        let call = await dmChatFeed(50421, pageCount++);
-        if (call.data.dm_chatrooms.length < 10) {
-          show = false;
-        }
-        for (let m of call.data.dm_chatrooms) {
-          resMem.push(m);
-        }
+      let call = await allChatroomMembersDm(
+        userContext.community.id,
+        lastCaughtPageAllMembers + 1
+      );
+      let newArr = [...dmContext.membersFeed];
+      newArr = newArr.concat(call.data.members);
+      if (newArr.length == totalMembersFiltered) {
+        setShouldContinuePaginateMembersFeed(false);
       }
-      console.log(resMem);
+      setLastCaughtPageAllMembers(lastCaughtPageAllMembers + 1);
+      dmContext.setMembersFeed(newArr);
     } catch (error) {
       console.log(error);
     }
   }
-
-  async function showMemberTOAnkit() {
-    let pageCount = 1;
-    let show = true;
-    let resMem = [];
+  async function markReadCall(chatroomId) {
     try {
-      while (show) {
-        let call = await myClient.dmAllMembers({
-          community_id: 50421,
-          page: pageCount++,
-        });
-        // console.log(call);
-        if (call.members.length < 10) {
-          show = false;
-        }
-        for (let m of call.members) {
-          resMem.push(m);
-        }
-      }
-      console.log(resMem);
+      await markRead(chatroomId);
+      let call = await getChatRoomDetails(myClient, chatroomId);
+      dmContext.setCurrentChatroom(call.data.chatroom);
+      dmContext.setCurrentProfile(call.data);
     } catch (error) {
       console.log(error);
     }
   }
-  useEffect(() => {
-    showAnkit();
-    showMemberTOAnkit();
-  }, []);
   useEffect(() => {
     if (sessionStorage.getItem("dmContext") !== null) {
       console.log(dmContext);
@@ -103,8 +105,13 @@ function CurrentDms() {
   });
 
   useEffect(() => {
-    loadHomeFeed();
+    loadHomeFeed(1);
     loadAllDmMembers();
+    function refreshContext() {
+      loadHomeFeed(1);
+      loadAllDmMembers();
+    }
+    dmContext.setRefreshContext(() => refreshContext);
   }, []);
 
   return (
@@ -117,9 +124,19 @@ function CurrentDms() {
       >
         Show DM Context
       </Button> */}
-      {dmContext.homeFeed.map((feed, feedIndex) => {
-        return <DmTile profile={feed} key={feedIndex} />;
-      })}
+      <div className="max-h-[400px] overflow-auto" id="mf-container">
+        {dmContext.homeFeed.map((feed, feedIndex) => {
+          return (
+            <DmTile
+              profile={feed}
+              key={feedIndex}
+              loadHomeFeed={loadHomeFeed}
+            />
+          );
+        })}
+      </div>
+
+      {}
       <div className="py-4 px-5 flex justify-between text-center h-[56px]">
         <span className="leading-6 text-xl">All Members</span>
         <IconButton
@@ -130,27 +147,63 @@ function CurrentDms() {
         </IconButton>
       </div>
       <Collapse in={openAllUsers}>
-        {dmContext.membersFeed.map((feed, feedIndex) => {
-          return (
-            <DmMemberTile
-              profile={feed}
-              profileIndex={feedIndex}
-              key={feed.id}
-            />
-          );
-        })}
+        <div className="h-[400px] overflow-auto" id="mf-container">
+          <InfiniteScroll
+            hasMore={shouldContinuePaginateMembersFeed}
+            dataLength={dmContext.membersFeed.length}
+            next={paginateAllMembers}
+            // loader={<h4>loading</h4>}
+            scrollableTarget="mf-container"
+          >
+            {dmContext.membersFeed.map((feed, feedIndex) => {
+              if (feed.id == userContext.currentUser.id) {
+                return null;
+              }
+              return (
+                <DmMemberTile
+                  profile={feed}
+                  profileIndex={feedIndex}
+                  key={feed.id}
+                />
+              );
+            })}
+          </InfiniteScroll>
+        </div>
       </Collapse>
     </Box>
   );
 }
 
-function DmTile({ profile }) {
+function DmTile({ profile, loadHomeFeed }) {
   const dmContext = useContext(DmContext);
-  function setProfile() {
-    dmContext.setCurrentProfile(profile);
-    dmContext.setCurrentChatroom(profile.chatroom);
+  const userContext = useContext(UserContext);
+  async function markReadCall(chatroomId) {
+    try {
+      await markRead(chatroomId);
+      loadHomeFeed(1);
+
+      let call = await getChatRoomDetails(myClient, chatroomId);
+      dmContext.setCurrentChatroom(call.data.chatroom);
+      dmContext.setCurrentProfile(call.data);
+    } catch (error) {
+      console.log(error);
+    }
   }
-  // console.log(profile);
+  async function setProfile() {
+    console.log(profile);
+    try {
+      if (profile.unseen_conversation_count > 0) {
+        await markRead(profile.chatroom.id);
+        await loadHomeFeed(1);
+      }
+      let call = await getChatRoomDetails(myClient, profile.chatroom.id);
+      dmContext.setCurrentProfile(call.data);
+      dmContext.setCurrentChatroom(call.data.chatroom);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <Link
       to={directMessageChatPath}
@@ -163,7 +216,7 @@ function DmTile({ profile }) {
         className="flex justify-between py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
         style={{
           backgroundColor:
-            dmContext.currentChatroom.id === profile.chatroom.id
+            dmContext?.currentChatroom?.id === profile?.chatroom?.id
               ? "#ECF3FF"
               : "#FFFFFF",
         }}
@@ -173,12 +226,14 @@ function DmTile({ profile }) {
           className="text-base font-normal"
           sx={{
             color:
-              dmContext.currentChatroom.id === profile.chatroom.id
+              dmContext?.currentChatroom?.id === profile?.chatroom?.id
                 ? "#3884F7"
                 : "#323232",
           }}
         >
-          {profile.chatroom.chatroom_with_user.name}
+          {userContext.currentUser.id === profile.chatroom.member.id
+            ? profile.chatroom.chatroom_with_user.name
+            : profile.chatroom.member.name}
         </Typography>
 
         <Typography
@@ -187,6 +242,9 @@ function DmTile({ profile }) {
           sx={{
             color:
               profile.unseen_conversation_count > 0 ? "#3884F7" : "#323232",
+            // dmContext.currentChatroom.unseen_count > 0
+            //   ? "#3884F7"
+            //   : "#323232",
           }}
         >
           {profile.unseen_conversation_count > 0 ? (
