@@ -83,17 +83,81 @@ const router = createBrowserRouter([
   },
 ]);
 
+let routesObject = [
+  {
+    path: mainPath,
+    element: <Main />,
+    children: [
+      {
+        path: forumPath,
+        element: null,
+      },
+      {
+        path: groupPath,
+        element: <Groups />,
+        children: [
+          {
+            path: groupMainPath,
+            element: <GroupChatArea />,
+          },
+          {
+            path: groupInfoPath,
+            element: <GroupInfo />,
+          },
+          {
+            path: groupAcceptInvitePath,
+            element: <AcceptInvite />,
+          },
+          {
+            path: groupPersonalInfoPath,
+            element: <PersonInfo />,
+          },
+        ],
+      },
+      {
+        path: eventsPath,
+        element: null,
+      },
+      {
+        path: directMessagePath,
+        element: <DirectMessagesMain />,
+        children: [
+          {
+            path: directMessageChatPath,
+            element: <ChatArea />,
+          },
+          {
+            path: directMessageInfoPath,
+            element: <PersonInfo />,
+          },
+        ],
+      },
+      {
+        path: addedByMePath,
+        element: null,
+      },
+    ],
+  },
+];
+routesObject.map((item, itemIndex) => {});
+
 function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [community, setCommunity] = useState({});
   useEffect(() => {
-    initiateSDK(false, "6c3e3024-4cfe-4614-9586-b0dbcad7a2e3", "Gaurav")
+    initiateSDK(false, "53208f29-5d15-473e-ab70-5fd77605be0f", "Ankit Garg SDK")
       .then((res) => {
-        setCommunity(res.data.data.community);
-        setCurrentUser(res.data.data.user);
+        setCommunity(res?.data?.community);
+        setCurrentUser(res?.data?.user);
+        sessionStorage.setItem("communityId", res?.data?.community?.id);
       })
+      // .then((res) => {
+      //   setCommunity(res.data.data.community);
+      //   setCurrentUser(res.data.data.user);
+      //   sessionStorage.setItem("communityId", res.data.data.community.id);
+      // })
       .catch((error) => {
-        console.log(error);
+        console.log("Error =>", error);
       });
   }, []);
 
@@ -108,7 +172,9 @@ function App() {
         }}
       >
         {Object.keys(currentUser).length > 0 ? (
-          <RouterProvider router={router} />
+          <>
+            <RouterProvider router={router} />
+          </>
         ) : null}
       </UserContext.Provider>
       {/* <Block/> */}

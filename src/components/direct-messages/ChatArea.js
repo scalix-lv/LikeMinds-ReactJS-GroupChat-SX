@@ -1,13 +1,13 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect } from "react";
 import ChatRoomAreaDM from "../ChatConversationsArea/ChatRoomAreaDM";
 import { DmContext } from "./DirectMessagesMain";
 import TittleDm from "./TitleDM";
-import { getConversationsForGroup } from "../../sdkFunctions";
+import { dmChatFeed, getConversationsForGroup } from "../../sdkFunctions";
 
 import { onValue, ref } from "firebase/database";
-import { myClient } from "../..";
+import { myClient, UserContext } from "../..";
 // Exported Styled Box
 export const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
@@ -18,7 +18,8 @@ export const StyledBox = styled(Box)({
 });
 function ChatArea() {
   const dmContext = useContext(DmContext);
-  let db = myClient.fbInstance;
+  const userContext = useContext(UserContext);
+  let db = myClient.fbInstance();
 
   const getChatroomConversations = async (chatroomId, pageNo) => {
     let optionObject = {
@@ -53,26 +54,62 @@ function ChatArea() {
       console.log(response.errorMessage);
     }
   };
+  async function loadHomeFeed(pageNo) {
+    try {
+      let feedCall = await dmChatFeed(userContext.community.id, pageNo);
+      let newFeedArray = feedCall.data.dm_chatrooms;
+      dmContext.setHomeFeed(newFeedArray);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
     const query = ref(db, "collabcards");
     return onValue(query, (snapshot) => {
       const data = snapshot.val();
       console.log(data);
-      if (snapshot.exists() && Object.keys(dmContext.currentChatroom).length) {
+      if (
+        snapshot.exists() &&
+        Object.keys(dmContext.currentChatroom).length > 0
+      ) {
         getChatroomConversations(dmContext.currentChatroom?.id, 500);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const query = ref(db, "collabcards");
+    return onValue(query, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      if (snapshot.exists()) {
+        loadHomeFeed(1);
       }
     });
   }, []);
 
   return (
     <div>
-      <StyledBox>
-        {Object.keys(dmContext.currentChatroom).length > 0 ? (
-          <TittleDm title={dmContext.currentChatroom.chatroom_with_user.name} />
-        ) : null}
-        <ChatRoomAreaDM />
-      </StyledBox>
+      {dmContext.currentChatroom ? (
+        <StyledBox>
+          {Object.keys(dmContext.currentChatroom).length > 0 ? (
+            <TittleDm
+              title={
+                userContext.currentUser.id ===
+                dmContext.currentChatroom.member.id
+                  ? dmContext.currentChatroom.chatroom_with_user.name
+                  : dmContext.currentChatroom.member.name
+              }
+            />
+          ) : null}
+          <ChatRoomAreaDM />
+        </StyledBox>
+      ) : (
+        <div className="flex justify-center items-center">
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 }

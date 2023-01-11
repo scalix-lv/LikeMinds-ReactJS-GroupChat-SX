@@ -71,12 +71,12 @@ export const getUnjoinedList = async (
 function Groups() {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
+
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const [shouldLoadMoreHomeFeed, setShouldLoadMoreHomeFeed] = useState(true);
   const [shouldLoadMoreUnjoinedFeed, setShouldLoadMoreUnjoinedFeed] =
     useState(true);
-
   const [conversationsArray, setConversationArray] = useState([]);
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
@@ -128,7 +128,6 @@ function Groups() {
         <ChatRoomContext.Provider
           value={{
             chatRoomList: chatRoomsList,
-
             unJoined: unJoined,
             shouldLoadMoreHomeFeed: shouldLoadMoreHomeFeed,
             shouldLoadMoreUnjoinedFeed: shouldLoadMoreUnjoinedFeed,

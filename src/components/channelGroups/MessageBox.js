@@ -6,17 +6,10 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { UserContext, userObj } from "../..";
-import {
-  addReaction,
-  getString,
-  getUserLink,
-  getUsername,
-  linkConverter,
-  tagExtracter,
-} from "../../sdkFunctions";
+import React, { useContext, useRef, useState } from "react";
+
+import { UserContext } from "../..";
+import { addReaction, linkConverter, tagExtracter } from "../../sdkFunctions";
 import { Link, useNavigate } from "react-router-dom";
 import { myClient } from "../..";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
@@ -418,8 +411,8 @@ function MoreOptions({ convoId, userId, convoObject }) {
       >
         <EmojiPicker
           onEmojiClick={(e) => {
-            addReaction(e.emoji, convoId, groupContext.activeGroup.id)
-              
+            addReaction(e.emoji, convoId, groupContext.activeGroup.id);
+
             handleCloseEmoji();
           }}
         />

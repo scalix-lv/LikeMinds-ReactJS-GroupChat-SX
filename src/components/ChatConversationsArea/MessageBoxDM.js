@@ -23,6 +23,13 @@ function MessageBoxDM({
   conversationObject,
   replyConversationObject,
 }) {
+  if (conversationObject.state !== 0) {
+    return (
+      <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
+        {parse(linkConverter(tagExtracter(messageString)))}
+      </div>
+    );
+  }
   return (
     <div>
       <Box className="flex mb-4">
@@ -67,10 +74,9 @@ function StringBox({
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
   const [displayMediaModal, setDisplayMediaModel] = useState(false);
-  // let shouldOPenModel = Boolean(displayMediaModal);
+
   const [mediaData, setMediaData] = useState(null);
-  // console.log(userId);
-  // console.log(userContext.currentUser.id);
+
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"

@@ -175,10 +175,8 @@ function GroupChatArea() {
     <div>
       {groupContext.activeGroup.chatroom?.id ? (
         <Tittle
-          headerProps={{
-            title: groupContext.activeGroup.chatroom.header,
-            memberCount: groupContext.activeGroup.participant_count,
-          }}
+          title={groupContext.activeGroup.chatroom.header}
+          memberCount={groupContext.activeGroup.participant_count}
         />
       ) : null}
       <div
