@@ -45,11 +45,22 @@ function GroupChatArea() {
     const el = document.getElementById("chat");
     el.scrollTop = el.scrollHeight;
   };
-
+  useEffect(()=>{
+    updateHeight();
+  },[])
   useEffect(() => {
     // scroll();
-    updateHeight();
-  }, []);
+    let convoArrLength = conversationContext.conversationsArray.length
+    let lastConvoArrLength = conversationContext.conversationsArray[convoArrLength-1]?.length
+    if(conversationContext.conversationsArray.length === 0){
+      return 
+    }
+    if(conversationContext?.conversationsArray[convoArrLength-1][lastConvoArrLength-1]?.member?.id 
+      == userContext.currentUser.id){
+      updateHeight();
+    }
+    console.log(conversationContext.conversationsArray, convoArrLength, lastConvoArrLength, userContext.currentUser)
+  }, [conversationContext.conversationsArray]);
 
   const fn = async (chatroomId, pageNo) => {
     // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
@@ -214,7 +225,7 @@ function GroupChatArea() {
             />
             <div ref={ref}></div>
             <div className="fixed bottom-0 w-[62.1%]">
-              <Input />
+              <Input updateHeight={updateHeight}/>
             </div>
           </>
         ) : (

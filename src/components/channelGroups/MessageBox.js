@@ -22,6 +22,7 @@ import { GroupContext } from "../../Main";
 import { directMessagePath, groupPersonalInfoPath } from "./../../routes";
 import { CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
 import parse from "html-react-parser";
+import { DmContext } from "../direct-messages/DirectMessagesMain";
 
 function MessageBox({
   username,
@@ -98,7 +99,7 @@ function StringBox({
           <Link
             to={groupPersonalInfoPath}
             state={{
-              communityId: groupContext.activeGroup.community.id,
+              communityId: userContext.community.id ,
               memberId: userId,
             }}
           >

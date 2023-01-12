@@ -56,7 +56,7 @@ export const InputContext = React.createContext({
   setTextVal: () => {},
 });
 
-function Input() {
+function Input({updateHeight}) {
   const [audioFiles, setAudioFiles] = useState("");
   const [mediaFiles, setMediaFiles] = useState("");
   const [docFiles, setDocFiles] = useState("");
@@ -131,7 +131,9 @@ function InputSearchField() {
       console.log(response.errorMessage);
     }
   };
+  let count = 1;
   let handleSendMessage = async () => {
+    
     try {
       let isRepliedConvo = selectedConversationContext.isSelected;
       let { text, setText } = inputContext;
@@ -139,6 +141,7 @@ function InputSearchField() {
       let res = null;
       // textValT = textVal.
       let tv = text;
+      console.log("checkpoint " + count++)
       if (tv.length != 0) {
         if (!filesArray.length) {
           res = await fnew(false, 0, tv, setText, isRepliedConvo);
@@ -212,6 +215,7 @@ function InputSearchField() {
     isRepliedConvo
   ) => {
     try {
+      console.log("checkpoint " + count++)
       let config = {
         text: tv.toString(),
         created_at: Date.now(),
@@ -228,7 +232,7 @@ function InputSearchField() {
           selectedConversationContext.conversationObject.id;
       }
       let callRes = await myClient.onConversationsCreate(config);
-
+      console.log("checkpoint " + count++)
       let oldConversationArr = conversationContext.conversationsArray;
       let oldLength = oldConversationArr.length;
       let newConvoArr = [...oldConversationArr];
@@ -242,7 +246,9 @@ function InputSearchField() {
         callRes.conversation.member = userContext.currentUser;
         newConvoArr.push([...callRes.conversation]);
       }
+      console.log("checkpoint " + count++)
       conversationContext.setConversationArray(newConvoArr);
+      console.log("checkpoint " + count++)
       setTextVal("");
       inputContext.setText("");
       selectedConversationContext.setIsSelected(false);

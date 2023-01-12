@@ -12,49 +12,49 @@ import events from "../../assets/events.svg";
 import forum from "../../assets/forum.svg";
 import abm from "../../assets/abm.svg";
 import groups from "../../assets/groups.svg";
+import { RouteContext } from "../../Main";
+import { addedByMePath, directMessagePath, eventsPath, forumPath, groupPath } from "../../routes";
 const NavContext = React.createContext({
   currentPath: null,
   setCurrentPath: () => {},
 });
 function Sidenav() {
-  const [currentPath, setCurrentPath] = useState("forums");
+  
+
+  
 
   const navArray = [
     {
       title: "Forums",
-      path: "forums",
+      path: forumPath,
       Icon: forum,
     },
     {
       title: "Groups",
-      path: "groups",
+      path: groupPath,
       Icon: groups,
     },
     {
       title: "Events",
-      path: "events",
+      path: eventsPath,
       Icon: events,
     },
     {
       title: "Direct Messages",
-      path: "direct-messages",
+      path: directMessagePath,
       Icon: dm,
     },
     {
       title: "Added By Me",
-      path: "added-by-me",
+      path: addedByMePath,
       Icon: abm,
     },
   ];
 
   return (
     <div>
-      <NavContext.Provider
-        value={{
-          currentPath: currentPath,
-          setCurrentPath: setCurrentPath,
-        }}
-      >
+      
+      
         {navArray.map((block, blockIndex) => {
           return (
             <NavBlock
@@ -65,15 +65,16 @@ function Sidenav() {
             />
           );
         })}
-      </NavContext.Provider>
+   
     </div>
   );
 }
 
 function NavBlock({ title, Icon, path }) {
-  const useNavContext = useContext(NavContext);
+  const useNavContext = useContext(RouteContext);
   function changeCurrentPath() {
-    useNavContext.setCurrentPath(path);
+    useNavContext.setCurrentRoute(path);
+    
   }
   return (
     <Link to={path} style={{ ...linkCss }} onClick={changeCurrentPath}>
@@ -85,9 +86,9 @@ function NavBlock({ title, Icon, path }) {
               style={{
                 ...navIconCss,
                 color:
-                  useNavContext.currentPath === path ? "#FFFFFF" : "#3884F7",
+                  useNavContext.currentRoute === path ? "#FFFFFF" : "#3884F7",
                 backgroundColor:
-                  useNavContext.currentPath === path ? "#3884F7" : " #D7E6FD",
+                  useNavContext.currentRoute === path ? "#3884F7" : " #D7E6FD",
                 marginLeft: "auto",
                 marginRight: "auto",
               }}
@@ -98,7 +99,7 @@ function NavBlock({ title, Icon, path }) {
         <span
           sx={{
             ...linkTextCss,
-            fontWeight: useNavContext.currentPath === path ? 400 : 300,
+            fontWeight: useNavContext.currentRoute === path ? 400 : 300,
           }}
           variant="p"
         >

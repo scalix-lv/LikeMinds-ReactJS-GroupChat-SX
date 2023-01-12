@@ -1,5 +1,5 @@
 import { createTheme, Grid, ThemeProvider } from "@mui/material";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, createContext } from "react";
 import { Outlet } from "react-router-dom";
 import { UserContext } from ".";
 import Header from "./components/header/Header";
@@ -27,6 +27,7 @@ export const GroupContext = React.createContext({
   refreshContextUi: () => {},
 });
 function Main() {
+  const [currentRoute, setCurrentRoute] = useState("forums")
   const [activeGroup, setActiveGroup] = useState({});
   const userContext = useContext(UserContext);
   const [refreshState, setRefreshState] = useState(true);
@@ -46,6 +47,10 @@ function Main() {
     }
   });
   return (
+    <RouteContext.Provider value={{
+      currentRoute: currentRoute,
+      setCurrentRoute: setCurrentRoute
+    }}>
     <GroupContext.Provider
       value={{
         activeGroup: activeGroup,
@@ -68,7 +73,13 @@ function Main() {
         </div>
       </ThemeProvider>
     </GroupContext.Provider>
+    </RouteContext.Provider>
   );
 }
+
+export const RouteContext = createContext({
+  currentRoute: "",
+  setCurrentRoute: ()=>{}
+})
 
 export default Main;
