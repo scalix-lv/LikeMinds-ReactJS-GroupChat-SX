@@ -20,9 +20,10 @@ import EmojiPicker from "emoji-picker-react";
 // import { GroupContext } from "../Groups/Groups";
 import { GroupContext } from "../../Main";
 import { directMessagePath, groupPersonalInfoPath } from "./../../routes";
-import { CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
+import { ConversationContext, CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
 import parse from "html-react-parser";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
+import { ChatRoomContext } from "../Groups/Groups";
 
 function MessageBox({
   username,
@@ -301,6 +302,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
   };
   const ref = useRef(null);
   const groupContext = useContext(GroupContext);
+  const conversationContext = useContext(ConversationContext)
   useState(() => {
     const handleCloseFunction = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -412,8 +414,9 @@ function MoreOptions({ convoId, userId, convoObject }) {
       >
         <EmojiPicker
           onEmojiClick={(e) => {
-            addReaction(e.emoji, convoId, groupContext.activeGroup.id);
-
+            console.log(groupContext)
+            addReaction(e.emoji, convoId, groupContext.activeGroup.chatroom.id).then(r=>conversationContext.refreshConversationArray(groupContext.activeGroup.chatroom.id, 100, conversationContext));
+            
             handleCloseEmoji();
           }}
         />

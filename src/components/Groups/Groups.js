@@ -6,6 +6,7 @@ import Tittle from "../groupChatArea/tittle/Tittle";
 import {
   ConversationContext,
   CurrentSelectedConversationContext,
+  getChatroomConversationArray,
   StyledBox,
 } from "../groupChatArea/GroupChatArea";
 import "./Groups.css";
@@ -149,6 +150,7 @@ function Groups() {
             value={{
               conversationsArray: conversationsArray,
               setConversationArray: setConversationArray,
+              refreshConversationArray: getChatroomConversationArray
             }}
           >
             <div className="flex overflow-hidden customHeight flex-1">

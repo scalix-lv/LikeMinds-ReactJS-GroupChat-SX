@@ -22,9 +22,50 @@ export const StyledBox = styled(Box)({
   height: "100%",
 });
 
+
+
+export const getChatroomConversationArray = async (chatroomId, pageNo, conversationContext) => {
+  // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
+  let optionObject = {
+    chatroomID: chatroomId,
+    page: pageNo,
+  };
+
+  let response = await getConversationsForGroup(optionObject);
+
+  if (!response.error) {
+    let conversations = response.data;
+
+    let conversationToBeSetArray = [];
+    let newConversationArray = [];
+    let lastDate = "";
+    sessionStorage.setItem("lastConvoId", conversations[0].id);
+    for (let convo of conversations) {
+      if (convo.date === lastDate) {
+        conversationToBeSetArray.push(convo);
+        lastDate = convo.date;
+      } else {
+        if (conversationToBeSetArray.length != 0) {
+          newConversationArray.push(conversationToBeSetArray);
+          conversationToBeSetArray = [];
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
+        } else {
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
+        }
+      }
+    }
+    newConversationArray.push(conversationToBeSetArray);
+    conversationContext.setConversationArray(newConversationArray);
+  } else {
+    console.log(response.errorMessage);
+  }
+};
 export const ConversationContext = React.createContext({
   conversationsArray: [],
   setConversationArray: () => {},
+  refreshConversationArray: ()=>{}
 });
 
 function GroupChatArea() {
@@ -62,44 +103,7 @@ function GroupChatArea() {
     console.log(conversationContext.conversationsArray, convoArrLength, lastConvoArrLength, userContext.currentUser)
   }, [conversationContext.conversationsArray]);
 
-  const fn = async (chatroomId, pageNo) => {
-    // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
-    let optionObject = {
-      chatroomID: chatroomId,
-      page: pageNo,
-    };
-
-    let response = await getConversationsForGroup(optionObject);
-
-    if (!response.error) {
-      let conversations = response.data;
-
-      let conversationToBeSetArray = [];
-      let newConversationArray = [];
-      let lastDate = "";
-      sessionStorage.setItem("lastConvoId", conversations[0].id);
-      for (let convo of conversations) {
-        if (convo.date === lastDate) {
-          conversationToBeSetArray.push(convo);
-          lastDate = convo.date;
-        } else {
-          if (conversationToBeSetArray.length != 0) {
-            newConversationArray.push(conversationToBeSetArray);
-            conversationToBeSetArray = [];
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          } else {
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          }
-        }
-      }
-      newConversationArray.push(conversationToBeSetArray);
-      conversationContext.setConversationArray(newConversationArray);
-    } else {
-      console.log(response.errorMessage);
-    }
-  };
+  
   const fnPagination = async (chatroomId, pageNo) => {
     // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
     let optionObject = {
@@ -149,7 +153,7 @@ function GroupChatArea() {
   };
   useEffect(() => {
     if (groupContext.activeGroup.chatroom?.id)
-      fn(groupContext.activeGroup.chatroom?.id, 100);
+      getChatroomConversationArray(groupContext.activeGroup.chatroom?.id, 100, conversationContext);
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
