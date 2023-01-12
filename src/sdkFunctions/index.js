@@ -103,6 +103,7 @@ export async function getReportingOptions() {
 
 export async function addReaction(reaction, convoId, chatId) {
   try {
+    
     const reactionCall = await myClient.addAction({
       chatroom_id: chatId,
       conversation_id: convoId,
