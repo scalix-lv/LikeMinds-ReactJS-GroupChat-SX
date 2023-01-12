@@ -145,7 +145,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [community, setCommunity] = useState({});
   useEffect(() => {
-    initiateSDK(false, "53208f29-5d15-473e-ab70-5fd77605be0f", "Ankit Garg SDK")
+    initiateSDK(false, "0992885d-a170-494b-80c5-ecaef0cb2a24", "Ankit")
       .then((res) => {
         setCommunity(res?.data?.community);
         setCurrentUser(res?.data?.user);

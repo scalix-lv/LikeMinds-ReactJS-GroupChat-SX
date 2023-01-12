@@ -10,7 +10,8 @@ import { DmContext } from "./DirectMessagesMain";
 export async function reqDM(profile, userContext, dmContext, navigate) {
   try {
     let call = await requestDM(profile.id, userContext.community.id);
-    if (!call.data.success) {
+    console.log(call)
+    if (call.data === undefined) {
       alert(call.data.error_message);
       return;
     } else if (!call.data.is_request_dm_limit_exceeded) {
