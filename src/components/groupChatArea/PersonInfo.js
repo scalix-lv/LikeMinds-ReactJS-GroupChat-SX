@@ -47,9 +47,8 @@ function PersonInfo() {
   useEffect(() => {
     const fn = async () => {
       try {
-        const memberCall = await myClient.profileData({
-          community_id: userContext.community.id,
-          member_id: location.state.memberId,
+        const memberCall = await myClient.getProfile({
+          user_id: location.state.memberId,
         });
         if(memberCall?.member.id === profileDate.id){
           return
@@ -61,8 +60,13 @@ function PersonInfo() {
     };
     fn();
   });
+  useEffect(()=>{
+    console.log(profileDate)
+  }, [profileDate])
   return (
-    <div className="overflow-auto w-full h-full">
+    Object.keys(profileDate).length?
+    (
+      <div className="overflow-auto w-full h-full">
       {/* Title Header */}
       { routeContext.currentRoute === groupPath   ? (
         <Tittle
@@ -113,7 +117,7 @@ function PersonInfo() {
 
         <Box className="ml-3 mt-4 text-[#323232]">
           <div className="w-[60px] h-[60px] border-[1px] border-[#eeeeee] bg-[#eeeeee] text-[30px] mr-2.5 rounded-[5px] flex justify-center items-center">
-            {profileDate.image_url !== "" ? (
+            {profileDate.image_url !== "" && profileDate.image_url !== undefined ? (
               <img
                 src={profileDate.image_url}
                 className="w-full h-full"
@@ -153,6 +157,10 @@ function PersonInfo() {
         </Box>
       </div>
     </div>
+    ):
+    null
+
+   
   );
 }
 
