@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect } from "react";
 import ChatRoomAreaDM from "../ChatConversationsArea/ChatRoomAreaDM";
@@ -17,11 +17,13 @@ export const StyledBox = styled(Box)({
   height: "100%",
 });
 function ChatArea() {
-  const dmContext = useContext(DmContext);
+  // const dmContext = useContext(DmContext);
+  const dmContext = useContext(DmContext)
   const userContext = useContext(UserContext);
   let db = myClient.fbInstance();
 
-  const getChatroomConversations = async (chatroomId, pageNo) => {
+  async function getChatroomConversations(chatroomId, pageNo){
+    console.log(chatroomId)
     let optionObject = {
       chatroomID: chatroomId,
       page: pageNo,
@@ -70,10 +72,12 @@ function ChatArea() {
       const data = snapshot.val();
       console.log(data);
       if (
-        snapshot.exists() &&
-        Object.keys(dmContext.currentChatroom).length > 0
+        snapshot.exists() 
+        
       ) {
-        getChatroomConversations(dmContext.currentChatroom?.id, 500);
+        console.log(dmContext)
+        
+        getChatroomConversations(sessionStorage.getItem("currentChatRoomKey"), 500);
       }
     });
   }, []);
@@ -84,6 +88,7 @@ function ChatArea() {
       const data = snapshot.val();
       console.log(data);
       if (snapshot.exists()) {
+console.log(dmContext)
         loadHomeFeed(1);
       }
     });
@@ -91,9 +96,12 @@ function ChatArea() {
 
   return (
     <div>
+
       {dmContext.currentChatroom ? (
         <StyledBox>
+          {/* <Button fullWidth onClick={()=>console.log(dmContext)}>SHOW ME THE CONTEXT</Button> */}
           {Object.keys(dmContext.currentChatroom).length > 0 ? (
+            
             <TittleDm
               title={
                 userContext.currentUser.id ===

@@ -16,11 +16,12 @@ import {
 import { directMessageChatPath } from "../../../routes";
 import DmMemberTile from "../DmMemberTile";
 import InfiniteScroll from "react-infinite-scroll-component";
+
 import { myClient, UserContext } from "../../..";
 
 function CurrentDms() {
   const dmContext = useContext(DmContext);
-  const userContext = useContext(UserContext);
+  const userContext_LM = useContext(UserContext);
   const [openAllUsers, setOpenAllUsers] = useState(true);
   const [totalMembersFiltered, setTotalMembersFiltered] = useState(null);
   const [lastCaughtPageAllMembers, setLastCaughtPageAllMembers] = useState(1);
@@ -28,16 +29,48 @@ function CurrentDms() {
     shouldContinuePaginateMembersFeed,
     setShouldContinuePaginateMembersFeed,
   ] = useState(true);
-
+  const [shouldContinuePaginateHomeFeed, setShouldContinuePaginateHomeFeed] = useState(true)
   const [lastPageHomeFeed, setLastPageHomeFeed] = useState(1);
-
+  const [feedObjects, setFeedObjects] = useState({})
+  function joinFeed(oldArray, newArray, serialObject){
+    serialObject = {...serialObject}
+    console.log(newArray.length)
+    for(let feed of newArray){
+      let roomId = feed.chatroom.id
+      console.log("A")
+      if(serialObject[roomId] === undefined){
+        console.log("B")
+        serialObject[roomId] = true
+        oldArray.push(feed)
+      }
+      
+      
+    }
+    setFeedObjects(serialObject)
+    return oldArray
+  }
   async function loadHomeFeed(pageNo) {
     try {
-      let feedCall = await dmChatFeed(userContext.community.id, pageNo);
+      let oldArr = [...dmContext.homeFeed]
+      let feedCall = await dmChatFeed(userContext_LM.community.id, pageNo);
       let newFeedArray = feedCall.data.dm_chatrooms;
+      if(newFeedArray.length < 10){
+        setShouldContinuePaginateHomeFeed(false)
+      }
+      newFeedArray = joinFeed(oldArr, newFeedArray, feedObjects)
       dmContext.setHomeFeed(newFeedArray);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async function paginateHomeFeed(){
+    try {
+      let currentHomeFeed = [...dmContext.homeFeed]
+      const pageNo = currentHomeFeed.length/10
+      const call = await loadHomeFeed(pageNo+1)
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -61,7 +94,7 @@ function CurrentDms() {
   async function paginateAllMembers() {
     try {
       let call = await allChatroomMembersDm(
-        userContext.community.id,
+        userContext_LM.community.id,
         lastCaughtPageAllMembers + 1
       );
       let newArr = [...dmContext.membersFeed];
@@ -124,7 +157,12 @@ function CurrentDms() {
       >
         Show DM Context
       </Button> */}
-      <div className="max-h-[400px] overflow-auto" id="mf-container">
+      <div className="max-h-[400px] overflow-auto" id="hf-container">
+        <InfiniteScroll
+        next={paginateHomeFeed}
+        dataLength={dmContext.homeFeed.length}
+        hasMore={shouldContinuePaginateHomeFeed}
+        scrollableTarget="hf-container">
         {dmContext.homeFeed.map((feed, feedIndex) => {
           return (
             <DmTile
@@ -134,7 +172,9 @@ function CurrentDms() {
             />
           );
         })}
+        </InfiniteScroll>
       </div>
+      
 
       {}
       <div className="py-4 px-5 flex justify-between text-center h-[56px]">
@@ -156,7 +196,7 @@ function CurrentDms() {
             scrollableTarget="mf-container"
           >
             {dmContext.membersFeed.map((feed, feedIndex) => {
-              if (feed.id == userContext.currentUser.id) {
+              if (feed.id == userContext_LM.currentUser.id) {
                 return null;
               }
               return (
@@ -176,7 +216,7 @@ function CurrentDms() {
 
 function DmTile({ profile, loadHomeFeed }) {
   const dmContext = useContext(DmContext);
-  const userContext = useContext(UserContext);
+  const userContext_LM = useContext(UserContext);
   async function markReadCall(chatroomId) {
     try {
       await markRead(chatroomId);
@@ -196,9 +236,12 @@ function DmTile({ profile, loadHomeFeed }) {
         await markRead(profile.chatroom.id);
         await loadHomeFeed(1);
       }
+      sessionStorage.setItem("currentChatRoomKey", profile.chatroom.id)
+      
       let call = await getChatRoomDetails(myClient, profile.chatroom.id);
-      dmContext.setCurrentProfile(call.data);
-      dmContext.setCurrentChatroom(call.data.chatroom);
+      // dmContext.setCurrentProfile(call.data);
+      // dmContext.setCurrentChatroom(call.data.chatroom);
+      await markReadCall(profile.chatroom.id)
     } catch (error) {
       console.log(error);
     }
@@ -231,7 +274,7 @@ function DmTile({ profile, loadHomeFeed }) {
                 : "#323232",
           }}
         >
-          {userContext.currentUser.id === profile.chatroom.member.id
+          {userContext_LM.currentUser.id === profile.chatroom.member.id
             ? profile.chatroom.chatroom_with_user.name
             : profile.chatroom.member.name}
         </Typography>
