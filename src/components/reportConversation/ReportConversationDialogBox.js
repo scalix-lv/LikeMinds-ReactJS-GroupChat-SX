@@ -16,7 +16,7 @@ function ReportConversationDialogBox({
     getReportingOptions()
       .then((r) => setReasonArr(r.data.report_tags))
       .catch((e) => console.log(e));
-  });
+  },[]);
   return (
     <div className="bg-white p-4 w-[400px]">
       <div className="flex justify-between p-4">
