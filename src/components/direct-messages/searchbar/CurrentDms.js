@@ -217,9 +217,14 @@ function CurrentDms() {
 function DmTile({ profile, loadHomeFeed }) {
   const dmContext = useContext(DmContext);
   const userContext_LM = useContext(UserContext);
+
+  const [shouldNotShow, setShouldNotShow] = useState(false)
   async function markReadCall(chatroomId) {
     try {
-      await markRead(chatroomId);
+      let markCall = await markRead(chatroomId);
+      if(markCall.data.success){
+        setShouldNotShow(true)
+      }
       loadHomeFeed(1);
 
       let call = await getChatRoomDetails(myClient, chatroomId);
@@ -283,18 +288,23 @@ function DmTile({ profile, loadHomeFeed }) {
           component={"span"}
           className="text-sm font-light"
           sx={{
-            color:
-              profile.unseen_conversation_count > 0 ? "#3884F7" : "#323232",
-            // dmContext.currentChatroom.unseen_count > 0
-            //   ? "#3884F7"
-            //   : "#323232",
+            color:profile.unseen_conversation_count != undefined ?
+              (profile.unseen_conversation_count > 0 ? "#3884F7" : "#323232") : profile.unread_messages != undefined ? (
+                profile.unread_messages > 0 ? "#3884F7" : "#323232"
+              ) : "white",
+            display: shouldNotShow ? "none" : 'inline'
           }}
         >
-          {profile.unseen_conversation_count > 0 ? (
+          {profile.unseen_conversation_count != undefined  ? (
+            profile.unseen_conversation_count > 0 ? 
             <>{profile.unseen_conversation_count} new messages</>
-          ) : null}
+            :null
+          ) : profile.unread_messages != undefined ? (
+            profile.unread_messages > 0 ? <>{profile.unread_messages} new messages</> : null
+          ) : null
+         }
         </Typography>
-      </div>
+      </div> 
     </Link>
   );
 }

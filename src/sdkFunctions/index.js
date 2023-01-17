@@ -94,7 +94,9 @@ export async function createNewConversation(val, groupContext, options) {
 
 export async function getReportingOptions() {
   try {
-    let rep = await myClient.getReportTags();
+    let rep = await myClient.getReportTags({
+      type: 0
+    });
     return jsonReturnHandler(rep, null);
   } catch (e) {
     return jsonReturnHandler(null, e);
