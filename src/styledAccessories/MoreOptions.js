@@ -120,6 +120,7 @@ export function MoreOptionsDM() {
         vertical: "bottom",
         horizontal: "left",
       }}
+     
     >
       <MenuItem
         onClick={leaveGroup}
@@ -134,7 +135,9 @@ export function MoreOptionsDM() {
     </Menu>
   );
   return (
-    <span>
+    <span style={{
+      display: dmContext.currentChatroom.chat_request_state == 0 ? "none" : 'inline'
+    }}>
       <IconButton
         onClick={(e) => {
           setAnchor(e.currentTarget);
