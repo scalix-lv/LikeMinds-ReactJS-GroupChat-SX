@@ -149,14 +149,14 @@ function CurrentDms() {
 
   return (
     <Box>
-      <Button
+      {/* <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button>
+      </Button> */}
       <div className="max-h-[400px] overflow-auto" id="hf-container">
         <InfiniteScroll
         next={paginateHomeFeed}
