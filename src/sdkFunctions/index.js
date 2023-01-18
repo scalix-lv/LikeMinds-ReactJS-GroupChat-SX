@@ -246,7 +246,7 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
 export function tagExtracter(str) {
   let newContent = str
     .split("<<")
-    .join(`<span hl="Sd" style="color: green; cursor:pointer;">`);
+    .join(`<span hl="Sd" style="color: #3884F7; cursor:pointer;">`);
   newContent = newContent.split("|route").join("</span>|route");
   let a = newContent.split("|route");
 

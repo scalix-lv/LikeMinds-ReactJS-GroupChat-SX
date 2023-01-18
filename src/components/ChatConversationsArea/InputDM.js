@@ -30,11 +30,7 @@ import "./Input.css";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 
 function InputDM({ updateHeight }) {
-  const [audioFiles, setAudioFiles] = useState("");
-  const [mediaFiles, setMediaFiles] = useState("");
-  const [docFiles, setDocFiles] = useState("");
-  const [text, setText] = useState("");
-  const [textVal, setTextVal] = useState("");
+    
 
   return (
     <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
@@ -92,7 +88,7 @@ function InputSearchField({ updateHeight }) {
   let handleSendMessage = async () => {
     try {
       console.log(dmContext.currentChatroom.chat_request_state);
-      if (dmContext.currentChatroom.chat_request_state === null) {
+      if (dmContext.currentChatroom.chat_request_state === null && (dmContext.currentChatroom.member.state != 1 && dmContext.currentChatroom.chatroom_with_user.state != 1)) {
         console.log("sending request");
         let textMessage = dmContext.messageText;
         dmContext.setMessageText("");
