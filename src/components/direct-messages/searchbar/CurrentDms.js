@@ -22,6 +22,7 @@ import { myClient, UserContext } from "../../..";
 function CurrentDms() {
   const dmContext = useContext(DmContext);
   const userContext_LM = useContext(UserContext);
+
   const [openAllUsers, setOpenAllUsers] = useState(true);
   const [totalMembersFiltered, setTotalMembersFiltered] = useState(null);
   const [lastCaughtPageAllMembers, setLastCaughtPageAllMembers] = useState(1);
@@ -32,6 +33,7 @@ function CurrentDms() {
   const [shouldContinuePaginateHomeFeed, setShouldContinuePaginateHomeFeed] = useState(true)
   const [lastPageHomeFeed, setLastPageHomeFeed] = useState(1);
   const [feedObjects, setFeedObjects] = useState({})
+  const [selectedIndex, setSelectedIndex] = useState(null)
   function joinFeed(oldArray, newArray, serialObject){
     serialObject = {...serialObject}
     console.log(newArray.length)
@@ -169,6 +171,8 @@ function CurrentDms() {
               profile={feed}
               key={feedIndex}
               loadHomeFeed={loadHomeFeed}
+              selectedId={selectedIndex}
+              setSelectedId={setSelectedIndex}
             />
           );
         })}
@@ -214,7 +218,7 @@ function CurrentDms() {
   );
 }
 
-function DmTile({ profile, loadHomeFeed }) {
+function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
   const dmContext = useContext(DmContext);
   const userContext_LM = useContext(UserContext);
 
@@ -235,7 +239,7 @@ function DmTile({ profile, loadHomeFeed }) {
     }
   }
   async function setProfile() {
-    console.log(profile);
+    
     try {
       if (profile.unseen_conversation_count > 0) {
         await markRead(profile.chatroom.id);
@@ -244,8 +248,7 @@ function DmTile({ profile, loadHomeFeed }) {
       sessionStorage.setItem("currentChatRoomKey", profile.chatroom.id)
       
       let call = await getChatRoomDetails(myClient, profile.chatroom.id);
-      // dmContext.setCurrentProfile(call.data);
-      // dmContext.setCurrentChatroom(call.data.chatroom);
+ 
       await markReadCall(profile.chatroom.id)
     } catch (error) {
       console.log(error);
@@ -258,13 +261,16 @@ function DmTile({ profile, loadHomeFeed }) {
       style={{
         textDecoration: "none",
       }}
+      onClick={()=>{
+        setSelectedId(profile.chatroom.id)
+      }}
     >
       <div
         onClick={setProfile}
         className="flex justify-between py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
         style={{
           backgroundColor:
-            dmContext?.currentChatroom?.id === profile?.chatroom?.id
+            selectedId === profile?.chatroom?.id
               ? "#ECF3FF"
               : "#FFFFFF",
         }}
