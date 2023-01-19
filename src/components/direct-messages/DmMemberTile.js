@@ -1,13 +1,13 @@
 import { Margin } from "@mui/icons-material";
-import { Button } from "@mui/material";
-import React, { useContext } from "react";
+import { Button, Snackbar } from "@mui/material";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { myClient, UserContext } from "../..";
 import { directMessageChatPath, directMessageInfoPath } from "../../routes";
 import { createDM, getChatRoomDetails, requestDM } from "../../sdkFunctions";
 import { DmContext } from "./DirectMessagesMain";
 
-export async function reqDM(profile, userContext, dmContext, navigate, setSelectedId) {
+export async function reqDM(profile, userContext, dmContext, navigate, setSelectedId, setOpenSnackBar,setSnackBarMessage) {
   try {
     let call = await requestDM(profile.id, userContext.community.id);
     console.log(call)
@@ -23,6 +23,12 @@ export async function reqDM(profile, userContext, dmContext, navigate, setSelect
           myClient,
           call.data.chatroom_id
         );
+        console.log(profileData)
+        if(!profileData.sucess){
+          setOpenSnackBar(true)
+    setSnackBarMessage("An Error Occoured")
+    return
+        }
         if(setSelectedId != undefined){
           setSelectedId(profile.id)
         }
@@ -46,6 +52,8 @@ export async function reqDM(profile, userContext, dmContext, navigate, setSelect
     }
   } catch (error) {
     console.log(error);
+    return error
+    
   }
 }
 
@@ -54,7 +62,8 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
   let dmContext = useContext(DmContext);
   let userContext = useContext(UserContext);
   // console.log(profile);
-
+  const [openSnackBar, setOpenSnackBar] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState("")
   return (
     <div
       className="flex justify-between items-center py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
@@ -89,7 +98,10 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
           },
         }}
         onClick={() => {
-          reqDM(profile, userContext, dmContext, navigate, setSelectedId);
+          reqDM(profile, userContext, dmContext, navigate, setSelectedId, setOpenSnackBar, setSnackBarMessage).then(r=>{}).catch(e=>{
+            setOpenSnackBar(true)
+    setSnackBarMessage(e.error_message)
+          })
           
         }}
         variant="filled"
@@ -115,6 +127,9 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
           View Profile
         </Button>
       </Link>
+      {
+        openSnackBar ? <Snackbar open={openSnackBar} onClose={()=>setOpenSnackBar(false)} message={snackBarMessage} autoHideDuration={3000}/> : null
+      }
     </div>
   );
 }
