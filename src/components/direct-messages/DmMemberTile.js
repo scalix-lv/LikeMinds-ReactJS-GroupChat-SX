@@ -7,19 +7,25 @@ import { directMessageChatPath, directMessageInfoPath } from "../../routes";
 import { createDM, getChatRoomDetails, requestDM } from "../../sdkFunctions";
 import { DmContext } from "./DirectMessagesMain";
 
-export async function reqDM(profile, userContext, dmContext, navigate) {
+export async function reqDM(profile, userContext, dmContext, navigate, setSelectedId) {
   try {
     let call = await requestDM(profile.id, userContext.community.id);
     console.log(call)
+    
+
     if (call.data === undefined) {
       alert(call.data.error_message);
       return;
     } else if (!call.data.is_request_dm_limit_exceeded) {
+      
       if (call.data.chatroom_id != null) {
         let profileData = await getChatRoomDetails(
           myClient,
           call.data.chatroom_id
         );
+        if(setSelectedId != undefined){
+          setSelectedId(profile.id)
+        }
         console.log(profileData);
         dmContext.setCurrentProfile(profileData.data);
         dmContext.setCurrentChatroom(profileData.data.chatroom);
@@ -43,7 +49,7 @@ export async function reqDM(profile, userContext, dmContext, navigate) {
   }
 }
 
-function DmMemberTile({ profile, profileIndex }) {
+function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
   const navigate = useNavigate();
   let dmContext = useContext(DmContext);
   let userContext = useContext(UserContext);
@@ -83,7 +89,8 @@ function DmMemberTile({ profile, profileIndex }) {
           },
         }}
         onClick={() => {
-          reqDM(profile, userContext, dmContext, navigate);
+          reqDM(profile, userContext, dmContext, navigate, setSelectedId);
+          
         }}
         variant="filled"
       >

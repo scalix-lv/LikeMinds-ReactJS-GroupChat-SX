@@ -30,7 +30,7 @@ import "./Input.css";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 
 function InputDM({ updateHeight }) {
-    
+
 
   return (
     <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
@@ -217,6 +217,7 @@ function InputSearchField({ updateHeight }) {
       dmContext.setAudioAttachments([]);
       dmContext.setMediaAttachments([]);
       dmContext.setDocumentAttachments([]);
+      console.log(dmContext.currentChatroom.id)
       getChatroomConversations(
         dmContext.currentChatroom.id,
         1000,
