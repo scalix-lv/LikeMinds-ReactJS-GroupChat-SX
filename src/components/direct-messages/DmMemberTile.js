@@ -32,7 +32,7 @@ export async function reqDM(profile, userContext, dmContext, navigate, setSelect
         if(setSelectedId != undefined){
           setSelectedId(profile.id)
         }
-        console.log(profileData);
+        console.log(profileData); 
         dmContext.setCurrentProfile(profileData.data);
         dmContext.setCurrentChatroom(profileData.data.chatroom);
       } else {
