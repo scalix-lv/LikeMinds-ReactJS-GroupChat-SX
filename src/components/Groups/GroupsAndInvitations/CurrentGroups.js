@@ -52,21 +52,11 @@ function CurrentGroups() {
     <Box>
       {<PublicGroup groupList={chatroomContext.chatRoomsList} />}
 
-      {groupsInviteInfo.map((group, groupIndex) => {
-        return (
-          <NavLink key={group.title + groupIndex} to={groupMainPath}>
-            <GroupInviteTile
-              title={group.title}
-              groupType={group.groupType}
-              getChatRoomData={getChatRoomData}
-            />
-          </NavLink>
-        );
-      })}
+    
       <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
         <span>All Public Groups</span>
         <IconButton onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}>
-          {shouldOpenPublicCard ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
+          {!shouldOpenPublicCard ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
         </IconButton>
       </div>
       <Collapse
