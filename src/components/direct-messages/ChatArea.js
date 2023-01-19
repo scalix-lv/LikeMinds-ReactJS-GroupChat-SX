@@ -23,6 +23,9 @@ function ChatArea() {
   let db = myClient.fbInstance();
 
   async function getChatroomConversations(chatroomId, pageNo){
+    if(chatroomId == null){
+      return
+    }
     console.log(chatroomId)
     let optionObject = {
       chatroomID: chatroomId,
@@ -65,7 +68,14 @@ function ChatArea() {
       console.log(error);
     }
   }
-
+  const getCurrentChatroomID = ()=>{
+    let l = Object.keys(dmContext.currentChatroom).length
+    if(l>0){
+      return dmContext.currentChatroom.id
+    }else{
+      return sessionStorage.getItem("currentChatRoomKey")
+    }
+  }
   useEffect(() => {
     const query = ref(db, "collabcards");
     return onValue(query, (snapshot) => {
@@ -77,7 +87,7 @@ function ChatArea() {
       ) {
         console.log(dmContext)
         
-        getChatroomConversations(sessionStorage.getItem("currentChatRoomKey"), 500);
+        getChatroomConversations(getCurrentChatroomID(), 500);
       }
     });
   }, []);

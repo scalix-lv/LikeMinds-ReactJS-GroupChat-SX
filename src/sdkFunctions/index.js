@@ -20,7 +20,7 @@ export const createNewClient = (key) => {
   return client;
 };
 
-export const getChatRoomDetails = async (myClient: LikeMinds, chatRoomId) => {
+export const getChatRoomDetails = async (myClient, chatRoomId) => {
   try {
     console.log(chatRoomId);
     const params = {
