@@ -23,11 +23,11 @@ export async function reqDM(profile, userContext, dmContext, navigate, setSelect
           myClient,
           call.data.chatroom_id
         );
-        console.log(profileData)
-        if(!profileData.sucess){
+        console.log(profileData.error)
+        if(profileData.data == undefined){
           setOpenSnackBar(true)
     setSnackBarMessage("An Error Occoured")
-    return
+          return
         }
         if(setSelectedId != undefined){
           setSelectedId(profile.id)
