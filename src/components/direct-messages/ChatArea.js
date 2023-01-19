@@ -2,12 +2,13 @@ import { Box, Button, CircularProgress } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect } from "react";
 import ChatRoomAreaDM from "../ChatConversationsArea/ChatRoomAreaDM";
-import { DmContext } from "./DirectMessagesMain";
+
 import TittleDm from "./TitleDM";
 import { dmChatFeed, getConversationsForGroup } from "../../sdkFunctions";
 
 import { onValue, ref } from "firebase/database";
 import { myClient, UserContext } from "../..";
+import { DmContext } from "./DirectMessagesMain";
 // Exported Styled Box
 export const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
@@ -17,9 +18,9 @@ export const StyledBox = styled(Box)({
   height: "100%",
 });
 function ChatArea() {
-  // const dmContext = useContext(DmContext);
-  const dmContext = useContext(DmContext)
+ 
   const userContext = useContext(UserContext);
+  const dmContext = useContext(DmContext)
   let db = myClient.fbInstance();
 
   async function getChatroomConversations(chatroomId, pageNo){
@@ -69,7 +70,12 @@ function ChatArea() {
     }
   }
   const getCurrentChatroomID = ()=>{
+
     let l = Object.keys(dmContext.currentChatroom).length
+    if(l == 0){
+      return
+    }
+    console.log(l)
     if(l>0){
       return dmContext.currentChatroom.id
     }else{
