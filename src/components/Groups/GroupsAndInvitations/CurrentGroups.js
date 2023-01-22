@@ -4,7 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import Typicode from "likeminds-apis-sdk";
+import Typicode from "likeminds-chat-beta";
 import {
   createNewClient,
   getChatRoomDetails,
