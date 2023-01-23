@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { UserContext } from "../..";
+import SearchBarContainer from "../SearchBar/SearchBar";
 
 import CurrentDms from "./searchbar/CurrentDms";
 import SearchBarDirectMessages from "./searchbar/SearchBarDirectMessages";
@@ -54,6 +55,7 @@ function DirectMessagesMain() {
         <div className="flex overflow-hidden customHeight flex-1">
           <div className="flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel">
             <SearchBarDirectMessages />
+            {/* <SearchBarContainer/> */}
             <CurrentDms />
           </div>
           <div className="flex-[.68] bg-[#f9f6ff] relative pt-[42px]">

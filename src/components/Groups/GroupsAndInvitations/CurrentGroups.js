@@ -25,19 +25,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 function CurrentGroups() {
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(false);
-
-  // content to be deleted
-
-  const groupsInviteInfo = [
-    {
-      title: "Founders Social",
-      groupType: "private",
-    },
-    {
-      title: "Socialize and Stratagize",
-      groupType: "private",
-    },
-  ];
+  
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
