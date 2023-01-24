@@ -154,7 +154,7 @@ function Groups() {
             }}
           >
             <div className="flex overflow-hidden customHeight flex-1">
-              <div className="flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel">
+              <div className="flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel relative">
                 {/* Search Bar */}
                 <SearchbarGroups />
 

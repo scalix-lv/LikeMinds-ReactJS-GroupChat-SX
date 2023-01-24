@@ -4,7 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import Typicode from "likeminds-apis-sdk";
+import Typicode from "likeminds-chat-beta";
 import {
   createNewClient,
   getChatRoomDetails,
@@ -25,19 +25,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 function CurrentGroups() {
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(false);
-
-  // content to be deleted
-
-  const groupsInviteInfo = [
-    {
-      title: "Founders Social",
-      groupType: "private",
-    },
-    {
-      title: "Socialize and Stratagize",
-      groupType: "private",
-    },
-  ];
+  
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {

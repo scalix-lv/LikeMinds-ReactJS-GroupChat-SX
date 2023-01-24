@@ -1,17 +1,72 @@
-import { Box, InputAdornment, TextField } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Collapse, IconButton, InputAdornment, TextField } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import filterIcon from "../../../assets/svg/menu.svg";
 import searchIcon from "../../../assets/svg/searchBoxIcon.svg";
+import { myClient } from "../../..";
+import SearchBarContainer from "../../SearchBar/SearchBar";
 
 function SearchbarGroups() {
   const [searchString, setSearchString] = useState("");
+  const [searchResultObject, setSearchResultObject] = useState([])
+  const [showSearchContainer, setShowSearchContainer] = useState(false)
+  const ref = useRef(null)
+  useEffect(()=>{
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setShowSearchContainer(false)
+      }
+    };
+    document.addEventListener('click', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  })
+    useEffect(()=>{
+    const searchTimeOut = setTimeout(async ()=>{
+      try {
+        let callFollowed = await myClient.searchChatroom({
+          follow_status: true,
+          search: searchString,
+          page_size: 200,
+          page: 1,
+          search_type: 'header'
+        })
+        let callUnFollowed = await myClient.searchChatroom({
+          follow_status: false,
+          search: searchString,
+          page_size: 200,
+          page: 1,
+          search_type: 'header'
+        })
+        let obj = []
+        obj[0] = {
+          "Followed Chatrooms" : callFollowed.chatrooms
+        }
+        obj[1] = {
+          "Unfollowed Chatrooms" : callUnFollowed.chatrooms
+        }
+        
+        setSearchResultObject(obj)
+        console.log(obj)
+      } catch (error) {
+        console.log(error)
+      }
+    }, 500)
 
-  // className="border-[#eeeeee] border-[1px] py-[12px] px-[16px] rounded-[10px]"
+    return ()=>{
+      clearTimeout(searchTimeOut)
+    }
+  }, [searchString])
 
+  useEffect(()=>{
+    console.log(showSearchContainer)
+  }, [showSearchContainer])
   return (
-    <Box className="p-[20px] flex justify-between">
+    <div>
+    <Box ref={ref} className="p-[20px] pb-6 flex justify-between relative z-10">
       <TextField
+      fullWidth
         InputProps={{
           startAdornment: (
             <InputAdornment className="mr-[16px]" position="start">
@@ -21,28 +76,58 @@ function SearchbarGroups() {
           endAdornment:
             searchString.length > 1 ? (
               <InputAdornment className="mr-8" position="end">
-                <CloseIcon />
+                <IconButton onClick={()=>setSearchResultObject(false)}>
+
+                </IconButton>
               </InputAdornment>
             ) : null,
           sx: {
             fontFamily: "Lato",
             borderRadius: "10px",
             border: "1px solid #EEEEEE",
-            width: "370px",
+            // width: "370px",
           },
           className:
-            "bg-[#F5F5F5] font-[300] text-[14px] h-[48px] max-w-[300px] w-[100%]",
+            "bg-[#F5F5F5] font-[300] text-[14px] h-[48px] w-[100%]",
         }}
         placeholder="Search for groups"
         value={searchString}
         onChange={(e) => {
           setSearchString(e.target.value);
         }}
+        onFocus={()=>{
+          setShowSearchContainer(true)
+        }}
+        
       />
       <div className="ml-2">
         <img src={filterIcon} alt="filter icon" />
       </div>
     </Box>
+    <div style={{
+      display: showSearchContainer && searchString.length > 0 ? "block" : "none",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      height: "100%",
+      width: "100%",
+      position: "fixed",
+      top: "0",
+      left: "0",
+      zIndex: "9",
+      
+    }}></div>
+    <div 
+    style={{
+      display: showSearchContainer
+       && searchString.length > 0
+        ? "block" : "none",
+        position: "absolute",
+        zIndex: 10,
+        width: "100%"
+    }}
+    >
+    <SearchBarContainer searchResults={searchResultObject} />
+    </div>
+    </div>
   );
 }
 

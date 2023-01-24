@@ -1,4 +1,4 @@
-import LikeMinds from "likeminds-apis-sdk";
+import LikeMinds from "likeminds-chat-beta";
 import { myClient } from "..";
 export const jsonReturnHandler = (data, error) => {
   let returnObject = {

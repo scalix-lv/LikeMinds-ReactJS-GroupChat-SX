@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import LikeMinds from "likeminds-apis-sdk";
+import LikeMinds from "likeminds-chat-beta";
 
 export const myClient = new LikeMinds({
   apiKey: process.env.REACT_APP_API_KEY,
