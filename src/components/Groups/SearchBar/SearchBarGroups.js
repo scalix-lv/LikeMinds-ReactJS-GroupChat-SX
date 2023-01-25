@@ -10,6 +10,7 @@ function SearchbarGroups() {
   const [searchString, setSearchString] = useState("");
   const [searchResultObject, setSearchResultObject] = useState([])
   const [showSearchContainer, setShowSearchContainer] = useState(false)
+  const [shouldShowLoading, setShouldShowLoading] = useState(true)
   const ref = useRef(null)
   useEffect(()=>{
     const handleClickOutside = (event) => {
@@ -25,6 +26,7 @@ function SearchbarGroups() {
     useEffect(()=>{
     const searchTimeOut = setTimeout(async ()=>{
       try {
+        setShouldShowLoading(true)
         let callFollowed = await myClient.searchChatroom({
           follow_status: true,
           search: searchString,
@@ -41,13 +43,14 @@ function SearchbarGroups() {
         })
         let obj = []
         obj[0] = {
-          "Followed Chatrooms" : callFollowed.chatrooms
+          "Followed Groups" : callFollowed.chatrooms
         }
         obj[1] = {
-          "Unfollowed Chatrooms" : callUnFollowed.chatrooms
+          "Unfollowed Groups" : callUnFollowed.chatrooms
         }
         
         setSearchResultObject(obj)
+        setShouldShowLoading(false)
         console.log(obj)
       } catch (error) {
         console.log(error)
@@ -125,7 +128,7 @@ function SearchbarGroups() {
         width: "100%"
     }}
     >
-    <SearchBarContainer searchResults={searchResultObject} />
+    <SearchBarContainer searchResults={searchResultObject} shouldShowLoading={shouldShowLoading} />
     </div>
     </div>
   );

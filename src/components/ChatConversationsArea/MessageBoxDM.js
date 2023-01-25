@@ -9,7 +9,7 @@ import moreIcon from "../../assets/svg/more-vertical.svg";
 import pdfIcon from "../../assets/svg/pdf-document.svg";
 import EmojiPicker from "emoji-picker-react";
 import parse from "html-react-parser";
-import { addReaction, linkConverter, tagExtracter } from "../../sdkFunctions";
+import { addReaction, deleteChatFromDM, getConversationsForGroup, linkConverter, tagExtracter, undoBlock } from "../../sdkFunctions";
 import { directMessageInfoPath, directMessagePath } from "../../routes";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 function MessageBoxDM({
@@ -27,6 +27,17 @@ function MessageBoxDM({
     return (
       <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
         {parse(linkConverter(tagExtracter(messageString)))}
+        {
+          conversationObject.state === 19 ? 
+          (<>
+          <span className="text-[#3884f7] cursor-pointer" 
+          onClick={()=>{
+            undoBlock(conversationObject.chatroom_id)
+          }}>
+             {" "} Tap to Undo
+          </span>
+          </>):null
+        }
       </div>
     );
   }
@@ -40,6 +51,7 @@ function MessageBoxDM({
           userId={userId}
           attachments={attachments}
           replyConversationObject={replyConversationObject}
+          conversationObject={conversationObject}
         />
         <MoreOptions convoId={convoId} convoObject={conversationObject} />
       </Box>
@@ -68,6 +80,7 @@ function StringBox({
   userId,
   attachments,
   replyConversationObject,
+  conversationObject
 }) {
   const ref = useRef(null);
   const dmContext = useContext(DmContext);
@@ -107,7 +120,7 @@ function StringBox({
         </div>
       </div>
 
-      <div className="flex w-full flex-col">
+      {conversationObject.deleted_by !== undefined ?<span className="text-[14px] w-full font-[300] text-[#323232]">This message has been deleted.</span>:<div className="flex w-full flex-col">
         <div className="w-full mb-1">
           {(() => {
             if (attachments !== null && attachments.length < 2) {
@@ -257,9 +270,10 @@ function StringBox({
         <div className="text-[14px] w-full font-[300] text-[#323232]">
           <span className="msgCard" ref={ref}>
             {parse(linkConverter(tagExtracter(messageString)))}
-          </span>
+          </span> 
+          
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
@@ -318,6 +332,44 @@ function MoreOptions({ convoId, userId, convoObject }) {
     }
   }
 
+  async function getChatroomConversations(chatroomId, pageNo){
+    if(chatroomId == null){
+      return
+    }
+    console.log(chatroomId)
+    let optionObject = {
+      chatroomID: chatroomId,
+      page: pageNo,
+    };
+    let response = await getConversationsForGroup(optionObject);
+    if (!response.error) {
+      let conversations = response.data;
+      let conversationToBeSetArray = [];
+      let newConversationArray = [];
+      let lastDate = "";
+      for (let convo of conversations) {
+        if (convo.date === lastDate) {
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
+        } else {
+          if (conversationToBeSetArray.length != 0) {
+            newConversationArray.push(conversationToBeSetArray);
+            conversationToBeSetArray = [];
+            conversationToBeSetArray.push(convo);
+            lastDate = convo.date;
+          } else {
+            conversationToBeSetArray.push(convo);
+            lastDate = convo.date;
+          }
+        }
+      }
+      newConversationArray.push(conversationToBeSetArray);
+      dmContext.setCurrentChatroomConversations(newConversationArray);
+    } else {
+      console.log(response.errorMessage);
+    }
+  };
+
   const options = [
     {
       title: "Reply",
@@ -330,6 +382,15 @@ function MoreOptions({ convoId, userId, convoObject }) {
       title: "Report",
       clickFunction: () => {
         setShouldShowBlock(!shouldShow);
+      },
+    },
+    {
+      title: "delete",
+      clickFunction: (e) => {
+        let convos = [...dmContext.currentChatroomConversations]
+        deleteChatFromDM([convoId]).then(r=>{
+          getChatroomConversations(convoObject.chatroom_id, 500)
+        }).catch(e=>console.log(e))
       },
     },
   ];
