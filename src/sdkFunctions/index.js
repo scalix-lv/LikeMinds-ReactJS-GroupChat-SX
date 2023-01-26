@@ -435,3 +435,29 @@ export function getFromSessionStorage(key) {
   let sessionStorageObject = sessionStorage.getItem(key);
   return sessionStorageObject;
 }
+
+
+export async function undoBlock(chatroomId){
+  try {
+    // let call = await myClient.
+    // let call = await m
+    let call = await myClient.blockCR({
+      chatroom_id: chatroomId,
+      status: 1
+    })
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export async function deleteChatFromDM(idArr){
+  try {
+    let call = await myClient.deleteMsg({
+      conversation_ids: idArr,
+      reason: "none"
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
