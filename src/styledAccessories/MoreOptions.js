@@ -3,7 +3,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { leaveChatRoom } from "../sdkFunctions";
 import { GroupContext } from "../Main";
-import { UserContext } from "..";
+import { myClient, UserContext } from "..";
 import leaveIcon from "../assets/svg/leave.svg";
 import { useNavigate } from "react-router-dom";
 import { ChatRoomContext } from "../components/Groups/Groups";
@@ -109,6 +109,17 @@ export function MoreOptionsDM() {
       });
   }
 
+  async function muteNotifications(id){
+    try {
+      let call = await myClient.muteNotification({
+        chatroom_id: dmContext.currentChatroom.id,
+        value: id == 6 ? true : false
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const MenuBox = (
     <Menu
       anchorEl={anchor}
@@ -121,17 +132,26 @@ export function MoreOptionsDM() {
         horizontal: "left",
       }}
      
-    >
-      <MenuItem
-        onClick={leaveGroup}
+    >{
+      dmContext.currentProfile.chatroom_actions.map((option, optionIndex)=>{
+        return (
+          <MenuItem
+        onClick={()=>{
+          if(option.id === 6 || option.id === 8){
+          muteNotifications(option.id) }
+        }}
         sx={{
           fontSize: "14px",
           color: "#323232",
         }}
       >
         <img src={leaveIcon} alt="leave" className="mr-2" />
-        Leave DM
+        {option.title}
       </MenuItem>
+        )
+      })
+    }
+      
     </Menu>
   );
   return (

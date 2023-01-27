@@ -29,6 +29,7 @@ function MessageBoxDM({
         {parse(linkConverter(tagExtracter(messageString)))}
         {
           conversationObject.state === 19 ? 
+          
           (<>
           <span className="text-[#3884f7] cursor-pointer" 
           onClick={()=>{
@@ -120,7 +121,9 @@ function StringBox({
         </div>
       </div>
 
-      {conversationObject.deleted_by !== undefined ?<span className="text-[14px] w-full font-[300] text-[#323232]">This message has been deleted.</span>:<div className="flex w-full flex-col">
+      {conversationObject.deleted_by !== undefined ?
+      (<span className="text-[14px] w-full font-[300] text-[#323232]">This message has been deleted.</span>):
+      (<div className="flex w-full flex-col">
         <div className="w-full mb-1">
           {(() => {
             if (attachments !== null && attachments.length < 2) {
@@ -273,7 +276,8 @@ function StringBox({
           </span> 
           
         </div>
-      </div>}
+      </div>)
+      }
     </div>
   );
 }
