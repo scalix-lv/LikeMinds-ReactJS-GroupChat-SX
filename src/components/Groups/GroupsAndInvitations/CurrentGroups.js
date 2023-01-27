@@ -24,7 +24,7 @@ import { ChatRoomContext, fn, getUnjoinedList } from "../Groups";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 function CurrentGroups() {
-  const [shouldOpenPublicCard, setShouldPublicCard] = useState(false);
+  const [shouldOpenPublicCard, setShouldPublicCard] = useState(true);
   
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {

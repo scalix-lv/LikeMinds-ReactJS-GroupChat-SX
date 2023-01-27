@@ -46,7 +46,7 @@ function SearchbarGroups() {
           "Followed Groups" : callFollowed.chatrooms
         }
         obj[1] = {
-          "Unfollowed Groups" : callUnFollowed.chatrooms
+          "Other Groups" : callUnFollowed.chatrooms
         }
         
         setSearchResultObject(obj)
@@ -69,6 +69,7 @@ function SearchbarGroups() {
     <div>
     <Box ref={ref} className="p-[20px] pb-6 flex justify-between relative z-10">
       <TextField
+      autoComplete="off"
       fullWidth
         InputProps={{
           startAdornment: (

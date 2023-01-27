@@ -67,8 +67,10 @@ function SearchBarContainer({searchResults, shouldShowLoading}) {
 
 function MatchFoundContainer({ matchArray, title }) {
  
-
-  return <MatchTileHead matchObject={matchArray} title={title} />;
+  if(matchArray.length > 0 ){
+    return <MatchTileHead matchObject={matchArray} title={title} />;
+  }
+  
 }
 
 function MatchTileHead({ matchObject, title }) {
@@ -96,7 +98,7 @@ function MatchTileHead({ matchObject, title }) {
             title={searchItem?.chatroom?.header}
             key={searchItem?.chatroom?.title + searchIndex}
             match={searchItem}
-            showJoinButton={title == "Unfollowed Groups" ? true : false}
+            showJoinButton={title == "Other Groups" ? true : false}
           />
         );
       })}
