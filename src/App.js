@@ -151,11 +151,6 @@ function App() {
         setCurrentUser(res?.data?.user);
         sessionStorage.setItem("communityId", res?.data?.community?.id);
       })
-      // .then((res) => {
-      //   setCommunity(res.data.data.community);
-      //   setCurrentUser(res.data.data.user);
-      //   sessionStorage.setItem("communityId", res.data.data.community.id);
-      // })
       .catch((error) => {
         console.log("Error =>", error);
       });
