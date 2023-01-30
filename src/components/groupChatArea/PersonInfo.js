@@ -28,7 +28,7 @@ import { directMessagePath, groupPath } from "../../routes";
 import TittleDm from "../direct-messages/TitleDM";
 
 function PersonInfo() {
-  const routeContext = useContext(RouteContext)
+  const routeContext = useContext(RouteContext);
   const gc = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
@@ -50,8 +50,8 @@ function PersonInfo() {
         const memberCall = await myClient.getProfile({
           user_id: location.state.memberId,
         });
-        if(memberCall?.member.id === profileDate.id){
-          return
+        if (memberCall?.member.id === profileDate.id) {
+          return;
         }
         setProfileData(memberCall?.member);
       } catch (error) {
@@ -60,43 +60,43 @@ function PersonInfo() {
     };
     fn();
   });
-  useEffect(()=>{
-    console.log(profileDate)
-  }, [profileDate])
-  return (
-    Object.keys(profileDate).length?
-    (
-      <div className="overflow-auto w-full h-full">
+  useEffect(() => {
+    console.log(profileDate);
+  }, [profileDate]);
+  return Object.keys(profileDate).length ? (
+    <div className="overflow-auto w-full h-full">
       {/* Title Header */}
-      { routeContext.currentRoute === groupPath   ? (
+      {routeContext.currentRoute === groupPath ? (
         <Tittle
-          
-            title={gc.activeGroup.chatroom.header}
-            memberCount= {gc.activeGroup.participant_count}
-          
+          title={gc.activeGroup.chatroom.header}
+          memberCount={gc.activeGroup.participant_count}
         />
-      ) : 
-      routeContext.currentRoute === directMessagePath && !location.state.isFromAllMembers ? (
-        <TittleDm title={"hello"}/>
-      ): null}
+      ) : routeContext.currentRoute === directMessagePath &&
+        !location.state.isFromAllMembers ? (
+        <TittleDm title={profileDate.name} />
+      ) : null}
       {/* Title Header */}
 
       <div className="mr-[120px] ml-[20px]">
         <div className="flex">
-          { !location.state.isFromAllMembers ? (<><IconButton
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <img src={backIcon} alt="back icon" />
-          </IconButton>
+          {!location.state.isFromAllMembers ? (
+            <>
+              <IconButton
+                onClick={() => {
+                  navigate(-1);
+                }}
+              >
+                <img src={backIcon} alt="back icon" />
+              </IconButton>
 
-          <div className="text-[20px] mt-[8px] font-[400] leading-[24px]">
-            Group Info /{" "}
-            <span className="font-[700] text-[#3884F7]">
-              {profileDate.name}
-            </span>
-          </div></>):null}
+              <div className="text-[20px] mt-[8px] font-[400] leading-[24px]">
+                Group Info /{" "}
+                <span className="font-[700] text-[#3884F7]">
+                  {profileDate.name}
+                </span>
+              </div>
+            </>
+          ) : null}
           <div className="grow" />
           {location.state.isFromAllMembers ? (
             <Button
@@ -117,7 +117,8 @@ function PersonInfo() {
 
         <Box className="ml-3 mt-4 text-[#323232]">
           <div className="w-[60px] h-[60px] border-[1px] border-[#eeeeee] bg-[#eeeeee] text-[30px] mr-2.5 rounded-[5px] flex justify-center items-center">
-            {profileDate.image_url !== "" && profileDate.image_url !== undefined ? (
+            {profileDate.image_url !== "" &&
+            profileDate.image_url !== undefined ? (
               <img
                 src={profileDate.image_url}
                 className="w-full h-full"
@@ -157,11 +158,7 @@ function PersonInfo() {
         </Box>
       </div>
     </div>
-    ):
-    null
-
-   
-  );
+  ) : null;
 }
 
 function InfoTile({ index, title, buttontitle }) {

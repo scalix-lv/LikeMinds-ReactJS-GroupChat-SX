@@ -246,7 +246,7 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
 export function tagExtracter(str) {
   let newContent = str
     .split("<<")
-    .join(`<span hl="Sd" style="color: #3884F7; cursor:pointer;">`);
+    .join(`<span hl="Sd" class="username" style="color: #3884F7; cursor:pointer;">`);
   newContent = newContent.split("|route").join("</span>|route");
   let a = newContent.split("|route");
 
@@ -460,4 +460,15 @@ export async function deleteChatFromDM(idArr){
   } catch (error) {
     console.log(error)
   }
+}
+
+export function getDmMember(str, currentUser){
+    let userString = str
+    let currentLength = currentUser.length
+    if(userString.substring(0, currentLength) === currentUser){
+        return userString.substr(currentLength+1)
+    }else{
+        return userString.substring(0, userString.length - currentLength)
+    }
+    
 }
