@@ -13,16 +13,18 @@ import forum from "../../assets/forum.svg";
 import abm from "../../assets/abm.svg";
 import groups from "../../assets/groups.svg";
 import { RouteContext } from "../../Main";
-import { addedByMePath, directMessagePath, eventsPath, forumPath, groupPath } from "../../routes";
+import {
+  addedByMePath,
+  directMessagePath,
+  eventsPath,
+  forumPath,
+  groupPath,
+} from "../../routes";
 const NavContext = React.createContext({
   currentPath: null,
   setCurrentPath: () => {},
 });
 function Sidenav() {
-  
-
-  
-
   const navArray = [
     {
       title: "Forums",
@@ -53,19 +55,16 @@ function Sidenav() {
 
   return (
     <div>
-      
-      
-        {navArray.map((block, blockIndex) => {
-          return (
-            <NavBlock
-              key={block.title + blockIndex}
-              title={block.title}
-              path={block.path}
-              Icon={block.Icon}
-            />
-          );
-        })}
-   
+      {navArray.map((block, blockIndex) => {
+        return (
+          <NavBlock
+            key={block.title + blockIndex}
+            title={block.title}
+            path={block.path}
+            Icon={block.Icon}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -73,8 +72,8 @@ function Sidenav() {
 function NavBlock({ title, Icon, path }) {
   const useNavContext = useContext(RouteContext);
   function changeCurrentPath() {
+    sessionStorage.setItem("routeContext", path);
     useNavContext.setCurrentRoute(path);
-    
   }
   return (
     <Link to={path} style={{ ...linkCss }} onClick={changeCurrentPath}>

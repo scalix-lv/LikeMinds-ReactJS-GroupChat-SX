@@ -20,7 +20,10 @@ import EmojiPicker from "emoji-picker-react";
 // import { GroupContext } from "../Groups/Groups";
 import { GroupContext } from "../../Main";
 import { directMessagePath, groupPersonalInfoPath } from "./../../routes";
-import { ConversationContext, CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
+import {
+  ConversationContext,
+  CurrentSelectedConversationContext,
+} from "../groupChatArea/GroupChatArea";
 import parse from "html-react-parser";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 import { ChatRoomContext } from "../Groups/Groups";
@@ -100,7 +103,7 @@ function StringBox({
           <Link
             to={groupPersonalInfoPath}
             state={{
-              communityId: userContext.community.id ,
+              communityId: userContext.community.id,
               memberId: userId,
             }}
           >
@@ -261,11 +264,7 @@ function StringBox({
 
         <div className="text-[14px] w-full font-[300] text-[#323232]">
           <span className="msgCard" ref={ref}>
-            {parse(
-              linkConverter(
-                tagExtracter(messageString, groupContext, userId, navigate)
-              )
-            )}
+            {parse(linkConverter(tagExtracter(messageString, userContext)))}
           </span>
         </div>
       </div>
@@ -302,7 +301,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
   };
   const ref = useRef(null);
   const groupContext = useContext(GroupContext);
-  const conversationContext = useContext(ConversationContext)
+  const conversationContext = useContext(ConversationContext);
   useState(() => {
     const handleCloseFunction = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -414,9 +413,19 @@ function MoreOptions({ convoId, userId, convoObject }) {
       >
         <EmojiPicker
           onEmojiClick={(e) => {
-            console.log(groupContext)
-            addReaction(e.emoji, convoId, groupContext.activeGroup.chatroom.id).then(r=>conversationContext.refreshConversationArray(groupContext.activeGroup.chatroom.id, 100, conversationContext));
-            
+            console.log(groupContext);
+            addReaction(
+              e.emoji,
+              convoId,
+              groupContext.activeGroup.chatroom.id
+            ).then((r) =>
+              conversationContext.refreshConversationArray(
+                groupContext.activeGroup.chatroom.id,
+                100,
+                conversationContext
+              )
+            );
+
             handleCloseEmoji();
           }}
         />
