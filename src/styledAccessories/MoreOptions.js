@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, Menu, MenuItem, Snackbar } from "@mui/material";
 import {
   getChatRoomDetails,
   getConversationsForGroup,
@@ -126,7 +126,8 @@ export function MoreOptionsDM() {
   const dmContext = useContext(DmContext);
   const userContext = useContext(UserContext);
   const [anchor, setAnchor] = useState(null);
-
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
@@ -164,6 +165,8 @@ export function MoreOptionsDM() {
       );
       dmContext.setCurrentChatroom(refreshCall.data.chatroom);
       dmContext.setCurrentProfile(refreshCall.data);
+      setShowSnackBar(true);
+      setSnackbarMessage("Notifications " + (id == 6 ? "muted" : "unmuted"));
     } catch (error) {
       console.log(error);
     }
@@ -179,6 +182,13 @@ export function MoreOptionsDM() {
       1000,
       dmContext
     );
+
+    let callChatroomRefresh = await getChatRoomDetails(
+      myClient,
+      dmContext.currentChatroom.id
+    );
+    dmContext.setCurrentChatroom(callChatroomRefresh.data.chatroom);
+    dmContext.setCurrentProfile(callChatroomRefresh.data);
     console.log(callRefresh);
   }
 
@@ -234,6 +244,14 @@ export function MoreOptionsDM() {
           dmContext.currentChatroom.chat_request_state == 0 ? "none" : "inline",
       }}
     >
+      <Snackbar
+        open={showSnackBar}
+        onClose={() => {
+          setShowSnackBar(false);
+        }}
+        message={snackbarMessage}
+        autoHideDuration={3000}
+      />
       <IconButton
         onClick={(e) => {
           setAnchor(e.currentTarget);

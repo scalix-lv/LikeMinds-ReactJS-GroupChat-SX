@@ -95,7 +95,7 @@ export async function createNewConversation(val, groupContext, options) {
 export async function getReportingOptions() {
   try {
     let rep = await myClient.getReportTags({
-      type: 0
+      type: 0,
     });
     return jsonReturnHandler(rep, null);
   } catch (e) {
@@ -105,7 +105,6 @@ export async function getReportingOptions() {
 
 export async function addReaction(reaction, convoId, chatId) {
   try {
-    
     const reactionCall = await myClient.addAction({
       chatroom_id: chatId,
       conversation_id: convoId,
@@ -243,10 +242,16 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
   }
 }
 
-export function tagExtracter(str) {
+export function tagExtracter(str, userContext) {
+  let splitArr = str.split(
+    `<<${userContext.currentUser.name}|route://member/${userContext.currentUser.id}>>`
+  );
+  str = splitArr.join("");
   let newContent = str
     .split("<<")
-    .join(`<span hl="Sd" class="username" style="color: #3884F7; cursor:pointer;">`);
+    .join(
+      `<span hl="Sd" class="username" style="color: #3884F7; cursor:pointer;">`
+    );
   newContent = newContent.split("|route").join("</span>|route");
   let a = newContent.split("|route");
 
@@ -436,39 +441,36 @@ export function getFromSessionStorage(key) {
   return sessionStorageObject;
 }
 
-
-export async function undoBlock(chatroomId){
+export async function undoBlock(chatroomId) {
   try {
     // let call = await myClient.
     // let call = await m
     let call = await myClient.blockCR({
       chatroom_id: chatroomId,
-      status: 1
-    })
-
+      status: 1,
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
 
-export async function deleteChatFromDM(idArr){
+export async function deleteChatFromDM(idArr) {
   try {
     let call = await myClient.deleteMsg({
       conversation_ids: idArr,
-      reason: "none"
-    })
+      reason: "none",
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
 
-export function getDmMember(str, currentUser){
-    let userString = str
-    let currentLength = currentUser.length
-    if(userString.substring(0, currentLength) === currentUser){
-        return userString.substr(currentLength+1)
-    }else{
-        return userString.substring(0, userString.length - currentLength)
-    }
-    
+export function getDmMember(str, currentUser) {
+  let userString = str;
+  let currentLength = currentUser.length;
+  if (userString.substring(0, currentLength) === currentUser) {
+    return userString.substr(currentLength + 1);
+  } else {
+    return userString.substring(0, userString.length - currentLength);
+  }
 }

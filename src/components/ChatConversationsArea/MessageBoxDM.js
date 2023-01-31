@@ -12,6 +12,7 @@ import parse from "html-react-parser";
 import {
   addReaction,
   deleteChatFromDM,
+  getChatRoomDetails,
   getConversationsForGroup,
   linkConverter,
   tagExtracter,
@@ -70,25 +71,19 @@ function MessageBoxDM({
   replyConversationObject,
 }) {
   let [userString, setUserString] = useState("");
-
+  let userContext = useContext(UserContext);
   useState(() => {
-    let targDiv = document.getElementById("state-1");
-    if (Boolean(targDiv)) {
-      let spanT = targDiv?.getElementsByClassName("username");
-      console.log(spanT);
-      let str = "";
-      for (let tag of spanT) {
-        str = str + tag.textContent + " ";
-      }
-
-      str.trim();
-      console.log(str);
-      if (str != userString) {
-        setUserString(str);
+    let stateDiv = document.getElementById("state-1");
+    if (stateDiv !== undefined && stateDiv !== null) {
+      let childrens = stateDiv.children;
+      for (let tag of childrens) {
+        console.log(tag);
+        if (tag.innerHTML === userContext.currentUser.name) {
+          tag.style.display = "none";
+        }
       }
     }
   });
-
   let dmContext = useContext(DmContext);
   if (conversationObject.state !== 0) {
     return (
@@ -96,12 +91,12 @@ function MessageBoxDM({
         {conversationObject.state === 1 ? (
           <>
             <span id="state-1">
-              {parse(linkConverter(tagExtracter(messageString)))}
+              {parse(linkConverter(tagExtracter(messageString, userContext)))}
             </span>
           </>
         ) : (
           <>
-            {parse(linkConverter(tagExtracter(messageString)))}
+            {parse(linkConverter(tagExtracter(messageString, userContext)))}
             {conversationObject.state === 19 &&
             dmContext.currentChatroom.chat_request_state === 2 ? (
               <>
@@ -113,7 +108,16 @@ function MessageBoxDM({
                         dmContext.currentChatroom.id,
                         1000,
                         dmContext
-                      );
+                      ).then(() => {
+                        getChatRoomDetails(
+                          myClient,
+                          dmContext.currentChatroom.id
+                        ).then((e) => {
+                          console.log(e);
+                          dmContext.setCurrentChatroom(e.data.chatroom);
+                          dmContext.setCurrentProfile(e.data);
+                        });
+                      });
                     });
                   }}
                 >
@@ -360,7 +364,7 @@ function StringBox({
 
           <div className="text-[14px] w-full font-[300] text-[#323232]">
             <span className="msgCard" ref={ref}>
-              {parse(linkConverter(tagExtracter(messageString)))}
+              {parse(linkConverter(tagExtracter(messageString, userContext)))}
             </span>
           </div>
         </div>
