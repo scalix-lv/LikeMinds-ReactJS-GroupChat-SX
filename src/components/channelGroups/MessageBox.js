@@ -39,6 +39,54 @@ function MessageBox({
   conversationObject,
   replyConversationObject,
 }) {
+  let userContext = useContext(UserContext);
+
+  if (conversationObject.state !== 0) {
+    return (
+      <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
+        {/* {conversationObject.state === 1 ? (
+          <> */}
+        <span id="state-1">
+          {parse(linkConverter(tagExtracter(messageString, userContext)))}
+        </span>
+        {/* </>
+        ) : (
+          <>
+            {parse(linkConverter(tagExtracter(messageString, userContext)))}
+            {conversationObject.state === 19 &&
+            dmContext.currentChatroom.chat_request_state === 2 ? (
+              <>
+                <span
+                  className="text-[#3884f7] cursor-pointer"
+                  onClick={() => {
+                    undoBlock(conversationObject.chatroom_id).then((r) => {
+                      getChatroomConversations(
+                        dmContext.currentChatroom.id,
+                        1000,
+                        dmContext
+                      ).then(() => {
+                        getChatRoomDetails(
+                          myClient,
+                          dmContext.currentChatroom.id
+                        ).then((e) => {
+                          console.log(e);
+                          dmContext.setCurrentChatroom(e.data.chatroom);
+                          dmContext.setCurrentProfile(e.data);
+                        });
+                      });
+                    });
+                  }}
+                >
+                  {" "}
+                  Tap to Undo
+                </span>
+              </>
+            ) : null}
+          </>
+        )} */}
+      </div>
+    );
+  }
   return (
     <div>
       <Box className="flex mb-4">

@@ -72,18 +72,7 @@ function MessageBoxDM({
 }) {
   let [userString, setUserString] = useState("");
   let userContext = useContext(UserContext);
-  useState(() => {
-    let stateDiv = document.getElementById("state-1");
-    if (stateDiv !== undefined && stateDiv !== null) {
-      let childrens = stateDiv.children;
-      for (let tag of childrens) {
-        console.log(tag);
-        if (tag.innerHTML === userContext.currentUser.name) {
-          tag.style.display = "none";
-        }
-      }
-    }
-  });
+
   let dmContext = useContext(DmContext);
   if (conversationObject.state !== 0) {
     return (
@@ -91,7 +80,9 @@ function MessageBoxDM({
         {conversationObject.state === 1 ? (
           <>
             <span id="state-1">
-              {parse(linkConverter(tagExtracter(messageString, userContext)))}
+              {parse(
+                linkConverter(tagExtracter(messageString, userContext, 1))
+              )}
             </span>
           </>
         ) : (

@@ -150,7 +150,7 @@ function Groups() {
             value={{
               conversationsArray: conversationsArray,
               setConversationArray: setConversationArray,
-              refreshConversationArray: getChatroomConversationArray
+              refreshConversationArray: getChatroomConversationArray,
             }}
           >
             <div className="flex overflow-hidden customHeight flex-1">

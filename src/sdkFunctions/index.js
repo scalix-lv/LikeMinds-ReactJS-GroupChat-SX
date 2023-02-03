@@ -242,11 +242,14 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
   }
 }
 
-export function tagExtracter(str, userContext) {
-  let splitArr = str.split(
-    `<<${userContext.currentUser.name}|route://member/${userContext.currentUser.id}>>`
-  );
-  str = splitArr.join("");
+export function tagExtracter(str, userContext, state) {
+  if (state === 1) {
+    let splitArr = str.split(
+      `<<${userContext.currentUser.name}|route://member/${userContext.currentUser.id}>>`
+    );
+    str = splitArr.join("");
+  }
+
   let newContent = str
     .split("<<")
     .join(
@@ -309,14 +312,14 @@ function seviceWorker() {
 }
 
 // for joining the group
-export async function joinChatRoom(collabId, userId, refreshContext) {
+export async function joinChatRoom(collabId, userId) {
   try {
     const joinCall = await myClient.leaveChatroom({
       collabcard_id: collabId,
       member_id: userId,
       value: true,
     });
-    refreshContext();
+    // refreshContext();
 
     return jsonReturnHandler(joinCall, null);
   } catch (error) {

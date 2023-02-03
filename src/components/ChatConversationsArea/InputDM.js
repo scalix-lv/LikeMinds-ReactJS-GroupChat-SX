@@ -30,21 +30,19 @@ import "./Input.css";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 
 function InputDM({ updateHeight }) {
-
-
+  const ref = useRef();
   return (
     <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
-      <InputSearchField updateHeight={updateHeight} />
-      <InputOptions />
+      <InputSearchField updateHeight={updateHeight} inputRef={ref} />
+      <InputOptions inputRef={ref} />
     </Box>
   );
 }
 
-function InputSearchField({ updateHeight }) {
+function InputSearchField({ updateHeight, inputRef }) {
   const dmContext = useContext(DmContext);
   const userContext = useContext(UserContext);
   const ref = useRef();
-
   const getChatroomConversations = async (
     chatroomId,
     pageNo,
@@ -88,7 +86,11 @@ function InputSearchField({ updateHeight }) {
   let handleSendMessage = async () => {
     try {
       console.log(dmContext.currentChatroom.chat_request_state);
-      if (dmContext.currentChatroom.chat_request_state === null && (dmContext.currentChatroom.member.state != 1 && dmContext.currentChatroom.chatroom_with_user.state != 1)) {
+      if (
+        dmContext.currentChatroom.chat_request_state === null &&
+        dmContext.currentChatroom.member.state != 1 &&
+        dmContext.currentChatroom.chatroom_with_user.state != 1
+      ) {
         console.log("sending request");
         let textMessage = dmContext.messageText;
         dmContext.setMessageText("");
@@ -102,21 +104,31 @@ function InputSearchField({ updateHeight }) {
         dmContext.setCurrentProfile(chatroomCall.data);
         return;
       }
+      console.log("Inside This Block");
       let isRepliedConvo = dmContext.isConversationSelected;
+      console.log("Inside This Block2");
       let { messageText, setMessageText } = dmContext;
+      console.log("Inside This Block3");
       let [text, setText] = [messageText, setMessageText];
+      console.log("Inside This Block4");
       let inputContext = {
         mediaFiles: dmContext.mediaAttachments,
         audioFiles: dmContext.audioAttachments,
         docFiles: dmContext.documentAttachments,
       };
+      console.log("Inside This Block5");
       let filesArray = mergeInputFiles(inputContext);
+      console.log("Inside This Block6");
       let res = null;
+      console.log("Inside This Block7");
       let tv = text;
+      console.log("Inside This Block8");
       if (tv.length != 0) {
         if (!filesArray.length) {
+          console.log("1");
           res = await fnew(false, 0, tv, setText, isRepliedConvo);
         } else {
+          console.log("2");
           res = await fnew(
             true,
             filesArray.length,
@@ -127,6 +139,7 @@ function InputSearchField({ updateHeight }) {
         }
         updateHeight();
       } else if (filesArray.length > 0) {
+        console.log("3");
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
       }
 
@@ -154,7 +167,8 @@ function InputSearchField({ updateHeight }) {
           }
 
           let fileUploadRes = await myClient.uploadMedia(config);
-
+          console.log("after upload");
+          console.log(fileUploadRes);
           let onUploadCall = await myClient.onUploadFile({
             conversation_id: res.data.id,
             files_count: 1,
@@ -168,6 +182,10 @@ function InputSearchField({ updateHeight }) {
           });
 
           updateHeight();
+          console.log(inputRef);
+          if (inputRef.current) {
+            inputRef.current.value = null;
+          }
         }
       } else {
         updateHeight();
@@ -209,7 +227,7 @@ function InputSearchField({ updateHeight }) {
 
       setTextVal("");
       //   inputContext.setText("");
-      dmContext.setMessageText();
+      dmContext.setMessageText("");
       //   selectedConversationContext.setIsSelected(false);
       dmContext.setIsConversationSelected(false);
       //   selectedConversationContext.setConversationObject(null);
@@ -217,7 +235,7 @@ function InputSearchField({ updateHeight }) {
       dmContext.setAudioAttachments([]);
       dmContext.setMediaAttachments([]);
       dmContext.setDocumentAttachments([]);
-      console.log(dmContext.currentChatroom.id)
+      console.log(dmContext.currentChatroom.id);
       getChatroomConversations(
         dmContext.currentChatroom.id,
         1000,
@@ -389,7 +407,7 @@ function InputSearchField({ updateHeight }) {
   );
 }
 
-function InputOptions() {
+function InputOptions({ inputRef }) {
   const dmContext = useContext(DmContext);
   const optionArr = [
     {
@@ -438,6 +456,7 @@ function InputOptions() {
               accept={accept}
               setFile={option.setFile}
               file={option.file}
+              inputRef={inputRef}
             />
           );
         } else {
@@ -447,7 +466,7 @@ function InputOptions() {
     </Box>
   );
 }
-function OptionButtonBox({ option, accept, file, setFile }) {
+function OptionButtonBox({ option, accept, file, setFile, inputRef }) {
   return (
     <IconButton>
       <label>
@@ -457,8 +476,10 @@ function OptionButtonBox({ option, accept, file, setFile }) {
           multiple
           accept={accept}
           onChange={(e) => {
+            console.log(e.target.files);
             setFile(e.target.files);
           }}
+          ref={inputRef}
         />
         <img className="w-[20px] h-[20px]" src={option.Icon} />
       </label>
@@ -505,15 +526,8 @@ function ImagePreview() {
   const dmContext = useContext(DmContext);
   const [mediaArray, setMediaArray] = useState([]);
   useEffect(() => {
-    // let {audioFiles, docFiles, mediaFiles} = inputContext
-    // let newArr = mergeInputFiles(inputContext);
     let newArr = [];
-    // if (newArr.length > 0) {
-    //   // setPreviewUrl(URL.createObjectURL(newArr[0]));
-    //   setMediaArray(newArr)
-    // } else {
-    //   setPreviewUrl("");
-    // }
+
     for (let nf of dmContext.mediaAttachments) {
       if (nf.type.split("/")[0] === "image") {
         newArr.push(nf);
