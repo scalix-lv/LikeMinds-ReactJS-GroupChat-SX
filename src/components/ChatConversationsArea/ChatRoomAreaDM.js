@@ -49,7 +49,7 @@ function ChatRoomAreaDM() {
       newConversationArray.push(conversationToBeSetArray);
       dmContext.setCurrentChatroomConversations(newConversationArray);
     } else {
-      console.log(response.errorMessage);
+      // console.log(response.errorMessage);
     }
   };
 
@@ -100,9 +100,7 @@ function ChatRoomAreaDM() {
 
             <div ref={ref}></div>
             {dmContext.currentChatroom.chat_request_state == 0 ? (
-              <>
-               
-              </>
+              <></>
             ) : dmContext.currentChatroom.chat_request_state !== 2 ? (
               <div className="fixed bottom-0 w-[62.1%]">
                 <InputDM updateHeight={updateHeight} />

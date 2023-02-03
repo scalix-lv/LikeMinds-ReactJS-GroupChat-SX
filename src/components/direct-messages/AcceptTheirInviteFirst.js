@@ -18,7 +18,7 @@ function AcceptTheirInviteFirst({ title }) {
       dmContext.setCurrentChatroom(newChatroomObject.data.chatroom);
       dmContext.setCurrentProfile(newChatroomObject.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -32,7 +32,7 @@ function AcceptTheirInviteFirst({ title }) {
       dmContext.setCurrentChatroom(newChatroomObject.data.chatroom);
       dmContext.setCurrentProfile(newChatroomObject.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   return (

@@ -31,7 +31,7 @@ function CurrentGroups() {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   const chatroomContext = useContext(ChatRoomContext);
@@ -93,7 +93,7 @@ function PublicGroup({ groupTitle, groupList }) {
     try {
       const markReadCall = await markRead(chatroomId);
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
-      console.log(chatRoomData);
+      // console.log(chatRoomData);
       if (!chatRoomData.error) {
         const tagCall = await getTaggingList(
           chatRoomData.data.community.id,
@@ -103,10 +103,10 @@ function PublicGroup({ groupTitle, groupList }) {
         chatRoomData.data.membersDetail = tagCall.data.members;
         groupContext.setActiveGroup(chatRoomData.data);
       } else {
-        console.log(chatRoomData.errorMessage);
+        // console.log(chatRoomData.errorMessage);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   return (
@@ -168,10 +168,10 @@ function PublicGroupTile({ groupTitle, group }) {
       //   //     groupcontext.activeGroup.chatroom.id
       //   //   ).then((e) => {
       //   //     groupcontext.setActiveGroup(e.data);
-      //   //     console.log(e);
+      //   //     // console.log(e);
       //   //   });
       //   // })
-      //   // .catch((e) => console.log(e));
+      //   // .catch((e) => // console.log(e));
       //   // groupcontext.refreshContextUi();
       // }}
       className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
@@ -226,15 +226,15 @@ function UnjoinedGroup({ groupTitle, group }) {
         chatRoomData.data.membersDetail = tagCall.data.members;
         groupContext.setActiveGroup(chatRoomData.data);
       } else {
-        console.log(chatRoomData.errorMessage);
+        // console.log(chatRoomData.errorMessage);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   async function joinGroup() {
     try {
-      console.log(group);
+      // console.log(group);
       let call = await joinChatRoom(
         group.id,
         userContext.currentUser.id,
@@ -247,7 +247,7 @@ function UnjoinedGroup({ groupTitle, group }) {
         // groupContext.refreshContextUi();
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 

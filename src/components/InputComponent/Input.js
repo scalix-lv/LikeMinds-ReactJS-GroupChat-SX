@@ -33,6 +33,7 @@ import m from "./m";
 import MessageBox from "../channelGroups/MessageBox";
 import { Close } from "@mui/icons-material";
 import "./Input.css";
+import { getChatroomConversationArray } from "../groupChatArea/GroupChatArea";
 const StyledInputWriteComment = styled(TextField)({
   background: "#F9F9F9",
   borderRadius: "20px",
@@ -56,7 +57,7 @@ export const InputContext = React.createContext({
   setTextVal: () => {},
 });
 
-function Input({updateHeight}) {
+function Input({ updateHeight }) {
   const [audioFiles, setAudioFiles] = useState("");
   const [mediaFiles, setMediaFiles] = useState("");
   const [docFiles, setDocFiles] = useState("");
@@ -128,12 +129,11 @@ function InputSearchField() {
 
       setConversationArray(newConversationArray);
     } else {
-      console.log(response.errorMessage);
+      // console.log(response.errorMessage);
     }
   };
   let count = 1;
   let handleSendMessage = async () => {
-    
     try {
       let isRepliedConvo = selectedConversationContext.isSelected;
       let { text, setText } = inputContext;
@@ -141,7 +141,7 @@ function InputSearchField() {
       let res = null;
       // textValT = textVal.
       let tv = text;
-      console.log("checkpoint " + count++)
+      // console.log("checkpoint " + count++);
       if (tv.length != 0) {
         if (!filesArray.length) {
           res = await fnew(false, 0, tv, setText, isRepliedConvo);
@@ -193,6 +193,7 @@ function InputSearchField() {
             type: fileType,
             url: fileUploadRes.Location,
           });
+          await conversationContext.refreshConversationArray();
         }
       } else {
         return {
@@ -215,7 +216,7 @@ function InputSearchField() {
     isRepliedConvo
   ) => {
     try {
-      console.log("checkpoint " + count++)
+      // console.log("checkpoint " + count++);
       let config = {
         text: tv.toString(),
         created_at: Date.now(),
@@ -232,7 +233,7 @@ function InputSearchField() {
           selectedConversationContext.conversationObject.id;
       }
       let callRes = await myClient.onConversationsCreate(config);
-      console.log("checkpoint " + count++)
+      // console.log("checkpoint " + count++);
       let oldConversationArr = conversationContext.conversationsArray;
       let oldLength = oldConversationArr.length;
       let newConvoArr = [...oldConversationArr];
@@ -246,15 +247,19 @@ function InputSearchField() {
         callRes.conversation.member = userContext.currentUser;
         newConvoArr.push([...callRes.conversation]);
       }
-      console.log("checkpoint " + count++)
+      // console.log("checkpoint " + count++);
       conversationContext.setConversationArray(newConvoArr);
-      console.log("checkpoint " + count++)
+      // console.log("checkpoint " + count++);
       setTextVal("");
       inputContext.setText("");
       selectedConversationContext.setIsSelected(false);
       selectedConversationContext.setConversationObject(null);
       clearInputFiles(inputContext);
-
+      await getChatroomConversationArray(
+        groupContext.activeGroup.chatroom.id,
+        1000,
+        conversationContext
+      );
       return { error: false, data: callRes };
     } catch (error) {
       return { error: true, errorMessage: error };
@@ -289,6 +294,10 @@ function InputSearchField() {
     enter: false,
     shift: false,
   };
+
+  useEffect(() => {
+    inputContext.setTextVal("");
+  }, [groupContext.activeGroup]);
   return (
     <Box
       sx={{
@@ -392,13 +401,6 @@ function InputSearchField() {
               index,
               focused
             ) => {
-              console.log([
-                suggestion,
-                search,
-                highlightedDisplay,
-                index,
-                focused,
-              ]);
               return (
                 <div className={`user ${focused ? "focused" : ""}`}>
                   {suggestion.imageUrl.length > 0 ? (

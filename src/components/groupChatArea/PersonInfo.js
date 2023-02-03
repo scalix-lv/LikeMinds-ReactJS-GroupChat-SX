@@ -33,7 +33,7 @@ function PersonInfo() {
   const userContext = useContext(UserContext);
   const mediaArray = [LinkedInIcon, InstagramIcon, TwitterIcon];
   const location = useLocation();
-  console.log(location);
+  // console.log(location);
   const [profileDate, setProfileData] = useState({});
   const navigate = useNavigate();
   const ref = useRef();
@@ -55,13 +55,13 @@ function PersonInfo() {
         }
         setProfileData(memberCall?.member);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
     fn();
   });
   useEffect(() => {
-    console.log(profileDate);
+    // console.log(profileDate);
   }, [profileDate]);
   return Object.keys(profileDate).length ? (
     <div className="overflow-auto w-full h-full">

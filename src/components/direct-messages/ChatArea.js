@@ -18,16 +18,15 @@ export const StyledBox = styled(Box)({
   height: "100%",
 });
 function ChatArea() {
- 
   const userContext = useContext(UserContext);
-  const dmContext = useContext(DmContext)
+  const dmContext = useContext(DmContext);
   let db = myClient.fbInstance();
 
-  async function getChatroomConversations(chatroomId, pageNo){
-    if(chatroomId == null){
-      return
+  async function getChatroomConversations(chatroomId, pageNo) {
+    if (chatroomId == null) {
+      return;
     }
-    console.log(chatroomId)
+    // console.log(chatroomId);
     let optionObject = {
       chatroomID: chatroomId,
       page: pageNo,
@@ -57,42 +56,38 @@ function ChatArea() {
       newConversationArray.push(conversationToBeSetArray);
       dmContext.setCurrentChatroomConversations(newConversationArray);
     } else {
-      console.log(response.errorMessage);
+      // console.log(response.errorMessage);
     }
-  };
+  }
   async function loadHomeFeed(pageNo) {
     try {
       let feedCall = await dmChatFeed(userContext.community.id, pageNo);
       let newFeedArray = feedCall.data.dm_chatrooms;
       dmContext.setHomeFeed(newFeedArray);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
-  const getCurrentChatroomID = ()=>{
-
-    let l = Object.keys(dmContext.currentChatroom).length
-    if(l == 0){
-      return
+  const getCurrentChatroomID = () => {
+    let l = Object.keys(dmContext.currentChatroom).length;
+    if (l == 0) {
+      return;
     }
-    console.log(l)
-    if(l>0){
-      return dmContext.currentChatroom.id
-    }else{
-      return sessionStorage.getItem("currentChatRoomKey")
+    // console.log(l);
+    if (l > 0) {
+      return dmContext.currentChatroom.id;
+    } else {
+      return sessionStorage.getItem("currentChatRoomKey");
     }
-  }
+  };
   useEffect(() => {
     const query = ref(db, "collabcards");
     return onValue(query, (snapshot) => {
       const data = snapshot.val();
-      console.log(data);
-      if (
-        snapshot.exists() 
-        
-      ) {
-        console.log(dmContext)
-        
+      // console.log(data);
+      if (snapshot.exists()) {
+        // console.log(dmContext);
+
         getChatroomConversations(getCurrentChatroomID(), 500);
       }
     });
@@ -102,9 +97,9 @@ function ChatArea() {
     const query = ref(db, "collabcards");
     return onValue(query, (snapshot) => {
       const data = snapshot.val();
-      console.log(data);
+      // console.log(data);
       if (snapshot.exists()) {
-console.log(dmContext)
+        // console.log(dmContext);
         loadHomeFeed(1);
       }
     });
@@ -112,12 +107,10 @@ console.log(dmContext)
 
   return (
     <div>
-
       {dmContext.currentChatroom ? (
         <StyledBox>
-          {/* <Button fullWidth onClick={()=>console.log(dmContext)}>SHOW ME THE CONTEXT</Button> */}
+          {/* <Button fullWidth onClick={()=>// console.log(dmContext)}>SHOW ME THE CONTEXT</Button> */}
           {Object.keys(dmContext.currentChatroom).length > 0 ? (
-            
             <TittleDm
               title={
                 userContext.currentUser.id ===

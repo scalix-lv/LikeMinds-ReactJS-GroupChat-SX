@@ -22,9 +22,11 @@ export const StyledBox = styled(Box)({
   height: "100%",
 });
 
-
-
-export const getChatroomConversationArray = async (chatroomId, pageNo, conversationContext) => {
+export const getChatroomConversationArray = async (
+  chatroomId,
+  pageNo,
+  conversationContext
+) => {
   // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
   let optionObject = {
     chatroomID: chatroomId,
@@ -59,13 +61,13 @@ export const getChatroomConversationArray = async (chatroomId, pageNo, conversat
     newConversationArray.push(conversationToBeSetArray);
     conversationContext.setConversationArray(newConversationArray);
   } else {
-    console.log(response.errorMessage);
+    // console.log(response.errorMessage);
   }
 };
 export const ConversationContext = React.createContext({
   conversationsArray: [],
   setConversationArray: () => {},
-  refreshConversationArray: ()=>{}
+  refreshConversationArray: () => {},
 });
 
 function GroupChatArea() {
@@ -86,24 +88,32 @@ function GroupChatArea() {
     const el = document.getElementById("chat");
     el.scrollTop = el.scrollHeight;
   };
-  useEffect(()=>{
+  useEffect(() => {
     updateHeight();
-  },[])
+  }, []);
   useEffect(() => {
     // scroll();
-    let convoArrLength = conversationContext.conversationsArray.length
-    let lastConvoArrLength = conversationContext.conversationsArray[convoArrLength-1]?.length
-    if(conversationContext.conversationsArray.length === 0){
-      return 
+    let convoArrLength = conversationContext.conversationsArray.length;
+    let lastConvoArrLength =
+      conversationContext.conversationsArray[convoArrLength - 1]?.length;
+    if (conversationContext.conversationsArray.length === 0) {
+      return;
     }
-    if(conversationContext?.conversationsArray[convoArrLength-1][lastConvoArrLength-1]?.member?.id 
-      == userContext.currentUser.id){
+    if (
+      conversationContext?.conversationsArray[convoArrLength - 1][
+        lastConvoArrLength - 1
+      ]?.member?.id == userContext.currentUser.id
+    ) {
       updateHeight();
     }
-    console.log(conversationContext.conversationsArray, convoArrLength, lastConvoArrLength, userContext.currentUser)
+    // console.log(
+    //   conversationContext.conversationsArray,
+    //   convoArrLength,
+    //   lastConvoArrLength,
+    //   userContext.currentUser
+    // );
   }, [conversationContext.conversationsArray]);
 
-  
   const fnPagination = async (chatroomId, pageNo) => {
     // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
     let optionObject = {
@@ -148,12 +158,16 @@ function GroupChatArea() {
       ];
       conversationContext.setConversationArray(newConversationArray);
     } else {
-      console.log(response.errorMessage);
+      // console.log(response.errorMessage);
     }
   };
   useEffect(() => {
     if (groupContext.activeGroup.chatroom?.id)
-      getChatroomConversationArray(groupContext.activeGroup.chatroom?.id, 100, conversationContext);
+      getChatroomConversationArray(
+        groupContext.activeGroup.chatroom?.id,
+        100,
+        conversationContext
+      );
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
@@ -207,7 +221,9 @@ function GroupChatArea() {
                 let h = scrollTop.current.scrollHeight;
                 scrollTop.current.scrollTop = h / 2;
               })
-              .catch((e) => console.log(e));
+              .catch((e) => {
+                console.log(e);
+              });
           }
         }}
       >
@@ -229,7 +245,7 @@ function GroupChatArea() {
             />
             <div ref={ref}></div>
             <div className="fixed bottom-0 w-[62.1%]">
-              <Input updateHeight={updateHeight}/>
+              <Input updateHeight={updateHeight} />
             </div>
           </>
         ) : (

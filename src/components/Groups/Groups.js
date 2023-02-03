@@ -45,7 +45,7 @@ export const fn = async (
       setShouldLoadMore(false);
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -65,7 +65,7 @@ export const getUnjoinedList = async (
       setShouldLoadMore(false);
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
