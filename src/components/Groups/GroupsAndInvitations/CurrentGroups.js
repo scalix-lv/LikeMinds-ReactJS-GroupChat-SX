@@ -25,7 +25,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 function CurrentGroups() {
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(true);
-  
+
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
@@ -35,12 +35,11 @@ function CurrentGroups() {
     }
   }
   const chatroomContext = useContext(ChatRoomContext);
-  useEffect(() => {}, [chatroomContext.chatRoomList, chatroomContext.unJoined]);
+
   return (
     <Box>
       {<PublicGroup groupList={chatroomContext.chatRoomsList} />}
 
-    
       <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
         <span>All Public Groups</span>
         <IconButton onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}>
@@ -92,6 +91,7 @@ function PublicGroup({ groupTitle, groupList }) {
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
+      const markReadCall = await markRead(chatroomId);
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
       console.log(chatRoomData);
       if (!chatRoomData.error) {
@@ -160,14 +160,20 @@ function PublicGroupTile({ groupTitle, group }) {
   const chatroomContext = useContext(ChatRoomContext);
   return (
     <div
-      onClick={() => {
-        markRead(group.chatroom.id)
-          .then((res) => {
-            chatroomContext.refreshChatroomContext();
-          })
-          .catch((e) => console.log(e));
-        // groupcontext.refreshContextUi();
-      }}
+      // onClick={() => {
+      //   markRead(group.chatroom.id);
+      //   // .then((res) => {
+      //   //   getChatRoomDetails(
+      //   //     myClient,
+      //   //     groupcontext.activeGroup.chatroom.id
+      //   //   ).then((e) => {
+      //   //     groupcontext.setActiveGroup(e.data);
+      //   //     console.log(e);
+      //   //   });
+      //   // })
+      //   // .catch((e) => console.log(e));
+      //   // groupcontext.refreshContextUi();
+      // }}
       className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
       style={{
         backgroundColor:
@@ -228,16 +234,17 @@ function UnjoinedGroup({ groupTitle, group }) {
   }
   async function joinGroup() {
     try {
+      console.log(group);
       let call = await joinChatRoom(
         group.id,
         userContext.currentUser.id,
         groupContext.refreshContextUi
       );
-      chatroomContext.refreshChatroomContext();
+      // chatroomContext.refreshChatroomContext();`1`
 
       if (call.data.success) {
         groupContext.setActiveGroup(group);
-        groupContext.refreshContextUi();
+        // groupContext.refreshContextUi();
       }
     } catch (error) {
       console.log(error);
@@ -246,9 +253,9 @@ function UnjoinedGroup({ groupTitle, group }) {
 
   return (
     <div
-      onClick={() => {
-        getChatRoomData(group.id);
-      }}
+      // onClick={() => {
+      //   getChatRoomData(group.id);
+      // }}
       className="flex justify-between leading-5 py-4 px-5 border-[#EEEEEE] border-t-[1px]"
       style={{
         backgroundColor:
