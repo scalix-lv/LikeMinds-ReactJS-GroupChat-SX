@@ -25,7 +25,7 @@ async function getChatroomConversations(chatroomId, pageNo, dmContext) {
   if (chatroomId == null) {
     return;
   }
-  console.log(chatroomId);
+  // console.log(chatroomId);
   let optionObject = {
     chatroomID: chatroomId,
     page: pageNo,
@@ -55,7 +55,7 @@ async function getChatroomConversations(chatroomId, pageNo, dmContext) {
     newConversationArray.push(conversationToBeSetArray);
     dmContext.setCurrentChatroomConversations(newConversationArray);
   } else {
-    console.log(response.errorMessage);
+    // console.log(response.errorMessage);
   }
 }
 
@@ -104,7 +104,7 @@ function MessageBoxDM({
                           myClient,
                           dmContext.currentChatroom.id
                         ).then((e) => {
-                          console.log(e);
+                          // console.log(e);
                           dmContext.setCurrentChatroom(e.data.chatroom);
                           dmContext.setCurrentProfile(e.data);
                         });
@@ -379,6 +379,7 @@ function TimeBox({ time }) {
 }
 
 function MoreOptions({ convoId, userId, convoObject }) {
+  const userContext = useContext(UserContext);
   const dmContext = useContext(DmContext);
   const navigate = useNavigate();
   const [anchor, setAnchor] = useState(null);
@@ -412,9 +413,9 @@ function MoreOptions({ convoId, userId, convoObject }) {
         conversation_id: convoid,
       });
       setShouldShowBlock(!shouldShow);
-      console.log(deleteCall);
+      // console.log(deleteCall);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -422,7 +423,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
     if (chatroomId == null) {
       return;
     }
-    console.log(chatroomId);
+    // console.log(chatroomId);
     let optionObject = {
       chatroomID: chatroomId,
       page: pageNo,
@@ -452,7 +453,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       newConversationArray.push(conversationToBeSetArray);
       dmContext.setCurrentChatroomConversations(newConversationArray);
     } else {
-      console.log(response.errorMessage);
+      // console.log(response.errorMessage);
     }
   }
 
@@ -507,6 +508,12 @@ function MoreOptions({ convoId, userId, convoObject }) {
         anchorEl={anchor}
       >
         {options.map((option, optionIndex) => {
+          if (
+            option.title === "Report" &&
+            convoObject.member.id == userContext.currentUser.id
+          ) {
+            return null;
+          }
           return (
             <MenuItem
               key={option.title}
@@ -545,9 +552,12 @@ function MoreOptions({ convoId, userId, convoObject }) {
       >
         <EmojiPicker
           onEmojiClick={(e) => {
-            addReaction(e.emoji, convoId, dmContext.currentChatroom.id)
-              .then((r) => console.log(r))
-              .catch((e) => console.log(e));
+            addReaction(e.emoji, convoId, dmContext.currentChatroom.id).then(
+              (r) => {
+                getChatroomConversations(dmContext.currentChatroom.id, 1000);
+              }
+            );
+
             handleCloseEmoji();
           }}
         />

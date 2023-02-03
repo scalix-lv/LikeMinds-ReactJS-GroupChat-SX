@@ -26,11 +26,11 @@ function SearchBarDirectMessages() {
         search: string,
         page: 1,
         page_size: 5,
-        search_type: "header"
-      })
-      console.log(call)
+        search_type: "header",
+      });
+      // console.log(call);
     } catch (error) {
-      console.log(error)
+      // console.log(error);
     }
   }
 
@@ -46,7 +46,7 @@ function SearchBarDirectMessages() {
         <TextField
           InputProps={{
             startAdornment: (
-              <InputAdornment className="mr-[16px]">
+              <InputAdornment position="start" className="mr-[16px]">
                 <img src={searchIcon} alt="Search Icon" />
               </InputAdornment>
             ),

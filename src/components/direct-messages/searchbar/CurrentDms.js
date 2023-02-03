@@ -37,12 +37,12 @@ function CurrentDms() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   function joinFeed(oldArray, newArray, serialObject) {
     serialObject = { ...serialObject };
-    console.log(newArray.length);
+    // console.log(newArray.length);
     for (let feed of newArray) {
       let roomId = feed.chatroom.id;
-      console.log("A");
+      // console.log("A");
       if (serialObject[roomId] === undefined) {
-        console.log("B");
+        // console.log("B");
         serialObject[roomId] = true;
         oldArray.push(feed);
       }
@@ -61,7 +61,7 @@ function CurrentDms() {
       newFeedArray = joinFeed(oldArr, newFeedArray, feedObjects);
       dmContext.setHomeFeed(newFeedArray);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -71,7 +71,7 @@ function CurrentDms() {
       const pageNo = currentHomeFeed.length / 10;
       const call = await loadHomeFeed(pageNo + 1);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -88,7 +88,7 @@ function CurrentDms() {
       dmContext.setMembersFeed(arr);
       setTotalMembersFiltered(call.data.total_members);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -106,7 +106,7 @@ function CurrentDms() {
       setLastCaughtPageAllMembers(lastCaughtPageAllMembers + 1);
       dmContext.setMembersFeed(newArr);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   async function markReadCall(chatroomId) {
@@ -116,12 +116,12 @@ function CurrentDms() {
       dmContext.setCurrentChatroom(call.data.chatroom);
       dmContext.setCurrentProfile(call.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   useEffect(() => {
     if (sessionStorage.getItem("dmContext") !== null) {
-      console.log(dmContext);
+      // console.log(dmContext);
       if (
         dmContext.currentProfile != undefined &&
         Object.keys(dmContext.currentProfile)?.length
@@ -153,7 +153,7 @@ function CurrentDms() {
       <Button
         fullWidth
         onClick={() => {
-          console.log(dmContext);
+          // console.log(dmContext);
         }}
       >
         Show DM Context
@@ -234,7 +234,7 @@ function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
       dmContext.setCurrentChatroom(call.data.chatroom);
       dmContext.setCurrentProfile(call.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   async function setProfile() {
@@ -249,7 +249,7 @@ function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
 
       await markReadCall(profile.chatroom.id);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 

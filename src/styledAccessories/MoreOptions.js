@@ -39,7 +39,7 @@ export function MoreOptions() {
       })
       .catch((r) => {
         // alert("e");
-        console.log(r);
+        // console.log(r);
       });
 
     navigate("/groups/");
@@ -88,7 +88,7 @@ async function getChatroomConversations(chatroomId, pageNo, dmContext) {
   if (chatroomId == null) {
     return;
   }
-  console.log(chatroomId);
+  // console.log(chatroomId);
   let optionObject = {
     chatroomID: chatroomId,
     page: pageNo,
@@ -118,7 +118,7 @@ async function getChatroomConversations(chatroomId, pageNo, dmContext) {
     newConversationArray.push(conversationToBeSetArray);
     dmContext.setCurrentChatroomConversations(newConversationArray);
   } else {
-    console.log(response.errorMessage);
+    // console.log(response.errorMessage);
   }
 }
 export function MoreOptionsDM() {
@@ -147,7 +147,7 @@ export function MoreOptionsDM() {
       })
       .catch((r) => {
         // alert("e");
-        console.log(r);
+        // console.log(r);
       });
   }
 
@@ -168,7 +168,7 @@ export function MoreOptionsDM() {
       setShowSnackBar(true);
       setSnackbarMessage("Notifications " + (id == 6 ? "muted" : "unmuted"));
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   async function block(id) {
@@ -189,7 +189,7 @@ export function MoreOptionsDM() {
     );
     dmContext.setCurrentChatroom(callChatroomRefresh.data.chatroom);
     dmContext.setCurrentProfile(callChatroomRefresh.data);
-    console.log(callRefresh);
+    // console.log(callRefresh);
   }
 
   const MenuBox = (
@@ -207,6 +207,7 @@ export function MoreOptionsDM() {
       {dmContext.currentProfile.chatroom_actions.map((option, optionIndex) => {
         return (
           <MenuItem
+            key={option.id}
             onClick={() => {
               if (option.id === 6 || option.id === 8) {
                 muteNotifications(option.id);

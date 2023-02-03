@@ -22,16 +22,16 @@ export const createNewClient = (key) => {
 
 export const getChatRoomDetails = async (myClient, chatRoomId) => {
   try {
-    console.log(chatRoomId);
+    // console.log(chatRoomId);
     const params = {
       chatroom_id: chatRoomId,
       page: 1,
     };
     const chatRoomResponse = await myClient.getChatroom(params);
-    console.log(chatRoomResponse);
+    // console.log(chatRoomResponse);
     return jsonReturnHandler(chatRoomResponse, null);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return jsonReturnHandler(null, error);
   }
 };
@@ -176,7 +176,7 @@ export async function getAllChatroomMember(
     setFunction(newList);
     return shouldLoadMore;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return false;
   }
 }
@@ -207,7 +207,7 @@ export async function getUnjoinedRooms(community_id, pageNo) {
     });
     return jsonReturnHandler(unjoinedGroups, null);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return jsonReturnHandler(null, error);
   }
 }
@@ -221,7 +221,7 @@ export async function joinNewGroup(collabId, userID, value) {
     });
     return jsonReturnHandler(joinCall, null);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return jsonReturnHandler(null, error);
   }
 }
@@ -400,7 +400,7 @@ export async function requestDM(memberId, communityId) {
 
 export async function canDirectMessage(chatroomId) {
   try {
-    console.log(chatroomId);
+    // console.log(chatroomId);
     let call = await myClient.canDmFeed({
       community_id: sessionStorage.getItem("communityId"),
       req_from: chatroomId,
@@ -453,7 +453,7 @@ export async function undoBlock(chatroomId) {
       status: 1,
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 }
 
@@ -464,7 +464,7 @@ export async function deleteChatFromDM(idArr) {
       reason: "none",
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 }
 

@@ -7,42 +7,48 @@ import { directMessageChatPath, directMessageInfoPath } from "../../routes";
 import { createDM, getChatRoomDetails, requestDM } from "../../sdkFunctions";
 import { DmContext } from "./DirectMessagesMain";
 
-export async function reqDM(profile, userContext, dmContext, navigate, setSelectedId, setOpenSnackBar,setSnackBarMessage) {
+export async function reqDM(
+  profile,
+  userContext,
+  dmContext,
+  navigate,
+  setSelectedId,
+  setOpenSnackBar,
+  setSnackBarMessage
+) {
   try {
     let call = await requestDM(profile.id, userContext.community.id);
-    console.log(call)
-    
+    // console.log(call);
 
     if (call.data === undefined) {
       alert(call.data.error_message);
       return;
     } else if (!call.data.is_request_dm_limit_exceeded) {
-      
       if (call.data.chatroom_id != null) {
         let profileData = await getChatRoomDetails(
           myClient,
           call.data.chatroom_id
         );
-        console.log(profileData.error)
-        if(profileData.data == undefined){
-          setOpenSnackBar(true)
-    setSnackBarMessage("An Error Occoured")
-          return
+        // console.log(profileData.error);
+        if (profileData.data == undefined) {
+          setOpenSnackBar(true);
+          setSnackBarMessage("An Error Occoured");
+          return;
         }
-        if(setSelectedId != undefined){
-          setSelectedId(profile.id)
+        if (setSelectedId != undefined) {
+          setSelectedId(profile.id);
         }
-        console.log(profileData); 
+        // console.log(profileData);
         dmContext.setCurrentProfile(profileData.data);
         dmContext.setCurrentChatroom(profileData.data.chatroom);
       } else {
         let createDmCall = await createDM(profile.id);
-        console.log(createDmCall);
+        // console.log(createDmCall);
         let chatroomDetailsCall = await getChatRoomDetails(
           myClient,
           createDmCall.data.chatroom.id
         );
-        console.log(chatroomDetailsCall);
+        // console.log(chatroomDetailsCall);
         dmContext.setCurrentProfile(chatroomDetailsCall.data);
         dmContext.setCurrentChatroom(chatroomDetailsCall.data.chatroom);
       }
@@ -51,9 +57,8 @@ export async function reqDM(profile, userContext, dmContext, navigate, setSelect
       alert("now message at ", call.data.new_request_dm_timestamp);
     }
   } catch (error) {
-    console.log(error);
-    return error
-    
+    // console.log(error);
+    return error;
   }
 }
 
@@ -61,9 +66,9 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
   const navigate = useNavigate();
   let dmContext = useContext(DmContext);
   let userContext = useContext(UserContext);
-  // console.log(profile);
-  const [openSnackBar, setOpenSnackBar] = useState(false)
-  const [snackBarMessage, setSnackBarMessage] = useState("")
+  // // console.log(profile);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState("");
   return (
     <div
       className="flex justify-between items-center py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
@@ -98,11 +103,20 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
           },
         }}
         onClick={() => {
-          reqDM(profile, userContext, dmContext, navigate, setSelectedId, setOpenSnackBar, setSnackBarMessage).then(r=>{}).catch(e=>{
-            setOpenSnackBar(true)
-    setSnackBarMessage(e.error_message)
-          })
-          
+          reqDM(
+            profile,
+            userContext,
+            dmContext,
+            navigate,
+            setSelectedId,
+            setOpenSnackBar,
+            setSnackBarMessage
+          )
+            .then((r) => {})
+            .catch((e) => {
+              setOpenSnackBar(true);
+              setSnackBarMessage(e.error_message);
+            });
         }}
         variant="filled"
       >
@@ -127,9 +141,14 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
           View Profile
         </Button>
       </Link>
-      {
-        openSnackBar ? <Snackbar open={openSnackBar} onClose={()=>setOpenSnackBar(false)} message={snackBarMessage} autoHideDuration={3000}/> : null
-      }
+      {openSnackBar ? (
+        <Snackbar
+          open={openSnackBar}
+          onClose={() => setOpenSnackBar(false)}
+          message={snackBarMessage}
+          autoHideDuration={3000}
+        />
+      ) : null}
     </div>
   );
 }

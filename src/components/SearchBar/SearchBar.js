@@ -2,79 +2,72 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { myClient, UserContext } from "../..";
 import { GroupContext } from "../../Main";
-import { getChatRoomDetails, getTaggingList, joinChatRoom, markRead } from "../../sdkFunctions";
+import {
+  getChatRoomDetails,
+  getTaggingList,
+  joinChatRoom,
+  markRead,
+} from "../../sdkFunctions";
 import { ChatRoomContext } from "../Groups/Groups";
 import NotFoundLogo from "./../../assets/Icon.png";
 import { groupMainPath } from "../../routes";
 import { Button } from "@mui/material";
 
-function SearchBarContainer({searchResults, shouldShowLoading}) {
-  const [searchArray, setSearchArray] = useState([])
-  const [shouldShowSearchScreen, setShouldShowSearchScreen] = useState(false)
-  const groupContext = useContext(GroupContext)
-  useEffect(()=>{
-    if(searchResults.length > 0){
-      setSearchArray(searchResults)
+function SearchBarContainer({ searchResults, shouldShowLoading }) {
+  const [searchArray, setSearchArray] = useState([]);
+  const [shouldShowSearchScreen, setShouldShowSearchScreen] = useState(false);
+  const groupContext = useContext(GroupContext);
+  useEffect(() => {
+    if (searchResults.length > 0) {
+      setSearchArray(searchResults);
     }
-  })
-  useEffect(()=>{
-    if(searchResults.length > 0){
-      
-      for(let obj of searchResults){
-        
-        if(obj[Object.keys(obj)[0]].length > 0){
-          if(!shouldShowSearchScreen){
-            
-            setShouldShowSearchScreen(true)}
-          return ()=>{}
+  });
+  useEffect(() => {
+    if (searchResults.length > 0) {
+      for (let obj of searchResults) {
+        if (obj[Object.keys(obj)[0]].length > 0) {
+          if (!shouldShowSearchScreen) {
+            setShouldShowSearchScreen(true);
+          }
+          return () => {};
         }
       }
     }
-    if(setShouldShowSearchScreen){
-      
-      setShouldShowSearchScreen(false)
+    if (setShouldShowSearchScreen) {
+      setShouldShowSearchScreen(false);
     }
-    
-  })
-  
+  });
 
   return (
     <div className="max-h-[500px] w-[100%] rounded-[10px] bg-white overflow-auto">
-
-      {
-        shouldShowSearchScreen ?
-          (<>
-          {
-            searchArray.map((item, itemIndex) => {
-              let title = Object.keys(item)[0]
-              return (
-                <MatchFoundContainer
-                  matchArray={item[title]}
-                  key={title}
-                  title = {title}
-                />
-
-              );
-            
+      {shouldShowSearchScreen ? (
+        <>
+          {searchArray.map((item, itemIndex) => {
+            let title = Object.keys(item)[0];
+            return (
+              <MatchFoundContainer
+                matchArray={item[title]}
+                key={title}
+                title={title}
+              />
+            );
           })}
-          </>)
-          : (<NothingFound shouldShowLoading={shouldShowLoading}/>)
-      }
+        </>
+      ) : (
+        <NothingFound shouldShowLoading={shouldShowLoading} />
+      )}
       {/* <NothingFound/> */}
     </div>
   );
 }
 
 function MatchFoundContainer({ matchArray, title }) {
- 
-  if(matchArray.length > 0 ){
+  if (matchArray.length > 0) {
     return <MatchTileHead matchObject={matchArray} title={title} />;
   }
-  
 }
 
 function MatchTileHead({ matchObject, title }) {
-  
   return (
     <div>
       <div
@@ -92,7 +85,6 @@ function MatchTileHead({ matchObject, title }) {
         </span>
       </div>
       {matchObject?.map((searchItem, searchIndex) => {
-        
         return (
           <MatchTileFields
             title={searchItem?.chatroom?.header}
@@ -107,23 +99,24 @@ function MatchTileHead({ matchObject, title }) {
 }
 
 function MatchTileFields({ title, match, showJoinButton }) {
-  const groupContext = useContext(GroupContext)
-  const chatroomContext = useContext(ChatRoomContext)
-  const userContext = useContext(UserContext)
-  const navigate = useNavigate()
-  let markReadFromSearch= () => {
+  const groupContext = useContext(GroupContext);
+  const chatroomContext = useContext(ChatRoomContext);
+  const userContext = useContext(UserContext);
+  const navigate = useNavigate();
+  let markReadFromSearch = () => {
     markRead(match.chatroom.id)
       .then((res) => {
         chatroomContext.refreshChatroomContext();
-        navigate(groupMainPath)
+        navigate(groupMainPath);
       })
-      .catch((e) => console.log(e));
-    // groupcontext.refreshContextUi();
-  }
+      .catch((e) => {
+        console.log(e);
+      });
+  };
   async function getChatRoomDataFromSearch(chatroomId) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
-      console.log(chatRoomData);
+      // console.log(chatRoomData);
       if (!chatRoomData.error) {
         const tagCall = await getTaggingList(
           chatRoomData.data.community.id,
@@ -133,11 +126,10 @@ function MatchTileFields({ title, match, showJoinButton }) {
         chatRoomData.data.membersDetail = tagCall.data.members;
         groupContext.setActiveGroup(chatRoomData.data);
       } else {
-        console.log(chatRoomData.errorMessage);
+        // console.log(chatRoomData.errorMessage);
       }
-  
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   async function joinGroup() {
@@ -154,7 +146,7 @@ function MatchTileFields({ title, match, showJoinButton }) {
         groupContext.refreshContextUi();
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   return (
@@ -164,41 +156,46 @@ function MatchTileFields({ title, match, showJoinButton }) {
                         h-[54px] border-b border-b-solid border-b-[#EEEEEE]
                         cursor-pointer
                         justify-between"
-    onClick={()=>{
-      console.log("clicked")
-      getChatRoomDataFromSearch(match.chatroom.id)
-      markReadFromSearch()
-    }}
+      onClick={() => {
+        // console.log("clicked");
+        getChatRoomDataFromSearch(match.chatroom.id);
+        markReadFromSearch();
+      }}
     >
       <span className="leading-[19px] font-normal text-center font-normal text-[#323232]">
         {title}
       </span>
-      {showJoinButton ? <Button
-      sx={{
-        color: '#3884F7'
-      }}
-      className=""
-      variant="outlined"
-      onClick={()=>{
-        joinGroup()
-      }}>
-
-        JOIN
-      </Button> : null}
+      {showJoinButton ? (
+        <Button
+          sx={{
+            color: "#3884F7",
+          }}
+          className=""
+          variant="outlined"
+          onClick={() => {
+            joinGroup();
+          }}
+        >
+          JOIN
+        </Button>
+      ) : null}
     </div>
   );
 }
 
-function NothingFound({shouldShowLoading}) {
+function NothingFound({ shouldShowLoading }) {
   return (
     <div className="flex justify-center items-center flex-col px-14 py-7 w-[100%] rounded-[10px] border ">
-      {shouldShowLoading ? 
-      <span>loading ...</span>
-      :<>
-      <img src={NotFoundLogo} />
-      <p className="leading-12 text-2xl text-center">
-        Oops, There are no posts related to this search.
-      </p></>}
+      {shouldShowLoading ? (
+        <span>loading ...</span>
+      ) : (
+        <>
+          <img src={NotFoundLogo} />
+          <p className="leading-12 text-2xl text-center">
+            Oops, There are no posts related to this search.
+          </p>
+        </>
+      )}
     </div>
   );
 }
