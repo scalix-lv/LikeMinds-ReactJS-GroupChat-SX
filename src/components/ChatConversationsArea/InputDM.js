@@ -149,7 +149,6 @@ function InputSearchField({ updateHeight, inputRef }) {
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
       }
 
-      updateHeight();
       if (res != null && filesArray.length > 0) {
         let index = 0;
         for (let newFile of filesArray) {
@@ -188,6 +187,11 @@ function InputSearchField({ updateHeight, inputRef }) {
           });
 
           updateHeight();
+          await getChatroomConversations(
+            dmContext.currentChatroom.id,
+            1000,
+            dmContext.setCurrentChatroomConversations
+          );
           // console.log(inputRef);
           if (inputRef.current) {
             inputRef.current.value = null;
@@ -242,11 +246,7 @@ function InputSearchField({ updateHeight, inputRef }) {
       dmContext.setMediaAttachments([]);
       dmContext.setDocumentAttachments([]);
       // console.log(dmContext.currentChatroom.id);
-      await getChatroomConversations(
-        dmContext.currentChatroom.id,
-        1000,
-        dmContext.setCurrentChatroomConversations
-      );
+
       updateHeight();
       return { error: false, data: callRes };
     } catch (error) {

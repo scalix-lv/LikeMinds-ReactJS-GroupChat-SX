@@ -204,7 +204,7 @@ function GroupChatArea() {
     <div>
       {groupContext.activeGroup.chatroom?.id ? (
         <Tittle
-          title={groupContext.activeGroup.chatroom.header}
+          title={groupContext.activeGroup.chatroom.title}
           memberCount={groupContext.activeGroup.participant_count}
         />
       ) : null}

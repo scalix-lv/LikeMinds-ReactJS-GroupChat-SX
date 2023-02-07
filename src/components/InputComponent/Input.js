@@ -80,14 +80,14 @@ function Input({ updateHeight }) {
           setTextVal: setTextVal,
         }}
       >
-        <InputSearchField />
+        <InputSearchField updateHeight={updateHeight} />
         <InputOptions />
       </InputContext.Provider>
     </Box>
   );
 }
 
-function InputSearchField() {
+function InputSearchField({ updateHeight }) {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const ref = useRef();
@@ -193,7 +193,14 @@ function InputSearchField() {
             type: fileType,
             url: fileUploadRes.Location,
           });
-          await conversationContext.refreshConversationArray();
+
+          await getChatroomConversationArray(
+            groupContext.activeGroup.chatroom.id,
+            1000,
+            conversationContext
+          );
+          updateHeight();
+          // await conversationContext.refreshConversationArray();
         }
       } else {
         return {
