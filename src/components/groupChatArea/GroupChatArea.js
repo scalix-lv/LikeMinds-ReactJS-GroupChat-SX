@@ -216,7 +216,7 @@ function GroupChatArea() {
         onScroll={(e) => {
           let current = scrollTop.current.scrollTop;
           if (current < 200 && current % 150 == 0) {
-            fnPagination(groupContext.activeGroup.chatroom.id, 50)
+            fnPagination(groupContext.activeGroup?.chatroom?.id, 50)
               .then((res) => {
                 let h = scrollTop.current.scrollHeight;
                 scrollTop.current.scrollTop = h / 2;

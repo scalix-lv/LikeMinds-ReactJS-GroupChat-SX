@@ -34,7 +34,7 @@ export function MoreOptions() {
     )
       .then((r) => {
         // alert("s");
-        groupContext.refreshContextUi();
+        // groupContext.refreshContextUi();
         chatroomContext.refreshChatroomContext();
       })
       .catch((r) => {

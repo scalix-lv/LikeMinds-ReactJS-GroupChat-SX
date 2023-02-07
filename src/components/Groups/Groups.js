@@ -13,7 +13,7 @@ import "./Groups.css";
 import { Button } from "@mui/material";
 import { GroupContext } from "../../Main";
 import { communityId, myClient, UserContext } from "../..";
-import { getUnjoinedRooms } from "../../sdkFunctions";
+import { getChatRoomDetails, getUnjoinedRooms } from "../../sdkFunctions";
 export const ChatRoomContext = createContext({
   chatRoomList: [],
   refreshChatroomContext: () => {},
@@ -31,7 +31,9 @@ export const fn = async (
   chatroomList,
   setChatRoomsList,
   setShouldLoadMore,
-  communityId
+  communityId,
+  serialObject,
+  setSerialObject
 ) => {
   try {
     const pageNoToCall = Math.floor(chatroomList.length / 10) + 1;
@@ -39,14 +41,31 @@ export const fn = async (
       communityId: communityId,
       page: pageNoToCall,
     });
-    let newChatRoomList = chatroomList.concat(feedCall.my_chatrooms);
+
+    let oldArr = [...chatroomList];
+    let newChatRoomList = joinTheHomeFeeds(
+      oldArr,
+      feedCall.my_chatrooms,
+      serialObject,
+      setSerialObject
+    );
     setChatRoomsList(newChatRoomList);
-    if (feedCall.my_chatrooms.length < 10) {
-      setShouldLoadMore(false);
-    }
   } catch (error) {
     // console.log(error);
   }
+};
+
+const joinTheHomeFeeds = (oldArr, newArr, serialObject, setSerialObject) => {
+  const so = { ...serialObject };
+  for (let feed of newArr) {
+    if (so[feed.chatroom.id] === undefined) {
+      so[feed.chatroom.id] = true;
+      oldArr.push(feed);
+    }
+  }
+  setSerialObject(so);
+
+  return oldArr;
 };
 
 // for getting the list of unjoined grouop
@@ -54,10 +73,12 @@ export const getUnjoinedList = async (
   unJoined,
   setUnjoined,
   setShouldLoadMore,
-  communityId
+  communityId,
+  pageNo
 ) => {
   try {
     let pageNoToCall = Math.floor(unJoined.length / 5) + 1;
+
     const feedCall = await getUnjoinedRooms(communityId, pageNoToCall);
     let newChatRoomList = unJoined.concat(feedCall.data.chatrooms);
     setUnjoined(newChatRoomList);
@@ -72,7 +93,7 @@ export const getUnjoinedList = async (
 function Groups() {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-
+  const [serialObject, setSerialObject] = useState({});
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const [shouldLoadMoreHomeFeed, setShouldLoadMoreHomeFeed] = useState(true);
@@ -101,13 +122,40 @@ function Groups() {
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
+    fn(
+      chatRoomsList,
+      setChatRoomsList,
+      setShouldLoadMoreHomeFeed,
+      userContext.community.id,
+      serialObject,
+      setSerialObject
+    );
+    if (groupContext.activeGroup.id == undefined) {
+      return;
+    }
+    getChatRoomDetails(myClient, groupContext.activeGroup.id).then((res) => {
+      if (res.data) {
+        let unJoineds = [...unJoined];
+        for (let uc of unJoineds) {
+          if (uc.id == res.data.chatroom.id) {
+            uc.follow_status = true;
+          }
+        }
+        setUnjoined(unJoineds);
+      }
+    });
+  }, [groupContext.activeGroup]);
+
+  useEffect(() => {
     // loading the list of chatrooms (already joined)
 
     fn(
       chatRoomsList,
       setChatRoomsList,
       setShouldLoadMoreHomeFeed,
-      userContext.community.id
+      userContext.community.id,
+      serialObject,
+      setSerialObject
     );
     getUnjoinedList(
       unJoined,
@@ -116,6 +164,7 @@ function Groups() {
       userContext.community.id
     );
   }, []);
+
   return (
     <div>
       <CurrentSelectedConversationContext.Provider

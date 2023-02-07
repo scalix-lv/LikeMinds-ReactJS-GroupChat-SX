@@ -106,7 +106,7 @@ function PublicGroup({ groupTitle, groupList }) {
         // console.log(chatRoomData.errorMessage);
       }
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   }
   return (
@@ -142,7 +142,7 @@ function PublicGroup({ groupTitle, groupList }) {
                 <div>
                   <PublicGroupTile
                     key={group.chatroom.id + groupIndex}
-                    groupTitle={group.chatroom.header}
+                    groupTitle={group.chatroom.title}
                     group={group}
                   />
                 </div>
@@ -160,24 +160,10 @@ function PublicGroupTile({ groupTitle, group }) {
   const chatroomContext = useContext(ChatRoomContext);
   return (
     <div
-      // onClick={() => {
-      //   markRead(group.chatroom.id);
-      //   // .then((res) => {
-      //   //   getChatRoomDetails(
-      //   //     myClient,
-      //   //     groupcontext.activeGroup.chatroom.id
-      //   //   ).then((e) => {
-      //   //     groupcontext.setActiveGroup(e.data);
-      //   //     // console.log(e);
-      //   //   });
-      //   // })
-      //   // .catch((e) => // console.log(e));
-      //   // groupcontext.refreshContextUi();
-      // }}
       className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
       style={{
         backgroundColor:
-          groupTitle === groupcontext.activeGroup.chatroom?.header
+          groupTitle === groupcontext.activeGroup.chatroom?.title
             ? "#ECF3FF"
             : "#FFFFFF",
       }}
@@ -185,7 +171,7 @@ function PublicGroupTile({ groupTitle, group }) {
       <Typography
         sx={{
           color:
-            groupTitle === groupcontext.activeGroup.chatroom?.header
+            groupTitle === groupcontext.activeGroup.chatroom?.title
               ? "#3884f7"
               : "#000000",
         }}
@@ -242,9 +228,10 @@ function UnjoinedGroup({ groupTitle, group }) {
       );
       // chatroomContext.refreshChatroomContext();`1`
 
-      if (call.data.success) {
+      console.log(call);
+      if (!call.error) {
+        console.log("here");
         groupContext.setActiveGroup(group);
-        // groupContext.refreshContextUi();
       }
     } catch (error) {
       // console.log(error);
