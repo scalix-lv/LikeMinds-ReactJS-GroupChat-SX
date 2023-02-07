@@ -122,28 +122,35 @@ function Groups() {
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
-    fn(
-      chatRoomsList,
-      setChatRoomsList,
-      setShouldLoadMoreHomeFeed,
-      userContext.community.id,
-      serialObject,
-      setSerialObject
-    );
-    if (groupContext.activeGroup.id == undefined) {
-      return;
-    }
-    getChatRoomDetails(myClient, groupContext.activeGroup.id).then((res) => {
-      if (res.data) {
-        let unJoineds = [...unJoined];
-        for (let uc of unJoineds) {
-          if (uc.id == res.data.chatroom.id) {
-            uc.follow_status = true;
+    if (Object.keys(groupContext.activeGroup).length === 0) {
+      // console.log("hello");
+    } else {
+      fn(
+        chatRoomsList,
+        setChatRoomsList,
+        setShouldLoadMoreHomeFeed,
+        userContext.community.id,
+        serialObject,
+        setSerialObject
+      );
+      // console.log(groupContext);
+      if (unJoined.length == 0) {
+        return;
+      }
+      getChatRoomDetails(myClient, groupContext.activeGroup.chatroom.id).then(
+        (res) => {
+          if (res.data) {
+            let unJoineds = [...unJoined];
+            for (let uc of unJoineds) {
+              if (uc.id == res.data.chatroom.id) {
+                uc.follow_status = true;
+              }
+            }
+            setUnjoined(unJoineds);
           }
         }
-        setUnjoined(unJoineds);
-      }
-    });
+      );
+    }
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
@@ -164,6 +171,10 @@ function Groups() {
       userContext.community.id
     );
   }, []);
+
+  useEffect(() => {
+    console.log(groupContext);
+  }, [groupContext.activeGroup]);
 
   return (
     <div>

@@ -227,11 +227,12 @@ function UnjoinedGroup({ groupTitle, group }) {
         groupContext.refreshContextUi
       );
       // chatroomContext.refreshChatroomContext();`1`
-
+      let details = await getChatRoomDetails(myClient, group.id);
+      console.log(details);
       console.log(call);
       if (!call.error) {
         console.log("here");
-        groupContext.setActiveGroup(group);
+        groupContext.setActiveGroup(details.data);
       }
     } catch (error) {
       // console.log(error);

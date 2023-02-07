@@ -147,6 +147,7 @@ function InputSearchField({ updateHeight, inputRef }) {
       } else if (filesArray.length > 0) {
         // console.log("3");
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
+        updateHeight();
       }
 
       if (res != null && filesArray.length > 0) {
@@ -186,13 +187,13 @@ function InputSearchField({ updateHeight, inputRef }) {
             url: fileUploadRes.Location,
           });
 
-          updateHeight();
           await getChatroomConversations(
             dmContext.currentChatroom.id,
             1000,
             dmContext.setCurrentChatroomConversations
           );
           // console.log(inputRef);
+          updateHeight();
           if (inputRef.current) {
             inputRef.current.value = null;
           }
@@ -204,6 +205,7 @@ function InputSearchField({ updateHeight, inputRef }) {
           data: res,
         };
       }
+      updateHeight();
     } catch (error) {
       return {
         error: true,
@@ -246,7 +248,11 @@ function InputSearchField({ updateHeight, inputRef }) {
       dmContext.setMediaAttachments([]);
       dmContext.setDocumentAttachments([]);
       // console.log(dmContext.currentChatroom.id);
-
+      await getChatroomConversations(
+        dmContext.currentChatroom.id,
+        1000,
+        dmContext.setCurrentChatroomConversations
+      );
       updateHeight();
       return { error: false, data: callRes };
     } catch (error) {
@@ -526,9 +532,12 @@ function ImagePreview() {
   const [mediaArray, setMediaArray] = useState([]);
   useEffect(() => {
     let newArr = [];
-
     for (let nf of dmContext.mediaAttachments) {
-      if (nf.type.split("/")[0] === "image") {
+      if (
+        nf.type.split("/")[0] === "image" ||
+        nf.type.split("/")[0] === "video"
+      ) {
+        console.log(nf);
         newArr.push(nf);
       }
     }
@@ -554,8 +563,16 @@ function ImagePreview() {
                 <img src={URL.createObjectURL(file)} alt="preview" />
               </div>
             );
-          } else {
-            return null;
+          } else if (fileTypeInitial === "video") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <video
+                  src={URL.createObjectURL(file)}
+                  type="video/mp4"
+                  controls
+                />
+              </div>
+            );
           }
         })}
         <IconButton

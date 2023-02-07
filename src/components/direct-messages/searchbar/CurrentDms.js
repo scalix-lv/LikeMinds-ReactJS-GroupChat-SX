@@ -120,6 +120,9 @@ function CurrentDms() {
     }
   }
   useEffect(() => {
+    dmContext.resetContext();
+  }, [dmContext.currentProfile]);
+  useEffect(() => {
     if (sessionStorage.getItem("dmContext") !== null) {
       // console.log(dmContext);
       if (
@@ -153,7 +156,7 @@ function CurrentDms() {
       <Button
         fullWidth
         onClick={() => {
-          // console.log(dmContext);
+          console.log(dmContext);
         }}
       >
         Show DM Context
