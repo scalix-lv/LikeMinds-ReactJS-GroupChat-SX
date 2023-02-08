@@ -134,7 +134,13 @@ function PersonInfo() {
 
           <div className="mt-[20px]">
             {mediaArray.map((MediaIcon, mediaIconIndex) => {
-              return <MediaIcon className="m-1 text-4xl" fontSize="medium" />;
+              return (
+                <MediaIcon
+                  className="m-1 text-4xl"
+                  fontSize="medium"
+                  key={mediaIconIndex}
+                />
+              );
             })}
           </div>
 

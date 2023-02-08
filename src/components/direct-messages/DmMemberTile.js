@@ -103,6 +103,7 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
           },
         }}
         onClick={() => {
+          dmContext.setShowLoadingBar(true);
           reqDM(
             profile,
             userContext,
@@ -112,7 +113,9 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
             setOpenSnackBar,
             setSnackBarMessage
           )
-            .then((r) => {})
+            .then((r) => {
+              dmContext.setShowLoadingBar(false);
+            })
             .catch((e) => {
               setOpenSnackBar(true);
               setSnackBarMessage(e.error_message);

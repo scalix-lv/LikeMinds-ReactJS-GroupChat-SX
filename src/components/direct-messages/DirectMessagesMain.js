@@ -22,6 +22,7 @@ function DirectMessagesMain() {
   const [isConversationSelected, setIsConversationSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
   const [refreshContext, setRefreshContext] = useState(null);
+  const [showLoadingBar, setShowLoadingBar] = useState(false);
   function resetContext() {
     setIsConversationSelected(false);
     setConversationObject({});
@@ -59,6 +60,8 @@ function DirectMessagesMain() {
           refreshContext,
           setRefreshContext,
           resetContext,
+          showLoadingBar,
+          setShowLoadingBar,
         }}
       >
         <div className="flex overflow-hidden customHeight flex-1">
@@ -104,4 +107,6 @@ export const DmContext = React.createContext({
   refreshContext: () => {},
   setRefreshContext: () => {},
   resetContext: () => {},
+  showLoadingBar: Boolean,
+  setShowLoadingBar: () => {},
 });

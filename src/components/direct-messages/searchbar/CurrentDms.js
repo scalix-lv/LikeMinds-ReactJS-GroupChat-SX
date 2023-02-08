@@ -153,14 +153,14 @@ function CurrentDms() {
 
   return (
     <Box>
-      <Button
+      {/* <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button>
+      </Button> */}
       <div className="max-h-[400px] overflow-auto" id="hf-container">
         <InfiniteScroll
           next={paginateHomeFeed}
@@ -236,6 +236,7 @@ function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
       let call = await getChatRoomDetails(myClient, chatroomId);
       dmContext.setCurrentChatroom(call.data.chatroom);
       dmContext.setCurrentProfile(call.data);
+      dmContext.setShowLoadingBar(false);
     } catch (error) {
       // console.log(error);
     }
@@ -263,6 +264,7 @@ function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
         textDecoration: "none",
       }}
       onClick={() => {
+        dmContext.setShowLoadingBar(true);
         setSelectedId(profile.chatroom.id);
       }}
     >

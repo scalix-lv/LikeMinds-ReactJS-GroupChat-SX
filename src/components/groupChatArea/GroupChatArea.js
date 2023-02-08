@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { myClient, UserContext } from "../..";
@@ -86,7 +86,9 @@ function GroupChatArea() {
   // Scroll to bottom
   const updateHeight = () => {
     const el = document.getElementById("chat");
-    el.scrollTop = el.scrollHeight;
+    if (el != null) {
+      el.scrollTop = el.scrollHeight;
+    }
   };
   useEffect(() => {
     updateHeight();
@@ -202,58 +204,68 @@ function GroupChatArea() {
 
   return (
     <div>
-      {groupContext.activeGroup.chatroom?.id ? (
-        <Tittle
-          title={groupContext.activeGroup.chatroom.title}
-          memberCount={groupContext.activeGroup.participant_count}
-        />
-      ) : null}
-      <div
-        id="chat"
-        className="relative overflow-x-hidden overflow-auto"
-        style={{ height: "calc(100vh - 270px)" }}
-        ref={scrollTop}
-        onScroll={(e) => {
-          let current = scrollTop.current.scrollTop;
-          if (current < 200 && current % 150 == 0) {
-            fnPagination(groupContext.activeGroup?.chatroom?.id, 50)
-              .then((res) => {
-                let h = scrollTop.current.scrollHeight;
-                scrollTop.current.scrollTop = h / 2;
-              })
-              .catch((e) => {
-                console.log(e);
-              });
-          }
-        }}
-      >
-        {groupContext.activeGroup.chatroom?.id !== undefined ? (
-          <>
-            {conversationContext.conversationsArray.map((convoArr, index) => {
-              return (
-                <RegularBox
-                  convoArray={convoArr}
-                  key={convoArr[0].date + index}
-                />
-              );
-            })}
-
-            <div
-              style={{
-                flexGrow: 0.4,
-              }}
+      {groupContext.showLoadingBar == false ? (
+        <>
+          {groupContext.activeGroup.chatroom?.id ? (
+            <Tittle
+              title={groupContext.activeGroup.chatroom.header}
+              memberCount={groupContext.activeGroup.participant_count}
             />
-            <div ref={ref}></div>
-            <div className="fixed bottom-0 w-[62.1%]">
-              <Input updateHeight={updateHeight} />
-            </div>
-          </>
-        ) : (
-          <div className="h-full flex justify-center items-center text-[#999]">
-            Select a chat room to start messaging
+          ) : null}
+          <div
+            id="chat"
+            className="relative overflow-x-hidden overflow-auto"
+            style={{ height: "calc(100vh - 270px)" }}
+            ref={scrollTop}
+            onScroll={(e) => {
+              let current = scrollTop.current.scrollTop;
+              if (current < 200 && current % 150 == 0) {
+                fnPagination(groupContext.activeGroup?.chatroom?.id, 50)
+                  .then((res) => {
+                    let h = scrollTop.current.scrollHeight;
+                    scrollTop.current.scrollTop = h / 2;
+                  })
+                  .catch((e) => {
+                    console.log(e);
+                  });
+              }
+            }}
+          >
+            {groupContext.activeGroup.chatroom?.id !== undefined ? (
+              <>
+                {conversationContext.conversationsArray.map(
+                  (convoArr, index) => {
+                    return (
+                      <RegularBox
+                        convoArray={convoArr}
+                        key={convoArr[0].date + index}
+                      />
+                    );
+                  }
+                )}
+
+                <div
+                  style={{
+                    flexGrow: 0.4,
+                  }}
+                />
+                <div ref={ref}></div>
+                <div className="fixed bottom-0 w-[62.1%]">
+                  <Input updateHeight={updateHeight} />
+                </div>
+              </>
+            ) : (
+              <div className="h-full flex justify-center items-center text-[#999]">
+                Select a chat room to start messaging
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <div className="h-full flex justify-center items-center text-[#999] min-h-[80vh]">
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 }

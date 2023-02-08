@@ -107,7 +107,7 @@ function ChatArea() {
 
   return (
     <div>
-      {dmContext.currentChatroom ? (
+      {dmContext.currentChatroom && dmContext.showLoadingBar == false ? (
         <StyledBox>
           {/* <Button fullWidth onClick={()=>// console.log(dmContext)}>SHOW ME THE CONTEXT</Button> */}
           {Object.keys(dmContext.currentChatroom).length > 0 ? (
@@ -123,9 +123,14 @@ function ChatArea() {
           <ChatRoomAreaDM />
         </StyledBox>
       ) : (
-        <div className="flex justify-center items-center">
-          <CircularProgress />
-        </div>
+        <StyledBox>
+          <div className="flex justify-center items-center min-h-[80vh]">
+            <CircularProgress />
+          </div>
+        </StyledBox>
+        // <div className="flex justify-center items-center min-h-screen h-full">
+
+        // </div>
       )}
     </div>
   );

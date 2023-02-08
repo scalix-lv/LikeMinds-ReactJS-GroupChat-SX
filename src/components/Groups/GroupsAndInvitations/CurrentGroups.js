@@ -35,7 +35,6 @@ function CurrentGroups() {
     }
   }
   const chatroomContext = useContext(ChatRoomContext);
-
   return (
     <Box>
       {<PublicGroup groupList={chatroomContext.chatRoomsList} />}
@@ -67,7 +66,7 @@ function CurrentGroups() {
           {chatroomContext.unJoined.map((group, groupIndex) => {
             return (
               <UnjoinedGroup
-                groupTitle={group.title}
+                groupTitle={group.header}
                 group={group}
                 key={group.title + groupIndex}
               />
@@ -102,6 +101,7 @@ function PublicGroup({ groupTitle, groupList }) {
 
         chatRoomData.data.membersDetail = tagCall.data.members;
         groupContext.setActiveGroup(chatRoomData.data);
+        groupContext.setShowLoadingBar(false);
       } else {
         // console.log(chatRoomData.errorMessage);
       }
@@ -135,6 +135,7 @@ function PublicGroup({ groupTitle, groupList }) {
               <Link
                 to={groupMainPath}
                 onClick={() => {
+                  groupContext.setShowLoadingBar(true);
                   getChatRoomData(group.chatroom.id);
                 }}
                 key={group.chatroom.id + groupIndex + group.chatroom.header}
@@ -142,7 +143,7 @@ function PublicGroup({ groupTitle, groupList }) {
                 <div>
                   <PublicGroupTile
                     key={group.chatroom.id + groupIndex}
-                    groupTitle={group.chatroom.title}
+                    groupTitle={group.chatroom.header}
                     group={group}
                   />
                 </div>
@@ -163,7 +164,7 @@ function PublicGroupTile({ groupTitle, group }) {
       className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
       style={{
         backgroundColor:
-          groupTitle === groupcontext.activeGroup.chatroom?.title
+          groupTitle === groupcontext.activeGroup.chatroom?.header
             ? "#ECF3FF"
             : "#FFFFFF",
       }}
@@ -171,7 +172,7 @@ function PublicGroupTile({ groupTitle, group }) {
       <Typography
         sx={{
           color:
-            groupTitle === groupcontext.activeGroup.chatroom?.title
+            groupTitle === groupcontext.activeGroup.chatroom?.header
               ? "#3884f7"
               : "#000000",
         }}
@@ -221,6 +222,7 @@ function UnjoinedGroup({ groupTitle, group }) {
   async function joinGroup() {
     try {
       // console.log(group);
+      groupContext.setShowLoadingBar(true);
       let call = await joinChatRoom(
         group.id,
         userContext.currentUser.id,
@@ -233,6 +235,7 @@ function UnjoinedGroup({ groupTitle, group }) {
       if (!call.error) {
         console.log("here");
         groupContext.setActiveGroup(details.data);
+        groupContext.setShowLoadingBar(false);
       }
     } catch (error) {
       // console.log(error);
@@ -246,20 +249,20 @@ function UnjoinedGroup({ groupTitle, group }) {
       // }}
       className="flex justify-between leading-5 py-4 px-5 border-[#EEEEEE] border-t-[1px]"
       style={{
-        backgroundColor:
-          groupTitle === groupContext.activeGroup.chatroom?.header
-            ? "#FFFFFF"
-            : "#FFFFFF",
+        // backgroundColor:
+        //   groupTitle === groupContext.activeGroup.chatroom?.header
+        //     ? "#FFFFFF"
+        //     : "#FFFFFF",
         cursor: "pointer",
       }}
     >
       <Typography
         sx={{
           marginTop: "6px",
-          color:
-            groupTitle === groupContext.activeGroup.chatroom?.header
-              ? "#3884f7"
-              : "#000000",
+          // color:
+          //   groupTitle === groupContext.activeGroup.chatroom?.header
+          //     ? "#3884f7"
+          //     : "#000000",
         }}
         component={"span"}
         className="text-base font-normal"

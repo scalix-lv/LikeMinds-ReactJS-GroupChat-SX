@@ -25,12 +25,15 @@ export const GroupContext = React.createContext({
   activeGroup: {},
   setActiveGroup: () => {},
   refreshContextUi: () => {},
+  showLoadingBar: Boolean,
+  setShowLoadingBar: () => {},
 });
 function Main() {
   const [currentRoute, setCurrentRoute] = useState("forums");
   const [activeGroup, setActiveGroup] = useState({});
   const userContext = useContext(UserContext);
   const [refreshState, setRefreshState] = useState(true);
+  const [showLoadingBar, setShowLoadingBar] = useState(false);
   function refreshGroups() {
     setRefreshState(!refreshState);
   }
@@ -66,6 +69,8 @@ function Main() {
           activeGroup: activeGroup,
           setActiveGroup: setActiveGroup,
           refreshContextUi: refreshGroups,
+          showLoadingBar,
+          setShowLoadingBar,
         }}
       >
         <ThemeProvider theme={newTheme}>

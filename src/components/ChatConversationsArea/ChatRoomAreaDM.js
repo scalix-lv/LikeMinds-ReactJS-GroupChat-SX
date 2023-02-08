@@ -4,7 +4,7 @@ import RegularBox from "../channelGroups/RegularBox";
 import { getConversationsForGroup } from "../../sdkFunctions";
 import InputDM from "./InputDM";
 import { UserContext } from "../..";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import LetThemAcceptInvite from "../direct-messages/LetThemAcceptInvite";
 import AcceptTheirInviteFirst from "../direct-messages/AcceptTheirInviteFirst";
 function ChatRoomAreaDM() {
@@ -110,7 +110,7 @@ function ChatRoomAreaDM() {
         )
       ) : (
         <div className="h-full flex justify-center items-center text-[#999]">
-          Select a chat room to start messaging
+          <CircularProgress />
         </div>
       )}
     </div>

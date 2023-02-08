@@ -172,9 +172,9 @@ function Groups() {
     );
   }, []);
 
-  useEffect(() => {
-    console.log(groupContext);
-  }, [groupContext.activeGroup]);
+  // useEffect(() => {
+  //   console.log(groupContext);
+  // }, [groupContext.activeGroup]);
 
   return (
     <div>
