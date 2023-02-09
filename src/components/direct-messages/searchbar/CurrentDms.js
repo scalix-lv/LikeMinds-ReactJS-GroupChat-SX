@@ -18,6 +18,8 @@ import DmMemberTile from "../DmMemberTile";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import { myClient, UserContext } from "../../..";
+import { onValue, ref } from "firebase/database";
+import { getChatroomConversations } from "../ChatArea";
 
 function CurrentDms() {
   const dmContext = useContext(DmContext);
@@ -60,6 +62,7 @@ function CurrentDms() {
       }
       newFeedArray = joinFeed(oldArr, newFeedArray, feedObjects);
       dmContext.setHomeFeed(newFeedArray);
+      return newFeedArray;
     } catch (error) {
       // console.log(error);
     }
@@ -151,16 +154,61 @@ function CurrentDms() {
     dmContext.setRefreshContext(() => refreshContext);
   }, []);
 
+  let db = myClient.fbInstance();
+
+  const getCurrentChatroomID = () => {
+    let l = Object.keys(dmContext.currentChatroom).length;
+    if (l == 0) {
+      return;
+    }
+    // console.log(l);
+    if (l > 0) {
+      return dmContext.currentChatroom.id;
+    } else {
+      return sessionStorage.getItem("currentChatRoomKey");
+    }
+  };
+  // useEffect(() => {
+  //   const query = ref(db, "collabcards");
+  //   return onValue(query, (snapshot) => {
+  //     const data = snapshot.val();
+  //     // console.log(data);
+  //     if (snapshot.exists()) {
+  //       // console.log(dmContext);
+
+  //       getChatroomConversations(getCurrentChatroomID(), 500, dmContext);
+  //     }
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    const query = ref(db, "collabcards");
+    return onValue(query, (snapshot) => {
+      const data = snapshot.val();
+      // console.log(data);
+      if (snapshot.exists()) {
+        // console.log(dmContext);
+        loadHomeFeed(1).then((res) => {
+          console.log(res);
+          if (res[0].chatroom.id === dmContext.currentChatroom.id) {
+            console.log("here");
+            getChatroomConversations(getCurrentChatroomID(), 500, dmContext);
+          }
+        });
+      }
+    });
+  }, []);
+
   return (
     <Box>
-      {/* <Button
+      <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button> */}
+      </Button>
       <div className="max-h-[400px] overflow-auto" id="hf-container">
         <InfiniteScroll
           next={paginateHomeFeed}

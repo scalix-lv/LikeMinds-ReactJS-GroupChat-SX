@@ -13,7 +13,11 @@ import "./Groups.css";
 import { Button } from "@mui/material";
 import { GroupContext } from "../../Main";
 import { communityId, myClient, UserContext } from "../..";
-import { getChatRoomDetails, getUnjoinedRooms } from "../../sdkFunctions";
+import {
+  getAllChatroomMember,
+  getChatRoomDetails,
+  getUnjoinedRooms,
+} from "../../sdkFunctions";
 export const ChatRoomContext = createContext({
   chatRoomList: [],
   refreshChatroomContext: () => {},
@@ -49,18 +53,30 @@ export const fn = async (
       serialObject,
       setSerialObject
     );
+    // console.log("This is the updated list, ", oldArr);
     setChatRoomsList(newChatRoomList);
   } catch (error) {
     // console.log(error);
   }
 };
-
+const refreshHomeFeed = async (communityId, setChatRoomList) => {
+  try {
+    const feedCall = await myClient.getHomeFeedData({
+      communityId: communityId,
+      page: 0,
+    });
+    setChatRoomList(feedCall.my_chatrooms);
+  } catch (error) {
+    console.log(error);
+  }
+};
 const joinTheHomeFeeds = (oldArr, newArr, serialObject, setSerialObject) => {
   const so = { ...serialObject };
   for (let feed of newArr) {
     if (so[feed.chatroom.id] === undefined) {
       so[feed.chatroom.id] = true;
       oldArr.push(feed);
+    } else {
     }
   }
   setSerialObject(so);
@@ -102,7 +118,7 @@ function Groups() {
   const [conversationsArray, setConversationArray] = useState([]);
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
-
+  const [memberList, setMemberList] = useState([]);
   useEffect(() => {
     if (Object.keys(groupContext.activeGroup).length == 0) {
       if (sessionStorage.getItem("groupContext")) {
@@ -172,9 +188,36 @@ function Groups() {
     );
   }, []);
 
-  // useEffect(() => {
-  //   console.log(groupContext);
-  // }, [groupContext.activeGroup]);
+  useEffect(() => {
+    async function getAllMembers() {
+      let cont = true;
+      let list = [];
+      let pgNo = 1;
+      while (cont) {
+        let call = await myClient.allMembers({
+          chatroom_id: groupContext.activeGroup.chatroom.id,
+          community_id: groupContext.activeGroup.community.id,
+          page: pgNo,
+        });
+
+        list = list.concat(call.members);
+        pgNo = pgNo + 1;
+        if (call.members.length < 11) {
+          cont = false;
+        }
+      }
+      if (
+        JSON.stringify(groupContext.activeGroup.members) !==
+        JSON.stringify(list)
+      ) {
+        let obj = { ...groupContext.activeGroup };
+        obj.members = list;
+
+        groupContext.setActiveGroup(obj);
+      }
+    }
+    getAllMembers();
+  }, [groupContext.activeGroup]);
 
   return (
     <div>
@@ -197,7 +240,11 @@ function Groups() {
             setShouldLoadMoreHomeFeed: setShouldLoadMoreHomeFeed,
             setShouldLoadMoreUnjoinedFeed: setShouldLoadMoreUnjoinedFeed,
             refreshChatroomContext: () => {
-              fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed);
+              // fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed);
+              refreshHomeFeed(
+                groupContext.activeGroup.community.id,
+                setChatRoomsList
+              );
               getUnjoinedList(
                 unJoined,
                 setUnjoined,

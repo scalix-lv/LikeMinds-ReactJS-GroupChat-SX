@@ -54,8 +54,9 @@ function ChatRoomAreaDM() {
   };
 
   useEffect(() => {
-    if (Object.keys(dmContext.currentChatroom).length)
+    if (Object.keys(dmContext.currentChatroom).length) {
       getChatroomConversations(dmContext.currentChatroom.id, 1000);
+    }
   }, [dmContext.currentChatroom]);
 
   useEffect(() => {

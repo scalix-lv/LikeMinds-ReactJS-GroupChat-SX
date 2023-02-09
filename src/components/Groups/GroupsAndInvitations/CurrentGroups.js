@@ -26,18 +26,10 @@ import InfiniteScroll from "react-infinite-scroll-component";
 function CurrentGroups() {
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(true);
 
-  // for gettingChatRoom()
-  async function getChatRoomData(chatroomId) {
-    try {
-      const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
-    } catch (error) {
-      // console.log(error);
-    }
-  }
   const chatroomContext = useContext(ChatRoomContext);
   return (
     <Box>
-      {<PublicGroup groupList={chatroomContext.chatRoomsList} />}
+      <PublicGroup groupList={chatroomContext.chatRoomsList} />
 
       <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
         <span>All Public Groups</span>
@@ -91,7 +83,9 @@ function PublicGroup({ groupTitle, groupList }) {
   async function getChatRoomData(chatroomId) {
     try {
       const markReadCall = await markRead(chatroomId);
+      // console.log(markReadCall);
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
+      // console.log("here");
       // console.log(chatRoomData);
       if (!chatRoomData.error) {
         const tagCall = await getTaggingList(

@@ -36,27 +36,30 @@ function TittleDm({ title }) {
 function TitleArea({ title }) {
   const navigate = useNavigate();
   const dmContext = useContext(DmContext);
-  const userContext = useContext(UserContext)
+  const userContext = useContext(UserContext);
   return (
     <div
       className="text-left"
       onClick={() => {
         navigate(directMessageInfoPath, {
           state: {
-            memberId: userContext.currentUser.id ===
-            dmContext.currentChatroom.member.id
-              ? dmContext.currentChatroom.chatroom_with_user.id
-              : dmContext.currentChatroom.member.id,
+            memberId:
+              userContext.currentUser.id === dmContext.currentChatroom.member.id
+                ? dmContext.currentChatroom.chatroom_with_user.id
+                : dmContext.currentChatroom.member.id,
             communityId: userContext.community.id,
           },
         });
       }}
     >
-      <span component={"p"} className="font-semibold text-xl leading-6">
+      <span
+        component={"p"}
+        className="font-semibold text-xl leading-6 cursor-pointer"
+      >
         {title ? title : null}
       </span>
       <div />
-      <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD]">
+      <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD] cursor-pointer">
         Member
       </span>
     </div>

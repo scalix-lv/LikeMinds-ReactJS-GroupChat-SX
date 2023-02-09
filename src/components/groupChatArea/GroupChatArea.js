@@ -179,11 +179,17 @@ function GroupChatArea() {
     );
     return onValue(query, (snapshot) => {
       // const data = snapshot.val();
-
+      // console.log(snapshot.val());
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
+        updateHeight();
+        getChatroomConversationArray(
+          groupContext.activeGroup.chatroom.id,
+          500,
+          conversationContext
+        );
         chatRoomContext.refreshChatroomContext();
       }
     });
@@ -251,7 +257,13 @@ function GroupChatArea() {
                 />
                 <div ref={ref}></div>
                 <div className="fixed bottom-0 w-[62.1%]">
-                  <Input updateHeight={updateHeight} />
+                  {groupContext.activeGroup.chatroom.member_can_message ? (
+                    <Input updateHeight={updateHeight} />
+                  ) : (
+                    <span className="flex justify-center items-center text-[#999] py-4">
+                      Only Community Managers can send messages.
+                    </span>
+                  )}
                 </div>
               </>
             ) : (

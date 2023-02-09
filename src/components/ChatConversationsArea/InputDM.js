@@ -7,6 +7,7 @@ import mic from "./../../assets/svg/mic.svg";
 import paperclip from "./../../assets/svg/paperclip.svg";
 import { GroupContext } from "../../Main";
 import { myClient, UserContext } from "../..";
+import pdfIcon from "../../assets/svg/pdf-document.svg";
 import {
   ConversationContext,
   CurrentSelectedConversationContext,
@@ -310,6 +311,8 @@ function InputSearchField({ updateHeight, inputRef }) {
       ) : null}
 
       {/* for preview Image */}
+      <DocPreview />
+      <AudioPreview />
       {<ImagePreview />}
       <div className="relative">
         <IconButton
@@ -533,6 +536,7 @@ function ImagePreview() {
   useEffect(() => {
     let newArr = [];
     for (let nf of dmContext.mediaAttachments) {
+      console.log(nf);
       if (
         nf.type.split("/")[0] === "image" ||
         nf.type.split("/")[0] === "video"
@@ -571,6 +575,135 @@ function ImagePreview() {
                   type="video/mp4"
                   controls
                 />
+              </div>
+            );
+          } else if (fileTypeInitial === "audio") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                Hello
+                <audio src={URL.createObjectURL} type="audio/mp3" control />
+              </div>
+            );
+          }
+        })}
+        <IconButton
+          onClick={() => {
+            dmContext.setAudioAttachments([]);
+            dmContext.setMediaAttachments([]);
+            dmContext.setDocumentAttachments([]);
+          }}
+        >
+          <Close />
+        </IconButton>
+      </div>
+    </div>
+  );
+}
+function AudioPreview() {
+  const [previewUrl, setPreviewUrl] = useState("");
+  //   const inputContext = useContext(InputContext);
+  const dmContext = useContext(DmContext);
+  const [mediaArray, setMediaArray] = useState([]);
+  useEffect(() => {
+    let newArr = [];
+    for (let nf of dmContext.audioAttachments) {
+      console.log(nf);
+      if (nf.type.split("/")[0] === "audio") {
+        console.log(nf);
+        newArr.push(nf);
+      }
+    }
+    setMediaArray(newArr);
+  }, [
+    dmContext.mediaAttachments,
+    dmContext.audioAttachments,
+    dmContext.documentAttachments,
+  ]);
+  return (
+    <div
+      style={{
+        display: mediaArray.length > 0 ? "block" : "none",
+      }}
+    >
+      <div className="w-full shadow-sm p-3 flex justify-between">
+        {mediaArray.map((file, fileIndex) => {
+          const fileTypeInitial = file.type.split("/")[0];
+          // console.log(fileTypeInitial);
+          if (fileTypeInitial === "image") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <img src={URL.createObjectURL(file)} alt="preview" />
+              </div>
+            );
+          } else if (fileTypeInitial === "video") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <video
+                  src={URL.createObjectURL(file)}
+                  type="video/mp4"
+                  controls
+                />
+              </div>
+            );
+          } else if (fileTypeInitial === "audio") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <audio
+                  src={URL.createObjectURL(file)}
+                  type="audio/mp3"
+                  controls
+                />
+              </div>
+            );
+          }
+        })}
+        <IconButton
+          onClick={() => {
+            dmContext.setAudioAttachments([]);
+            dmContext.setMediaAttachments([]);
+            dmContext.setDocumentAttachments([]);
+          }}
+        >
+          <Close />
+        </IconButton>
+      </div>
+    </div>
+  );
+}
+function DocPreview() {
+  const [previewUrl, setPreviewUrl] = useState("");
+  //   const inputContext = useContext(InputContext);
+  const dmContext = useContext(DmContext);
+  const [mediaArray, setMediaArray] = useState([]);
+  useEffect(() => {
+    let newArr = [];
+    for (let nf of dmContext.documentAttachments) {
+      console.log(nf);
+      if (nf.type.split("/")[1] === "pdf") {
+        console.log(nf);
+        newArr.push(nf);
+      }
+    }
+    setMediaArray(newArr);
+  }, [
+    dmContext.mediaAttachments,
+    dmContext.audioAttachments,
+    dmContext.documentAttachments,
+  ]);
+  return (
+    <div
+      style={{
+        display: mediaArray.length > 0 ? "block" : "none",
+      }}
+    >
+      <div className="w-full shadow-sm p-3 flex justify-between">
+        {mediaArray.map((file, fileIndex) => {
+          const fileTypeInitial = file.type.split("/")[1];
+          // console.log(fileTypeInitial);
+          if (fileTypeInitial === "pdf") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <img src={pdfIcon} alt="pdf" className="w-[24px]" />
               </div>
             );
           }
