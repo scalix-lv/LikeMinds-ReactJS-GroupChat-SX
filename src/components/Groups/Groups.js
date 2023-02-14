@@ -153,7 +153,7 @@ function Groups() {
       if (unJoined.length == 0) {
         return;
       }
-      getChatRoomDetails(myClient, groupContext.activeGroup.chatroom.id).then(
+      getChatRoomDetails(myClient, groupContext.activeGroup.chatroom?.id).then(
         (res) => {
           if (res.data) {
             let unJoineds = [...unJoined];
@@ -195,14 +195,15 @@ function Groups() {
       let pgNo = 1;
       while (cont) {
         let call = await myClient.allMembers({
-          chatroom_id: groupContext.activeGroup.chatroom.id,
-          community_id: groupContext.activeGroup.community.id,
+          chatroom_id: groupContext.activeGroup?.chatroom?.id,
+          community_id: groupContext.activeGroup?.community?.id,
           page: pgNo,
         });
-
+        // console.table()\c
+        // console.log(call);
         list = list.concat(call.members);
         pgNo = pgNo + 1;
-        if (call.members.length < 11) {
+        if (call.members.length < 10) {
           cont = false;
         }
       }

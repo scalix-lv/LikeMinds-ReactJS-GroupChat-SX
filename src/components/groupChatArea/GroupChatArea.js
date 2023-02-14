@@ -108,16 +108,9 @@ function GroupChatArea() {
     ) {
       updateHeight();
     }
-    // console.log(
-    //   conversationContext.conversationsArray,
-    //   convoArrLength,
-    //   lastConvoArrLength,
-    //   userContext.currentUser
-    // );
   }, [conversationContext.conversationsArray]);
 
   const fnPagination = async (chatroomId, pageNo) => {
-    // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
     let optionObject = {
       chatroomID: chatroomId,
       page: 50,
@@ -184,6 +177,7 @@ function GroupChatArea() {
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
+        // console.log(snapshot.val());
         updateHeight();
         getChatroomConversationArray(
           groupContext.activeGroup.chatroom.id,
@@ -203,6 +197,7 @@ function GroupChatArea() {
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
+        // console.log(snapshot.val());
         chatRoomContext.refreshChatroomContext();
       }
     });

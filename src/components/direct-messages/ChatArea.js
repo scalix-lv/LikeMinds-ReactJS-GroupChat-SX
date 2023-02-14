@@ -68,36 +68,16 @@ function ChatArea() {
   const dmContext = useContext(DmContext);
 
   // useEffect(() => {
-  //   console.log("DM CONEXT IN CHAT AREA", dmContext.currentChatroom);
-  // });
-
-  const getCurrentChatroomID = () => {
-    let l = Object.keys(dmContext.currentChatroom).length;
-    if (l == 0) {
-      return;
-    }
-    // console.log(l);
-    if (l > 0) {
-      return dmContext.currentChatroom.id;
-    } else {
-      return sessionStorage.getItem("currentChatRoomKey");
-    }
-  };
-
-  useEffect(() => {
-    // console.log(dmContext.showLoadingBar);
-    // console.log("ALA ALA ALA CONYTEXT ALA");
-    let chatroomId = dmContext.currentChatroom.id;
-    // console.log(chatroomId);
-    getChatroomConversations(chatroomId, 500, dmContext);
-  }, [dmContext.currentChatroom]);
+  //   let chatroomId = dmContext.currentChatroom.id;
+  //   getChatroomConversations(chatroomId, 1000, dmContext);
+  // }, [dmContext.currentChatroom]);
 
   return (
     <div>
       {
-        dmContext.currentChatroom && dmContext.showLoadingBar == false ? (
+        dmContext.currentChatroom?.id != undefined &&
+        dmContext.showLoadingBar == false ? (
           <StyledBox>
-            {/* <Button fullWidth onClick={()=>// console.log(dmContext)}>SHOW ME THE CONTEXT</Button> */}
             {Object.keys(dmContext.currentChatroom).length > 0 ? (
               <TittleDm
                 title={

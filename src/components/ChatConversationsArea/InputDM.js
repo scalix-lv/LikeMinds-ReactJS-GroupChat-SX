@@ -93,6 +93,7 @@ function InputSearchField({ updateHeight, inputRef }) {
   let handleSendMessage = async () => {
     try {
       // console.log(dmContext.currentChatroom.chat_request_state);
+      // let dmContext =
       if (
         dmContext.currentChatroom.chat_request_state === null &&
         dmContext.currentChatroom.member.state != 1 &&
@@ -150,6 +151,8 @@ function InputSearchField({ updateHeight, inputRef }) {
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
         updateHeight();
       }
+      ref.current.removeAttribute("disabled");
+      // console.log("HERE IS IT");
 
       if (res != null && filesArray.length > 0) {
         let index = 0;
@@ -206,6 +209,7 @@ function InputSearchField({ updateHeight, inputRef }) {
           data: res,
         };
       }
+
       updateHeight();
     } catch (error) {
       return {
@@ -356,6 +360,7 @@ function InputSearchField({ updateHeight, inputRef }) {
               dmContext.setMessageText(newStr);
             } else if (keyObj.enter == true && keyObj.shift == false) {
               e.preventDefault();
+              ref.current.setAttribute("disabled", true);
               handleSendMessage();
             }
           }}

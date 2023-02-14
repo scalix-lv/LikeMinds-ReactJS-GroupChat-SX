@@ -13,6 +13,8 @@ import forum from "../../assets/forum.svg";
 import abm from "../../assets/abm.svg";
 import groups from "../../assets/groups.svg";
 import { RouteContext } from "../../Main";
+import closeDrawer from "../../assets/close_drawer.png";
+import openDrawer from "../../assets/open_drawer.png";
 import {
   addedByMePath,
   directMessagePath,
@@ -52,9 +54,22 @@ function Sidenav() {
       Icon: abm,
     },
   ];
+  const routeContext = useContext(RouteContext);
 
+  function toggleNavigationBar() {
+    routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
+  }
   return (
-    <div>
+    <div className="relative">
+      {/* <div
+        className="w-[26px] h-[26px] rounded-full border border-[#EEEEEE] md:none flex justify-center items-center bg-white absolute top-2.5 right-0 translate-x-[50%]"
+        onClick={toggleNavigationBar}
+      >
+        <img
+          src={routeContext.isNavigationBoxOpen ? closeDrawer : openDrawer}
+          alt="drawer state"
+        />
+      </div> */}
       {navArray.map((block, blockIndex) => {
         return (
           <NavBlock

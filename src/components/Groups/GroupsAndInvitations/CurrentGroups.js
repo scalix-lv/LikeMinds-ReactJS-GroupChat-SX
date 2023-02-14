@@ -16,7 +16,6 @@ import {
 import { myClient, UserContext } from "../../..";
 import { Link, NavLink } from "react-router-dom";
 import { groupMainPath } from "../../../routes";
-// import { GroupContext } from "../Groups";
 import cancelIcon from "../../../assets/svg/cancel.svg";
 import acceptIcon from "../../../assets/svg/accept.svg";
 import { GroupContext } from "../../../Main";
@@ -242,13 +241,15 @@ function UnjoinedGroup({ groupTitle, group }) {
       //   getChatRoomData(group.id);
       // }}
       className="flex justify-between leading-5 py-4 px-5 border-[#EEEEEE] border-t-[1px]"
-      style={{
-        // backgroundColor:
-        //   groupTitle === groupContext.activeGroup.chatroom?.header
-        //     ? "#FFFFFF"
-        //     : "#FFFFFF",
-        cursor: "pointer",
-      }}
+      style={
+        {
+          // backgroundColor:
+          //   groupTitle === groupContext.activeGroup.chatroom?.header
+          //     ? "#FFFFFF"
+          //     : "#FFFFFF",
+          // cursor: "pointer",
+        }
+      }
     >
       <Typography
         sx={{

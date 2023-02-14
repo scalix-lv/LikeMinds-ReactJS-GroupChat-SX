@@ -233,7 +233,7 @@ function InputSearchField({ updateHeight }) {
         // attachment_count: false,
         chatroom_id: groupContext.activeGroup.chatroom.id,
       };
-      console.log(config);
+      // console.log(config);
       if (has_files) {
         config.attachment_count = attachment_count;
         config.has_files = true;
@@ -389,6 +389,7 @@ function InputSearchField({ updateHeight }) {
               inputContext.setText(newStr);
             } else if (keyObj.enter == true && keyObj.shift == false) {
               e.preventDefault();
+
               handleSendMessage();
             }
           }}

@@ -34,7 +34,10 @@ function TitleArea({ title, memberCount }) {
   return (
     <Box className="text-left">
       {/* For Group Title */}
-      <span component={"p"} className="font-semibold text-xl leading-6">
+      <span
+        component={"p"}
+        className="font-semibold text-xl leading-6 cursor-pointer"
+      >
         {title ? title : null}
       </span>
 

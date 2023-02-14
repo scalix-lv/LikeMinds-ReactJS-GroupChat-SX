@@ -34,6 +34,7 @@ function Main() {
   const userContext = useContext(UserContext);
   const [refreshState, setRefreshState] = useState(true);
   const [showLoadingBar, setShowLoadingBar] = useState(false);
+  const [openNavBar, setOpenNavBar] = useState(false);
   function refreshGroups() {
     setRefreshState(!refreshState);
   }
@@ -62,6 +63,8 @@ function Main() {
       value={{
         currentRoute: currentRoute,
         setCurrentRoute: setCurrentRoute,
+        isNavigationBoxOpen: openNavBar,
+        setIsNavigationBoxOpen: setOpenNavBar,
       }}
     >
       <GroupContext.Provider
@@ -75,7 +78,7 @@ function Main() {
       >
         <ThemeProvider theme={newTheme}>
           <div className="flex w-[100vw] fixed h-[65px] z-10">
-            <Header />
+            {/* <Header /> */}
           </div>
 
           <div className="flex flex-1 h-full customHeight mt-[65px]">
@@ -95,6 +98,8 @@ function Main() {
 export const RouteContext = createContext({
   currentRoute: "",
   setCurrentRoute: () => {},
+  isNavigationBoxOpen: Boolean,
+  setIsNavigationBoxOpen: () => {},
 });
 
 export default Main;

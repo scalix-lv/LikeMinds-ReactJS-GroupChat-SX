@@ -1,14 +1,11 @@
 import { Box, Button, Collapse, IconButton, Typography } from "@mui/material";
 import React, { useState, useContext, useEffect } from "react";
-import CloseIcon from "@mui/icons-material/Close";
-import DoneIcon from "@mui/icons-material/Done";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { DmContext } from "../DirectMessagesMain";
 import { Link } from "react-router-dom";
 import {
   allChatroomMembersDm,
-  canDirectMessage,
   dmChatFeed,
   getChatRoomDetails,
   markRead,
@@ -16,7 +13,6 @@ import {
 import { directMessageChatPath } from "../../../routes";
 import DmMemberTile from "../DmMemberTile";
 import InfiniteScroll from "react-infinite-scroll-component";
-
 import { myClient, UserContext } from "../../..";
 import { onValue, ref } from "firebase/database";
 import { getChatroomConversations } from "../ChatArea";
@@ -37,6 +33,7 @@ function CurrentDms() {
   const [lastPageHomeFeed, setLastPageHomeFeed] = useState(1);
   const [feedObjects, setFeedObjects] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(null);
+
   function joinFeed(oldArray, newArray, serialObject) {
     serialObject = { ...serialObject };
     // console.log(newArray.length);
@@ -52,6 +49,7 @@ function CurrentDms() {
     setFeedObjects(serialObject);
     return oldArray;
   }
+
   async function loadHomeFeed(pageNo) {
     try {
       let oldArr = [...dmContext.homeFeed];
@@ -112,19 +110,12 @@ function CurrentDms() {
       // console.log(error);
     }
   }
-  async function markReadCall(chatroomId) {
-    try {
-      await markRead(chatroomId);
-      let call = await getChatRoomDetails(myClient, chatroomId);
-      dmContext.setCurrentChatroom(call.data.chatroom);
-      dmContext.setCurrentProfile(call.data);
-    } catch (error) {
-      // console.log(error);
-    }
-  }
+
+  // This effect will run for resetting the context like reply or reseting the input field
   useEffect(() => {
     dmContext.resetContext();
   }, [dmContext.currentProfile]);
+
   useEffect(() => {
     if (sessionStorage.getItem("dmContext") !== null) {
       // console.log(dmContext);
@@ -144,6 +135,7 @@ function CurrentDms() {
     }
   });
 
+  // this effect will run once and will load the home feed and all members feed
   useEffect(() => {
     loadHomeFeed(1);
     loadAllDmMembers();
@@ -156,6 +148,7 @@ function CurrentDms() {
 
   let db = myClient.fbInstance();
 
+  // for getting the id for the currentchatroom from the session storage
   const getCurrentChatroomID = () => {
     let l = Object.keys(dmContext.currentChatroom).length;
     if (l == 0) {
@@ -168,30 +161,15 @@ function CurrentDms() {
       return sessionStorage.getItem("currentChatRoomKey");
     }
   };
-  // useEffect(() => {
-  //   const query = ref(db, "collabcards");
-  //   return onValue(query, (snapshot) => {
-  //     const data = snapshot.val();
-  //     // console.log(data);
-  //     if (snapshot.exists()) {
-  //       // console.log(dmContext);
 
-  //       getChatroomConversations(getCurrentChatroomID(), 500, dmContext);
-  //     }
-  //   });
-  // }, []);
-
+  // for resetting the conversation of the current chatroom
   useEffect(() => {
     const query = ref(db, "collabcards");
     return onValue(query, (snapshot) => {
-      const data = snapshot.val();
-      // console.log(data);
       if (snapshot.exists()) {
-        // console.log(dmContext);
+        console.log(snapshot.val());
         loadHomeFeed(1).then((res) => {
-          console.log(res);
           if (res[0].chatroom.id === dmContext.currentChatroom.id) {
-            console.log("here");
             getChatroomConversations(getCurrentChatroomID(), 500, dmContext);
           }
         });
@@ -201,14 +179,14 @@ function CurrentDms() {
 
   return (
     <Box>
-      <Button
+      {/* <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button>
+      </Button> */}
       <div className="max-h-[400px] overflow-auto" id="hf-container">
         <InfiniteScroll
           next={paginateHomeFeed}
@@ -273,13 +251,14 @@ function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
   const userContext_LM = useContext(UserContext);
 
   const [shouldNotShow, setShouldNotShow] = useState(false);
+
   async function markReadCall(chatroomId) {
     try {
       let markCall = await markRead(chatroomId);
       if (markCall.data.success) {
         setShouldNotShow(true);
       }
-      loadHomeFeed(1);
+      await loadHomeFeed(1);
 
       let call = await getChatRoomDetails(myClient, chatroomId);
       dmContext.setCurrentChatroom(call.data.chatroom);
@@ -289,16 +268,10 @@ function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
       // console.log(error);
     }
   }
+
   async function setProfile() {
     try {
-      if (profile.unseen_conversation_count > 0) {
-        await markRead(profile.chatroom.id);
-        await loadHomeFeed(1);
-      }
       sessionStorage.setItem("currentChatRoomKey", profile.chatroom.id);
-
-      let call = await getChatRoomDetails(myClient, profile.chatroom.id);
-
       await markReadCall(profile.chatroom.id);
     } catch (error) {
       // console.log(error);
