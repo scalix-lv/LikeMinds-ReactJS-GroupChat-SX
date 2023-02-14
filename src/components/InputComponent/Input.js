@@ -197,7 +197,7 @@ function InputSearchField({ updateHeight }) {
 
           await getChatroomConversationArray(
             groupContext.activeGroup.chatroom.id,
-            1000,
+            100,
             conversationContext
           );
           updateHeight();
