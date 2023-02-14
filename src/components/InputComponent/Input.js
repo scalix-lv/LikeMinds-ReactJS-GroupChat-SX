@@ -144,7 +144,6 @@ function InputSearchField({ updateHeight }) {
       let tv = text;
       // console.log("checkpoint " + count++);
       if (tv.length != 0) {
-        console.log("1");
         if (!filesArray.length) {
           res = await fnew(false, 0, tv, setText, isRepliedConvo);
         } else {

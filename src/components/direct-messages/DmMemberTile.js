@@ -19,35 +19,33 @@ export async function reqDM(
   try {
     let call = await requestDM(profile.id, userContext.community.id);
     // console.log(call);
-    let i = 1;
-    console.log(i++);
+    // let i = 1;
+
     if (call.data === undefined) {
       alert(call.data.error_message);
 
       return;
     } else if (!call.data.is_request_dm_limit_exceeded) {
-      console.log(i++);
       if (call.data.chatroom_id != null) {
         let profileData = await getChatRoomDetails(
           myClient,
           call.data.chatroom_id
         );
         // console.log(profileData.error);
-        console.log(i++);
+
         if (profileData.data == undefined) {
           setOpenSnackBar(true);
           setSnackBarMessage("An Error Occoured");
           return;
         }
-        console.log(i++);
+
         if (setSelectedId != undefined) {
           setSelectedId(profile.id);
         }
-        console.log(i++);
+
         // console.log(profileData);
         dmContext.setCurrentProfile(profileData.data);
         dmContext.setCurrentChatroom(profileData.data.chatroom);
-        console.log(i++);
       } else {
         let createDmCall = await createDM(profile.id);
         // console.log(createDmCall);
