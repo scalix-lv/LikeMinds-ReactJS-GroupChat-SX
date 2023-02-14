@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { UserContext } from ".";
 import { initiateSDK } from "./sdkFunctions";
 import ChatArea from "./components/direct-messages/ChatArea";
+import Error from "./components/errorPage/Error";
 
 const router = createBrowserRouter([
   {
@@ -80,6 +81,7 @@ const router = createBrowserRouter([
         element: null,
       },
     ],
+    errorElement: <Error />,
   },
 ]);
 

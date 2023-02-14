@@ -167,7 +167,7 @@ function CurrentDms() {
     const query = ref(db, "collabcards");
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot.val());
+        // console.log(snapshot.val());
         loadHomeFeed(1).then((res) => {
           if (res[0].chatroom.id === dmContext.currentChatroom.id) {
             getChatroomConversations(getCurrentChatroomID(), 500, dmContext);
