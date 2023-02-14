@@ -24,7 +24,11 @@ import Tittle from "./tittle/Tittle";
 import { getChatRoomDetails, requestDM } from "../../sdkFunctions";
 import { DmContext } from "../direct-messages/DirectMessagesMain";
 import { reqDM } from "../direct-messages/DmMemberTile";
-import { directMessagePath, groupPath } from "../../routes";
+import {
+  directMessageChatPath,
+  directMessagePath,
+  groupPath,
+} from "../../routes";
 import TittleDm from "../direct-messages/TitleDM";
 
 function PersonInfo() {
@@ -106,7 +110,11 @@ function PersonInfo() {
                 color: "white",
               }}
               onClick={() =>
-                reqDM(profileDate, userContext, dmContext, navigate)
+                reqDM(profileDate, userContext, dmContext, navigate).then(
+                  (e) => {
+                    navigate(directMessageChatPath);
+                  }
+                )
               }
               startIcon={<img src={require("./../../assets/message.png")} />}
             >
@@ -134,7 +142,13 @@ function PersonInfo() {
 
           <div className="mt-[20px]">
             {mediaArray.map((MediaIcon, mediaIconIndex) => {
-              return <MediaIcon className="m-1 text-4xl" fontSize="medium" />;
+              return (
+                <MediaIcon
+                  className="m-1 text-4xl"
+                  fontSize="medium"
+                  key={mediaIconIndex}
+                />
+              );
             })}
           </div>
 

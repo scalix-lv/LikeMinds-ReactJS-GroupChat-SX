@@ -7,6 +7,7 @@ import mic from "./../../assets/svg/mic.svg";
 import paperclip from "./../../assets/svg/paperclip.svg";
 import { GroupContext } from "../../Main";
 import { myClient, UserContext } from "../..";
+import pdfIcon from "../../assets/svg/pdf-document.svg";
 import {
   ConversationContext,
   CurrentSelectedConversationContext,
@@ -92,6 +93,7 @@ function InputSearchField({ updateHeight, inputRef }) {
   let handleSendMessage = async () => {
     try {
       // console.log(dmContext.currentChatroom.chat_request_state);
+      // let dmContext =
       if (
         dmContext.currentChatroom.chat_request_state === null &&
         dmContext.currentChatroom.member.state != 1 &&
@@ -147,9 +149,11 @@ function InputSearchField({ updateHeight, inputRef }) {
       } else if (filesArray.length > 0) {
         // console.log("3");
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
+        updateHeight();
       }
+      ref.current.removeAttribute("disabled");
+      // console.log("HERE IS IT");
 
-      updateHeight();
       if (res != null && filesArray.length > 0) {
         let index = 0;
         for (let newFile of filesArray) {
@@ -187,8 +191,13 @@ function InputSearchField({ updateHeight, inputRef }) {
             url: fileUploadRes.Location,
           });
 
-          updateHeight();
+          await getChatroomConversations(
+            dmContext.currentChatroom.id,
+            1000,
+            dmContext.setCurrentChatroomConversations
+          );
           // console.log(inputRef);
+          updateHeight();
           if (inputRef.current) {
             inputRef.current.value = null;
           }
@@ -200,6 +209,8 @@ function InputSearchField({ updateHeight, inputRef }) {
           data: res,
         };
       }
+
+      updateHeight();
     } catch (error) {
       return {
         error: true,
@@ -304,6 +315,8 @@ function InputSearchField({ updateHeight, inputRef }) {
       ) : null}
 
       {/* for preview Image */}
+      <DocPreview />
+      <AudioPreview />
       {<ImagePreview />}
       <div className="relative">
         <IconButton
@@ -347,6 +360,7 @@ function InputSearchField({ updateHeight, inputRef }) {
               dmContext.setMessageText(newStr);
             } else if (keyObj.enter == true && keyObj.shift == false) {
               e.preventDefault();
+              ref.current.setAttribute("disabled", true);
               handleSendMessage();
             }
           }}
@@ -526,9 +540,13 @@ function ImagePreview() {
   const [mediaArray, setMediaArray] = useState([]);
   useEffect(() => {
     let newArr = [];
-
     for (let nf of dmContext.mediaAttachments) {
-      if (nf.type.split("/")[0] === "image") {
+      console.log(nf);
+      if (
+        nf.type.split("/")[0] === "image" ||
+        nf.type.split("/")[0] === "video"
+      ) {
+        console.log(nf);
         newArr.push(nf);
       }
     }
@@ -554,8 +572,145 @@ function ImagePreview() {
                 <img src={URL.createObjectURL(file)} alt="preview" />
               </div>
             );
-          } else {
-            return null;
+          } else if (fileTypeInitial === "video") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <video
+                  src={URL.createObjectURL(file)}
+                  type="video/mp4"
+                  controls
+                />
+              </div>
+            );
+          } else if (fileTypeInitial === "audio") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                Hello
+                <audio src={URL.createObjectURL} type="audio/mp3" control />
+              </div>
+            );
+          }
+        })}
+        <IconButton
+          onClick={() => {
+            dmContext.setAudioAttachments([]);
+            dmContext.setMediaAttachments([]);
+            dmContext.setDocumentAttachments([]);
+          }}
+        >
+          <Close />
+        </IconButton>
+      </div>
+    </div>
+  );
+}
+function AudioPreview() {
+  const [previewUrl, setPreviewUrl] = useState("");
+  //   const inputContext = useContext(InputContext);
+  const dmContext = useContext(DmContext);
+  const [mediaArray, setMediaArray] = useState([]);
+  useEffect(() => {
+    let newArr = [];
+    for (let nf of dmContext.audioAttachments) {
+      console.log(nf);
+      if (nf.type.split("/")[0] === "audio") {
+        console.log(nf);
+        newArr.push(nf);
+      }
+    }
+    setMediaArray(newArr);
+  }, [
+    dmContext.mediaAttachments,
+    dmContext.audioAttachments,
+    dmContext.documentAttachments,
+  ]);
+  return (
+    <div
+      style={{
+        display: mediaArray.length > 0 ? "block" : "none",
+      }}
+    >
+      <div className="w-full shadow-sm p-3 flex justify-between">
+        {mediaArray.map((file, fileIndex) => {
+          const fileTypeInitial = file.type.split("/")[0];
+          // console.log(fileTypeInitial);
+          if (fileTypeInitial === "image") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <img src={URL.createObjectURL(file)} alt="preview" />
+              </div>
+            );
+          } else if (fileTypeInitial === "video") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <video
+                  src={URL.createObjectURL(file)}
+                  type="video/mp4"
+                  controls
+                />
+              </div>
+            );
+          } else if (fileTypeInitial === "audio") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <audio
+                  src={URL.createObjectURL(file)}
+                  type="audio/mp3"
+                  controls
+                />
+              </div>
+            );
+          }
+        })}
+        <IconButton
+          onClick={() => {
+            dmContext.setAudioAttachments([]);
+            dmContext.setMediaAttachments([]);
+            dmContext.setDocumentAttachments([]);
+          }}
+        >
+          <Close />
+        </IconButton>
+      </div>
+    </div>
+  );
+}
+function DocPreview() {
+  const [previewUrl, setPreviewUrl] = useState("");
+  //   const inputContext = useContext(InputContext);
+  const dmContext = useContext(DmContext);
+  const [mediaArray, setMediaArray] = useState([]);
+  useEffect(() => {
+    let newArr = [];
+    for (let nf of dmContext.documentAttachments) {
+      console.log(nf);
+      if (nf.type.split("/")[1] === "pdf") {
+        console.log(nf);
+        newArr.push(nf);
+      }
+    }
+    setMediaArray(newArr);
+  }, [
+    dmContext.mediaAttachments,
+    dmContext.audioAttachments,
+    dmContext.documentAttachments,
+  ]);
+  return (
+    <div
+      style={{
+        display: mediaArray.length > 0 ? "block" : "none",
+      }}
+    >
+      <div className="w-full shadow-sm p-3 flex justify-between">
+        {mediaArray.map((file, fileIndex) => {
+          const fileTypeInitial = file.type.split("/")[1];
+          // console.log(fileTypeInitial);
+          if (fileTypeInitial === "pdf") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <img src={pdfIcon} alt="pdf" className="w-[24px]" />
+              </div>
+            );
           }
         })}
         <IconButton

@@ -1,12 +1,13 @@
 import styled from "@emotion/styled";
 import { Box, Menu, MenuItem, Typography } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Gap from "../../../styledAccessories/Gap";
 
 import SearchBar from "../../../styledAccessories/SearchBar";
 import { MoreOptions } from "../../../styledAccessories/MoreOptions";
 import { Link } from "react-router-dom";
 import { groupInfoPath } from "../../../routes";
+import { GroupContext } from "../../../Main";
 const TitleBox = styled(Box)({
   display: "flex",
   width: "100%",
@@ -29,10 +30,14 @@ function Tittle({ title, memberCount }) {
 }
 
 function TitleArea({ title, memberCount }) {
+  const groupContext = useContext(GroupContext);
   return (
     <Box className="text-left">
       {/* For Group Title */}
-      <span component={"p"} className="font-semibold text-xl leading-6">
+      <span
+        component={"p"}
+        className="font-semibold text-xl leading-6 cursor-pointer"
+      >
         {title ? title : null}
       </span>
 
@@ -40,7 +45,10 @@ function TitleArea({ title, memberCount }) {
       <div />
       <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD]">
         <Link to={groupInfoPath}>
-          {memberCount ? memberCount : null} members
+          {groupContext.activeGroup.members?.length > 0
+            ? groupContext.activeGroup.members?.length
+            : 0}{" "}
+          members
         </Link>
       </span>
     </Box>

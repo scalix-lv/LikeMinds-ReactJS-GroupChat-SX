@@ -1,4 +1,11 @@
-import { Box, Dialog, IconButton, Menu, MenuItem } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  IconButton,
+  Menu,
+  MenuItem,
+  Snackbar,
+} from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { communityId, myClient, UserContext } from "../..";
@@ -125,6 +132,15 @@ function MessageBoxDM({
   return (
     <div>
       <Box className="flex mb-4">
+        <Snackbar
+          open={dmContext.showSnackBar}
+          message={dmContext.snackBarMessage}
+          autoHideDuration={1000}
+          onClose={() => {
+            dmContext.setShowSnackBar(false);
+            dmContext.setSnackBarMessage("");
+          }}
+        />
         <StringBox
           username={username}
           messageString={messageString}
@@ -379,6 +395,8 @@ function TimeBox({ time }) {
 }
 
 function MoreOptions({ convoId, userId, convoObject }) {
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState("");
   const userContext = useContext(UserContext);
   const dmContext = useContext(DmContext);
   const navigate = useNavigate();
@@ -479,7 +497,12 @@ function MoreOptions({ convoId, userId, convoObject }) {
           .then((r) => {
             getChatroomConversations(convoObject.chatroom_id, 500);
           })
-          .catch((e) => console.log(e));
+          .catch((e) => {
+            console.log(e);
+            dmContext.setShowSnackBar(true);
+            dmContext.setSnackBarMessage(" error occoured");
+            // dmContext.setSnackBarMessage("Error in Deleing Message");
+          });
       },
     },
   ];

@@ -17,116 +17,94 @@ export const StyledBox = styled(Box)({
   flexDirection: "column",
   height: "100%",
 });
-function ChatArea() {
-  const userContext = useContext(UserContext);
-  const dmContext = useContext(DmContext);
-  let db = myClient.fbInstance();
-
-  async function getChatroomConversations(chatroomId, pageNo) {
-    if (chatroomId == null) {
-      return;
-    }
-    // console.log(chatroomId);
-    let optionObject = {
-      chatroomID: chatroomId,
-      page: pageNo,
-    };
-    let response = await getConversationsForGroup(optionObject);
-    if (!response.error) {
-      let conversations = response.data;
-      let conversationToBeSetArray = [];
-      let newConversationArray = [];
-      let lastDate = "";
-      for (let convo of conversations) {
-        if (convo.date === lastDate) {
+export async function getChatroomConversations(chatroomId, pageNo, dmContext) {
+  if (chatroomId == null) {
+    return;
+  }
+  // console.log(chatroomId);
+  let optionObject = {
+    chatroomID: chatroomId,
+    page: pageNo,
+  };
+  let response = await getConversationsForGroup(optionObject);
+  if (!response.error) {
+    let conversations = response.data;
+    let conversationToBeSetArray = [];
+    let newConversationArray = [];
+    let lastDate = "";
+    for (let convo of conversations) {
+      if (convo.date === lastDate) {
+        conversationToBeSetArray.push(convo);
+        lastDate = convo.date;
+      } else {
+        if (conversationToBeSetArray.length != 0) {
+          newConversationArray.push(conversationToBeSetArray);
+          conversationToBeSetArray = [];
           conversationToBeSetArray.push(convo);
           lastDate = convo.date;
         } else {
-          if (conversationToBeSetArray.length != 0) {
-            newConversationArray.push(conversationToBeSetArray);
-            conversationToBeSetArray = [];
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          } else {
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          }
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
         }
       }
-      newConversationArray.push(conversationToBeSetArray);
-      dmContext.setCurrentChatroomConversations(newConversationArray);
-    } else {
-      // console.log(response.errorMessage);
     }
+    newConversationArray.push(conversationToBeSetArray);
+    dmContext.setCurrentChatroomConversations(newConversationArray);
+  } else {
+    // console.log(response.errorMessage);
   }
-  async function loadHomeFeed(pageNo) {
-    try {
-      let feedCall = await dmChatFeed(userContext.community.id, pageNo);
-      let newFeedArray = feedCall.data.dm_chatrooms;
-      dmContext.setHomeFeed(newFeedArray);
-    } catch (error) {
-      // console.log(error);
-    }
+}
+export async function loadHomeFeed(pageNo, dmContext, userContext) {
+  try {
+    let feedCall = await dmChatFeed(userContext.community.id, pageNo);
+    let newFeedArray = feedCall.data.dm_chatrooms;
+    dmContext.setHomeFeed(newFeedArray);
+  } catch (error) {
+    // console.log(error);
   }
-  const getCurrentChatroomID = () => {
-    let l = Object.keys(dmContext.currentChatroom).length;
-    if (l == 0) {
-      return;
-    }
-    // console.log(l);
-    if (l > 0) {
-      return dmContext.currentChatroom.id;
-    } else {
-      return sessionStorage.getItem("currentChatRoomKey");
-    }
-  };
-  useEffect(() => {
-    const query = ref(db, "collabcards");
-    return onValue(query, (snapshot) => {
-      const data = snapshot.val();
-      // console.log(data);
-      if (snapshot.exists()) {
-        // console.log(dmContext);
+}
+function ChatArea() {
+  const userContext = useContext(UserContext);
+  const dmContext = useContext(DmContext);
 
-        getChatroomConversations(getCurrentChatroomID(), 500);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    const query = ref(db, "collabcards");
-    return onValue(query, (snapshot) => {
-      const data = snapshot.val();
-      // console.log(data);
-      if (snapshot.exists()) {
-        // console.log(dmContext);
-        loadHomeFeed(1);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   let chatroomId = dmContext.currentChatroom.id;
+  //   getChatroomConversations(chatroomId, 1000, dmContext);
+  // }, [dmContext.currentChatroom]);
 
   return (
     <div>
-      {dmContext.currentChatroom ? (
-        <StyledBox>
-          {/* <Button fullWidth onClick={()=>// console.log(dmContext)}>SHOW ME THE CONTEXT</Button> */}
-          {Object.keys(dmContext.currentChatroom).length > 0 ? (
-            <TittleDm
-              title={
-                userContext.currentUser.id ===
-                dmContext.currentChatroom.member.id
-                  ? dmContext.currentChatroom.chatroom_with_user.name
-                  : dmContext.currentChatroom.member.name
-              }
-            />
-          ) : null}
-          <ChatRoomAreaDM />
-        </StyledBox>
-      ) : (
-        <div className="flex justify-center items-center">
-          <CircularProgress />
-        </div>
-      )}
+      {
+        dmContext.currentChatroom?.id != undefined &&
+        dmContext.showLoadingBar == false ? (
+          <StyledBox>
+            {Object.keys(dmContext.currentChatroom).length > 0 ? (
+              <TittleDm
+                title={
+                  userContext.currentUser.id ===
+                  dmContext.currentChatroom.member.id
+                    ? dmContext.currentChatroom.chatroom_with_user.name
+                    : dmContext.currentChatroom.member.name
+                }
+              />
+            ) : null}
+            <ChatRoomAreaDM />
+          </StyledBox>
+        ) : dmContext.showLoadingBar === true ? (
+          <StyledBox>
+            <div className="flex justify-center items-center min-h-[80vh]">
+              <CircularProgress />
+            </div>
+          </StyledBox>
+        ) : (
+          <div className="flex justify-center items-center min-h-[80vh]">
+            Select a chatroom to start messaging
+          </div>
+        )
+        // <div className="flex justify-center items-center min-h-screen h-full">
+
+        // </div>
+      }
     </div>
   );
 }

@@ -161,16 +161,16 @@ export async function getAllChatroomMember(
   setFunction
 ) {
   try {
-    let pageNoToCall = list.length / 10 + 1;
+    let pageNoToCall = list.length / 11 + 1;
     let allMemberCall = await myClient.allMembers({
       chatroom_id: chatroomId,
       community_id: communityId,
       page: pageNoToCall,
     });
-
-    let shouldLoadMore = allMemberCall.members.length < 10 ? false : true;
+    // console.log(allMemberCall);
+    let shouldLoadMore = allMemberCall.members.length < 11 ? false : true;
     let newList = [...list];
-
+    console.log(shouldLoadMore);
     newList = [...list, ...allMemberCall.members];
 
     setFunction(newList);
@@ -465,6 +465,7 @@ export async function deleteChatFromDM(idArr) {
     });
   } catch (error) {
     // console.log(error);
+    return error;
   }
 }
 

@@ -13,7 +13,11 @@ import "./Groups.css";
 import { Button } from "@mui/material";
 import { GroupContext } from "../../Main";
 import { communityId, myClient, UserContext } from "../..";
-import { getUnjoinedRooms } from "../../sdkFunctions";
+import {
+  getAllChatroomMember,
+  getChatRoomDetails,
+  getUnjoinedRooms,
+} from "../../sdkFunctions";
 export const ChatRoomContext = createContext({
   chatRoomList: [],
   refreshChatroomContext: () => {},
@@ -31,7 +35,9 @@ export const fn = async (
   chatroomList,
   setChatRoomsList,
   setShouldLoadMore,
-  communityId
+  communityId,
+  serialObject,
+  setSerialObject
 ) => {
   try {
     const pageNoToCall = Math.floor(chatroomList.length / 10) + 1;
@@ -39,14 +45,43 @@ export const fn = async (
       communityId: communityId,
       page: pageNoToCall,
     });
-    let newChatRoomList = chatroomList.concat(feedCall.my_chatrooms);
+
+    let oldArr = [...chatroomList];
+    let newChatRoomList = joinTheHomeFeeds(
+      oldArr,
+      feedCall.my_chatrooms,
+      serialObject,
+      setSerialObject
+    );
+    // console.log("This is the updated list, ", oldArr);
     setChatRoomsList(newChatRoomList);
-    if (feedCall.my_chatrooms.length < 10) {
-      setShouldLoadMore(false);
-    }
   } catch (error) {
     // console.log(error);
   }
+};
+const refreshHomeFeed = async (communityId, setChatRoomList) => {
+  try {
+    const feedCall = await myClient.getHomeFeedData({
+      communityId: communityId,
+      page: 0,
+    });
+    setChatRoomList(feedCall.my_chatrooms);
+  } catch (error) {
+    console.log(error);
+  }
+};
+const joinTheHomeFeeds = (oldArr, newArr, serialObject, setSerialObject) => {
+  const so = { ...serialObject };
+  for (let feed of newArr) {
+    if (so[feed.chatroom.id] === undefined) {
+      so[feed.chatroom.id] = true;
+      oldArr.push(feed);
+    } else {
+    }
+  }
+  setSerialObject(so);
+
+  return oldArr;
 };
 
 // for getting the list of unjoined grouop
@@ -54,10 +89,12 @@ export const getUnjoinedList = async (
   unJoined,
   setUnjoined,
   setShouldLoadMore,
-  communityId
+  communityId,
+  pageNo
 ) => {
   try {
     let pageNoToCall = Math.floor(unJoined.length / 5) + 1;
+
     const feedCall = await getUnjoinedRooms(communityId, pageNoToCall);
     let newChatRoomList = unJoined.concat(feedCall.data.chatrooms);
     setUnjoined(newChatRoomList);
@@ -72,7 +109,7 @@ export const getUnjoinedList = async (
 function Groups() {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-
+  const [serialObject, setSerialObject] = useState({});
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const [shouldLoadMoreHomeFeed, setShouldLoadMoreHomeFeed] = useState(true);
@@ -81,7 +118,7 @@ function Groups() {
   const [conversationsArray, setConversationArray] = useState([]);
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
-
+  const [memberList, setMemberList] = useState([]);
   useEffect(() => {
     if (Object.keys(groupContext.activeGroup).length == 0) {
       if (sessionStorage.getItem("groupContext")) {
@@ -101,13 +138,47 @@ function Groups() {
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
+    if (Object.keys(groupContext.activeGroup).length === 0) {
+      // console.log("hello");
+    } else {
+      fn(
+        chatRoomsList,
+        setChatRoomsList,
+        setShouldLoadMoreHomeFeed,
+        userContext.community.id,
+        serialObject,
+        setSerialObject
+      );
+      // console.log(groupContext);
+      if (unJoined.length == 0) {
+        return;
+      }
+      getChatRoomDetails(myClient, groupContext.activeGroup.chatroom?.id).then(
+        (res) => {
+          if (res.data) {
+            let unJoineds = [...unJoined];
+            for (let uc of unJoineds) {
+              if (uc.id == res.data.chatroom.id) {
+                uc.follow_status = true;
+              }
+            }
+            setUnjoined(unJoineds);
+          }
+        }
+      );
+    }
+  }, [groupContext.activeGroup]);
+
+  useEffect(() => {
     // loading the list of chatrooms (already joined)
 
     fn(
       chatRoomsList,
       setChatRoomsList,
       setShouldLoadMoreHomeFeed,
-      userContext.community.id
+      userContext.community.id,
+      serialObject,
+      setSerialObject
     );
     getUnjoinedList(
       unJoined,
@@ -116,6 +187,39 @@ function Groups() {
       userContext.community.id
     );
   }, []);
+
+  useEffect(() => {
+    async function getAllMembers() {
+      let cont = true;
+      let list = [];
+      let pgNo = 1;
+      while (cont) {
+        let call = await myClient.allMembers({
+          chatroom_id: groupContext.activeGroup?.chatroom?.id,
+          community_id: groupContext.activeGroup?.community?.id,
+          page: pgNo,
+        });
+        // console.table()\c
+        // console.log(call);
+        list = list.concat(call.members);
+        pgNo = pgNo + 1;
+        if (call.members.length < 10) {
+          cont = false;
+        }
+      }
+      if (
+        JSON.stringify(groupContext.activeGroup.members) !==
+        JSON.stringify(list)
+      ) {
+        let obj = { ...groupContext.activeGroup };
+        obj.members = list;
+
+        groupContext.setActiveGroup(obj);
+      }
+    }
+    getAllMembers();
+  }, [groupContext.activeGroup]);
+
   return (
     <div>
       <CurrentSelectedConversationContext.Provider
@@ -137,7 +241,11 @@ function Groups() {
             setShouldLoadMoreHomeFeed: setShouldLoadMoreHomeFeed,
             setShouldLoadMoreUnjoinedFeed: setShouldLoadMoreUnjoinedFeed,
             refreshChatroomContext: () => {
-              fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed);
+              // fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed);
+              refreshHomeFeed(
+                groupContext.activeGroup.community.id,
+                setChatRoomsList
+              );
               getUnjoinedList(
                 unJoined,
                 setUnjoined,
