@@ -83,7 +83,7 @@ function GroupChatArea() {
 
   // Scroll to bottom
   const updateHeight = () => {
-    const el = document.getElementById("chat");
+    const el = document.getElementById("chate");
     if (el != null) {
       if (conversationContext.conversationsArray.length <= 50) {
         el.scrollTop = el.scrollHeight;
@@ -188,7 +188,7 @@ function GroupChatArea() {
         updateHeight();
         getChatroomConversationArray(
           groupContext.activeGroup.chatroom.id,
-          500,
+          100,
           conversationContext
         );
         chatRoomContext.refreshChatroomContext();
@@ -224,7 +224,7 @@ function GroupChatArea() {
             />
           ) : null}
           <div
-            id="chat"
+            id="chate"
             className="relative overflow-x-hidden overflow-auto"
             style={{ height: "calc(100vh - 270px)" }}
             ref={scrollTop}

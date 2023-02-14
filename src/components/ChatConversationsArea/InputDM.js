@@ -63,29 +63,27 @@ function InputSearchField({ updateHeight, inputRef }) {
 
     if (!response.error) {
       let conversations = response.data;
+      sessionStorage.setItem("dmLastConvo", conversations[0].id);
 
-      let conversationToBeSetArray = [];
-      let newConversationArray = [];
-      let lastDate = "";
-      for (let convo of conversations) {
-        if (convo.date === lastDate) {
-          conversationToBeSetArray.push(convo);
-          lastDate = convo.date;
-        } else {
-          if (conversationToBeSetArray.length !== 0) {
-            newConversationArray.push(conversationToBeSetArray);
-            conversationToBeSetArray = [];
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          } else {
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          }
-        }
-      }
-      newConversationArray.push(conversationToBeSetArray);
+      // for (let convo of conversations) {
+      //   if (convo.date === lastDate) {
+      //     conversationToBeSetArray.push(convo);
+      //     lastDate = convo.date;
+      //   } else {
+      //     if (conversationToBeSetArray.length !== 0) {
+      //       newConversationArray.push(conversationToBeSetArray);
+      //       conversationToBeSetArray = [];
+      //       conversationToBeSetArray.push(convo);
+      //       lastDate = convo.date;
+      //     } else {
+      //       conversationToBeSetArray.push(convo);
+      //       lastDate = convo.date;
+      //     }
+      //   }
+      // }
+      // newConversationArray.push(conversationToBeSetArray);
 
-      setConversationArray(newConversationArray);
+      setConversationArray(conversations);
     } else {
       // console.log(response.errorMessage);
     }
@@ -193,7 +191,7 @@ function InputSearchField({ updateHeight, inputRef }) {
 
           await getChatroomConversations(
             dmContext.currentChatroom.id,
-            1000,
+            100,
             dmContext.setCurrentChatroomConversations
           );
           // console.log(inputRef);
@@ -255,7 +253,7 @@ function InputSearchField({ updateHeight, inputRef }) {
       // console.log(dmContext.currentChatroom.id);
       await getChatroomConversations(
         dmContext.currentChatroom.id,
-        1000,
+        100,
         dmContext.setCurrentChatroomConversations
       );
       updateHeight();
