@@ -153,8 +153,11 @@ function Groups() {
       if (unJoined.length == 0) {
         return;
       }
-      getChatRoomDetails(myClient, groupContext.activeGroup.chatroom?.id).then(
-        (res) => {
+      if (groupContext.activeGroup.chatroom != undefined) {
+        getChatRoomDetails(
+          myClient,
+          groupContext.activeGroup?.chatroom?.id
+        ).then((res) => {
           if (res.data) {
             let unJoineds = [...unJoined];
             for (let uc of unJoineds) {
@@ -164,8 +167,8 @@ function Groups() {
             }
             setUnjoined(unJoineds);
           }
-        }
-      );
+        });
+      }
     }
   }, [groupContext.activeGroup]);
 
