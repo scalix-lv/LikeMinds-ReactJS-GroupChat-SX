@@ -1,6 +1,9 @@
-import React, { useContext, useState } from "react";
+import { onValue, ref } from "firebase/database";
+import React, { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { UserContext } from "../..";
+import { myClient, UserContext } from "../..";
+import SearchBarContainer from "../SearchBar/SearchBar";
+import { getChatroomConversations, loadHomeFeed } from "./ChatArea";
 
 import CurrentDms from "./searchbar/CurrentDms";
 import SearchBarDirectMessages from "./searchbar/SearchBarDirectMessages";
@@ -20,6 +23,18 @@ function DirectMessagesMain() {
   const [documentAttachments, setDocumentAttachments] = useState([]);
   const [isConversationSelected, setIsConversationSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
+  const [refreshContext, setRefreshContext] = useState(null);
+  const [showLoadingBar, setShowLoadingBar] = useState(false);
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState("");
+  function resetContext() {
+    setIsConversationSelected(false);
+    setConversationObject({});
+    setDocumentAttachments([]);
+    setMediaAttachments([]);
+    setAudioAttachments([]);
+    setMessageText("");
+  }
 
   return (
     <div>
@@ -47,11 +62,21 @@ function DirectMessagesMain() {
           setIsConversationSelected,
           conversationObject,
           setConversationObject,
+          refreshContext,
+          setRefreshContext,
+          resetContext,
+          showLoadingBar,
+          setShowLoadingBar,
+          showSnackBar,
+          setShowSnackBar,
+          snackBarMessage,
+          setSnackBarMessage,
         }}
       >
         <div className="flex overflow-hidden customHeight flex-1">
-          <div className="flex-[.32] customScroll bg-white border-r-[1px] border-[#eeeeee] pt-[20px]">
+          <div className="flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel">
             <SearchBarDirectMessages />
+            {/* <SearchBarContainer/> */}
             <CurrentDms />
           </div>
           <div className="flex-[.68] bg-[#f9f6ff] relative pt-[42px]">
@@ -88,4 +113,13 @@ export const DmContext = React.createContext({
   setIsConversationSelected: () => {},
   conversationObject: {},
   setConversationObject: () => {},
+  refreshContext: () => {},
+  setRefreshContext: () => {},
+  resetContext: () => {},
+  showLoadingBar: Boolean,
+  setShowLoadingBar: () => {},
+  showSnackBar: Boolean,
+  setShowSnackBar: () => {},
+  snackBarMessage: "",
+  setSnackBarMessage: () => {},
 });

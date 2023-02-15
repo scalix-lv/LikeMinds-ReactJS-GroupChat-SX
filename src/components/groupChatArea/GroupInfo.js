@@ -81,7 +81,7 @@ function GroupInfo() {
               {participantList?.map((profile, profileIndex) => {
                 return (
                   <ParticipantTile
-                    key={profile.id + profileIndex}
+                    key={profile.id + profileIndex + Math.random()}
                     profile={profile}
                     index={profileIndex}
                   />

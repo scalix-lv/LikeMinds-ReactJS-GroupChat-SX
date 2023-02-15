@@ -6,17 +6,10 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { UserContext, userObj } from "../..";
-import {
-  addReaction,
-  getString,
-  getUserLink,
-  getUsername,
-  linkConverter,
-  tagExtracter,
-} from "../../sdkFunctions";
+import React, { useContext, useRef, useState } from "react";
+
+import { UserContext } from "../..";
+import { addReaction, linkConverter, tagExtracter } from "../../sdkFunctions";
 import { Link, useNavigate } from "react-router-dom";
 import { myClient } from "../..";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
@@ -27,8 +20,13 @@ import EmojiPicker from "emoji-picker-react";
 // import { GroupContext } from "../Groups/Groups";
 import { GroupContext } from "../../Main";
 import { directMessagePath, groupPersonalInfoPath } from "./../../routes";
-import { CurrentSelectedConversationContext } from "../groupChatArea/GroupChatArea";
+import {
+  ConversationContext,
+  CurrentSelectedConversationContext,
+} from "../groupChatArea/GroupChatArea";
 import parse from "html-react-parser";
+import { DmContext } from "../direct-messages/DirectMessagesMain";
+import { ChatRoomContext } from "../Groups/Groups";
 
 function MessageBox({
   username,
@@ -41,6 +39,54 @@ function MessageBox({
   conversationObject,
   replyConversationObject,
 }) {
+  let userContext = useContext(UserContext);
+
+  if (conversationObject.state !== 0) {
+    return (
+      <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
+        {/* {conversationObject.state === 1 ? (
+          <> */}
+        <span id="state-1">
+          {parse(linkConverter(tagExtracter(messageString, userContext)))}
+        </span>
+        {/* </>
+        ) : (
+          <>
+            {parse(linkConverter(tagExtracter(messageString, userContext)))}
+            {conversationObject.state === 19 &&
+            dmContext.currentChatroom.chat_request_state === 2 ? (
+              <>
+                <span
+                  className="text-[#3884f7] cursor-pointer"
+                  onClick={() => {
+                    undoBlock(conversationObject.chatroom_id).then((r) => {
+                      getChatroomConversations(
+                        dmContext.currentChatroom.id,
+                        1000,
+                        dmContext
+                      ).then(() => {
+                        getChatRoomDetails(
+                          myClient,
+                          dmContext.currentChatroom.id
+                        ).then((e) => {
+                          // console.log(e);
+                          dmContext.setCurrentChatroom(e.data.chatroom);
+                          dmContext.setCurrentProfile(e.data);
+                        });
+                      });
+                    });
+                  }}
+                >
+                  {" "}
+                  Tap to Undo
+                </span>
+              </>
+            ) : null}
+          </>
+        )} */}
+      </div>
+    );
+  }
   return (
     <div>
       <Box className="flex mb-4">
@@ -105,7 +151,7 @@ function StringBox({
           <Link
             to={groupPersonalInfoPath}
             state={{
-              communityId: groupContext.activeGroup.community.id,
+              communityId: userContext.community.id,
               memberId: userId,
             }}
           >
@@ -266,11 +312,7 @@ function StringBox({
 
         <div className="text-[14px] w-full font-[300] text-[#323232]">
           <span className="msgCard" ref={ref}>
-            {parse(
-              linkConverter(
-                tagExtracter(messageString, groupContext, userId, navigate)
-              )
-            )}
+            {parse(linkConverter(tagExtracter(messageString, userContext)))}
           </span>
         </div>
       </div>
@@ -307,6 +349,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
   };
   const ref = useRef(null);
   const groupContext = useContext(GroupContext);
+  const conversationContext = useContext(ConversationContext);
   useState(() => {
     const handleCloseFunction = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -327,7 +370,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       });
       setShouldShowBlock(!shouldShow);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
   const selectedConversationContext = useContext(
@@ -418,8 +461,19 @@ function MoreOptions({ convoId, userId, convoObject }) {
       >
         <EmojiPicker
           onEmojiClick={(e) => {
-            addReaction(e.emoji, convoId, groupContext.activeGroup.id)
-              
+            // console.log(groupContext);
+            addReaction(
+              e.emoji,
+              convoId,
+              groupContext.activeGroup.chatroom.id
+            ).then((r) =>
+              conversationContext.refreshConversationArray(
+                groupContext.activeGroup.chatroom.id,
+                100,
+                conversationContext
+              )
+            );
+
             handleCloseEmoji();
           }}
         />
