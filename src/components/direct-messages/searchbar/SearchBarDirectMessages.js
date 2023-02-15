@@ -14,44 +14,45 @@ import SearchBarContainer from "../../SearchBar/SearchBar";
 
 import filterIcon from "../../../assets/svg/menu.svg";
 import searchIcon from "../../../assets/svg/searchBoxIcon.svg";
+import { myClient } from "../../..";
 function SearchBarDirectMessages() {
   const [searchString, setSearchString] = useState("");
   const [shouldOpen, setShouldOpen] = useState(false);
 
-  function callToApi() {
-    return null;
+  async function callToApi(string) {
+    try {
+      let call = await myClient.searchChatroom({
+        follow_status: true,
+        search: string,
+        page: 1,
+        page_size: 5,
+        search_type: "header",
+      });
+      // console.log(call);
+    } catch (error) {
+      // console.log(error);
+    }
   }
 
   useEffect(() => {
     let S_Length = searchString.length;
     if (!Boolean(S_Length % 3)) {
-      callToApi();
+      callToApi(searchString);
     }
   }, [searchString]);
-  // className="h-[100%] w-[100%] absolute top-[72px] overflow-hidden"
   return (
     <div>
-      <div
-        onClick={() => {
-          setShouldOpen(false);
-        }}
-        style={{
-          background: shouldOpen ? "rgba(0,0,0, 0.5)" : "none",
-          zIndex: shouldOpen ? 0 : -100,
-        }}
-      ></div>
-
       <Box className="p-[20px] flex justify-between">
         <TextField
           InputProps={{
             startAdornment: (
-              <InputAdornment className="mr-[16px]">
+              <InputAdornment position="start" className="mr-[16px]">
                 <img src={searchIcon} alt="Search Icon" />
               </InputAdornment>
             ),
             endAdornment:
               searchString.length > 1 ? (
-                <InputAdornment className="mr-8" position="end">
+                <InputAdornment className="mr-2" position="end">
                   <CloseIcon />
                 </InputAdornment>
               ) : null,

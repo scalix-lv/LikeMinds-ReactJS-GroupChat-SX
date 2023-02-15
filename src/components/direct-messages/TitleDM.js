@@ -4,10 +4,13 @@ import React, { useContext } from "react";
 import Gap from "../../styledAccessories/Gap";
 
 import SearchBar from "../../styledAccessories/SearchBar";
-import MoreOptions from "../../styledAccessories/MoreOptions";
+import MoreOptions, {
+  MoreOptionsDM,
+} from "../../styledAccessories/MoreOptions";
 import { Link, useNavigate } from "react-router-dom";
 import { directMessageInfoPath } from "../../routes";
 import { DmContext } from "./DirectMessagesMain";
+import { UserContext } from "../..";
 const TitleBox = styled(Box)({
   display: "flex",
   width: "100%",
@@ -33,23 +36,30 @@ function TittleDm({ title }) {
 function TitleArea({ title }) {
   const navigate = useNavigate();
   const dmContext = useContext(DmContext);
+  const userContext = useContext(UserContext);
   return (
     <div
       className="text-left"
       onClick={() => {
         navigate(directMessageInfoPath, {
           state: {
-            memberId: dmContext.currentChatroom.chatroom_with_user.id,
-            communityId: dmContext.currentProfile.community.id,
+            memberId:
+              userContext.currentUser.id === dmContext.currentChatroom.member.id
+                ? dmContext.currentChatroom.chatroom_with_user.id
+                : dmContext.currentChatroom.member.id,
+            communityId: userContext.community.id,
           },
         });
       }}
     >
-      <span component={"p"} className="font-semibold text-xl leading-6">
+      <span
+        component={"p"}
+        className="font-semibold text-xl leading-6 cursor-pointer"
+      >
         {title ? title : null}
       </span>
       <div />
-      <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD]">
+      <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD] cursor-pointer">
         Member
       </span>
     </div>
@@ -60,7 +70,7 @@ function OptionArea() {
   return (
     <Box>
       <SearchBar />
-      <MoreOptions />
+      <MoreOptionsDM />
     </Box>
   );
 }

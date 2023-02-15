@@ -14,6 +14,7 @@ import camera from "./../../assets/svg/camera.svg";
 import mic from "./../../assets/svg/mic.svg";
 import paperclip from "./../../assets/svg/paperclip.svg";
 import { GroupContext } from "../../Main";
+import pdfIcon from "../../assets/svg/pdf-document.svg";
 import { myClient, UserContext } from "../..";
 import {
   ConversationContext,
@@ -33,6 +34,7 @@ import m from "./m";
 import MessageBox from "../channelGroups/MessageBox";
 import { Close } from "@mui/icons-material";
 import "./Input.css";
+import { getChatroomConversationArray } from "../groupChatArea/GroupChatArea";
 const StyledInputWriteComment = styled(TextField)({
   background: "#F9F9F9",
   borderRadius: "20px",
@@ -56,7 +58,7 @@ export const InputContext = React.createContext({
   setTextVal: () => {},
 });
 
-function Input() {
+function Input({ updateHeight }) {
   const [audioFiles, setAudioFiles] = useState("");
   const [mediaFiles, setMediaFiles] = useState("");
   const [docFiles, setDocFiles] = useState("");
@@ -79,14 +81,14 @@ function Input() {
           setTextVal: setTextVal,
         }}
       >
-        <InputSearchField />
+        <InputSearchField updateHeight={updateHeight} />
         <InputOptions />
       </InputContext.Provider>
     </Box>
   );
 }
 
-function InputSearchField() {
+function InputSearchField({ updateHeight }) {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const ref = useRef();
@@ -128,9 +130,10 @@ function InputSearchField() {
 
       setConversationArray(newConversationArray);
     } else {
-      console.log(response.errorMessage);
+      // console.log(response.errorMessage);
     }
   };
+  let count = 1;
   let handleSendMessage = async () => {
     try {
       let isRepliedConvo = selectedConversationContext.isSelected;
@@ -139,6 +142,7 @@ function InputSearchField() {
       let res = null;
       // textValT = textVal.
       let tv = text;
+      // console.log("checkpoint " + count++);
       if (tv.length != 0) {
         if (!filesArray.length) {
           res = await fnew(false, 0, tv, setText, isRepliedConvo);
@@ -190,6 +194,14 @@ function InputSearchField() {
             type: fileType,
             url: fileUploadRes.Location,
           });
+
+          await getChatroomConversationArray(
+            groupContext.activeGroup.chatroom.id,
+            100,
+            conversationContext
+          );
+          updateHeight();
+          // await conversationContext.refreshConversationArray();
         }
       } else {
         return {
@@ -212,6 +224,7 @@ function InputSearchField() {
     isRepliedConvo
   ) => {
     try {
+      // console.log("checkpoint " + count++);
       let config = {
         text: tv.toString(),
         created_at: Date.now(),
@@ -219,6 +232,7 @@ function InputSearchField() {
         // attachment_count: false,
         chatroom_id: groupContext.activeGroup.chatroom.id,
       };
+      // console.log(config);
       if (has_files) {
         config.attachment_count = attachment_count;
         config.has_files = true;
@@ -227,27 +241,37 @@ function InputSearchField() {
         config.replied_conversation_id =
           selectedConversationContext.conversationObject.id;
       }
+
       let callRes = await myClient.onConversationsCreate(config);
 
-      let oldConversationArr = conversationContext.conversationsArray;
-      let oldLength = oldConversationArr.length;
-      let newConvoArr = [...oldConversationArr];
-      // newConvoArr.push(callRes.conversation);
-      if (
-        callRes.conversation.date === oldConversationArr[oldLength - 1][0].date
-      ) {
-        callRes.conversation.member = userContext.currentUser;
-        newConvoArr[oldLength - 1].push(callRes.conversation);
-      } else {
-        callRes.conversation.member = userContext.currentUser;
-        newConvoArr.push([...callRes.conversation]);
-      }
-      conversationContext.setConversationArray(newConvoArr);
+      // let oldConversationArr = conversationContext.conversationsArray;
+      // let oldLength = oldConversationArr.length;
+      // let newConvoArr = [...oldConversationArr];
+
+      // console.log("3");
+      // if (
+      //   callRes.conversation.date === oldConversationArr[oldLength - 1][0].date
+      // ) {
+      //   callRes.conversation.member = userContext.currentUser;
+      //   newConvoArr[oldLength - 1].push(callRes.conversation);
+      // } else {
+      //   callRes.conversation.member = userContext.currentUser;
+      //   newConvoArr.push([...callRes.conversation]);
+      // }
+      // console.log("4");
+      // conversationContext.setConversationArray(newConvoArr);
+
       setTextVal("");
       inputContext.setText("");
       selectedConversationContext.setIsSelected(false);
       selectedConversationContext.setConversationObject(null);
       clearInputFiles(inputContext);
+
+      // await getChatroomConversationArray(
+      //   groupContext.activeGroup.chatroom.id,
+      //   1000,
+      //   conversationContext
+      // );
 
       return { error: false, data: callRes };
     } catch (error) {
@@ -283,6 +307,10 @@ function InputSearchField() {
     enter: false,
     shift: false,
   };
+
+  useEffect(() => {
+    inputContext.setTextVal("");
+  }, [groupContext.activeGroup]);
   return (
     <Box
       sx={{
@@ -322,6 +350,8 @@ function InputSearchField() {
       ) : null}
 
       {/* for preview Image */}
+      <DocPreview />
+      <AudioPreview />
       {<ImagePreview />}
       <div className="relative">
         <IconButton
@@ -358,6 +388,7 @@ function InputSearchField() {
               inputContext.setText(newStr);
             } else if (keyObj.enter == true && keyObj.shift == false) {
               e.preventDefault();
+
               handleSendMessage();
             }
           }}
@@ -386,13 +417,6 @@ function InputSearchField() {
               index,
               focused
             ) => {
-              console.log([
-                suggestion,
-                search,
-                highlightedDisplay,
-                index,
-                focused,
-              ]);
               return (
                 <div className={`user ${focused ? "focused" : ""}`}>
                   {suggestion.imageUrl.length > 0 ? (
@@ -534,7 +558,10 @@ function ImagePreview() {
   useEffect(() => {
     let newArr = [];
     for (let nf of inputContext.mediaFiles) {
-      if (nf.type.split("/")[0] === "image") {
+      if (
+        nf.type.split("/")[0] === "image" ||
+        nf.type.split("/")[0] === "video"
+      ) {
         newArr.push(nf);
       }
     }
@@ -554,6 +581,104 @@ function ImagePreview() {
             return (
               <div className="max-w-[120px]" key={file.name + fileIndex}>
                 <img src={URL.createObjectURL(file)} alt="preview" />
+              </div>
+            );
+          } else if (fileTypeInitial === "video") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <video
+                  src={URL.createObjectURL(file)}
+                  type="video/mp4"
+                  controls
+                />
+              </div>
+            );
+          }
+        })}
+        <IconButton
+          onClick={() => {
+            clearInputFiles(inputContext);
+          }}
+        >
+          <Close />
+        </IconButton>
+      </div>
+    </div>
+  );
+}
+function AudioPreview() {
+  const inputContext = useContext(InputContext);
+  const [mediaArray, setMediaArray] = useState([]);
+  useEffect(() => {
+    let newArr = [];
+    for (let nf of inputContext.audioFiles) {
+      if (nf.type.split("/")[0] === "audio") {
+        newArr.push(nf);
+      }
+    }
+    setMediaArray(newArr);
+  }, [inputContext.audioFiles, inputContext.mediaFiles, inputContext.docFiles]);
+  return (
+    <div
+      style={{
+        display: mediaArray.length > 0 ? "block" : "none",
+      }}
+    >
+      <div className="w-full shadow-sm p-3 flex justify-between">
+        {mediaArray.map((file, fileIndex) => {
+          const fileTypeInitial = file.type.split("/")[0];
+
+          if (fileTypeInitial === "audio") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <audio
+                  src={URL.createObjectURL(file)}
+                  type="audio/mp3"
+                  controls
+                />
+              </div>
+            );
+          } else {
+            return null;
+          }
+        })}
+        <IconButton
+          onClick={() => {
+            clearInputFiles(inputContext);
+          }}
+        >
+          <Close />
+        </IconButton>
+      </div>
+    </div>
+  );
+}
+function DocPreview() {
+  const inputContext = useContext(InputContext);
+  const [mediaArray, setMediaArray] = useState([]);
+  useEffect(() => {
+    let newArr = [];
+    for (let nf of inputContext.docFiles) {
+      if (nf.type.split("/")[1] === "pdf") {
+        newArr.push(nf);
+      }
+    }
+    setMediaArray(newArr);
+  }, [inputContext.audioFiles, inputContext.mediaFiles, inputContext.docFiles]);
+  return (
+    <div
+      style={{
+        display: mediaArray.length > 0 ? "block" : "none",
+      }}
+    >
+      <div className="w-full shadow-sm p-3 flex justify-between">
+        {mediaArray.map((file, fileIndex) => {
+          const fileTypeInitial = file.type.split("/")[1];
+
+          if (fileTypeInitial === "pdf") {
+            return (
+              <div className="max-w-[120px]" key={file.name + fileIndex}>
+                <img src={pdfIcon} alt="pdf" className="w-[24px]" />
               </div>
             );
           } else {

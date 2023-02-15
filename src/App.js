@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { UserContext } from ".";
 import { initiateSDK } from "./sdkFunctions";
 import ChatArea from "./components/direct-messages/ChatArea";
+import Error from "./components/errorPage/Error";
 
 const router = createBrowserRouter([
   {
@@ -80,20 +81,80 @@ const router = createBrowserRouter([
         element: null,
       },
     ],
+    errorElement: <Error />,
   },
 ]);
+
+let routesObject = [
+  {
+    path: mainPath,
+    element: <Main />,
+    children: [
+      {
+        path: forumPath,
+        element: null,
+      },
+      {
+        path: groupPath,
+        element: <Groups />,
+        children: [
+          {
+            path: groupMainPath,
+            element: <GroupChatArea />,
+          },
+          {
+            path: groupInfoPath,
+            element: <GroupInfo />,
+          },
+          {
+            path: groupAcceptInvitePath,
+            element: <AcceptInvite />,
+          },
+          {
+            path: groupPersonalInfoPath,
+            element: <PersonInfo />,
+          },
+        ],
+      },
+      {
+        path: eventsPath,
+        element: null,
+      },
+      {
+        path: directMessagePath,
+        element: <DirectMessagesMain />,
+        children: [
+          {
+            path: directMessageChatPath,
+            element: <ChatArea />,
+          },
+          {
+            path: directMessageInfoPath,
+            element: <PersonInfo />,
+          },
+        ],
+      },
+      {
+        path: addedByMePath,
+        element: null,
+      },
+    ],
+  },
+];
+routesObject.map((item, itemIndex) => {});
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [community, setCommunity] = useState({});
   useEffect(() => {
-    initiateSDK(false, "f661a53c-48bf-4791-b74b-4ecc4bdb934f", "Gaurav")
+    initiateSDK(false, "3cdcaf10-1950-4997-b48e-7a29bbe3dcdc", "")
       .then((res) => {
-        setCommunity(res.data.data.community);
-        setCurrentUser(res.data.data.user);
+        setCommunity(res?.data?.community);
+        setCurrentUser(res?.data?.user);
+        sessionStorage.setItem("communityId", res?.data?.community?.id);
       })
       .catch((error) => {
-        console.log(error);
+        // console.log("Error =>", error);
       });
   }, []);
 
@@ -108,7 +169,9 @@ function App() {
         }}
       >
         {Object.keys(currentUser).length > 0 ? (
-          <RouterProvider router={router} />
+          <>
+            <RouterProvider router={router} />
+          </>
         ) : null}
       </UserContext.Provider>
       {/* <Block/> */}

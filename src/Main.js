@@ -1,5 +1,5 @@
 import { createTheme, Grid, ThemeProvider } from "@mui/material";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, createContext } from "react";
 import { Outlet } from "react-router-dom";
 import { UserContext } from ".";
 import Header from "./components/header/Header";
@@ -25,11 +25,16 @@ export const GroupContext = React.createContext({
   activeGroup: {},
   setActiveGroup: () => {},
   refreshContextUi: () => {},
+  showLoadingBar: Boolean,
+  setShowLoadingBar: () => {},
 });
 function Main() {
+  const [currentRoute, setCurrentRoute] = useState("forums");
   const [activeGroup, setActiveGroup] = useState({});
   const userContext = useContext(UserContext);
   const [refreshState, setRefreshState] = useState(true);
+  const [showLoadingBar, setShowLoadingBar] = useState(false);
+  const [openNavBar, setOpenNavBar] = useState(false);
   function refreshGroups() {
     setRefreshState(!refreshState);
   }
@@ -45,30 +50,56 @@ function Main() {
       sessionStorage.setItem("userContext", JSON.stringify(userContext));
     }
   });
+
+  useEffect(() => {
+    if (sessionStorage.getItem("routeContext") !== null) {
+      setCurrentRoute(sessionStorage.getItem("routeContext"));
+    } else {
+      sessionStorage.setItem("routeContext", currentRoute);
+    }
+  });
   return (
-    <GroupContext.Provider
+    <RouteContext.Provider
       value={{
-        activeGroup: activeGroup,
-        setActiveGroup: setActiveGroup,
-        refreshContextUi: refreshGroups,
+        currentRoute: currentRoute,
+        setCurrentRoute: setCurrentRoute,
+        isNavigationBoxOpen: openNavBar,
+        setIsNavigationBoxOpen: setOpenNavBar,
       }}
     >
-      <ThemeProvider theme={newTheme}>
-        <div className="flex w-[100vw] fixed h-[65px] z-10">
-          <Header />
-        </div>
+      <GroupContext.Provider
+        value={{
+          activeGroup: activeGroup,
+          setActiveGroup: setActiveGroup,
+          refreshContextUi: refreshGroups,
+          showLoadingBar,
+          setShowLoadingBar,
+        }}
+      >
+        <ThemeProvider theme={newTheme}>
+          <div className="flex w-[100vw] fixed h-[65px] z-10">
+            <Header />
+          </div>
 
-        <div className="flex flex-1 h-full customHeight mt-[65px]">
-          <div className="flex-[.085] border-r-[1px] border-[#eeeeee]">
-            <Sidenav />
+          <div className="flex flex-1 h-full customHeight mt-[65px]">
+            <div className="flex-[.085] border-r-[1px] border-[#eeeeee]">
+              <Sidenav />
+            </div>
+            <div className="flex-[.915]">
+              <Outlet />
+            </div>
           </div>
-          <div className="flex-[.915]">
-            <Outlet />
-          </div>
-        </div>
-      </ThemeProvider>
-    </GroupContext.Provider>
+        </ThemeProvider>
+      </GroupContext.Provider>
+    </RouteContext.Provider>
   );
 }
+
+export const RouteContext = createContext({
+  currentRoute: "",
+  setCurrentRoute: () => {},
+  isNavigationBoxOpen: Boolean,
+  setIsNavigationBoxOpen: () => {},
+});
 
 export default Main;
