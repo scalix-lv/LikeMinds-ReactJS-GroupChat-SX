@@ -29,27 +29,9 @@ export async function getChatroomConversations(chatroomId, pageNo, dmContext) {
   let response = await getConversationsForGroup(optionObject);
   if (!response.error) {
     let conversations = response.data;
-    let conversationToBeSetArray = [];
-    let newConversationArray = [];
-    let lastDate = "";
-    for (let convo of conversations) {
-      if (convo.date === lastDate) {
-        conversationToBeSetArray.push(convo);
-        lastDate = convo.date;
-      } else {
-        if (conversationToBeSetArray.length != 0) {
-          newConversationArray.push(conversationToBeSetArray);
-          conversationToBeSetArray = [];
-          conversationToBeSetArray.push(convo);
-          lastDate = convo.date;
-        } else {
-          conversationToBeSetArray.push(convo);
-          lastDate = convo.date;
-        }
-      }
-    }
-    newConversationArray.push(conversationToBeSetArray);
-    dmContext.setCurrentChatroomConversations(newConversationArray);
+    // sessionStorage.setItem("dmLastConvo", conversations[0].id);
+
+    dmContext.setCurrentChatroomConversations(conversations);
   } else {
     // console.log(response.errorMessage);
   }
