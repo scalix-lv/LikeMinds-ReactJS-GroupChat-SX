@@ -246,7 +246,7 @@ function Groups() {
             refreshChatroomContext: () => {
               // fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed);
               refreshHomeFeed(
-                groupContext.activeGroup.community.id,
+                sessionStorage.getItem("communityId"),
                 setChatRoomsList
               );
               getUnjoinedList(

@@ -141,7 +141,7 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
       >
         <Button
           sx={{
-            width: "107px",
+            width: "110px",
             height: "34px",
           }}
           variant="outlined"
