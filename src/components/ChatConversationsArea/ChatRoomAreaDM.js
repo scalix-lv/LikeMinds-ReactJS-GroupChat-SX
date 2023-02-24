@@ -20,7 +20,7 @@ function ChatRoomAreaDM() {
   const updateHeight = () => {
     const el = document.getElementById("chat");
     if (el != null) {
-      if (dmContext.currentChatroomConversations.length <= 50) {
+      if (dmContext.currentChatroomConversations.length <= 52) {
         el.scrollTop = el.scrollHeight;
         sessionStorage.setItem("currentContainerSize", el.scrollHeight);
       } else {
@@ -49,35 +49,12 @@ function ChatRoomAreaDM() {
       }
       let newConversationArray = [];
       sessionStorage.setItem("dmLastConvo", conversations[0].id);
-      {
-        // for (let convo of conversations) {
-        //   if (convo.date === lastDate) {
-        //     conversationToBeSetArray.push(convo);
-        //     lastDate = convo.date;
-        //   } else {
-        //     if (conversationToBeSetArray.length !== 0) {
-        //       newConversationArray.push(conversationToBeSetArray);
-        //       conversationToBeSetArray = [];
-        //       conversationToBeSetArray.push(convo);
-        //       lastDate = convo.date;
-        //     } else {
-        //       conversationToBeSetArray.push(convo);
-        //       lastDate = convo.date;
-        //     }
-        //   }
-        // }
-        // // console.log(conversationToBeSetArray);
-        // newConversationArray = [conversationToBeSetArray];
-        // for (let arr of oldConversationsArray) {
-        //   newConversationArray.push(arr);
-        // }
-        // console.log(newConversationArray);
-      }
+
       newConversationArray = [
         ...conversations,
         ...dmContext.currentChatroomConversations,
       ];
-      // console.log(newConversationArray);
+
       dmContext.setCurrentChatroomConversations(newConversationArray);
     } else {
       // console.log(response.errorMessage);
@@ -94,28 +71,6 @@ function ChatRoomAreaDM() {
     if (!response.error) {
       let conversations = response.data;
       sessionStorage.setItem("dmLastConvo", conversations[0].id);
-      {
-        // let conversationToBeSetArray = [];
-        // let newConversationArray = [];
-        // let lastDate = "";
-        // for (let convo of conversations) {
-        //   if (convo.date === lastDate) {
-        //     conversationToBeSetArray.push(convo);
-        //     lastDate = convo.date;
-        //   } else {
-        //     if (conversationToBeSetArray.length !== 0) {
-        //       newConversationArray.push(conversationToBeSetArray);
-        //       conversationToBeSetArray = [];
-        //       conversationToBeSetArray.push(convo);
-        //       lastDate = convo.date;
-        //     } else {
-        //       conversationToBeSetArray.push(convo);
-        //       lastDate = convo.date;
-        //     }
-        //   }
-        // }
-        // newConversationArray.push(conversationToBeSetArray);
-      }
       dmContext.setCurrentChatroomConversations(conversations);
     } else {
       // console.log(response.errorMessage);
@@ -130,10 +85,8 @@ function ChatRoomAreaDM() {
 
   useEffect(() => {
     updateHeight();
+    // console.log("heyya");
   }, [dmContext.currentChatroomConversations]);
-  // useEffect(() => {
-  //   updateHeight();
-  // }, []);
 
   return (
     <div
@@ -179,27 +132,20 @@ function ChatRoomAreaDM() {
               style={{ height: "calc(100vh - 270px)" }}
               ref={scrollTop}
               onScroll={(e) => {
+                if (scrollTop.current.scrollTop < 100) {
+                  console.log("here");
+                  return;
+                }
+                // console.log(dmContext.currentChatroomConversations);
                 let currentHeight = scrollTop.current.scrollHeight;
                 currentHeight = currentHeight.toString();
                 let current = scrollTop.current.scrollTop;
 
                 if (current < 200 && current % 150 == 0) {
-                  // console.log("calling paginate");
                   paginateChatroomConversations(
                     dmContext.currentChatroom.id,
                     50
                   );
-                  {
-                    // .then((res) => {
-                    //   let h = scrollTop.current.scrollHeight;
-                    //   console.log(h);
-                    //   console.log(currentHeight);
-                    //   scrollTop.current.scrollTop = h - currentHeight;
-                    // })
-                    // .catch((e) => {
-                    //   console.log(e);
-                    // });}
-                  }
                 }
               }}
             >
