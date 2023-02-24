@@ -147,7 +147,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [community, setCommunity] = useState({});
   useEffect(() => {
-    initiateSDK(false, "3cdcaf10-1950-4997-b48e-7a29bbe3dcdc", "")
+    initiateSDK(false, "60d19927-8b66-4f78-af91-c6005950847c", "")
       .then((res) => {
         setCommunity(res?.data?.community);
         setCurrentUser(res?.data?.user);

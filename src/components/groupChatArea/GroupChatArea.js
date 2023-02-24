@@ -2,7 +2,7 @@ import { Box, Button, CircularProgress } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { myClient, UserContext } from "../..";
-import { config, getConversationsForGroup } from "../../sdkFunctions";
+import { config, getConversationsForGroup, markRead } from "../../sdkFunctions";
 import RegularBox, { DateSpecifier } from "../channelGroups/RegularBox";
 import { GroupContext } from "../../Main";
 import Input from "../InputComponent/Input";
@@ -40,23 +40,6 @@ export const getChatroomConversationArray = async (
     let conversations = response.data;
 
     sessionStorage.setItem("lastConvoId", conversations[0].id);
-    // for (let convo of conversations) {
-    //   if (convo.date === lastDate) {
-    //     conversationToBeSetArray.push(convo);
-    //     lastDate = convo.date;
-    //   } else {
-    //     if (conversationToBeSetArray.length != 0) {
-    //       newConversationArray.push(conversationToBeSetArray);
-    //       conversationToBeSetArray = [];
-    //       conversationToBeSetArray.push(convo);
-    //       lastDate = convo.date;
-    //     } else {
-    //       conversationToBeSetArray.push(convo);
-    //       lastDate = convo.date;
-    //     }
-    //   }
-    // }
-    // newConversationArray.push(conversationToBeSetArray);
     conversationContext.setConversationArray(conversations);
   } else {
     // console.log(response.errorMessage);
@@ -136,24 +119,7 @@ function GroupChatArea() {
       let newConversationArray = [];
 
       sessionStorage.setItem("lastConvoId", conversations[0].id);
-      // for (let convo of conversations) {
-      //   if (convo.date === lastDate) {
-      //     conversationToBeSetArray.push(convo);
-      //     lastDate = convo.date;
-      //   } else {
-      //     if (conversationToBeSetArray.length !== 0) {
-      //       newConversationArray.push(conversationToBeSetArray);
-      //       conversationToBeSetArray = [];
-      //       conversationToBeSetArray.push(convo);
-      //       lastDate = convo.date;
-      //     } else {
-      //       conversationToBeSetArray.push(convo);
-      //       lastDate = convo.date;
-      //     }
-      //   }
-      // }
 
-      // newConversationArray.push(conversationToBeSetArray);
       newConversationArray = [
         ...conversations,
         ...conversationContext.conversationsArray,
@@ -186,20 +152,25 @@ function GroupChatArea() {
       ) {
         // console.log(snapshot.val());
         updateHeight();
-        getChatroomConversationArray(
-          groupContext.activeGroup.chatroom.id,
-          100,
-          conversationContext
-        );
+        markRead(groupContext.activeGroup.chatroom.id).then(() => {
+          getChatroomConversationArray(
+            groupContext.activeGroup.chatroom.id,
+            100,
+            conversationContext
+          );
+        });
+
         chatRoomContext.refreshChatroomContext();
       }
     });
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
-    const query = REF(db, `users/${userContext.currentUser.id}`);
+    // const query = REF(db, `users/${userContext.currentUser.id}`);
+    const query = REF(db, `community/${userContext.community.id}`);
     return onValue(query, (snapshot) => {
-      // const data = snapshot.val();
+      const data = snapshot.val();
+      console.log(data);
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
@@ -229,6 +200,12 @@ function GroupChatArea() {
             style={{ height: "calc(100vh - 270px)" }}
             ref={scrollTop}
             onScroll={(e) => {
+              console.log("aagya");
+              console.log(scrollTop.current.scrollHeight);
+              if (scrollTop.current.scrollHeight < 100) {
+                console.log("here");
+                return;
+              }
               let current = scrollTop.current.scrollTop;
               if (current < 200 && current % 150 == 0) {
                 fnPagination(groupContext.activeGroup?.chatroom?.id, 50);

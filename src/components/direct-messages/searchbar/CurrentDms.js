@@ -163,30 +163,56 @@ function CurrentDms() {
   };
 
   // for resetting the conversation of the current chatroom
+  // useEffect(() => {
+  //   const query = ref(db, "collabcards");
+  //   return onValue(query, (snapshot) => {
+  //     if (snapshot.exists()) {
+  //       console.log(snapshot.val());
+  //       loadHomeFeed(1).then((res) => {
+  //         console.log(res[0].chatroom.id);
+  //         console.log(dmContext.currentChatroom.id);
+  //         if (res[0].chatroom.id === dmContext.currentChatroom.id) {
+  //           console.log("aagya");
+  //           getChatroomConversations(getCurrentChatroomID(), 100, dmContext);
+  //         }
+  //       });
+  //     }
+  //   });
+  // }, []);
+
   useEffect(() => {
     const query = ref(db, "collabcards");
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
-        // console.log(snapshot.val());
-        loadHomeFeed(1).then((res) => {
-          if (res[0].chatroom.id === dmContext.currentChatroom.id) {
-            getChatroomConversations(getCurrentChatroomID(), 500, dmContext);
-          }
+        console.log(snapshot);
+        loadHomeFeed(1);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const query = ref(db, `/collabcards/${dmContext.currentChatroom.id}`);
+    return onValue(query, (snapshot) => {
+      if (snapshot.exists()) {
+        console.log(snapshot.val());
+        markRead(dmContext.currentChatroom.id).then(() => {
+          getChatroomConversations(getCurrentChatroomID(), 100, dmContext);
         });
+        // getChatroomConversations(getCurrentChatroomID(), 95, dmContext);
       }
     });
   }, []);
 
   return (
     <Box>
-      {/* <Button
+      <Button
         fullWidth
         onClick={() => {
           console.log(dmContext);
         }}
       >
         Show DM Context
-      </Button> */}
+      </Button>
       <div className="max-h-[400px] overflow-auto" id="hf-container">
         <InfiniteScroll
           next={paginateHomeFeed}
