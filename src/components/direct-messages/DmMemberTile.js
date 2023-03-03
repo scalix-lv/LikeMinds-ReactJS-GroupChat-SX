@@ -132,7 +132,7 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
         Message
       </Button>
       <Link
-        to={directMessageInfoPath}
+        to={`${directMessageInfoPath}/${profile?.user_unique_id} `}
         state={{
           communityId: userContext.community.id,
           memberId: profile.id,
@@ -141,8 +141,10 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
       >
         <Button
           sx={{
-            width: "110px",
+            width: "107px",
             height: "34px",
+            paddingX: "3px",
+            fontSize: "12px",
           }}
           variant="outlined"
           // onClick={routeToProfile}

@@ -12,6 +12,7 @@ import { onValue, ref as REF } from "firebase/database";
 // import { initializeApp } from "firebase/app";
 import { ChatRoomContext } from "../Groups/Groups";
 import MessageBlock from "../channelGroups/MessageBlock";
+import { useParams } from "react-router-dom";
 // Exported Styled Box
 
 export const StyledBox = styled(Box)({
@@ -29,17 +30,18 @@ export const getChatroomConversationArray = async (
   conversationContext
 ) => {
   // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
-  let optionObject = {
+  const optionObject = {
     chatroomID: chatroomId,
     page: pageNo,
   };
 
-  let response = await getConversationsForGroup(optionObject);
+  const response = await getConversationsForGroup(optionObject);
 
   if (!response.error) {
-    let conversations = response.data;
+    const conversations = response.data;
 
     sessionStorage.setItem("lastConvoId", conversations[0].id);
+
     conversationContext.setConversationArray(conversations);
   } else {
     // console.log(response.errorMessage);
@@ -51,16 +53,16 @@ export const ConversationContext = React.createContext({
   refreshConversationArray: () => {},
 });
 
-function GroupChatArea() {
+const GroupChatArea = () => {
   // const [conversationContext.conversationsArray, conversationContext.setConversationArray] = useState([]);
   const chatRoomContext = useContext(ChatRoomContext);
   const conversationContext = useContext(ConversationContext);
-  let groupContext = useContext(GroupContext);
+  const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-  let db = myClient.fbInstance();
+  const db = myClient.fbInstance();
   const ref = useRef(null);
   const scrollTop = useRef(null);
-
+  const params = useParams();
   const [shouldLoadMoreConversations, setShouldLoadMoreConversations] =
     useState(true);
 
@@ -72,9 +74,9 @@ function GroupChatArea() {
         el.scrollTop = el.scrollHeight;
         sessionStorage.setItem("currentContainerSize", el.scrollHeight);
       } else {
-        let newScrollHeight = el.scrollHeight;
-        let oldHeight = sessionStorage.getItem("currentContainerSize");
-        let newHeightToSet = newScrollHeight - parseInt(oldHeight);
+        const newScrollHeight = el.scrollHeight;
+        const oldHeight = sessionStorage.getItem("currentContainerSize");
+        const newHeightToSet = newScrollHeight - parseInt(oldHeight);
         el.scrollTop = newHeightToSet;
         sessionStorage.setItem("currentContainerSize", el.scrollHeight);
       }
@@ -84,9 +86,8 @@ function GroupChatArea() {
     updateHeight();
   }, []);
   useEffect(() => {
-    // scroll();
-    let convoArrLength = conversationContext.conversationsArray.length;
-    let lastConvoArrLength =
+    const convoArrLength = conversationContext.conversationsArray.length;
+    const lastConvoArrLength =
       conversationContext.conversationsArray[convoArrLength - 1]?.length;
     if (conversationContext.conversationsArray.length === 0) {
       return;
@@ -101,17 +102,17 @@ function GroupChatArea() {
   }, [conversationContext.conversationsArray]);
 
   const fnPagination = async (chatroomId, pageNo) => {
-    let optionObject = {
+    const optionObject = {
       chatroomID: chatroomId,
       page: 50,
       scroll_direction: 0,
       conversation_id: sessionStorage.getItem("lastConvoId"),
     };
 
-    let response = await getConversationsForGroup(optionObject);
+    const response = await getConversationsForGroup(optionObject);
 
     if (!response.error) {
-      let conversations = response.data;
+      const conversations = response.data;
       if (conversations.length < 50) {
         setShouldLoadMoreConversations(false);
       }
@@ -119,7 +120,6 @@ function GroupChatArea() {
       let newConversationArray = [];
 
       sessionStorage.setItem("lastConvoId", conversations[0].id);
-
       newConversationArray = [
         ...conversations,
         ...conversationContext.conversationsArray,
@@ -152,30 +152,25 @@ function GroupChatArea() {
       ) {
         // console.log(snapshot.val());
         updateHeight();
-        markRead(groupContext.activeGroup.chatroom.id).then(() => {
-          getChatroomConversationArray(
-            groupContext.activeGroup.chatroom.id,
-            100,
-            conversationContext
-          );
-        });
-
+        console.log(snapshot.val());
+        getChatroomConversationArray(
+          groupContext.activeGroup.chatroom.id,
+          100,
+          conversationContext
+        );
         chatRoomContext.refreshChatroomContext();
       }
     });
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
-    // const query = REF(db, `users/${userContext.currentUser.id}`);
     const query = REF(db, `community/${userContext.community.id}`);
     return onValue(query, (snapshot) => {
-      const data = snapshot.val();
-      console.log(data);
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        // console.log(snapshot.val());
+        console.log(snapshot.val());
         chatRoomContext.refreshChatroomContext();
       }
     });
@@ -200,13 +195,10 @@ function GroupChatArea() {
             style={{ height: "calc(100vh - 270px)" }}
             ref={scrollTop}
             onScroll={(e) => {
-              console.log("aagya");
-              console.log(scrollTop.current.scrollHeight);
-              if (scrollTop.current.scrollHeight < 100) {
-                console.log("here");
+              const current = scrollTop.current.scrollTop;
+              if (current < 100) {
                 return;
               }
-              let current = scrollTop.current.scrollTop;
               if (current < 200 && current % 150 == 0) {
                 fnPagination(groupContext.activeGroup?.chatroom?.id, 50);
               }
@@ -225,10 +217,7 @@ function GroupChatArea() {
                     return (
                       <div className="ml-[28px] mr-[114px] pt-5" key={convo.id}>
                         {convo.date != lastConvoDate ? (
-                          <DateSpecifier
-                            dateString={convo.date}
-                            // key={convo.id + index}
-                          />
+                          <DateSpecifier dateString={convo.date} />
                         ) : null}
                         <MessageBlock
                           userId={convo.member.id}
@@ -269,7 +258,7 @@ function GroupChatArea() {
       )}
     </div>
   );
-}
+};
 
 export const CurrentSelectedConversationContext = React.createContext({
   isSelected: false,

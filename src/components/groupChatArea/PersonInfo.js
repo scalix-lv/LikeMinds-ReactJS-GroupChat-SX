@@ -201,5 +201,4 @@ function InfoTile({ index, title, buttontitle }) {
     </Box>
   );
 }
-
 export default PersonInfo;

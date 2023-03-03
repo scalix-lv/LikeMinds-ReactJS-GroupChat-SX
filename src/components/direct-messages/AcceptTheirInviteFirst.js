@@ -94,5 +94,4 @@ function AcceptTheirInviteFirst({ title }) {
     </div>
   );
 }
-
 export default AcceptTheirInviteFirst;

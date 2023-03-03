@@ -53,11 +53,8 @@ export const fn = async (
       serialObject,
       setSerialObject
     );
-    // console.log("This is the updated list, ", oldArr);
     setChatRoomsList(newChatRoomList);
-  } catch (error) {
-    // console.log(error);
-  }
+  } catch (error) {}
 };
 const refreshHomeFeed = async (communityId, setChatRoomList) => {
   try {
@@ -101,12 +98,11 @@ export const getUnjoinedList = async (
     if (feedCall.data.chatrooms.length < 5) {
       setShouldLoadMore(false);
     }
-  } catch (error) {
-    // console.log(error);
-  }
+  } catch (error) {}
 };
 
-function Groups() {
+function Groups(props) {
+  const { children } = props;
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const [serialObject, setSerialObject] = useState({});
@@ -139,7 +135,6 @@ function Groups() {
 
   useEffect(() => {
     if (Object.keys(groupContext.activeGroup).length === 0) {
-      // console.log("hello");
     } else {
       fn(
         chatRoomsList,
@@ -149,7 +144,7 @@ function Groups() {
         serialObject,
         setSerialObject
       );
-      // console.log(groupContext);
+
       if (unJoined.length == 0) {
         return;
       }
@@ -220,7 +215,9 @@ function Groups() {
         groupContext.setActiveGroup(obj);
       }
     }
-    getAllMembers();
+    if (groupContext?.activeGroup?.id != undefined) {
+      getAllMembers();
+    }
   }, [groupContext.activeGroup]);
 
   return (
@@ -244,7 +241,6 @@ function Groups() {
             setShouldLoadMoreHomeFeed: setShouldLoadMoreHomeFeed,
             setShouldLoadMoreUnjoinedFeed: setShouldLoadMoreUnjoinedFeed,
             refreshChatroomContext: () => {
-              // fn(chatRoomsList, setChatRoomsList, setShouldLoadMoreHomeFeed);
               refreshHomeFeed(
                 sessionStorage.getItem("communityId"),
                 setChatRoomsList
@@ -275,10 +271,8 @@ function Groups() {
                 {/* All Public Groups */}
               </div>
               {Object.keys(groupContext.activeGroup).length > 0 ? (
-                <div className="flex-[.68] bg-[#f9f6ff] relative pt-[42px]">
+                <div className="flex-[.68] bg-[#FFFBF2] relative pt-[42px]">
                   <Outlet />
-
-                  {/* <GroupChatArea/> */}
                 </div>
               ) : null}
             </div>
@@ -288,5 +282,4 @@ function Groups() {
     </div>
   );
 }
-
 export default Groups;

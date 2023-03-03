@@ -9,9 +9,10 @@ import { dmChatFeed, getConversationsForGroup } from "../../sdkFunctions";
 import { onValue, ref } from "firebase/database";
 import { myClient, UserContext } from "../..";
 import { DmContext } from "./DirectMessagesMain";
+import { useParams } from "react-router-dom";
 // Exported Styled Box
 export const StyledBox = styled(Box)({
-  backgroundColor: "#f6f6ff",
+  backgroundColor: "transparent",
   minHeight: "100vh",
   display: "flex",
   flexDirection: "column",
@@ -29,11 +30,11 @@ export async function getChatroomConversations(chatroomId, pageNo, dmContext) {
   let response = await getConversationsForGroup(optionObject);
   if (!response.error) {
     let conversations = response.data;
-    // sessionStorage.setItem("dmLastConvo", conversations[0].id);
+    sessionStorage.setItem("dmLastConvo", conversations[0].id);
 
     dmContext.setCurrentChatroomConversations(conversations);
   } else {
-    // console.log(response.errorMessage);
+    console.log(response.errorMessage);
   }
 }
 export async function loadHomeFeed(pageNo, dmContext, userContext) {
@@ -55,39 +56,34 @@ function ChatArea() {
   // }, [dmContext.currentChatroom]);
 
   return (
-    <div>
-      {
-        dmContext.currentChatroom?.id != undefined &&
-        dmContext.showLoadingBar == false ? (
-          <StyledBox>
-            {Object.keys(dmContext.currentChatroom).length > 0 ? (
-              <TittleDm
-                title={
-                  userContext.currentUser.id ===
-                  dmContext.currentChatroom.member.id
-                    ? dmContext.currentChatroom.chatroom_with_user.name
-                    : dmContext.currentChatroom.member.name
-                }
-              />
-            ) : null}
-            <ChatRoomAreaDM />
-          </StyledBox>
-        ) : dmContext.showLoadingBar === true ? (
-          <StyledBox>
-            <div className="flex justify-center items-center min-h-[80vh]">
-              <CircularProgress />
-            </div>
-          </StyledBox>
-        ) : (
+    <>
+      {dmContext.currentChatroom?.id != undefined &&
+      dmContext.showLoadingBar == false ? (
+        <StyledBox>
+          {Object.keys(dmContext.currentChatroom).length > 0 ? (
+            <TittleDm
+              title={
+                userContext.currentUser.id ===
+                dmContext.currentChatroom.member.id
+                  ? dmContext.currentChatroom.chatroom_with_user.name
+                  : dmContext.currentChatroom.member.name
+              }
+            />
+          ) : null}
+          <ChatRoomAreaDM />
+        </StyledBox>
+      ) : dmContext.showLoadingBar === true ? (
+        <StyledBox>
           <div className="flex justify-center items-center min-h-[80vh]">
-            Select a chatroom to start messaging
+            <CircularProgress />
           </div>
-        )
-        // <div className="flex justify-center items-center min-h-screen h-full">
-
-        // </div>
-      }
-    </div>
+        </StyledBox>
+      ) : (
+        <div className="flex justify-center items-center min-h-full">
+          Select a chatroom to start messaging
+        </div>
+      )}
+    </>
   );
 }
 

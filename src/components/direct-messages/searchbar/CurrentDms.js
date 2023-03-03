@@ -4,6 +4,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { DmContext } from "../DirectMessagesMain";
 import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   allChatroomMembersDm,
   dmChatFeed,
@@ -19,8 +20,9 @@ import { getChatroomConversations } from "../ChatArea";
 
 function CurrentDms() {
   const dmContext = useContext(DmContext);
-  const userContext_LM = useContext(UserContext);
-
+  const userContext = useContext(UserContext);
+  const { status } = useParams();
+  console.log(status);
   const [openAllUsers, setOpenAllUsers] = useState(true);
   const [totalMembersFiltered, setTotalMembersFiltered] = useState(null);
   const [lastCaughtPageAllMembers, setLastCaughtPageAllMembers] = useState(1);
@@ -33,16 +35,15 @@ function CurrentDms() {
   const [lastPageHomeFeed, setLastPageHomeFeed] = useState(1);
   const [feedObjects, setFeedObjects] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [listenAgain, setListenAgain] = useState(0);
 
+  // console.log(status);
   function joinFeed(oldArray, newArray, serialObject) {
     serialObject = { ...serialObject };
-    // console.log(newArray.length);
     for (let feed of newArray) {
       let roomId = feed.chatroom.id;
-      // console.log("A");
       if (serialObject[roomId] === undefined) {
-        // console.log("B");
-        serialObject[roomId] = true;
+        serialObject[roomId] = feed.unseen_conversation_count;
         oldArray.push(feed);
       }
     }
@@ -53,7 +54,7 @@ function CurrentDms() {
   async function loadHomeFeed(pageNo) {
     try {
       let oldArr = [...dmContext.homeFeed];
-      let feedCall = await dmChatFeed(userContext_LM.community.id, pageNo);
+      let feedCall = await dmChatFeed(userContext.community.id, pageNo);
       let newFeedArray = feedCall.data.dm_chatrooms;
       if (newFeedArray.length < 10) {
         setShouldContinuePaginateHomeFeed(false);
@@ -64,6 +65,13 @@ function CurrentDms() {
     } catch (error) {
       // console.log(error);
     }
+  }
+
+  async function refreshHomeFeed() {
+    try {
+      let feedCall = await dmChatFeed(userContext.community.id, 1);
+      dmContext.setHomeFeed(feedCall.data.dm_chatrooms);
+    } catch (error) {}
   }
 
   async function paginateHomeFeed() {
@@ -96,7 +104,7 @@ function CurrentDms() {
   async function paginateAllMembers() {
     try {
       let call = await allChatroomMembersDm(
-        userContext_LM.community.id,
+        userContext.community.id,
         lastCaughtPageAllMembers + 1
       );
       let newArr = [...dmContext.membersFeed];
@@ -108,6 +116,34 @@ function CurrentDms() {
       dmContext.setMembersFeed(newArr);
     } catch (error) {
       // console.log(error);
+    }
+  }
+
+  async function markReadCall(chatroomId) {
+    try {
+      if (
+        feedObjects[chatroomId] != 0 ||
+        feedObjects[chatroomId] == undefined
+      ) {
+        let markCall = await markRead(chatroomId);
+        await refreshHomeFeed();
+      }
+      let call = await getChatRoomDetails(myClient, chatroomId);
+      dmContext.setCurrentChatroom(call.data.chatroom);
+      dmContext.setCurrentProfile(call.data);
+      dmContext.setShowLoadingBar(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function setProfile(chatroom) {
+    try {
+      dmContext.setShowLoadingBar(true);
+      sessionStorage.setItem("currentChatRoomKey", chatroom);
+      await markReadCall(chatroom);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -137,12 +173,17 @@ function CurrentDms() {
 
   // this effect will run once and will load the home feed and all members feed
   useEffect(() => {
-    loadHomeFeed(1);
+    loadHomeFeed(1).then(() => {
+      setListenAgain((old) => {
+        return old + 1;
+      });
+    });
     loadAllDmMembers();
     function refreshContext() {
       loadHomeFeed(1);
       loadAllDmMembers();
     }
+
     dmContext.setRefreshContext(() => refreshContext);
   }, []);
 
@@ -151,9 +192,7 @@ function CurrentDms() {
   // for getting the id for the currentchatroom from the session storage
   const getCurrentChatroomID = () => {
     let l = Object.keys(dmContext.currentChatroom).length;
-    if (l == 0) {
-      return;
-    }
+
     // console.log(l);
     if (l > 0) {
       return dmContext.currentChatroom.id;
@@ -163,42 +202,66 @@ function CurrentDms() {
   };
 
   // for resetting the conversation of the current chatroom
-  // useEffect(() => {
-  //   const query = ref(db, "collabcards");
-  //   return onValue(query, (snapshot) => {
-  //     if (snapshot.exists()) {
-  //       console.log(snapshot.val());
-  //       loadHomeFeed(1).then((res) => {
-  //         console.log(res[0].chatroom.id);
-  //         console.log(dmContext.currentChatroom.id);
-  //         if (res[0].chatroom.id === dmContext.currentChatroom.id) {
-  //           console.log("aagya");
-  //           getChatroomConversations(getCurrentChatroomID(), 100, dmContext);
-  //         }
-  //       });
-  //     }
-  //   });
-  // }, []);
-
   useEffect(() => {
+    console.log(dmContext);
+    const fetchCall = async (id) => {
+      try {
+        let call = await myClient.fetchChatroomHome({
+          chatroom_id: id,
+        });
+        if (call != null) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        return false;
+      }
+    };
+    const homeFeedUpdate = async (snap) => {
+      try {
+        const arr = dmContext.homeFeed;
+        console.log(arr);
+        for (let item of arr) {
+          if (snap[item.chatroom.id] != undefined) {
+            let call = await fetchCall(item.chatroom.id);
+            console.log(call);
+            if (!!call) {
+              refreshHomeFeed();
+              break;
+            }
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const query = ref(db, "collabcards");
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot);
-        loadHomeFeed(1);
+        const snap = snapshot.val();
+        console.log(snap);
+        console.log(dmContext.homeFeed);
+        homeFeedUpdate(snap);
       }
     });
-  }, []);
+  }, [listenAgain]);
 
   useEffect(() => {
-    const query = ref(db, `/collabcards/${dmContext.currentChatroom.id}`);
+    if (status != "" && status != undefined && status != null) {
+      setProfile(status);
+    }
+  }, [status]);
+
+  useEffect(() => {
+    const query = ref(db, `/collabcards/${getCurrentChatroomID()}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot.val());
-        markRead(dmContext.currentChatroom.id).then(() => {
-          getChatroomConversations(getCurrentChatroomID(), 100, dmContext);
+        let chatroomId = getCurrentChatroomID();
+        markRead(chatroomId).then(() => {
+          getChatroomConversations(chatroomId, 100, dmContext);
         });
-        // getChatroomConversations(getCurrentChatroomID(), 95, dmContext);
       }
     });
   }, []);
@@ -228,6 +291,7 @@ function CurrentDms() {
                 loadHomeFeed={loadHomeFeed}
                 selectedId={selectedIndex}
                 setSelectedId={setSelectedIndex}
+                index={feedIndex}
               />
             );
           })}
@@ -252,7 +316,7 @@ function CurrentDms() {
             scrollableTarget="mf-container"
           >
             {dmContext.membersFeed.map((feed, feedIndex) => {
-              if (feed.id == userContext_LM.currentUser.id) {
+              if (feed.id == userContext.currentUser.id) {
                 return null;
               }
               return (
@@ -272,65 +336,39 @@ function CurrentDms() {
   );
 }
 
-function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
+function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId, index }) {
   const dmContext = useContext(DmContext);
-  const userContext_LM = useContext(UserContext);
-
+  const userContext = useContext(UserContext);
+  const { status } = useParams();
   const [shouldNotShow, setShouldNotShow] = useState(false);
-
-  async function markReadCall(chatroomId) {
-    try {
-      let markCall = await markRead(chatroomId);
-      if (markCall.data.success) {
-        setShouldNotShow(true);
-      }
-      await loadHomeFeed(1);
-
-      let call = await getChatRoomDetails(myClient, chatroomId);
-      dmContext.setCurrentChatroom(call.data.chatroom);
-      dmContext.setCurrentProfile(call.data);
-      dmContext.setShowLoadingBar(false);
-    } catch (error) {
-      // console.log(error);
-    }
-  }
-
-  async function setProfile() {
-    try {
-      sessionStorage.setItem("currentChatRoomKey", profile.chatroom.id);
-      await markReadCall(profile.chatroom.id);
-    } catch (error) {
-      // console.log(error);
-    }
-  }
 
   return (
     <Link
-      to={directMessageChatPath}
+      to={directMessageChatPath + "/" + profile.chatroom.id}
       style={{
         textDecoration: "none",
       }}
-      onClick={() => {
-        dmContext.setShowLoadingBar(true);
-        setSelectedId(profile.chatroom.id);
-      }}
     >
       <div
-        onClick={setProfile}
         className="flex justify-between py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
         style={{
           backgroundColor:
-            selectedId === profile?.chatroom?.id ? "#ECF3FF" : "#FFFFFF",
+            status?.toString() === profile?.chatroom?.id.toString()
+              ? "#ECF3FF"
+              : "#FFFFFF",
         }}
       >
         <Typography
           component={"span"}
           className="text-base font-normal"
           sx={{
-            color: selectedId === profile?.chatroom?.id ? "#3884F7" : "#323232",
+            color:
+              status?.toString() === profile?.chatroom?.id.toString()
+                ? "#3884F7"
+                : "#323232",
           }}
         >
-          {userContext_LM.currentUser.id === profile.chatroom.member.id
+          {userContext.currentUser.id === profile.chatroom.member.id
             ? profile.chatroom.chatroom_with_user.name
             : profile.chatroom.member.name}
         </Typography>
@@ -349,7 +387,7 @@ function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId }) {
                   ? "#3884F7"
                   : "#323232"
                 : "white",
-            display: shouldNotShow ? "none" : "inline",
+            // display: shouldNotShow ? 'none' : 'inline'
           }}
         >
           {profile.unseen_conversation_count != undefined ? (

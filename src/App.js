@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         element: <Groups />,
         children: [
           {
-            path: groupMainPath,
+            path: groupMainPath + "/:status",
             element: <GroupChatArea />,
           },
           {
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
         element: <DirectMessagesMain />,
         children: [
           {
-            path: directMessageChatPath,
+            path: directMessageChatPath + "/:status",
             element: <ChatArea />,
           },
           {

@@ -20,7 +20,7 @@ function ChatRoomAreaDM() {
   const updateHeight = () => {
     const el = document.getElementById("chat");
     if (el != null) {
-      if (dmContext.currentChatroomConversations.length <= 52) {
+      if (dmContext.currentChatroomConversations.length <= 50) {
         el.scrollTop = el.scrollHeight;
         sessionStorage.setItem("currentContainerSize", el.scrollHeight);
       } else {
@@ -54,10 +54,10 @@ function ChatRoomAreaDM() {
         ...conversations,
         ...dmContext.currentChatroomConversations,
       ];
-
+      // console.log(newConversationArray);
       dmContext.setCurrentChatroomConversations(newConversationArray);
     } else {
-      // console.log(response.errorMessage);
+      console.log(response.errorMessage);
     }
   };
 
@@ -71,6 +71,7 @@ function ChatRoomAreaDM() {
     if (!response.error) {
       let conversations = response.data;
       sessionStorage.setItem("dmLastConvo", conversations[0].id);
+
       dmContext.setCurrentChatroomConversations(conversations);
     } else {
       // console.log(response.errorMessage);
@@ -85,8 +86,10 @@ function ChatRoomAreaDM() {
 
   useEffect(() => {
     updateHeight();
-    // console.log("heyya");
   }, [dmContext.currentChatroomConversations]);
+  // useEffect(() => {
+  //   updateHeight();
+  // }, []);
 
   return (
     <div
@@ -118,30 +121,18 @@ function ChatRoomAreaDM() {
           )
         ) : (
           <>
-            {/* <InfiniteScroll
-              dataLength={dmContext.currentChatroomConversations.length}
-              hasMore={true}
-              inverse={true}
-              next={() =>
-                paginateChatroomConversations(dmContext.currentChatroom.id, 50)
-              }
-            > */}
             <div
               id="chat"
               className="relative overflow-x-hidden overflow-auto"
               style={{ height: "calc(100vh - 270px)" }}
               ref={scrollTop}
               onScroll={(e) => {
-                if (scrollTop.current.scrollTop < 100) {
-                  console.log("here");
-                  return;
-                }
-                // console.log(dmContext.currentChatroomConversations);
+                let current = scrollTop.current.scrollTop;
                 let currentHeight = scrollTop.current.scrollHeight;
                 currentHeight = currentHeight.toString();
-                let current = scrollTop.current.scrollTop;
 
                 if (current < 200 && current % 150 == 0) {
+                  console.log("calling paginate");
                   paginateChatroomConversations(
                     dmContext.currentChatroom.id,
                     50
@@ -149,14 +140,6 @@ function ChatRoomAreaDM() {
                 }
               }}
             >
-              {/* {dmContext.currentChatroomConversations.map((convoArr, index) => {
-                return (
-                  <RegularBox
-                    convoArray={convoArr}
-                    key={convoArr[0]?.date + index}
-                  />
-                );
-              })} */}
               {dmContext.currentChatroomConversations.map(
                 (convo, index, convoArr) => {
                   let lastConvoDate;
@@ -202,5 +185,4 @@ function ChatRoomAreaDM() {
     </div>
   );
 }
-
 export default ChatRoomAreaDM;
