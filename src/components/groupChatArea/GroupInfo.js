@@ -59,7 +59,7 @@ function GroupInfo() {
 
       <div className="mr-[120px] ml-[20px] mt-[10px]">
         <div className="flex">
-          <Link to={groupMainPath}>
+          <Link to={groupMainPath + "/" + gc.activeGroup.chatroom.id}>
             <IconButton>
               <img src={backIcon} alt="back icon" />
             </IconButton>
