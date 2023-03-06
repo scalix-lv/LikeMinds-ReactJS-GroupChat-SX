@@ -14,7 +14,7 @@ function MessageBlock({ conversationObject, userId }) {
   const currentUser = userContext.currentUser.id;
   const location = useLocation();
   const { step } = useParams();
-  // console.log(step);
+  // // console.log(step);
   return (
     <Box
       className="flex py-2 px-0 h-full overflow-auto"

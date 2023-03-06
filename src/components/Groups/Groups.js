@@ -66,7 +66,7 @@ const refreshHomeFeed = async (setChatRoomList, setShouldLoadMoreHomeFeed) => {
     setChatRoomList(feedCall.my_chatrooms);
     setShouldLoadMoreHomeFeed(true);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -113,7 +113,7 @@ export const getUnjoinedList = async (
       setShouldLoadMore(false);
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -135,7 +135,7 @@ export const paginateHomeFeed = async (
     const newHomeFeed = [...currentHomeFeed, ...call.my_chatrooms];
     setHomeFeed(newHomeFeed);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -154,7 +154,7 @@ export const paginateUnjoinedFeed = async (
     let newUnjoinedList = [...currentUnjoinedList, ...call.data.chatrooms];
     setUnjoinedList(newUnjoinedList);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -255,7 +255,7 @@ function Groups(props) {
           page: pgNo,
         });
         // console.table()\c
-        // console.log(call);
+        // // console.log(call);
         list = list.concat(call.members);
         pgNo = pgNo + 1;
         if (call.members.length < 10) {

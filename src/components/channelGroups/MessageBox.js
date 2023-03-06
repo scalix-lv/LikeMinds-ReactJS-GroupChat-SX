@@ -69,7 +69,7 @@ function MessageBox({
                           myClient,
                           dmContext.currentChatroom.id
                         ).then((e) => {
-                          // console.log(e);
+                          // // console.log(e);
                           dmContext.setCurrentChatroom(e.data.chatroom);
                           dmContext.setCurrentProfile(e.data);
                         });
@@ -372,7 +372,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       });
       setShouldShowBlock(!shouldShow);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
   const selectedConversationContext = useContext(
@@ -463,7 +463,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       >
         <EmojiPicker
           onEmojiClick={(e) => {
-            // console.log(groupContext);
+            // // console.log(groupContext);
             addReaction(
               e.emoji,
               convoId,

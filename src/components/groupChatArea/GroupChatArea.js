@@ -47,7 +47,7 @@ export const getChatroomConversationArray = async (
 
     conversationContext.setConversationArray(conversations);
   } else {
-    // console.log(response.errorMessage);
+    // // console.log(response.errorMessage);
   }
 };
 export const ConversationContext = React.createContext({
@@ -131,7 +131,7 @@ const GroupChatArea = () => {
       ];
       conversationContext.setConversationArray(newConversationArray);
     } else {
-      // console.log(response.errorMessage);
+      // // console.log(response.errorMessage);
     }
   };
   useEffect(() => {
@@ -150,14 +150,14 @@ const GroupChatArea = () => {
     );
     return onValue(query, (snapshot) => {
       // const data = snapshot.val();
-      // console.log(snapshot.val());
+      // // console.log(snapshot.val());
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        // console.log(snapshot.val());
+        // // console.log(snapshot.val());
         updateHeight();
-        console.log(snapshot.val());
+        // // console.log(snapshot.val());
         getChatroomConversationArray(
           groupContext.activeGroup.chatroom.id,
           100,
@@ -175,7 +175,7 @@ const GroupChatArea = () => {
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        // console.log(snapshot.val());
+        // // console.log(snapshot.val());
         chatRoomContext.refreshChatroomContext();
       }
     });

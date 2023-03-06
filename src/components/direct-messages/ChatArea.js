@@ -22,7 +22,7 @@ export async function getChatroomConversations(chatroomId, pageNo, dmContext) {
   if (chatroomId == null) {
     return;
   }
-  // console.log(chatroomId);
+  // // console.log(chatroomId);
   let optionObject = {
     chatroomID: chatroomId,
     page: pageNo,
@@ -34,7 +34,7 @@ export async function getChatroomConversations(chatroomId, pageNo, dmContext) {
 
     dmContext.setCurrentChatroomConversations(conversations);
   } else {
-    console.log(response.errorMessage);
+    // console.log(response.errorMessage);
   }
 }
 export async function loadHomeFeed(pageNo, dmContext, userContext) {
@@ -43,7 +43,7 @@ export async function loadHomeFeed(pageNo, dmContext, userContext) {
     let newFeedArray = feedCall.data.dm_chatrooms;
     dmContext.setHomeFeed(newFeedArray);
   } catch (error) {
-    // console.log(error);
+    // // console.log(error);
   }
 }
 function ChatArea() {

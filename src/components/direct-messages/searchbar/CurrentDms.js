@@ -22,7 +22,7 @@ function CurrentDms() {
   const dmContext = useContext(DmContext);
   const userContext = useContext(UserContext);
   const { status } = useParams();
-  console.log(status);
+  // console.log(status);
   const [openAllUsers, setOpenAllUsers] = useState(true);
   const [totalMembersFiltered, setTotalMembersFiltered] = useState(null);
   const [lastCaughtPageAllMembers, setLastCaughtPageAllMembers] = useState(1);
@@ -37,7 +37,7 @@ function CurrentDms() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [listenAgain, setListenAgain] = useState(0);
 
-  // console.log(status);
+  // // console.log(status);
   function joinFeed(oldArray, newArray, serialObject) {
     serialObject = { ...serialObject };
     for (let feed of newArray) {
@@ -63,7 +63,7 @@ function CurrentDms() {
       dmContext.setHomeFeed(newFeedArray);
       return newFeedArray;
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 
@@ -80,7 +80,7 @@ function CurrentDms() {
       const pageNo = currentHomeFeed.length / 10;
       const call = await loadHomeFeed(pageNo + 1);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 
@@ -97,7 +97,7 @@ function CurrentDms() {
       dmContext.setMembersFeed(arr);
       setTotalMembersFiltered(call.data.total_members);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 
@@ -115,7 +115,7 @@ function CurrentDms() {
       setLastCaughtPageAllMembers(lastCaughtPageAllMembers + 1);
       dmContext.setMembersFeed(newArr);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 
@@ -133,7 +133,7 @@ function CurrentDms() {
       dmContext.setCurrentProfile(call.data);
       dmContext.setShowLoadingBar(false);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -143,7 +143,7 @@ function CurrentDms() {
       sessionStorage.setItem("currentChatRoomKey", chatroom);
       await markReadCall(chatroom);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -154,7 +154,7 @@ function CurrentDms() {
 
   useEffect(() => {
     if (sessionStorage.getItem("dmContext") !== null) {
-      // console.log(dmContext);
+      // // console.log(dmContext);
       if (
         dmContext.currentProfile != undefined &&
         Object.keys(dmContext.currentProfile)?.length
@@ -193,7 +193,7 @@ function CurrentDms() {
   const getCurrentChatroomID = () => {
     let l = Object.keys(dmContext.currentChatroom).length;
 
-    // console.log(l);
+    // // console.log(l);
     if (l > 0) {
       return dmContext.currentChatroom.id;
     } else {
@@ -203,7 +203,7 @@ function CurrentDms() {
 
   // for resetting the conversation of the current chatroom
   useEffect(() => {
-    console.log(dmContext);
+    // console.log(dmContext);
     const fetchCall = async (id) => {
       try {
         let call = await myClient.fetchChatroomHome({
@@ -221,11 +221,11 @@ function CurrentDms() {
     const homeFeedUpdate = async (snap) => {
       try {
         const arr = dmContext.homeFeed;
-        console.log(arr);
+        // console.log(arr);
         for (let item of arr) {
           if (snap[item.chatroom.id] != undefined) {
             let call = await fetchCall(item.chatroom.id);
-            console.log(call);
+            // console.log(call);
             if (!!call) {
               refreshHomeFeed();
               break;
@@ -233,7 +233,7 @@ function CurrentDms() {
           }
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -241,8 +241,8 @@ function CurrentDms() {
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
         const snap = snapshot.val();
-        console.log(snap);
-        console.log(dmContext.homeFeed);
+        // console.log(snap);
+        // console.log(dmContext.homeFeed);
         homeFeedUpdate(snap);
       }
     });
@@ -268,14 +268,7 @@ function CurrentDms() {
 
   return (
     <Box>
-      <Button
-        fullWidth
-        onClick={() => {
-          console.log(dmContext);
-        }}
-      >
-        Show DM Context
-      </Button>
+      {/*  */}
       <div className="max-h-[400px] overflow-auto" id="hf-container">
         <InfiniteScroll
           next={paginateHomeFeed}

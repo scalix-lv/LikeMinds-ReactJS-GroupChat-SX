@@ -37,7 +37,7 @@ function CurrentGroups() {
   async function setChatroom(chatroomId) {
     try {
       const markReadCall = await markRead(chatroomId);
-      // console.log(markReadCall);
+      // // console.log(markReadCall);
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
 
       if (!chatRoomData.error) {
@@ -50,23 +50,17 @@ function CurrentGroups() {
         groupContext.setActiveGroup(chatRoomData.data);
         groupContext.setShowLoadingBar(false);
       } else {
-        // console.log(chatRoomData.errorMessage);
+        // // console.log(chatRoomData.errorMessage);
       }
     } catch (error) {}
   }
   useEffect(() => {
-    // console.log("here");
+    // // console.log("here");
     setChatroom(status);
   }, [status]);
   return (
     <Box>
-      <Button
-        onClick={() => {
-          console.log(chatroomContext);
-        }}
-      >
-        SHOW CHATROOM CONTEXT
-      </Button>
+      {/*  */}
       <PublicGroup groupList={chatroomContext.chatRoomsList} />
 
       <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
@@ -125,7 +119,7 @@ function PublicGroup({ groupTitle, groupList }) {
   async function getChatRoomData(chatroomId) {
     try {
       const markReadCall = await markRead(chatroomId);
-      // console.log(markReadCall);
+      // // console.log(markReadCall);
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
 
       if (!chatRoomData.error) {
@@ -138,10 +132,10 @@ function PublicGroup({ groupTitle, groupList }) {
         groupContext.setActiveGroup(chatRoomData.data);
         groupContext.setShowLoadingBar(false);
       } else {
-        // console.log(chatRoomData.errorMessage);
+        // // console.log(chatRoomData.errorMessage);
       }
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 
@@ -243,9 +237,9 @@ function UnjoinedGroup({ groupTitle, group }) {
         navigate(groupMainPath + "/" + group.id);
       }
 
-      console.log(call);
+      // console.log(call);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 

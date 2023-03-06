@@ -40,7 +40,7 @@ function ChatRoomAreaDM() {
       conversation_id: sessionStorage.getItem("dmLastConvo"),
       scroll_direction: 0,
     };
-    // console.log(optionObject);
+    // // console.log(optionObject);
     let response = await getConversationsForGroup(optionObject);
     if (!response.error) {
       let conversations = response.data;
@@ -54,10 +54,10 @@ function ChatRoomAreaDM() {
         ...conversations,
         ...dmContext.currentChatroomConversations,
       ];
-      // console.log(newConversationArray);
+      // // console.log(newConversationArray);
       dmContext.setCurrentChatroomConversations(newConversationArray);
     } else {
-      console.log(response.errorMessage);
+      // console.log(response.errorMessage);
     }
   };
 
@@ -74,7 +74,7 @@ function ChatRoomAreaDM() {
 
       dmContext.setCurrentChatroomConversations(conversations);
     } else {
-      // console.log(response.errorMessage);
+      // // console.log(response.errorMessage);
     }
   };
 
@@ -132,7 +132,7 @@ function ChatRoomAreaDM() {
                 currentHeight = currentHeight.toString();
 
                 if (current < 200 && current % 150 == 0) {
-                  console.log("calling paginate");
+                  // console.log("calling paginate");
                   paginateChatroomConversations(
                     dmContext.currentChatroom.id,
                     50
