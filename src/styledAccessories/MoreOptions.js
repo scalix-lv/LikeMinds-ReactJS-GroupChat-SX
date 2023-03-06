@@ -29,17 +29,13 @@ export function MoreOptions() {
   function leaveGroup() {
     leaveChatRoom(
       groupContext.activeGroup.chatroom.id,
-      userContext.currentUser.id,
-      groupContext.refreshContextUi
+      userContext.currentUser.id
     )
       .then((r) => {
-        // alert("s");
-        // groupContext.refreshContextUi();
         chatroomContext.refreshChatroomContext();
       })
       .catch((r) => {
-        // alert("e");
-        // console.log(r);
+        console.log(r);
       });
 
     navigate("/groups/");

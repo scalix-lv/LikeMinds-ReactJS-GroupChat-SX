@@ -40,6 +40,9 @@ export const getChatroomConversationArray = async (
   if (!response.error) {
     const conversations = response.data;
 
+    if (conversations.length == 0) {
+      return;
+    }
     sessionStorage.setItem("lastConvoId", conversations[0].id);
 
     conversationContext.setConversationArray(conversations);
@@ -62,7 +65,7 @@ const GroupChatArea = () => {
   const db = myClient.fbInstance();
   const ref = useRef(null);
   const scrollTop = useRef(null);
-  const params = useParams();
+  const { status } = useParams();
   const [shouldLoadMoreConversations, setShouldLoadMoreConversations] =
     useState(true);
 
@@ -113,8 +116,10 @@ const GroupChatArea = () => {
 
     if (!response.error) {
       const conversations = response.data;
-      if (conversations.length < 50) {
+
+      if (conversations.length == 0) {
         setShouldLoadMoreConversations(false);
+        return;
       }
 
       let newConversationArray = [];
@@ -170,7 +175,7 @@ const GroupChatArea = () => {
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        console.log(snapshot.val());
+        // console.log(snapshot.val());
         chatRoomContext.refreshChatroomContext();
       }
     });
@@ -179,6 +184,10 @@ const GroupChatArea = () => {
   useEffect(() => {
     updateHeight();
   }, [conversationContext.conversationsArray]);
+
+  useEffect(() => {
+    setShouldLoadMoreConversations(true);
+  }, [status]);
   return (
     <div>
       {groupContext.showLoadingBar == false ? (
@@ -189,67 +198,73 @@ const GroupChatArea = () => {
               memberCount={groupContext.activeGroup.participant_count}
             />
           ) : null}
-          <div
-            id="chate"
-            className="relative overflow-x-hidden overflow-auto"
-            style={{ height: "calc(100vh - 270px)" }}
-            ref={scrollTop}
-            onScroll={(e) => {
-              const current = scrollTop.current.scrollTop;
-              if (current < 100) {
-                return;
-              }
-              if (current < 200 && current % 150 == 0) {
-                fnPagination(groupContext.activeGroup?.chatroom?.id, 50);
-              }
-            }}
-          >
-            {groupContext.activeGroup.chatroom?.id !== undefined ? (
-              <>
-                {conversationContext.conversationsArray.map(
-                  (convo, index, convoArr) => {
-                    let lastConvoDate;
-                    if (index === 0) {
-                      lastConvoDate = "";
-                    } else {
-                      lastConvoDate = convoArr[index - 1].date;
-                    }
-                    return (
-                      <div className="ml-[28px] mr-[114px] pt-5" key={convo.id}>
-                        {convo.date != lastConvoDate ? (
-                          <DateSpecifier dateString={convo.date} />
-                        ) : null}
-                        <MessageBlock
-                          userId={convo.member.id}
-                          conversationObject={convo}
-                        />
-                      </div>
-                    );
-                  }
-                )}
 
-                <div
-                  style={{
-                    flexGrow: 0.4,
-                  }}
-                />
-                <div ref={ref}></div>
-                <div className="fixed bottom-0 w-[62.1%]">
-                  {groupContext.activeGroup.chatroom.member_can_message ? (
-                    <Input updateHeight={updateHeight} />
-                  ) : (
-                    <span className="flex justify-center items-center text-[#999] py-4">
-                      Only Community Managers can send messages.
-                    </span>
+          {conversationContext.conversationsArray?.length > 0 ? (
+            <div
+              id="chate"
+              className="relative overflow-x-hidden overflow-auto"
+              style={{ height: "calc(100vh - 270px)" }}
+              ref={scrollTop}
+              onScroll={(e) => {
+                if (!shouldLoadMoreConversations) {
+                  return;
+                }
+                const current = scrollTop.current.scrollTop;
+                if (current < 200 && current % 150 == 0) {
+                  fnPagination(groupContext.activeGroup?.chatroom?.id, 50);
+                }
+              }}
+            >
+              {groupContext.activeGroup.chatroom?.id !== undefined ? (
+                <>
+                  {conversationContext.conversationsArray.map(
+                    (convo, index, convoArr) => {
+                      let lastConvoDate;
+                      if (index === 0) {
+                        lastConvoDate = "";
+                      } else {
+                        lastConvoDate = convoArr[index - 1].date;
+                      }
+                      return (
+                        <div
+                          className="ml-[28px] mr-[114px] pt-5"
+                          key={convo.id}
+                        >
+                          {convo.date != lastConvoDate ? (
+                            <DateSpecifier dateString={convo.date} />
+                          ) : null}
+                          <MessageBlock
+                            userId={convo.member.id}
+                            conversationObject={convo}
+                          />
+                        </div>
+                      );
+                    }
                   )}
+
+                  <div
+                    style={{
+                      flexGrow: 0.4,
+                    }}
+                  />
+                  <div ref={ref}></div>
+                  <div className="fixed bottom-0 w-[62.1%]">
+                    {groupContext.activeGroup.chatroom.member_can_message ? (
+                      <Input updateHeight={updateHeight} />
+                    ) : (
+                      <span className="flex justify-center items-center text-[#999] py-4">
+                        Only Community Managers can send messages.
+                      </span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="h-full flex justify-center items-center text-[#999]">
+                  Select a chat room to start messaging
                 </div>
-              </>
-            ) : (
-              <div className="h-full flex justify-center items-center text-[#999]">
-                Select a chat room to start messaging
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          ) : null}
         </>
       ) : (
         <div className="h-full flex justify-center items-center text-[#999] min-h-[80vh]">

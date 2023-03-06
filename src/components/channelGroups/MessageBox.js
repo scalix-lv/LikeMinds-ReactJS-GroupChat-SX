@@ -174,10 +174,10 @@ function StringBox({
                 .map((item, itemIndex, dataObj) => {
                   return (
                     <img
+                      key={item.url}
                       src={item.url}
                       alt=""
                       className="m-1 w-full max-h-[230px]"
-                      key={item.url}
                       onClick={() => {
                         setMediaData({ mediaObj: dataObj, type: "image" });
                         setDisplayMediaModel(true);
@@ -200,12 +200,14 @@ function StringBox({
                   return (
                     <>
                       {itemIndex <= 3 ? (
-                        <div className="m-1 w-[146px] h-[146px] float-left rounded-md overflow-hidden relative">
+                        <div
+                          className="m-1 w-[146px] h-[146px] float-left rounded-md overflow-hidden relative"
+                          key={item.url}
+                        >
                           <img
                             src={item.url}
                             alt=""
                             className="w-full h-full"
-                            key={item.url}
                             onClick={() => {
                               setMediaData({
                                 mediaObj: dataObj,

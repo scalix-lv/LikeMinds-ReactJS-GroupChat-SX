@@ -19,7 +19,13 @@ import { groupMainPath } from "../../../routes";
 import cancelIcon from "../../../assets/svg/cancel.svg";
 import acceptIcon from "../../../assets/svg/accept.svg";
 import { GroupContext } from "../../../Main";
-import { ChatRoomContext, fn, getUnjoinedList } from "../Groups";
+import {
+  ChatRoomContext,
+  fn,
+  getUnjoinedList,
+  paginateHomeFeed,
+  paginateUnjoinedFeed,
+} from "../Groups";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -49,11 +55,18 @@ function CurrentGroups() {
     } catch (error) {}
   }
   useEffect(() => {
-    console.log("here");
+    // console.log("here");
     setChatroom(status);
   }, [status]);
   return (
     <Box>
+      <Button
+        onClick={() => {
+          console.log(chatroomContext);
+        }}
+      >
+        SHOW CHATROOM CONTEXT
+      </Button>
       <PublicGroup groupList={chatroomContext.chatRoomsList} />
 
       <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
@@ -64,32 +77,35 @@ function CurrentGroups() {
       </div>
       <Collapse
         in={shouldOpenPublicCard}
-        sx={{
-          maxHeight: "400px",
-          overflowY: "auto",
-        }}
+        // sx={{
+        //   maxHeight: "400px",
+        //   overflowY: "auto",
+        // }}
       >
-        <InfiniteScroll
-          hasMore={false}
-          next={() => {
-            getUnjoinedList(
-              chatroomContext.unJoined,
-              chatroomContext.setUnjoined,
-              chatroomContext.setShouldLoadMoreUnjoinedFeed
-            );
-          }}
-          dataLength={chatroomContext.unJoined.length}
-        >
-          {chatroomContext.unJoined.map((group, groupIndex) => {
-            return (
-              <UnjoinedGroup
-                groupTitle={group.header}
-                group={group}
-                key={group.title + groupIndex}
-              />
-            );
-          })}
-        </InfiniteScroll>
+        <div className="max-h-[400px] overflow-auto" id="unjoinedContainer">
+          <InfiniteScroll
+            hasMore={true}
+            next={() => {
+              paginateUnjoinedFeed(
+                chatroomContext.unJoined,
+                chatroomContext.setUnjoined,
+                chatroomContext.setShouldLoadMoreUnjoinedFeed
+              );
+            }}
+            dataLength={chatroomContext.unJoined.length}
+            scrollableTarget="unjoinedContainer"
+          >
+            {chatroomContext.unJoined.map((group, groupIndex) => {
+              return (
+                <UnjoinedGroup
+                  groupTitle={group.header}
+                  group={group}
+                  key={group.title + groupIndex}
+                />
+              );
+            })}
+          </InfiniteScroll>
+        </div>
       </Collapse>
     </Box>
   );
@@ -131,24 +147,21 @@ function PublicGroup({ groupTitle, groupList }) {
 
   return (
     <Box>
-      <Collapse
-        in={shouldOpen}
-        className="border-b border-solid border-[#EEEEEE]"
-        sx={{
-          maxHeight: "400px",
-          overflowY: "auto",
-        }}
+      <div
+        id="homefeedContainer"
+        className="max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
       >
         <InfiniteScroll
           hasMore={chatroomContext.shouldLoadMoreHomeFeed}
           next={() => {
-            fn(
+            paginateHomeFeed(
               chatroomContext.chatRoomList,
               chatroomContext.setChatRoomList,
               chatroomContext.setShouldLoadMoreHomeFeed
             );
           }}
           dataLength={chatroomContext.chatRoomList.length}
+          scrollableTarget="homefeedContainer"
         >
           {chatroomContext.chatRoomList.map((group, groupIndex) => {
             return (
@@ -160,8 +173,6 @@ function PublicGroup({ groupTitle, groupList }) {
                   } else {
                     markRead(group.chatroom.id);
                   }
-
-                  // getChatRoomData(group.chatroom.id);
                 }}
                 key={group.chatroom.id + groupIndex + group.chatroom.header}
               >
@@ -176,30 +187,24 @@ function PublicGroup({ groupTitle, groupList }) {
             );
           })}
         </InfiniteScroll>
-      </Collapse>
+      </div>
     </Box>
   );
 }
 
 function PublicGroupTile({ groupTitle, group }) {
   const groupcontext = useContext(GroupContext);
-  const chatroomContext = useContext(ChatRoomContext);
+  const { status } = useParams();
   return (
     <div
       className="flex justify-between py-4 px-5 border-[#EEEEEE] border-t-[1px] items-center"
       style={{
-        backgroundColor:
-          groupTitle === groupcontext.activeGroup.chatroom?.header
-            ? "#ECF3FF"
-            : "#FFFFFF",
+        backgroundColor: group.chatroom.id == status ? "#ECF3FF" : "#FFFFFF",
       }}
     >
       <Typography
         sx={{
-          color:
-            groupTitle === groupcontext.activeGroup.chatroom?.header
-              ? "#3884f7"
-              : "#000000",
+          color: group.chatroom.id == status ? "#3884f7" : "#000000",
         }}
         component={"span"}
         className="text-4 text-[#323232] leading-[17px]"
@@ -212,8 +217,7 @@ function PublicGroupTile({ groupTitle, group }) {
         ) : null}
       </Typography>
 
-      {group.unseen_conversation_count > 0 &&
-      group.chatroom.header !== groupcontext.activeGroup.chatroom?.header ? (
+      {group.unseen_conversation_count > 0 && group.chatroom.id !== status ? (
         <span className="text-[#3884f7] text-xs">
           {group.unseen_conversation_count} new messages
         </span>
@@ -238,14 +242,8 @@ function UnjoinedGroup({ groupTitle, group }) {
       if (!call.error) {
         navigate(groupMainPath + "/" + group.id);
       }
-      // let details = await getChatRoomDetails(myClient, group.id);
-      // console.log(details);
+
       console.log(call);
-      // if (!call.err9or) {
-      //   console.log("here");
-      //   groupContext.setActiveGroup(details.data);
-      //   groupContext.setShowLoadingBar(false);
-      // }
     } catch (error) {
       // console.log(error);
     }

@@ -56,17 +56,31 @@ export const fn = async (
     setChatRoomsList(newChatRoomList);
   } catch (error) {}
 };
-const refreshHomeFeed = async (communityId, setChatRoomList) => {
+const refreshHomeFeed = async (setChatRoomList, setShouldLoadMoreHomeFeed) => {
   try {
+    const communityId = sessionStorage.getItem("communityId");
     const feedCall = await myClient.getHomeFeedData({
       communityId: communityId,
       page: 0,
     });
     setChatRoomList(feedCall.my_chatrooms);
+    setShouldLoadMoreHomeFeed(true);
   } catch (error) {
     console.log(error);
   }
 };
+
+const refreshUnjoinedFeed = async (
+  setUnjoinedFeedList,
+  setShouldLoadMoreUnjoinedFeed
+) => {
+  try {
+    let call = await getUnjoinedRooms(sessionStorage.getItem("communityId"), 1);
+    setUnjoinedFeedList(call.data.chatrooms);
+    setShouldLoadMoreUnjoinedFeed(true);
+  } catch (error) {}
+};
+
 const joinTheHomeFeeds = (oldArr, newArr, serialObject, setSerialObject) => {
   const so = { ...serialObject };
   for (let feed of newArr) {
@@ -90,15 +104,58 @@ export const getUnjoinedList = async (
   pageNo
 ) => {
   try {
-    let pageNoToCall = Math.floor(unJoined.length / 5) + 1;
+    let pageNoToCall = Math.floor(unJoined.length / 10) + 1;
 
     const feedCall = await getUnjoinedRooms(communityId, pageNoToCall);
     let newChatRoomList = unJoined.concat(feedCall.data.chatrooms);
     setUnjoined(newChatRoomList);
-    if (feedCall.data.chatrooms.length < 5) {
+    if (feedCall.data.chatrooms.length < 10) {
       setShouldLoadMore(false);
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const paginateHomeFeed = async (
+  currentHomeFeed,
+  setHomeFeed,
+  setShouldLoadHomeFeed
+) => {
+  try {
+    const pageNo = currentHomeFeed.length / 10 + 1;
+    const communityId = sessionStorage.getItem("communityId");
+    const call = await myClient.getHomeFeedData({
+      communityId: communityId,
+      page: pageNo,
+    });
+    if (call.my_chatrooms.length < 10) {
+      setShouldLoadHomeFeed(false);
+    }
+    const newHomeFeed = [...currentHomeFeed, ...call.my_chatrooms];
+    setHomeFeed(newHomeFeed);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const paginateUnjoinedFeed = async (
+  currentUnjoinedList,
+  setUnjoinedList,
+  setShouldLoadMoreUnjoinedGroup
+) => {
+  try {
+    const pageNo = currentUnjoinedList.length / 10 + 1;
+    const communityId = sessionStorage.getItem("communityId");
+    const call = await getUnjoinedRooms(communityId, pageNo);
+    if (call.data.chatrooms.length < 10) {
+      setShouldLoadMoreUnjoinedGroup(false);
+    }
+    let newUnjoinedList = [...currentUnjoinedList, ...call.data.chatrooms];
+    setUnjoinedList(newUnjoinedList);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 function Groups(props) {
@@ -241,15 +298,8 @@ function Groups(props) {
             setShouldLoadMoreHomeFeed: setShouldLoadMoreHomeFeed,
             setShouldLoadMoreUnjoinedFeed: setShouldLoadMoreUnjoinedFeed,
             refreshChatroomContext: () => {
-              refreshHomeFeed(
-                sessionStorage.getItem("communityId"),
-                setChatRoomsList
-              );
-              getUnjoinedList(
-                unJoined,
-                setUnjoined,
-                setShouldLoadMoreUnjoinedFeed
-              );
+              refreshHomeFeed(setChatRoomsList, setShouldLoadMoreHomeFeed);
+              refreshUnjoinedFeed(setUnjoined, setShouldLoadMoreUnjoinedFeed);
             },
           }}
         >

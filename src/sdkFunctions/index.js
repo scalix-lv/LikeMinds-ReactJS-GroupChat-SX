@@ -233,7 +233,7 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
       member_id: userId,
       value: false,
     });
-    if (refreshContext !== null) {
+    if (refreshContext !== null && refreshContext !== undefined) {
       refreshContext();
     }
     return jsonReturnHandler(leaveCall, null);
