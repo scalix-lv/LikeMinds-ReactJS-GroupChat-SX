@@ -10,7 +10,6 @@ import SearchBarDirectMessages from "./searchbar/SearchBarDirectMessages";
 
 function DirectMessagesMain() {
   const userContext = useContext(UserContext);
-
   const [currentProfile, setCurrentProfile] = useState({});
   const [currentChatroomConversations, setCurrentChatroomConversations] =
     useState([]);
@@ -79,7 +78,7 @@ function DirectMessagesMain() {
             {/* <SearchBarContainer/> */}
             <CurrentDms />
           </div>
-          <div className="flex-[.68] bg-[#f9f6ff] relative pt-[42px]">
+          <div className="flex-[.68] bg-[#FFFBF2] relative pt-[42px]">
             <Outlet />
           </div>
         </div>

@@ -32,7 +32,7 @@ async function getChatroomConversations(chatroomId, pageNo, dmContext) {
   if (chatroomId == null) {
     return;
   }
-  // console.log(chatroomId);
+  // // console.log(chatroomId);
   let optionObject = {
     chatroomID: chatroomId,
     page: pageNo,
@@ -62,7 +62,7 @@ async function getChatroomConversations(chatroomId, pageNo, dmContext) {
     newConversationArray.push(conversationToBeSetArray);
     dmContext.setCurrentChatroomConversations(newConversationArray);
   } else {
-    // console.log(response.errorMessage);
+    // // console.log(response.errorMessage);
   }
 }
 
@@ -111,7 +111,7 @@ function MessageBoxDM({
                           myClient,
                           dmContext.currentChatroom.id
                         ).then((e) => {
-                          // console.log(e);
+                          // // console.log(e);
                           dmContext.setCurrentChatroom(e.data.chatroom);
                           dmContext.setCurrentProfile(e.data);
                         });
@@ -431,9 +431,9 @@ function MoreOptions({ convoId, userId, convoObject }) {
         conversation_id: convoid,
       });
       setShouldShowBlock(!shouldShow);
-      // console.log(deleteCall);
+      // // console.log(deleteCall);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 
@@ -441,7 +441,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
     if (chatroomId == null) {
       return;
     }
-    // console.log(chatroomId);
+    // // console.log(chatroomId);
     let optionObject = {
       chatroomID: chatroomId,
       page: pageNo,
@@ -471,7 +471,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
       newConversationArray.push(conversationToBeSetArray);
       dmContext.setCurrentChatroomConversations(newConversationArray);
     } else {
-      // console.log(response.errorMessage);
+      // // console.log(response.errorMessage);
     }
   }
 
@@ -498,7 +498,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
             getChatroomConversations(convoObject.chatroom_id, 500);
           })
           .catch((e) => {
-            console.log(e);
+            // console.log(e);
             dmContext.setShowSnackBar(true);
             dmContext.setSnackBarMessage(" error occoured");
             // dmContext.setSnackBarMessage("Error in Deleing Message");

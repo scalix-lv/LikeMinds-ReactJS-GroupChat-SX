@@ -130,7 +130,7 @@ function InputSearchField({ updateHeight }) {
 
       setConversationArray(newConversationArray);
     } else {
-      // console.log(response.errorMessage);
+      // // console.log(response.errorMessage);
     }
   };
   let count = 1;
@@ -142,7 +142,7 @@ function InputSearchField({ updateHeight }) {
       let res = null;
       // textValT = textVal.
       let tv = text;
-      // console.log("checkpoint " + count++);
+      // // console.log("checkpoint " + count++);
       if (tv.length != 0) {
         if (!filesArray.length) {
           res = await fnew(false, 0, tv, setText, isRepliedConvo);
@@ -224,7 +224,7 @@ function InputSearchField({ updateHeight }) {
     isRepliedConvo
   ) => {
     try {
-      // console.log("checkpoint " + count++);
+      // // console.log("checkpoint " + count++);
       let config = {
         text: tv.toString(),
         created_at: Date.now(),
@@ -232,7 +232,7 @@ function InputSearchField({ updateHeight }) {
         // attachment_count: false,
         chatroom_id: groupContext.activeGroup.chatroom.id,
       };
-      // console.log(config);
+      // // console.log(config);
       if (has_files) {
         config.attachment_count = attachment_count;
         config.has_files = true;
@@ -248,7 +248,7 @@ function InputSearchField({ updateHeight }) {
       // let oldLength = oldConversationArr.length;
       // let newConvoArr = [...oldConversationArr];
 
-      // console.log("3");
+      // // console.log("3");
       // if (
       //   callRes.conversation.date === oldConversationArr[oldLength - 1][0].date
       // ) {
@@ -258,7 +258,7 @@ function InputSearchField({ updateHeight }) {
       //   callRes.conversation.member = userContext.currentUser;
       //   newConvoArr.push([...callRes.conversation]);
       // }
-      // console.log("4");
+      // // console.log("4");
       // conversationContext.setConversationArray(newConvoArr);
 
       setTextVal("");

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { myClient, UserContext } from "../..";
 import { GroupContext } from "../../Main";
 import {
@@ -103,20 +103,21 @@ function MatchTileFields({ title, match, showJoinButton }) {
   const chatroomContext = useContext(ChatRoomContext);
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
+  const { status } = useParams();
   let markReadFromSearch = () => {
     markRead(match.chatroom.id)
       .then((res) => {
         chatroomContext.refreshChatroomContext();
-        navigate(groupMainPath);
+        // navigate(groupMainPath);
       })
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
       });
   };
   async function getChatRoomDataFromSearch(chatroomId) {
     try {
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
-      // console.log(chatRoomData);
+      // // console.log(chatRoomData);
       if (!chatRoomData.error) {
         const tagCall = await getTaggingList(
           chatRoomData.data.community.id,
@@ -126,27 +127,27 @@ function MatchTileFields({ title, match, showJoinButton }) {
         chatRoomData.data.membersDetail = tagCall.data.members;
         groupContext.setActiveGroup(chatRoomData.data);
       } else {
-        // console.log(chatRoomData.errorMessage);
+        // // console.log(chatRoomData.errorMessage);
       }
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
   async function joinGroup() {
     try {
+      if (status != match.chatroom.id) {
+        groupContext.setShowLoadingBar(true);
+      }
       let call = await joinChatRoom(
         match.chatroom.id,
         userContext.currentUser.id,
         groupContext.refreshContextUi
       );
-      chatroomContext.refreshChatroomContext();
-
-      if (call.data.success) {
-        groupContext.setActiveGroup(match);
-        groupContext.refreshContextUi();
+      if (!call.error) {
+        navigate(groupMainPath + "/" + match.chatroom.id);
       }
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
   return (
@@ -157,9 +158,10 @@ function MatchTileFields({ title, match, showJoinButton }) {
                         cursor-pointer
                         justify-between"
       onClick={() => {
-        // console.log("clicked");
-        getChatRoomDataFromSearch(match.chatroom.id);
+        // // console.log("clicked");
+        // getChatRoomDataFromSearch(match.chatroom.id);
         markReadFromSearch();
+        navigate(groupMainPath + "/" + match.chatroom.id);
       }}
     >
       <span className="leading-[19px] font-normal text-center font-normal text-[#323232]">

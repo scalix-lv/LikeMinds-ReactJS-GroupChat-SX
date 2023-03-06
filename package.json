@@ -1,6 +1,8 @@
 {
-  "name": "scalix-react",
-  "version": "0.1.0",
+  "name": "likeminds-chat-sx-rt",
+  "version": "1.2.2",
+  "versionName": "1.2.2",
+  "versionCode": "18",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
