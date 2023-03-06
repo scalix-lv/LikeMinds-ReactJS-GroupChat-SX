@@ -2,7 +2,7 @@ import React from "react";
 import MessageBlock from "./MessageBlock";
 
 function RegularBox({ convoArray }) {
-  // console.log(convoArray);
+  // // console.log(convoArray);
   return (
     <div className="ml-[28px] mr-[114px] pt-5">
       <DateSpecifier dateString={convoArray[0].date} />

@@ -9,7 +9,8 @@ import rightArrow from "../../assets/svg/right-arrow.svg";
 import { getAllChatroomMember } from "../../sdkFunctions";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { myClient } from "../..";
-import { groupPersonalInfoPath } from "../../routes";
+import { groupPersonalInfoPath, groupMainPath } from "../../routes";
+
 const StyledBox = styled(Box)({
   backgroundColor: "#f6f6ff",
 });
@@ -59,7 +60,7 @@ function GroupInfo() {
 
       <div className="mr-[120px] ml-[20px] mt-[10px]">
         <div className="flex">
-          <Link to={"/groups/main"}>
+          <Link to={groupMainPath}>
             <IconButton>
               <img src={backIcon} alt="back icon" />
             </IconButton>

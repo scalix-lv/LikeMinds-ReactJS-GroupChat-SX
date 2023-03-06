@@ -28,9 +28,9 @@ function SearchBarDirectMessages() {
         page_size: 5,
         search_type: "header",
       });
-      // console.log(call);
+      // // console.log(call);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 

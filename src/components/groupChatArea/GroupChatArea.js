@@ -12,6 +12,7 @@ import { onValue, ref as REF } from "firebase/database";
 // import { initializeApp } from "firebase/app";
 import { ChatRoomContext } from "../Groups/Groups";
 import MessageBlock from "../channelGroups/MessageBlock";
+import { useParams } from "react-router-dom";
 // Exported Styled Box
 
 export const StyledBox = styled(Box)({
@@ -29,20 +30,24 @@ export const getChatroomConversationArray = async (
   conversationContext
 ) => {
   // let pageToCall = Math.floor(conversationContext.conversationsArray.length/50) + 1?
-  let optionObject = {
+  const optionObject = {
     chatroomID: chatroomId,
     page: pageNo,
   };
 
-  let response = await getConversationsForGroup(optionObject);
+  const response = await getConversationsForGroup(optionObject);
 
   if (!response.error) {
-    let conversations = response.data;
+    const conversations = response.data;
 
+    if (conversations.length == 0) {
+      return;
+    }
     sessionStorage.setItem("lastConvoId", conversations[0].id);
+
     conversationContext.setConversationArray(conversations);
   } else {
-    // console.log(response.errorMessage);
+    // // console.log(response.errorMessage);
   }
 };
 export const ConversationContext = React.createContext({
@@ -51,16 +56,16 @@ export const ConversationContext = React.createContext({
   refreshConversationArray: () => {},
 });
 
-function GroupChatArea() {
+const GroupChatArea = () => {
   // const [conversationContext.conversationsArray, conversationContext.setConversationArray] = useState([]);
   const chatRoomContext = useContext(ChatRoomContext);
   const conversationContext = useContext(ConversationContext);
-  let groupContext = useContext(GroupContext);
+  const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
-  let db = myClient.fbInstance();
+  const db = myClient.fbInstance();
   const ref = useRef(null);
   const scrollTop = useRef(null);
-
+  const { status } = useParams();
   const [shouldLoadMoreConversations, setShouldLoadMoreConversations] =
     useState(true);
 
@@ -72,9 +77,9 @@ function GroupChatArea() {
         el.scrollTop = el.scrollHeight;
         sessionStorage.setItem("currentContainerSize", el.scrollHeight);
       } else {
-        let newScrollHeight = el.scrollHeight;
-        let oldHeight = sessionStorage.getItem("currentContainerSize");
-        let newHeightToSet = newScrollHeight - parseInt(oldHeight);
+        const newScrollHeight = el.scrollHeight;
+        const oldHeight = sessionStorage.getItem("currentContainerSize");
+        const newHeightToSet = newScrollHeight - parseInt(oldHeight);
         el.scrollTop = newHeightToSet;
         sessionStorage.setItem("currentContainerSize", el.scrollHeight);
       }
@@ -84,9 +89,8 @@ function GroupChatArea() {
     updateHeight();
   }, []);
   useEffect(() => {
-    // scroll();
-    let convoArrLength = conversationContext.conversationsArray.length;
-    let lastConvoArrLength =
+    const convoArrLength = conversationContext.conversationsArray.length;
+    const lastConvoArrLength =
       conversationContext.conversationsArray[convoArrLength - 1]?.length;
     if (conversationContext.conversationsArray.length === 0) {
       return;
@@ -101,32 +105,33 @@ function GroupChatArea() {
   }, [conversationContext.conversationsArray]);
 
   const fnPagination = async (chatroomId, pageNo) => {
-    let optionObject = {
+    const optionObject = {
       chatroomID: chatroomId,
       page: 50,
       scroll_direction: 0,
       conversation_id: sessionStorage.getItem("lastConvoId"),
     };
 
-    let response = await getConversationsForGroup(optionObject);
+    const response = await getConversationsForGroup(optionObject);
 
     if (!response.error) {
-      let conversations = response.data;
-      if (conversations.length < 50) {
+      const conversations = response.data;
+
+      if (conversations.length == 0) {
         setShouldLoadMoreConversations(false);
+        return;
       }
 
       let newConversationArray = [];
 
       sessionStorage.setItem("lastConvoId", conversations[0].id);
-
       newConversationArray = [
         ...conversations,
         ...conversationContext.conversationsArray,
       ];
       conversationContext.setConversationArray(newConversationArray);
     } else {
-      // console.log(response.errorMessage);
+      // // console.log(response.errorMessage);
     }
   };
   useEffect(() => {
@@ -145,37 +150,32 @@ function GroupChatArea() {
     );
     return onValue(query, (snapshot) => {
       // const data = snapshot.val();
-      // console.log(snapshot.val());
+      // // console.log(snapshot.val());
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        // console.log(snapshot.val());
+        // // console.log(snapshot.val());
         updateHeight();
-        markRead(groupContext.activeGroup.chatroom.id).then(() => {
-          getChatroomConversationArray(
-            groupContext.activeGroup.chatroom.id,
-            100,
-            conversationContext
-          );
-        });
-
+        // // console.log(snapshot.val());
+        getChatroomConversationArray(
+          groupContext.activeGroup.chatroom.id,
+          100,
+          conversationContext
+        );
         chatRoomContext.refreshChatroomContext();
       }
     });
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
-    // const query = REF(db, `users/${userContext.currentUser.id}`);
     const query = REF(db, `community/${userContext.community.id}`);
     return onValue(query, (snapshot) => {
-      const data = snapshot.val();
-      console.log(data);
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        // console.log(snapshot.val());
+        // // console.log(snapshot.val());
         chatRoomContext.refreshChatroomContext();
       }
     });
@@ -184,6 +184,10 @@ function GroupChatArea() {
   useEffect(() => {
     updateHeight();
   }, [conversationContext.conversationsArray]);
+
+  useEffect(() => {
+    setShouldLoadMoreConversations(true);
+  }, [status]);
   return (
     <div>
       {groupContext.showLoadingBar == false ? (
@@ -194,73 +198,73 @@ function GroupChatArea() {
               memberCount={groupContext.activeGroup.participant_count}
             />
           ) : null}
-          <div
-            id="chate"
-            className="relative overflow-x-hidden overflow-auto"
-            style={{ height: "calc(100vh - 270px)" }}
-            ref={scrollTop}
-            onScroll={(e) => {
-              console.log("aagya");
-              console.log(scrollTop.current.scrollHeight);
-              if (scrollTop.current.scrollHeight < 100) {
-                console.log("here");
-                return;
-              }
-              let current = scrollTop.current.scrollTop;
-              if (current < 200 && current % 150 == 0) {
-                fnPagination(groupContext.activeGroup?.chatroom?.id, 50);
-              }
-            }}
-          >
-            {groupContext.activeGroup.chatroom?.id !== undefined ? (
-              <>
-                {conversationContext.conversationsArray.map(
-                  (convo, index, convoArr) => {
-                    let lastConvoDate;
-                    if (index === 0) {
-                      lastConvoDate = "";
-                    } else {
-                      lastConvoDate = convoArr[index - 1].date;
-                    }
-                    return (
-                      <div className="ml-[28px] mr-[114px] pt-5" key={convo.id}>
-                        {convo.date != lastConvoDate ? (
-                          <DateSpecifier
-                            dateString={convo.date}
-                            // key={convo.id + index}
-                          />
-                        ) : null}
-                        <MessageBlock
-                          userId={convo.member.id}
-                          conversationObject={convo}
-                        />
-                      </div>
-                    );
-                  }
-                )}
 
-                <div
-                  style={{
-                    flexGrow: 0.4,
-                  }}
-                />
-                <div ref={ref}></div>
-                <div className="fixed bottom-0 w-[62.1%]">
-                  {groupContext.activeGroup.chatroom.member_can_message ? (
-                    <Input updateHeight={updateHeight} />
-                  ) : (
-                    <span className="flex justify-center items-center text-[#999] py-4">
-                      Only Community Managers can send messages.
-                    </span>
+          {conversationContext.conversationsArray?.length > 0 ? (
+            <div
+              id="chate"
+              className="relative overflow-x-hidden overflow-auto"
+              style={{ height: "calc(100vh - 270px)" }}
+              ref={scrollTop}
+              onScroll={(e) => {
+                if (!shouldLoadMoreConversations) {
+                  return;
+                }
+                const current = scrollTop.current.scrollTop;
+                if (current < 200 && current % 150 == 0) {
+                  fnPagination(groupContext.activeGroup?.chatroom?.id, 50);
+                }
+              }}
+            >
+              {groupContext.activeGroup.chatroom?.id !== undefined ? (
+                <>
+                  {conversationContext.conversationsArray.map(
+                    (convo, index, convoArr) => {
+                      let lastConvoDate;
+                      if (index === 0) {
+                        lastConvoDate = "";
+                      } else {
+                        lastConvoDate = convoArr[index - 1].date;
+                      }
+                      return (
+                        <div
+                          className="ml-[28px] mr-[114px] pt-5"
+                          key={convo.id}
+                        >
+                          {convo.date != lastConvoDate ? (
+                            <DateSpecifier dateString={convo.date} />
+                          ) : null}
+                          <MessageBlock
+                            userId={convo.member.id}
+                            conversationObject={convo}
+                          />
+                        </div>
+                      );
+                    }
                   )}
+
+                  <div
+                    style={{
+                      flexGrow: 0.4,
+                    }}
+                  />
+                  <div ref={ref}></div>
+                  <div className="fixed bottom-0 w-[62.1%]">
+                    {groupContext.activeGroup.chatroom.member_can_message ? (
+                      <Input updateHeight={updateHeight} />
+                    ) : (
+                      <span className="flex justify-center items-center text-[#999] py-4">
+                        Only Community Managers can send messages.
+                      </span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="h-full flex justify-center items-center text-[#999]">
+                  Select a chat room to start messaging
                 </div>
-              </>
-            ) : (
-              <div className="h-full flex justify-center items-center text-[#999]">
-                Select a chat room to start messaging
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          ) : null}
         </>
       ) : (
         <div className="h-full flex justify-center items-center text-[#999] min-h-[80vh]">
@@ -269,7 +273,7 @@ function GroupChatArea() {
       )}
     </div>
   );
-}
+};
 
 export const CurrentSelectedConversationContext = React.createContext({
   isSelected: false,
