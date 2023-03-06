@@ -149,15 +149,13 @@ const GroupChatArea = () => {
       `/collabcards/${groupContext.activeGroup.chatroom?.id}`
     );
     return onValue(query, (snapshot) => {
-      // const data = snapshot.val();
-      // // console.log(snapshot.val());
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        // // console.log(snapshot.val());
+        // console.log("inside /collabcard block");
         updateHeight();
-        // // console.log(snapshot.val());
+
         getChatroomConversationArray(
           groupContext.activeGroup.chatroom.id,
           100,
@@ -169,13 +167,14 @@ const GroupChatArea = () => {
   }, [groupContext.activeGroup]);
 
   useEffect(() => {
-    const query = REF(db, `community/${userContext.community.id}`);
+    // const query = REF(db, `community/${userContext.community.id}`);
+    const query = REF(db, `users/${userContext.currentUser.id}`);
     return onValue(query, (snapshot) => {
       if (
         snapshot.exists() &&
         groupContext.activeGroup.chatroom !== undefined
       ) {
-        // // console.log(snapshot.val());
+        // console.log("inside /community block");
         chatRoomContext.refreshChatroomContext();
       }
     });
