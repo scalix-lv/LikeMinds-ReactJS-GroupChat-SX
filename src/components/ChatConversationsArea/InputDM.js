@@ -46,7 +46,7 @@ function InputSearchField({ updateHeight, inputRef }) {
   const ref = useRef();
   useEffect(() => {
     if (ref.current) {
-      // console.log("here");
+      // // console.log("here");
       dmContext.setMessageText("");
     }
   }, [dmContext.currentChatroom]);
@@ -85,23 +85,23 @@ function InputSearchField({ updateHeight, inputRef }) {
 
       setConversationArray(conversations);
     } else {
-      // console.log(response.errorMessage);
+      // // console.log(response.errorMessage);
     }
   };
   let handleSendMessage = async () => {
     try {
-      // console.log(dmContext.currentChatroom.chat_request_state);
+      // // console.log(dmContext.currentChatroom.chat_request_state);
       // let dmContext =
       if (
         dmContext.currentChatroom.chat_request_state === null &&
         dmContext.currentChatroom.member.state != 1 &&
         dmContext.currentChatroom.chatroom_with_user.state != 1
       ) {
-        // console.log("sending request");
+        // // console.log("sending request");
         let textMessage = dmContext.messageText;
         dmContext.setMessageText("");
         let call = await dmAction(0, dmContext.currentChatroom.id, textMessage);
-        // console.log(call);
+        // // console.log(call);
         let chatroomCall = await getChatRoomDetails(
           myClient,
           dmContext.currentChatroom.id
@@ -110,31 +110,31 @@ function InputSearchField({ updateHeight, inputRef }) {
         dmContext.setCurrentProfile(chatroomCall.data);
         return;
       }
-      // console.log("Inside This Block");
+      // // console.log("Inside This Block");
       let isRepliedConvo = dmContext.isConversationSelected;
-      // console.log("Inside This Block2");
+      // // console.log("Inside This Block2");
       let { messageText, setMessageText } = dmContext;
-      // console.log("Inside This Block3");
+      // // console.log("Inside This Block3");
       let [text, setText] = [messageText, setMessageText];
-      // console.log("Inside This Block4");
+      // // console.log("Inside This Block4");
       let inputContext = {
         mediaFiles: dmContext.mediaAttachments,
         audioFiles: dmContext.audioAttachments,
         docFiles: dmContext.documentAttachments,
       };
-      // console.log("Inside This Block5");
+      // // console.log("Inside This Block5");
       let filesArray = mergeInputFiles(inputContext);
-      // console.log("Inside This Block6");
+      // // console.log("Inside This Block6");
       let res = null;
-      // console.log("Inside This Block7");
+      // // console.log("Inside This Block7");
       let tv = text;
-      // console.log("Inside This Block8");
+      // // console.log("Inside This Block8");
       if (tv.length != 0) {
         if (!filesArray.length) {
-          // console.log("1");
+          // // console.log("1");
           res = await fnew(false, 0, tv, setText, isRepliedConvo);
         } else {
-          // console.log("2");
+          // // console.log("2");
           res = await fnew(
             true,
             filesArray.length,
@@ -145,12 +145,12 @@ function InputSearchField({ updateHeight, inputRef }) {
         }
         updateHeight();
       } else if (filesArray.length > 0) {
-        // console.log("3");
+        // // console.log("3");
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
         updateHeight();
       }
       ref.current.removeAttribute("disabled");
-      // console.log("HERE IS IT");
+      // // console.log("HERE IS IT");
 
       if (res != null && filesArray.length > 0) {
         let index = 0;
@@ -175,8 +175,8 @@ function InputSearchField({ updateHeight, inputRef }) {
           }
 
           let fileUploadRes = await myClient.uploadMedia(config);
-          // console.log("after upload");
-          // console.log(fileUploadRes);
+          // // console.log("after upload");
+          // // console.log(fileUploadRes);
           let onUploadCall = await myClient.onUploadFile({
             conversation_id: res.data.id,
             files_count: 1,
@@ -194,7 +194,7 @@ function InputSearchField({ updateHeight, inputRef }) {
             100,
             dmContext.setCurrentChatroomConversations
           );
-          // console.log(inputRef);
+          // // console.log(inputRef);
           updateHeight();
           if (inputRef.current) {
             inputRef.current.value = null;
@@ -250,7 +250,7 @@ function InputSearchField({ updateHeight, inputRef }) {
       dmContext.setAudioAttachments([]);
       dmContext.setMediaAttachments([]);
       dmContext.setDocumentAttachments([]);
-      // console.log(dmContext.currentChatroom.id);
+      // // console.log(dmContext.currentChatroom.id);
       await getChatroomConversations(
         dmContext.currentChatroom.id,
         100,
@@ -487,7 +487,7 @@ function OptionButtonBox({ option, accept, file, setFile, inputRef }) {
           multiple
           accept={accept}
           onChange={(e) => {
-            // console.log(e.target.files);
+            // // console.log(e.target.files);
             setFile(e.target.files);
           }}
           ref={inputRef}
@@ -539,12 +539,12 @@ function ImagePreview() {
   useEffect(() => {
     let newArr = [];
     for (let nf of dmContext.mediaAttachments) {
-      console.log(nf);
+      // console.log(nf);
       if (
         nf.type.split("/")[0] === "image" ||
         nf.type.split("/")[0] === "video"
       ) {
-        console.log(nf);
+        // console.log(nf);
         newArr.push(nf);
       }
     }
@@ -563,7 +563,7 @@ function ImagePreview() {
       <div className="w-full shadow-sm p-3 flex justify-between">
         {mediaArray.map((file, fileIndex) => {
           const fileTypeInitial = file.type.split("/")[0];
-          // console.log(fileTypeInitial);
+          // // console.log(fileTypeInitial);
           if (fileTypeInitial === "image") {
             return (
               <div className="max-w-[120px]" key={file.name + fileIndex}>
@@ -610,9 +610,9 @@ function AudioPreview() {
   useEffect(() => {
     let newArr = [];
     for (let nf of dmContext.audioAttachments) {
-      console.log(nf);
+      // console.log(nf);
       if (nf.type.split("/")[0] === "audio") {
-        console.log(nf);
+        // console.log(nf);
         newArr.push(nf);
       }
     }
@@ -631,7 +631,7 @@ function AudioPreview() {
       <div className="w-full shadow-sm p-3 flex justify-between">
         {mediaArray.map((file, fileIndex) => {
           const fileTypeInitial = file.type.split("/")[0];
-          // console.log(fileTypeInitial);
+          // // console.log(fileTypeInitial);
           if (fileTypeInitial === "image") {
             return (
               <div className="max-w-[120px]" key={file.name + fileIndex}>
@@ -681,9 +681,9 @@ function DocPreview() {
   useEffect(() => {
     let newArr = [];
     for (let nf of dmContext.documentAttachments) {
-      console.log(nf);
+      // console.log(nf);
       if (nf.type.split("/")[1] === "pdf") {
-        console.log(nf);
+        // console.log(nf);
         newArr.push(nf);
       }
     }
@@ -702,7 +702,7 @@ function DocPreview() {
       <div className="w-full shadow-sm p-3 flex justify-between">
         {mediaArray.map((file, fileIndex) => {
           const fileTypeInitial = file.type.split("/")[1];
-          // console.log(fileTypeInitial);
+          // // console.log(fileTypeInitial);
           if (fileTypeInitial === "pdf") {
             return (
               <div className="max-w-[120px]" key={file.name + fileIndex}>

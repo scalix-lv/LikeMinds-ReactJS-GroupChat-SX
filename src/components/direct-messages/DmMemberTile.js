@@ -18,7 +18,7 @@ export async function reqDM(
 ) {
   try {
     let call = await requestDM(profile.id, userContext.community.id);
-    // console.log(call);
+    // // console.log(call);
     // let i = 1;
 
     if (call.data === undefined) {
@@ -31,7 +31,7 @@ export async function reqDM(
           myClient,
           call.data.chatroom_id
         );
-        // console.log(profileData.error);
+        // // console.log(profileData.error);
 
         if (profileData.data == undefined) {
           setOpenSnackBar(true);
@@ -43,17 +43,17 @@ export async function reqDM(
           setSelectedId(profile.id);
         }
 
-        // console.log(profileData);
+        // // console.log(profileData);
         dmContext.setCurrentProfile(profileData.data);
         dmContext.setCurrentChatroom(profileData.data.chatroom);
       } else {
         let createDmCall = await createDM(profile.id);
-        // console.log(createDmCall);
+        // // console.log(createDmCall);
         let chatroomDetailsCall = await getChatRoomDetails(
           myClient,
           createDmCall.data.chatroom.id
         );
-        // console.log(chatroomDetailsCall);
+        // // console.log(chatroomDetailsCall);
         dmContext.setCurrentProfile(chatroomDetailsCall.data);
         dmContext.setCurrentChatroom(chatroomDetailsCall.data.chatroom);
       }
@@ -62,7 +62,7 @@ export async function reqDM(
       alert("now message at ", call.data.new_request_dm_timestamp);
     }
   } catch (error) {
-    // console.log(error);
+    // // console.log(error);
     return error;
   }
 }
@@ -71,7 +71,7 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
   const navigate = useNavigate();
   let dmContext = useContext(DmContext);
   let userContext = useContext(UserContext);
-  // // console.log(profile);
+  // // // console.log(profile);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState("");
   return (
@@ -132,7 +132,7 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
         Message
       </Button>
       <Link
-        to={directMessageInfoPath}
+        to={`${directMessageInfoPath}/${profile?.user_unique_id} `}
         state={{
           communityId: userContext.community.id,
           memberId: profile.id,
@@ -141,8 +141,10 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
       >
         <Button
           sx={{
-            width: "110px",
+            width: "107px",
             height: "34px",
+            paddingX: "3px",
+            fontSize: "12px",
           }}
           variant="outlined"
           // onClick={routeToProfile}
