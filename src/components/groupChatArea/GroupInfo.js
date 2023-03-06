@@ -19,13 +19,14 @@ function GroupInfo() {
   const gc = useContext(GroupContext);
   const [participantList, setParticipantList] = useState([]);
   const [loadMode, setLoadMore] = useState(true);
-
+  const [totalMembers, setTotalMembers] = useState(0);
   let callFn = () => {
     getAllChatroomMember(
       gc.activeGroup?.chatroom?.id,
       gc.activeGroup?.community?.id,
       participantList,
-      setParticipantList
+      setParticipantList,
+      setTotalMembers
     )
       .then((res) => {
         if (res) {
@@ -50,17 +51,15 @@ function GroupInfo() {
       {/* Title Header */}
       {gc.activeGroup.chatroom?.id ? (
         <Tittle
-          headerProps={{
-            title: gc.activeGroup.chatroom.header,
-            memberCount: gc.activeGroup.participant_count,
-          }}
+          title={gc.activeGroup.chatroom.header}
+          memberCount={totalMembers}
         />
       ) : null}
       {/* Title Header */}
 
       <div className="mr-[120px] ml-[20px] mt-[10px]">
         <div className="flex">
-          <Link to={groupMainPath}>
+          <Link to={groupMainPath + "/" + gc.activeGroup.chatroom.id}>
             <IconButton>
               <img src={backIcon} alt="back icon" />
             </IconButton>

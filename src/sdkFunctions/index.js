@@ -158,25 +158,27 @@ export async function getAllChatroomMember(
   chatroomId,
   communityId,
   list,
-  setFunction
+  setFunction,
+  setTotalMembers
 ) {
   try {
-    let pageNoToCall = list.length / 11 + 1;
+    let pageNoToCall = list.length / 10 + 1;
     let allMemberCall = await myClient.allMembers({
       chatroom_id: chatroomId,
       community_id: communityId,
       page: pageNoToCall,
     });
-    // // console.log(allMemberCall);
-    let shouldLoadMore = allMemberCall.members.length < 11 ? false : true;
+    if (!!setTotalMembers) {
+      if (!!allMemberCall.total_members) {
+        setTotalMembers(allMemberCall.total_members);
+      }
+    }
+    let shouldLoadMore = allMemberCall.members.length < 10 ? false : true;
     let newList = [...list];
-    // console.log(shouldLoadMore);
     newList = [...list, ...allMemberCall.members];
-
     setFunction(newList);
     return shouldLoadMore;
   } catch (error) {
-    // // console.log(error);
     return false;
   }
 }

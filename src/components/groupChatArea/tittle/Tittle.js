@@ -45,9 +45,7 @@ function TitleArea({ title, memberCount }) {
       <div />
       <span className="text-xs font-normal leading-[14.5px] text-[#ADADAD]">
         <Link to={groupInfoPath}>
-          {groupContext.activeGroup.members?.length > 0
-            ? groupContext.activeGroup.members?.length
-            : 0}{" "}
+          {groupContext.activeGroup.participant_count + " "}
           members
         </Link>
       </span>
