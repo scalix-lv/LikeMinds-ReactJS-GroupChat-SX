@@ -148,7 +148,6 @@ const GroupChatArea = () => {
       db,
       `/collabcards/${groupContext.activeGroup.chatroom?.id}`
     );
-    console.log("hello" + groupContext.activeGroup.chatroom.id);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
         updateHeight();
