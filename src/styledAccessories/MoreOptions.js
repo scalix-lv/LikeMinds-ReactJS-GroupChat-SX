@@ -5,6 +5,7 @@ import {
   getChatRoomDetails,
   getConversationsForGroup,
   leaveChatRoom,
+  leaveSecretChatroom,
 } from "../sdkFunctions";
 import { GroupContext } from "../Main";
 import { myClient, UserContext } from "..";
@@ -27,18 +28,29 @@ export function MoreOptions() {
 
   let navigate = useNavigate();
   function leaveGroup() {
-    leaveChatRoom(
-      groupContext.activeGroup.chatroom.id,
-      userContext.currentUser.id
-    )
-      .then((r) => {
-        chatroomContext.refreshChatroomContext();
-      })
-      .catch((r) => {
-        // console.log(r);
-      });
+    if (!!groupContext.activeGroup.chatroom.is_secret) {
+      leaveSecretChatroom(
+        groupContext.activeGroup.chatroom.id,
+        userContext.currentUser.id
+      )
+        .then((r) => {
+          chatroomContext.refreshChatroomContext();
+        })
+        .catch((r) => {});
 
-    navigate("/groups/");
+      navigate("/groups/");
+    } else {
+      leaveChatRoom(
+        groupContext.activeGroup.chatroom.id,
+        userContext.currentUser.id
+      )
+        .then((r) => {
+          chatroomContext.refreshChatroomContext();
+        })
+        .catch((r) => {});
+
+      navigate("/groups/");
+    }
   }
 
   const MenuBox = (

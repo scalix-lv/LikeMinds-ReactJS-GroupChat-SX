@@ -148,14 +148,10 @@ const GroupChatArea = () => {
       db,
       `/collabcards/${groupContext.activeGroup.chatroom?.id}`
     );
+    console.log("hello" + groupContext.activeGroup.chatroom.id);
     return onValue(query, (snapshot) => {
-      if (
-        snapshot.exists() &&
-        groupContext.activeGroup.chatroom !== undefined
-      ) {
-        // console.log("inside /collabcard block");
+      if (snapshot.exists()) {
         updateHeight();
-
         getChatroomConversationArray(
           groupContext.activeGroup.chatroom.id,
           100,
@@ -170,11 +166,7 @@ const GroupChatArea = () => {
     // const query = REF(db, `community/${userContext.community.id}`);
     const query = REF(db, `users/${userContext.currentUser.id}`);
     return onValue(query, (snapshot) => {
-      if (
-        snapshot.exists() &&
-        groupContext.activeGroup.chatroom !== undefined
-      ) {
-        // console.log("inside /community block");
+      if (snapshot.exists()) {
         chatRoomContext.refreshChatroomContext();
       }
     });

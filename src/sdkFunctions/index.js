@@ -244,6 +244,21 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
   }
 }
 
+export async function leaveSecretChatroom(collabId, userId, refreshContext) {
+  try {
+    const leaveCall = await myClient.leaveSecretChatroom({
+      chatroom_id: collabId,
+      member_id: userId,
+    });
+    if (refreshContext !== null && refreshContext !== undefined) {
+      refreshContext();
+    }
+    return jsonReturnHandler(leaveCall, null);
+  } catch (error) {
+    return jsonReturnHandler(null, error);
+  }
+}
+
 export function tagExtracter(str, userContext, state) {
   if (state === 1) {
     let splitArr = str.split(
