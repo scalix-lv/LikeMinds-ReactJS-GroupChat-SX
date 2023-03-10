@@ -36,6 +36,9 @@ function CurrentGroups() {
   const groupContext = useContext(GroupContext);
   async function setChatroom(chatroomId) {
     try {
+      if (!!chatRoomData) {
+        return;
+      }
       const markReadCall = await markRead(chatroomId);
       // // console.log(markReadCall);
       const chatRoomData = await getChatRoomDetails(myClient, chatroomId);
