@@ -20,34 +20,28 @@ function GroupInfo() {
   const [participantList, setParticipantList] = useState([]);
   const [loadMode, setLoadMore] = useState(true);
   const [totalMembers, setTotalMembers] = useState(0);
-  let callFn = () => {
-    getAllChatroomMember(
-      gc.activeGroup?.chatroom?.id,
-      gc.activeGroup?.community?.id,
-      participantList,
-      setParticipantList,
-      setTotalMembers
-    )
-      .then((res) => {
-        if (res) {
-          setLoadMore(true);
-        } else {
-          setLoadMore(false);
-        }
-      })
-      .catch((res) => {
-        setLoadMore(res);
-      });
+  let callFn = (isSecret) => {
+    const getMemberList = async (isSecret) => {
+      try {
+        let call = await myClient.viewParticipants({
+          chatroom_id: gc.activeGroup.chatroom.id,
+          is_secret: isSecret,
+        });
+        setParticipantList(call.participants);
+      } catch (error) {}
+    };
+    getMemberList(isSecret);
   };
   // myClient.fb(gc.activeGroup.chatroom.id);
   useEffect(() => {
     if (Object.keys(gc.activeGroup).length > 0) {
-      callFn();
+      const isSecret = gc.activeGroup.chatroom.is_secret;
+      callFn(isSecret);
     }
   }, [gc.activeGroup]);
 
   return (
-    <div className="overflow-auto w-full h-full">
+    <div className=" w-full customHeight">
       {/* Title Header */}
       {gc.activeGroup.chatroom?.id ? (
         <Tittle
@@ -57,7 +51,7 @@ function GroupInfo() {
       ) : null}
       {/* Title Header */}
 
-      <div className="mr-[120px] ml-[20px] mt-[10px]">
+      <div className="mr-[120px] ml-[20px] mt-[10px] h-full">
         <div className="flex">
           <Link to={groupMainPath + "/" + gc.activeGroup.chatroom.id}>
             <IconButton>
@@ -70,12 +64,12 @@ function GroupInfo() {
         </div>
 
         {/* Member list */}
-        <div className="ml-1 pl-[5px]">
+        <div className="ml-1 pl-[5px] h-full">
           <div className="text-4 font-[700] text-[#323232]">Participants</div>
-          <div className="py-[18px]">
+          <div className="py-[18px] overflow-auto max-h-[70%]">
             <InfiniteScroll
               next={callFn}
-              hasMore={loadMode}
+              hasMore={false}
               dataLength={participantList.length}
             >
               {participantList?.map((profile, profileIndex) => {

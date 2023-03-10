@@ -56,7 +56,9 @@ function CurrentGroups() {
   }
   useEffect(() => {
     // // console.log("here");
-    setChatroom(status);
+    if (status) {
+      setChatroom(status);
+    }
   }, [status]);
   return (
     <Box>
