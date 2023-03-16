@@ -6,6 +6,7 @@ import {
   getConversationsForGroup,
   leaveChatRoom,
   leaveSecretChatroom,
+  log,
 } from "../sdkFunctions";
 import { GroupContext } from "../Main";
 import { myClient, UserContext } from "..";
@@ -24,6 +25,22 @@ export function MoreOptions() {
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
+  }
+  async function muteNotifications(id) {
+    try {
+      let call = await myClient.muteNotification({
+        chatroom_id: groupContext.activeGroup.chatroom.id,
+        value: id == 6 ? true : false,
+      });
+      closeMenu();
+      let refreshCall = await getChatRoomDetails(
+        myClient,
+        groupContext.activeGroup.chatroom.id
+      );
+      groupContext.activeGroup(refreshCall.data);
+    } catch (error) {
+      log(error);
+    }
   }
 
   let navigate = useNavigate();
@@ -65,16 +82,30 @@ export function MoreOptions() {
         horizontal: "left",
       }}
     >
-      <MenuItem
-        onClick={leaveGroup}
-        sx={{
-          fontSize: "14px",
-          color: "#323232",
-        }}
-      >
-        <img src={leaveIcon} alt="leave" className="mr-2" />
-        Leave Channel
-      </MenuItem>
+      {groupContext.activeGroup.chatroom_actions.map((item) => {
+        if (item.id === 2) {
+          return null;
+        }
+        return (
+          <MenuItem
+            key={item.id}
+            onClick={() => {
+              if (item.id === 6 || item.id === 8) {
+                muteNotifications(item.id);
+              } else if (item.id === 15) {
+                leaveGroup();
+              }
+            }}
+            sx={{
+              fontSize: "14px",
+              color: "#323232",
+            }}
+          >
+            <img src={leaveIcon} alt="leave" className="mr-2" />
+            {item.title}
+          </MenuItem>
+        );
+      })}
     </Menu>
   );
   return (
@@ -149,13 +180,11 @@ export function MoreOptionsDM() {
       dmContext.refreshContext()
     )
       .then((r) => {
-        // alert("s");
         dmContext.setCurrentChatroom({});
         navigate(directMessagePath);
       })
       .catch((r) => {
-        // alert("e");
-        // // console.log(r);
+        log(r);
       });
   }
 
@@ -197,7 +226,6 @@ export function MoreOptionsDM() {
     );
     dmContext.setCurrentChatroom(callChatroomRefresh.data.chatroom);
     dmContext.setCurrentProfile(callChatroomRefresh.data);
-    // // console.log(callRefresh);
   }
 
   const MenuBox = (

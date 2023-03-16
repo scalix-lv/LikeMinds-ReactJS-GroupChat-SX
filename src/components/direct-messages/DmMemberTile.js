@@ -46,6 +46,7 @@ export async function reqDM(
         // // console.log(profileData);
         dmContext.setCurrentProfile(profileData.data);
         dmContext.setCurrentChatroom(profileData.data.chatroom);
+        return profileData.data.chatroom.id;
       } else {
         let createDmCall = await createDM(profile.id);
         // // console.log(createDmCall);
@@ -56,6 +57,7 @@ export async function reqDM(
         // // console.log(chatroomDetailsCall);
         dmContext.setCurrentProfile(chatroomDetailsCall.data);
         dmContext.setCurrentChatroom(chatroomDetailsCall.data.chatroom);
+        return chatroomDetailsCall.data.chatroom.id;
       }
       // navigate(directMessageChatPath);
     } else {
@@ -119,7 +121,7 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
             setSnackBarMessage
           )
             .then((r) => {
-              navigate(directMessageChatPath);
+              navigate(directMessageChatPath + "/" + r);
               dmContext.setShowLoadingBar(false);
             })
             .catch((e) => {

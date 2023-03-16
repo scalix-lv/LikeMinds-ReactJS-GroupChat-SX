@@ -495,3 +495,9 @@ export function getDmMember(str, currentUser) {
     return userString.substring(0, userString.length - currentLength);
   }
 }
+
+export function log(str) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(str);
+  }
+}
