@@ -5,8 +5,8 @@ function FeedSkeleton() {
   const arr = Array(6).fill(null);
   return (
     <div>
-      {arr.map(() => {
-        return <Feed />;
+      {arr.map((item, index) => {
+        return <Feed key={index} />;
       })}
     </div>
   );

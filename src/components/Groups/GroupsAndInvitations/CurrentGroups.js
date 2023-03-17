@@ -37,6 +37,7 @@ function CurrentGroups() {
   const { status } = useParams();
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
+
   async function setChatroom(chatroomId) {
     try {
       const markReadCall = await markRead(chatroomId);
@@ -69,7 +70,7 @@ function CurrentGroups() {
   return (
     <Box>
       {/*  */}
-      <InvitedGroupList />
+
       <PublicGroup groupList={chatroomContext.chatRoomsList} />
 
       <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
@@ -112,13 +113,13 @@ function CurrentGroups() {
   );
 }
 
-function PublicGroup({ groupTitle, groupList }) {
+function PublicGroup({}) {
   const [shouldOpen, setShouldOpen] = useState(true);
   const [loadMoreGroups, shouldLoadMoreGroups] = useState(true);
   const { status } = useParams();
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
-
+  const [invitationListLength, setInvitationListLength] = useState(0);
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
@@ -161,9 +162,15 @@ function PublicGroup({ groupTitle, groupList }) {
                 chatroomContext.setShouldLoadMoreHomeFeed
               );
             }}
-            dataLength={chatroomContext.chatRoomList.length}
+            dataLength={
+              chatroomContext.chatRoomList.length + invitationListLength
+            }
             scrollableTarget="homefeedContainer"
           >
+            <InvitedGroupList
+              callBack={setInvitationListLength}
+              listLength={invitationListLength}
+            />
             {chatroomContext.chatRoomList.map((group, groupIndex) => {
               return (
                 <Link
@@ -314,11 +321,16 @@ function GroupInviteTile({ title, response, id }) {
             onClick={() => {
               response(id, 2);
             }}
+            className="cursor-pointer"
           >
             <img src={cancelIcon} alt="cancel" />
           </IconButton>
 
-          <IconButton disableRipple={true} onClick={() => response(id, 1)}>
+          <IconButton
+            disableRipple={true}
+            onClick={() => response(id, 1)}
+            className="cursor-pointer"
+          >
             <img src={acceptIcon} alt="accept" />
           </IconButton>
         </Box>
@@ -327,48 +339,50 @@ function GroupInviteTile({ title, response, id }) {
   );
 }
 
-const InvitedGroupList = ({}) => {
+const InvitedGroupList = ({ callBack, listLength }) => {
   const [loadMore, setLoadMore] = useState(true);
   const [list, setList] = useState([]);
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
   const navigate = useNavigate();
   const getInvitations = async () => {
-    if (!loadMore) {
-      return;
-    }
     try {
-      const pageNo = list.length / 10 + 1;
-      const call = await myClient.getInvites({
-        channel_type: 1,
-        page: pageNo,
-        page_size: 10,
-      });
-      const inviteArray = call.user_invites;
-      if (inviteArray.length < 10) {
-        setLoadMore(false);
+      let pageNo = 1;
+      let shouldCall = true;
+      let res = [];
+      let pageSize = 10;
+      while (shouldCall) {
+        const call = await myClient.getInvites({
+          channel_type: 1,
+          page: pageNo++,
+          page_size: pageSize,
+        });
+        const inviteArray = call.user_invites;
+        res = res.concat(inviteArray);
+        if (inviteArray.length < pageSize) {
+          shouldCall = false;
+        }
       }
-      if (!!inviteArray.length) {
-        const currList = [...list];
-        const newInviteArray = currList.concat(inviteArray);
-        setList(newInviteArray);
-      }
+      setList(res);
+      callBack(res.length);
     } catch (error) {
       log(error);
     }
   };
-
+  // not required currently as complete pagination is happening synchronously
   const refreshInvitations = async () => {
     try {
+      let pageSize = 10;
       let call = await myClient.getInvites({
         channel_type: 1,
         page: 1,
-        page_size: 10,
+        page_size: pageSize,
       });
 
       const inviteArray = call.user_invites;
-      if (inviteArray.length < 10) {
+      if (inviteArray.length < pageSize) {
         setLoadMore(false);
+        // pageSize;
       }
       setList(inviteArray);
     } catch (e) {
@@ -385,44 +399,50 @@ const InvitedGroupList = ({}) => {
       chatroomContext.refreshChatroomContext();
       if (response === 2) {
         groupContext.setActiveGroup({});
+        groupContext.setShowSnackBar(true);
+        groupContext.setSnackBarMessage("Invitation Rejected");
         navigate(groupPath);
         return;
       }
+      groupContext.setShowSnackBar(true);
+      groupContext.setSnackBarMessage("Invitation Accepted");
       let chatroomDetails = await getChatRoomDetails(myClient, channel_id);
       groupContext.setActiveGroup(chatroomDetails.data);
     } catch (error) {
+      groupContext.setShowSnackBar(true);
+      groupContext.setSnackBarMessage("Request Failed.");
       log(error);
     }
   };
   useEffect(() => {
     getInvitations();
-  }, []);
-
-  useEffect(() => {
-    refreshInvitations();
   }, [groupContext.activeGroup]);
+
+  // useEffect(() => {
+  //   refreshInvitations();
+  // }, [groupContext.activeGroup]);
 
   return (
     <>
-      <div className="max-h-[400px]" id="invitation-groups">
+      {/* <div className="max-h-[400px]" id="invitation-groups">
         <InfiniteScroll
           dataLength={list.length}
           hasMore={loadMore}
           next={getInvitations}
           response="invitation-groups"
-        >
-          {list.map((item) => {
-            return (
-              <GroupInviteTile
-                key={item.chatroom.id}
-                title={item.chatroom.header}
-                id={item.chatroom.id}
-                response={invitationResponse}
-              />
-            );
-          })}
-        </InfiniteScroll>
-      </div>
+        > */}
+      {list.map((item) => {
+        return (
+          <GroupInviteTile
+            key={item.chatroom.id}
+            title={item.chatroom.header}
+            id={item.chatroom.id}
+            response={invitationResponse}
+          />
+        );
+      })}
+      {/* </InfiniteScroll>
+      </div> */}
     </>
   );
 };

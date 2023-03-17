@@ -110,16 +110,26 @@ function AcceptTheirInviteFirst({ title }) {
               }}
               className="bg-[#3884F7] text-white h-[56px] w-[149px] px-[30px] py-[16px] text-base my-10 hover:text-[#3884F7] hover:bg-[#EBF3FF] mx-2"
               onClick={() => {
-                myClient.inviteAction({
-                  channel_id: status,
-                  invite_status: 1,
-                });
-                chatroomContext.refreshChatroomContext();
-                getChatRoomDetails(myClient, status)
-                  .then((res) => {
-                    groupContext.setActiveGroup(res.data);
+                myClient
+                  .inviteAction({
+                    channel_id: status,
+                    invite_status: 1,
                   })
-                  .catch((e) => log(e));
+                  .then((e) => {
+                    groupContext.setShowSnackBar(true);
+                    groupContext.setSnackBarMessage("Invitaion Accepted");
+                    chatroomContext.refreshChatroomContext();
+                    getChatRoomDetails(myClient, status)
+                      .then((res) => {
+                        groupContext.setActiveGroup(res.data);
+                      })
+                      .catch((e) => log(e));
+                  })
+                  .catch((e) => {
+                    groupContext.setShowSnackBar(true);
+
+                    groupContext.setSnackBarMessage("An Error Occoured");
+                  });
               }}
             >
               Accept
