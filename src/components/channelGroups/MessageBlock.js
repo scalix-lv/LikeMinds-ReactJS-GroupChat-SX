@@ -4,6 +4,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { UserContext, userObj } from "../..";
 import { RouteContext } from "../../Main";
 import { directMessagePath } from "../../routes";
+import { log } from "../../sdkFunctions";
 import MessageBoxDM from "../ChatConversationsArea/MessageBoxDM";
 import MessageBox from "./MessageBox";
 
@@ -12,9 +13,13 @@ function MessageBlock({ conversationObject, userId }) {
   const userContext = useContext(UserContext);
   const [convoDetails, setConvoDetails] = useState(conversationObject);
   const currentUser = userContext.currentUser.id;
-  const location = useLocation();
+  let { pathname } = useLocation();
+  pathname = pathname.split("/")[1];
+  log(pathname);
   const { step } = useParams();
+
   // // console.log(step);
+
   return (
     <Box
       className="flex py-2 px-0 h-full overflow-auto"
@@ -22,7 +27,7 @@ function MessageBlock({ conversationObject, userId }) {
         flexDirection: userId === currentUser ? "row-reverse" : "row",
       }}
     >
-      {step === "direct-message" ? (
+      {pathname === "direct-messages" ? (
         <MessageBoxDM
           userId={userId}
           username={convoDetails.member.name}

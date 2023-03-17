@@ -61,7 +61,7 @@ const refreshHomeFeed = async (setChatRoomList, setShouldLoadMoreHomeFeed) => {
     const communityId = sessionStorage.getItem("communityId");
     const feedCall = await myClient.getHomeFeedData({
       communityId: communityId,
-      page: 0,
+      page: 1,
     });
     setChatRoomList(feedCall.my_chatrooms);
     setShouldLoadMoreHomeFeed(true);
@@ -123,7 +123,7 @@ export const paginateHomeFeed = async (
   setShouldLoadHomeFeed
 ) => {
   try {
-    const pageNo = currentHomeFeed.length / 10 + 1;
+    const pageNo = Math.floor(currentHomeFeed.length / 10) + 1;
     const communityId = sessionStorage.getItem("communityId");
     const call = await myClient.getHomeFeedData({
       communityId: communityId,
@@ -145,7 +145,7 @@ export const paginateUnjoinedFeed = async (
   setShouldLoadMoreUnjoinedGroup
 ) => {
   try {
-    const pageNo = currentUnjoinedList.length / 10 + 1;
+    const pageNo = Math.floor(currentUnjoinedList.length / 10) + 1;
     const communityId = sessionStorage.getItem("communityId");
     const call = await getUnjoinedRooms(communityId, pageNo);
     if (call.data.chatrooms.length < 10) {
@@ -163,6 +163,7 @@ function Groups(props) {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const [serialObject, setSerialObject] = useState({});
+  const [feedSerialObject, setFeedSerialObject] = useState({});
   const [chatRoomsList, setChatRoomsList] = useState([]);
   const [unJoined, setUnjoined] = useState([]);
   const [shouldLoadMoreHomeFeed, setShouldLoadMoreHomeFeed] = useState(true);
@@ -190,43 +191,43 @@ function Groups(props) {
     sessionStorage.removeItem("last_message_id");
   }, [groupContext.activeGroup]);
 
-  useEffect(() => {
-    if (Object.keys(groupContext.activeGroup).length === 0) {
-    } else {
-      fn(
-        chatRoomsList,
-        setChatRoomsList,
-        setShouldLoadMoreHomeFeed,
-        userContext.community.id,
-        serialObject,
-        setSerialObject
-      );
+  // temporary removal
+  // useEffect(() => {
+  //   if (Object.keys(groupContext.activeGroup).length === 0) {
+  //   } else {
+  //     fn(
+  //       chatRoomsList,
+  //       setChatRoomsList,
+  //       setShouldLoadMoreHomeFeed,
+  //       userContext.community.id,
+  //       serialObject,
+  //       setSerialObject
+  //     );
 
-      if (unJoined.length == 0) {
-        return;
-      }
-      if (groupContext.activeGroup.chatroom != undefined) {
-        getChatRoomDetails(
-          myClient,
-          groupContext.activeGroup?.chatroom?.id
-        ).then((res) => {
-          if (res.data) {
-            let unJoineds = [...unJoined];
-            for (let uc of unJoineds) {
-              if (uc.id == res.data.chatroom.id) {
-                uc.follow_status = true;
-              }
-            }
-            setUnjoined(unJoineds);
-          }
-        });
-      }
-    }
-  }, [groupContext.activeGroup]);
+  //     if (unJoined.length == 0) {
+  //       return;
+  //     }
+  //     if (groupContext.activeGroup.chatroom != undefined) {
+  //       getChatRoomDetails(
+  //         myClient,
+  //         groupContext.activeGroup?.chatroom?.id
+  //       ).then((res) => {
+  //         if (res.data) {
+  //           let unJoineds = [...unJoined];
+  //           for (let uc of unJoineds) {
+  //             if (uc.id == res.data.chatroom.id) {
+  //               uc.follow_status = true;
+  //             }
+  //           }
+  //           setUnjoined(unJoineds);
+  //         }
+  //       });
+  //     }
+  //   }
+  // }, [groupContext.activeGroup]);
 
   useEffect(() => {
     // loading the list of chatrooms (already joined)
-
     fn(
       chatRoomsList,
       setChatRoomsList,

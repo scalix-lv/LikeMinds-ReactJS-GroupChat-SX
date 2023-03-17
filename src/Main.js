@@ -1,4 +1,4 @@
-import { createTheme, Grid, ThemeProvider } from "@mui/material";
+import { createTheme, Grid, Snackbar, ThemeProvider } from "@mui/material";
 import React, { useContext, useState, useEffect, createContext } from "react";
 import { Outlet } from "react-router-dom";
 import { UserContext } from ".";
@@ -27,6 +27,8 @@ export const GroupContext = React.createContext({
   refreshContextUi: () => {},
   showLoadingBar: Boolean,
   setShowLoadingBar: () => {},
+  setShowSnackBar: () => {},
+  setSnackBarMessage: () => {},
 });
 function Main() {
   const [currentRoute, setCurrentRoute] = useState("forums");
@@ -35,6 +37,8 @@ function Main() {
   const [refreshState, setRefreshState] = useState(true);
   const [showLoadingBar, setShowLoadingBar] = useState(false);
   const [openNavBar, setOpenNavBar] = useState(false);
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState("");
   function refreshGroups() {
     setRefreshState(!refreshState);
   }
@@ -74,6 +78,8 @@ function Main() {
           refreshContextUi: refreshGroups,
           showLoadingBar,
           setShowLoadingBar,
+          setShowSnackBar,
+          setSnackBarMessage,
         }}
       >
         <ThemeProvider theme={newTheme}>
@@ -89,6 +95,15 @@ function Main() {
               <Outlet />
             </div>
           </div>
+          <Snackbar
+            message={snackBarMessage}
+            open={showSnackBar}
+            autoHideDuration={3000}
+            onClose={() => {
+              setShowSnackBar(false);
+              setSnackBarMessage("");
+            }}
+          />
         </ThemeProvider>
       </GroupContext.Provider>
     </RouteContext.Provider>
