@@ -15,7 +15,7 @@ function ChatRoomAreaDM() {
   const ref = useRef(null);
   const [hasMore, setHasMore] = useState(true);
   const scrollTop = useRef(null);
-
+  const [showLoader, setShowLoader] = useState(false);
   // Scroll to bottom
   const updateHeight = () => {
     const el = document.getElementById("chat");
@@ -79,7 +79,7 @@ function ChatRoomAreaDM() {
   };
 
   useEffect(() => {
-    if (Object.keys(dmContext.currentChatroom).length) {
+    if (!!Object.keys(dmContext.currentChatroom).length) {
       getChatroomConversations(dmContext.currentChatroom.id, 100);
     }
   }, [dmContext.currentChatroom]);
@@ -87,9 +87,6 @@ function ChatRoomAreaDM() {
   useEffect(() => {
     updateHeight();
   }, [dmContext.currentChatroomConversations]);
-  // useEffect(() => {
-  //   updateHeight();
-  // }, []);
 
   return (
     <div
@@ -97,7 +94,8 @@ function ChatRoomAreaDM() {
       className="relative overflow-x-hidden overflow-auto"
       style={{ height: "calc(100vh - 270px)" }}
     >
-      {Object.keys(dmContext.currentChatroom).length > 0 ? (
+      {Object.keys(dmContext.currentChatroom).length > 0 &&
+      showLoader == false ? (
         dmContext.currentChatroom.chat_request_state === 0 ? (
           userContext.currentUser.id ==
           dmContext.currentChatroom.chat_requested_by[0].id ? (
@@ -130,7 +128,6 @@ function ChatRoomAreaDM() {
                 let current = scrollTop.current.scrollTop;
                 let currentHeight = scrollTop.current.scrollHeight;
                 currentHeight = currentHeight.toString();
-
                 if (current < 200 && current % 150 == 0) {
                   // console.log("calling paginate");
                   paginateChatroomConversations(
@@ -167,7 +164,6 @@ function ChatRoomAreaDM() {
 
               <div ref={ref}></div>
             </div>
-            {/* </InfiniteScroll> */}
             {dmContext.currentChatroom.chat_request_state == 0 ? (
               <></>
             ) : dmContext.currentChatroom.chat_request_state !== 2 ? (

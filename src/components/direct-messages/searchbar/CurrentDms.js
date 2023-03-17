@@ -17,6 +17,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { myClient, UserContext } from "../../..";
 import { onValue, ref } from "firebase/database";
 import { getChatroomConversations } from "../ChatArea";
+import FeedSkeleton from "../../skeletons/FeedSkeleton";
 
 function CurrentDms() {
   const dmContext = useContext(DmContext);
@@ -90,7 +91,10 @@ function CurrentDms() {
       let page = 1;
       let call;
       while (arr.length < 10) {
-        call = await allChatroomMembersDm(50421, page++);
+        call = await allChatroomMembersDm(
+          sessionStorage.getItem("communityItem"),
+          page++
+        );
         arr = [...arr, ...call.data.members];
       }
       setLastCaughtPageAllMembers(page);
@@ -270,25 +274,29 @@ function CurrentDms() {
     <Box>
       {/*  */}
       <div className="max-h-[400px] overflow-auto" id="hf-container">
-        <InfiniteScroll
-          next={paginateHomeFeed}
-          dataLength={dmContext.homeFeed.length}
-          hasMore={shouldContinuePaginateHomeFeed}
-          scrollableTarget="hf-container"
-        >
-          {dmContext.homeFeed.map((feed, feedIndex) => {
-            return (
-              <DmTile
-                profile={feed}
-                key={feedIndex}
-                loadHomeFeed={loadHomeFeed}
-                selectedId={selectedIndex}
-                setSelectedId={setSelectedIndex}
-                index={feedIndex}
-              />
-            );
-          })}
-        </InfiniteScroll>
+        {dmContext.homeFeed.length === 0 ? (
+          <FeedSkeleton />
+        ) : (
+          <InfiniteScroll
+            next={paginateHomeFeed}
+            dataLength={dmContext.homeFeed.length}
+            hasMore={shouldContinuePaginateHomeFeed}
+            scrollableTarget="hf-container"
+          >
+            {dmContext.homeFeed.map((feed, feedIndex) => {
+              return (
+                <DmTile
+                  profile={feed}
+                  key={feedIndex}
+                  loadHomeFeed={loadHomeFeed}
+                  selectedId={selectedIndex}
+                  setSelectedId={setSelectedIndex}
+                  index={feedIndex}
+                />
+              );
+            })}
+          </InfiniteScroll>
+        )}
       </div>
 
       <div className="py-4 px-5 flex justify-between text-center h-[56px]">
@@ -302,27 +310,31 @@ function CurrentDms() {
       </div>
       <Collapse in={openAllUsers}>
         <div className="h-[400px] overflow-auto" id="mf-container">
-          <InfiniteScroll
-            hasMore={shouldContinuePaginateMembersFeed}
-            dataLength={dmContext.membersFeed.length}
-            next={paginateAllMembers}
-            scrollableTarget="mf-container"
-          >
-            {dmContext.membersFeed.map((feed, feedIndex) => {
-              if (feed.id == userContext.currentUser.id) {
-                return null;
-              }
-              return (
-                <DmMemberTile
-                  profile={feed}
-                  profileIndex={feedIndex}
-                  key={feed.id}
-                  selectedId={selectedIndex}
-                  setSelectedId={setSelectedIndex}
-                />
-              );
-            })}
-          </InfiniteScroll>
+          {dmContext.membersFeed.length === 0 ? (
+            <FeedSkeleton />
+          ) : (
+            <InfiniteScroll
+              hasMore={shouldContinuePaginateMembersFeed}
+              dataLength={dmContext.membersFeed.length}
+              next={paginateAllMembers}
+              scrollableTarget="mf-container"
+            >
+              {dmContext.membersFeed.map((feed, feedIndex) => {
+                if (feed.id == userContext.currentUser.id) {
+                  return null;
+                }
+                return (
+                  <DmMemberTile
+                    profile={feed}
+                    profileIndex={feedIndex}
+                    key={feed.id}
+                    selectedId={selectedIndex}
+                    setSelectedId={setSelectedIndex}
+                  />
+                );
+              })}
+            </InfiniteScroll>
+          )}
         </div>
       </Collapse>
     </Box>

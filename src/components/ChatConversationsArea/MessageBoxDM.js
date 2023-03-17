@@ -22,6 +22,7 @@ import {
   getChatRoomDetails,
   getConversationsForGroup,
   linkConverter,
+  log,
   tagExtracter,
   undoBlock,
 } from "../../sdkFunctions";
@@ -40,29 +41,10 @@ async function getChatroomConversations(chatroomId, pageNo, dmContext) {
   let response = await getConversationsForGroup(optionObject);
   if (!response.error) {
     let conversations = response.data;
-    let conversationToBeSetArray = [];
-    let newConversationArray = [];
-    let lastDate = "";
-    for (let convo of conversations) {
-      if (convo.date === lastDate) {
-        conversationToBeSetArray.push(convo);
-        lastDate = convo.date;
-      } else {
-        if (conversationToBeSetArray.length != 0) {
-          newConversationArray.push(conversationToBeSetArray);
-          conversationToBeSetArray = [];
-          conversationToBeSetArray.push(convo);
-          lastDate = convo.date;
-        } else {
-          conversationToBeSetArray.push(convo);
-          lastDate = convo.date;
-        }
-      }
-    }
-    newConversationArray.push(conversationToBeSetArray);
-    dmContext.setCurrentChatroomConversations(newConversationArray);
+    sessionStorage.setItem("dmLastConvo", conversations[0].id);
+    dmContext.setCurrentChatroomConversations(conversations);
   } else {
-    // // console.log(response.errorMessage);
+    log(response.errorMessage);
   }
 }
 
@@ -104,14 +86,13 @@ function MessageBoxDM({
                     undoBlock(conversationObject.chatroom_id).then((r) => {
                       getChatroomConversations(
                         dmContext.currentChatroom.id,
-                        1000,
+                        100,
                         dmContext
                       ).then(() => {
                         getChatRoomDetails(
                           myClient,
                           dmContext.currentChatroom.id
                         ).then((e) => {
-                          // // console.log(e);
                           dmContext.setCurrentChatroom(e.data.chatroom);
                           dmContext.setCurrentProfile(e.data);
                         });
@@ -449,27 +430,8 @@ function MoreOptions({ convoId, userId, convoObject }) {
     let response = await getConversationsForGroup(optionObject);
     if (!response.error) {
       let conversations = response.data;
-      let conversationToBeSetArray = [];
-      let newConversationArray = [];
-      let lastDate = "";
-      for (let convo of conversations) {
-        if (convo.date === lastDate) {
-          conversationToBeSetArray.push(convo);
-          lastDate = convo.date;
-        } else {
-          if (conversationToBeSetArray.length != 0) {
-            newConversationArray.push(conversationToBeSetArray);
-            conversationToBeSetArray = [];
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          } else {
-            conversationToBeSetArray.push(convo);
-            lastDate = convo.date;
-          }
-        }
-      }
-      newConversationArray.push(conversationToBeSetArray);
-      dmContext.setCurrentChatroomConversations(newConversationArray);
+
+      dmContext.setCurrentChatroomConversations(conversations);
     } else {
       // // console.log(response.errorMessage);
     }
@@ -495,7 +457,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
         let convos = [...dmContext.currentChatroomConversations];
         deleteChatFromDM([convoId])
           .then((r) => {
-            getChatroomConversations(convoObject.chatroom_id, 500);
+            getChatroomConversations(convoObject.chatroom_id, 100);
           })
           .catch((e) => {
             // console.log(e);
