@@ -81,7 +81,7 @@ function PersonInfo() {
       ) : null}
       {/* Title Header */}
 
-      <div className="mr-[120px] ml-[20px]">
+      <div className="mr-[120px] ml-[20px] sm:max-md:mr-[28px]">
         <div className="flex">
           {!location.state.isFromAllMembers ? (
             <>

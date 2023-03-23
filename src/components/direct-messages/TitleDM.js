@@ -23,11 +23,13 @@ const TitleBox = styled(Box)({
 function TittleDm({ title }) {
   return (
     <Box className="flex">
-      <TitleBox>
+      {/* <TitleBox> */}
+      <div className="w-full flex border-b border-b-[#adadad] my-0 mr-[120px] ml-[28px] pt-0 px-0 pb-[10px] shadow-none z:max-md:mr-6">
         <TitleArea title={title} />
         <Gap />
         <OptionArea />
-      </TitleBox>
+      </div>
+      {/* </TitleBox> */}
       <Box className="flex" />
     </Box>
   );

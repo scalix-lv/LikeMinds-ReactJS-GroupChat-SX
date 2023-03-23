@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import React, { useContext, useState } from "react";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -26,7 +26,7 @@ const NavContext = React.createContext({
   currentPath: null,
   setCurrentPath: () => {},
 });
-function Sidenav() {
+function Sidenav({ setOpenMenu, openMenu }) {
   const navArray = [
     {
       title: "Forums",
@@ -60,7 +60,11 @@ function Sidenav() {
     routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
   }
   return (
-    <div className="relative">
+    <div
+      className={`relative ${
+        openMenu ? " z:max-sm:[143px] sm:max-md:w-[241px]" : ""
+      }`}
+    >
       {/* <div
         className="w-[26px] h-[26px] rounded-full border border-[#EEEEEE] md:none flex justify-center items-center bg-white absolute top-2.5 right-0 translate-x-[50%]"
         onClick={toggleNavigationBar}
@@ -80,6 +84,13 @@ function Sidenav() {
           />
         );
       })}
+      <div
+        variant="contained"
+        className="hidden z:max-md:block mx-auto p-1 bg-blue-600 text-center text-xs text-white cursor-pointer"
+        onClick={() => setOpenMenu(!openMenu)}
+      >
+        open layout
+      </div>
     </div>
   );
 }

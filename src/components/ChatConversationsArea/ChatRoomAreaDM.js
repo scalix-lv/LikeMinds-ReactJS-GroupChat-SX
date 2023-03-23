@@ -146,7 +146,10 @@ function ChatRoomAreaDM() {
                     lastConvoDate = convoArr[index - 1].date;
                   }
                   return (
-                    <div className="ml-[28px] mr-[114px] pt-5" key={convo.id}>
+                    <div
+                      className="ml-[28px] mr-[114px] pt-5 z:max-md:mr-[28px]"
+                      key={convo.id}
+                    >
                       {convo.date != lastConvoDate ? (
                         <DateSpecifier
                           dateString={convo.date}
@@ -167,7 +170,7 @@ function ChatRoomAreaDM() {
             {dmContext.currentChatroom.chat_request_state == 0 ? (
               <></>
             ) : dmContext.currentChatroom.chat_request_state !== 2 ? (
-              <div className="fixed bottom-0 w-[62.1%]">
+              <div className="fixed bottom-0 w-[62.1%] sm:max-md:w-[90%] z:max-sm:w-[85%]">
                 <InputDM updateHeight={updateHeight} />
               </div>
             ) : null}
