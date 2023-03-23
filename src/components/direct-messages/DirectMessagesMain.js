@@ -2,6 +2,7 @@ import { onValue, ref } from "firebase/database";
 import React, { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { myClient, UserContext } from "../..";
+import { RouteContext } from "../../Main";
 import SearchBarContainer from "../SearchBar/SearchBar";
 import { getChatroomConversations, loadHomeFeed } from "./ChatArea";
 
@@ -10,6 +11,7 @@ import SearchBarDirectMessages from "./searchbar/SearchBarDirectMessages";
 
 function DirectMessagesMain() {
   const userContext = useContext(UserContext);
+  const routeContext = useContext(RouteContext);
   const [currentProfile, setCurrentProfile] = useState({});
   const [currentChatroomConversations, setCurrentChatroomConversations] =
     useState([]);
@@ -34,56 +36,70 @@ function DirectMessagesMain() {
     setAudioAttachments([]);
     setMessageText("");
   }
-
+  useEffect(() => {
+    console.log(routeContext.isNavigationBoxOpen);
+  }, [routeContext.isNavigationBoxOpen]);
   return (
-    <div>
-      <DmContext.Provider
-        value={{
-          currentProfile,
-          setCurrentProfile,
-          homeFeed,
-          setHomeFeed,
-          membersFeed,
-          setMembersFeed,
-          currentChatroom,
-          setCurrentChatroom,
-          currentChatroomConversations,
-          setCurrentChatroomConversations,
-          messageText,
-          setMessageText,
-          audioAttachments,
-          setAudioAttachments,
-          mediaAttachments,
-          setMediaAttachments,
-          documentAttachments,
-          setDocumentAttachments,
-          isConversationSelected,
-          setIsConversationSelected,
-          conversationObject,
-          setConversationObject,
-          refreshContext,
-          setRefreshContext,
-          resetContext,
-          showLoadingBar,
-          setShowLoadingBar,
-          showSnackBar,
-          setShowSnackBar,
-          snackBarMessage,
-          setSnackBarMessage,
-        }}
-      >
-        <div className="flex overflow-hidden customHeight flex-1">
-          <div className="flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel">
-            <SearchBarDirectMessages />
-            {/* <SearchBarContainer/> */}
-            <CurrentDms />
-          </div>
-          <div className="flex-[.68] bg-[#FFFBF2] relative pt-[42px]">
-            <Outlet />
-          </div>
+    <DmContext.Provider
+      value={{
+        currentProfile,
+        setCurrentProfile,
+        homeFeed,
+        setHomeFeed,
+        membersFeed,
+        setMembersFeed,
+        currentChatroom,
+        setCurrentChatroom,
+        currentChatroomConversations,
+        setCurrentChatroomConversations,
+        messageText,
+        setMessageText,
+        audioAttachments,
+        setAudioAttachments,
+        mediaAttachments,
+        setMediaAttachments,
+        documentAttachments,
+        setDocumentAttachments,
+        isConversationSelected,
+        setIsConversationSelected,
+        conversationObject,
+        setConversationObject,
+        refreshContext,
+        setRefreshContext,
+        resetContext,
+        showLoadingBar,
+        setShowLoadingBar,
+        showSnackBar,
+        setShowSnackBar,
+        snackBarMessage,
+        setSnackBarMessage,
+      }}
+    >
+      <div className="flex overflow-hidden customHeight flex-1">
+        <div
+          className={`flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel 
+            ${
+              routeContext.isNavigationBoxOpen
+                ? "sm:max-md:flex-[.85] z:max-sm:flex-1"
+                : "z:max-md:hidden"
+            }`}
+        >
+          <SearchBarDirectMessages />
+          {/* <SearchBarContainer/> */}
+          <CurrentDms />
         </div>
-      </DmContext.Provider>
-    </div>
+        <div
+          className={`flex-[.68] bg-[#FFFBF2] relative pt-[42px]"
+            ${
+              routeContext.isNavigationBoxOpen
+                ? "sm:max-md:absolute sm:max-md:z-[-1] z:max-sm:hidden"
+                : "z:max-md:flex-[1]"
+            }`}
+        >
+          <Outlet />
+        </div>
+      </div>
+    </DmContext.Provider>
   );
 }
 
