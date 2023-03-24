@@ -18,6 +18,7 @@ import { myClient, UserContext } from "../../..";
 import { onValue, ref } from "firebase/database";
 import { getChatroomConversations } from "../ChatArea";
 import FeedSkeleton from "../../skeletons/FeedSkeleton";
+import { RouteContext } from "../../../Main";
 
 function CurrentDms() {
   const dmContext = useContext(DmContext);
@@ -284,16 +285,7 @@ function CurrentDms() {
             scrollableTarget="hf-container"
           >
             {dmContext.homeFeed.map((feed, feedIndex) => {
-              return (
-                <DmTile
-                  profile={feed}
-                  key={feedIndex}
-                  loadHomeFeed={loadHomeFeed}
-                  selectedId={selectedIndex}
-                  setSelectedId={setSelectedIndex}
-                  index={feedIndex}
-                />
-              );
+              return <DmTile profile={feed} key={feedIndex} />;
             })}
           </InfiniteScroll>
         )}
@@ -341,17 +333,18 @@ function CurrentDms() {
   );
 }
 
-function DmTile({ profile, loadHomeFeed, selectedId, setSelectedId, index }) {
-  const dmContext = useContext(DmContext);
+function DmTile({ profile }) {
   const userContext = useContext(UserContext);
   const { status } = useParams();
-  const [shouldNotShow, setShouldNotShow] = useState(false);
-
+  const routeContext = useContext(RouteContext);
   return (
     <Link
       to={directMessageChatPath + "/" + profile.chatroom.id}
       style={{
         textDecoration: "none",
+      }}
+      onClick={() => {
+        routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
       }}
     >
       <div

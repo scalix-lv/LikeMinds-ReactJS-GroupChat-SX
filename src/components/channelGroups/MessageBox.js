@@ -49,41 +49,6 @@ function MessageBox({
         <span id="state-1">
           {parse(linkConverter(tagExtracter(messageString, userContext)))}
         </span>
-        {/* </>
-        ) : (
-          <>
-            {parse(linkConverter(tagExtracter(messageString, userContext)))}
-            {conversationObject.state === 19 &&
-            dmContext.currentChatroom.chat_request_state === 2 ? (
-              <>
-                <span
-                  className="text-[#3884f7] cursor-pointer"
-                  onClick={() => {
-                    undoBlock(conversationObject.chatroom_id).then((r) => {
-                      getChatroomConversations(
-                        dmContext.currentChatroom.id,
-                        1000,
-                        dmContext
-                      ).then(() => {
-                        getChatRoomDetails(
-                          myClient,
-                          dmContext.currentChatroom.id
-                        ).then((e) => {
-                          // // console.log(e);
-                          dmContext.setCurrentChatroom(e.data.chatroom);
-                          dmContext.setCurrentProfile(e.data);
-                        });
-                      });
-                    });
-                  }}
-                >
-                  {" "}
-                  Tap to Undo
-                </span>
-              </>
-            ) : null}
-          </>
-        )} */}
       </div>
     );
   }
@@ -135,7 +100,7 @@ function StringBox({
 
   return (
     <div
-      className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
+      className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all z:max-sm:min-w-[242px] z:max-sm:max-w-[282px]"
       style={{
         background:
           userId === userContext.currentUser.id ? "#ECF3FF" : "#FFFFFF",

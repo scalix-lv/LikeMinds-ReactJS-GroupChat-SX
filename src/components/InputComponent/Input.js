@@ -66,7 +66,7 @@ function Input({ updateHeight }) {
   const [textVal, setTextVal] = useState("");
 
   return (
-    <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
+    <Box className="pt-[20px] pb-[5px] px-[40px] bg-white z:max-md:pl-2 ">
       <InputContext.Provider
         value={{
           audioFiles,

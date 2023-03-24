@@ -170,7 +170,7 @@ function StringBox({
 
   return (
     <div
-      className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
+      className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all z:max-sm:min-w-[242px] z:max-sm:max-w-[282px]"
       style={{
         background:
           userId === userContext.currentUser.id ? "#ECF3FF" : "#FFFFFF",

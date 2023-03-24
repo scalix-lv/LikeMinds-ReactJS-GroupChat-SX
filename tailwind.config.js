@@ -11,7 +11,6 @@ module.exports = {
         z: "0px",
         sm: "430px",
         md: "744px",
-        ...defaultTheme.screens,
       },
     },
   },
