@@ -51,7 +51,7 @@ function GroupInfo() {
       ) : null}
       {/* Title Header */}
 
-      <div className="mr-[120px] ml-[20px] mt-[10px] h-full">
+      <div className="mr-[120px] ml-[20px] mt-[10px] h-full z:max-md:mr-[28px]">
         <div className="flex">
           <Link to={groupMainPath + "/" + gc.activeGroup.chatroom.id}>
             <IconButton>

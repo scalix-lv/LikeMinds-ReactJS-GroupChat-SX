@@ -101,7 +101,7 @@ export function MoreOptions() {
               color: "#323232",
             }}
           >
-            <img src={leaveIcon} alt="leave" className="mr-2" />
+            {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
             {item.title}
           </MenuItem>
         );

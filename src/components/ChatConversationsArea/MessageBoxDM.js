@@ -131,7 +131,11 @@ function MessageBoxDM({
           replyConversationObject={replyConversationObject}
           conversationObject={conversationObject}
         />
-        <MoreOptions convoId={convoId} convoObject={conversationObject} />
+        {conversationObject.deleted_by == undefined ? (
+          <MoreOptions convoId={convoId} convoObject={conversationObject} />
+        ) : (
+          <div className="w-12px" />
+        )}
       </Box>
       <div>
         {conversationReactions.map((reactionObject, reactionObjectIndex) => {

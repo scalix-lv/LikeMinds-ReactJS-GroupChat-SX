@@ -215,20 +215,17 @@ function InputSearchField({ updateHeight, inputRef }) {
       dmContext.setMediaAttachments([]);
       dmContext.setDocumentAttachments([]);
       // // console.log(dmContext.currentChatroom.id);
-      await getChatroomConversations(
-        dmContext.currentChatroom.id,
-        100,
-        dmContext.setCurrentChatroomConversations
-      );
+      // await getChatroomConversations(
+      //   dmContext.currentChatroom.id,
+      //   100,
+      //   dmContext.setCurrentChatroomConversations
+      // );
       updateHeight();
       return { error: false, data: callRes };
     } catch (error) {
       return { error: true, errorMessage: error };
     }
   };
-
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
 
   const [openReplyBox, setOpenReplyBox] = useState(false);
 
