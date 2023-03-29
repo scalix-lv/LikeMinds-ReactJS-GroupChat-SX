@@ -153,11 +153,11 @@ function InputSearchField({ updateHeight, inputRef }) {
             url: fileUploadRes.Location,
           });
 
-          await getChatroomConversations(
-            dmContext.currentChatroom.id,
-            100,
-            dmContext.setCurrentChatroomConversations
-          );
+          // await getChatroomConversations(
+          //   dmContext.currentChatroom.id,
+          //   100,
+          //   dmContext.setCurrentChatroomConversations
+          // );
           // // console.log(inputRef);
           updateHeight();
           if (inputRef.current) {

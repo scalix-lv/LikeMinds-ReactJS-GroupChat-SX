@@ -36,9 +36,7 @@ function DirectMessagesMain() {
     setAudioAttachments([]);
     setMessageText("");
   }
-  useEffect(() => {
-    console.log(routeContext.isNavigationBoxOpen);
-  }, [routeContext.isNavigationBoxOpen]);
+
   return (
     <DmContext.Provider
       value={{

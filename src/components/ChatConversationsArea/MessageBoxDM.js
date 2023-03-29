@@ -220,7 +220,7 @@ function StringBox({
                       <img
                         src={item.url}
                         alt=""
-                        className="m-1 w-full max-h-[230px]"
+                        className="m-1 max-w-full max-h-[230px] w-auto h-auto mx-auto"
                         key={item.url}
                         onClick={() => {
                           setMediaData({ mediaObj: dataObj, type: "image" });
@@ -540,6 +540,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
         onClose={handleCloseEmoji}
       >
         <EmojiPicker
+          autoFocusSearch={false}
           onEmojiClick={(e) => {
             addReaction(e.emoji, convoId, dmContext.currentChatroom.id).then(
               (r) => {

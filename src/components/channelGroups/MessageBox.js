@@ -142,7 +142,7 @@ function StringBox({
                       key={item.url}
                       src={item.url}
                       alt=""
-                      className="m-1 w-full max-h-[230px]"
+                      className="m-1 max-w-full max-h-[230px] w-auto h-auto mx-auto"
                       onClick={() => {
                         setMediaData({ mediaObj: dataObj, type: "image" });
                         setDisplayMediaModel(true);
@@ -427,6 +427,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
         onClose={handleCloseEmoji}
       >
         <EmojiPicker
+          autoFocusSearch={false}
           onEmojiClick={(e) => {
             // // console.log(groupContext);
             addReaction(
