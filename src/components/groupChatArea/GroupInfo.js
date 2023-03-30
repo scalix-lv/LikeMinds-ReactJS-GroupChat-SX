@@ -21,7 +21,7 @@ function GroupInfo() {
   const [loadMode, setLoadMore] = useState(true);
   const [totalMembers, setTotalMembers] = useState(0);
   let callFn = (isSecret) => {
-    log("here");
+    // log("here");
     const getMemberList = async (isSecret) => {
       try {
         let page = Math.floor(participantList.length / 10) + 1;
