@@ -21,7 +21,7 @@ function GroupInfo() {
   const [loadMode, setLoadMore] = useState(true);
   const [totalMembers, setTotalMembers] = useState(0);
   let callFn = (isSecret) => {
-    log("here");
+    // log("here");
     const getMemberList = async (isSecret) => {
       try {
         let page = Math.floor(participantList.length / 10) + 1;
@@ -29,7 +29,7 @@ function GroupInfo() {
           chatroom_id: gc.activeGroup.chatroom.id,
           is_secret: isSecret,
           page: page,
-          page_size: 10,
+          page_size: page == 1 ? 20 : 10,
         });
         if (call.participants.length < 10) {
           setLoadMore(false);

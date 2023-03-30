@@ -44,6 +44,12 @@ function InputSearchField({ updateHeight, inputRef }) {
   const dmContext = useContext(DmContext);
   const userContext = useContext(UserContext);
   const ref = useRef();
+  const [disable, setDisable] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      setDisable(false);
+    }, 300);
+  }, [disable]);
   useEffect(() => {
     if (ref.current) {
       // // console.log("here");
@@ -76,6 +82,7 @@ function InputSearchField({ updateHeight, inputRef }) {
         dmContext.currentChatroom.member.state != 1 &&
         dmContext.currentChatroom.chatroom_with_user.state != 1
       ) {
+        setDisable(true);
         let textMessage = dmContext.messageText;
         dmContext.setMessageText("");
         let call = await dmAction(0, dmContext.currentChatroom.id, textMessage);
@@ -332,7 +339,9 @@ function InputSearchField({ updateHeight, inputRef }) {
             }
           }}
           disabled={
-            dmContext.currentChatroom?.chat_request_state === 0 ? true : false
+            dmContext.currentChatroom?.chat_request_state === 0 || disable
+              ? true
+              : false
           }
         >
           <Mention
