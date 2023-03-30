@@ -36,9 +36,7 @@ function DirectMessagesMain() {
     setAudioAttachments([]);
     setMessageText("");
   }
-  useEffect(() => {
-    console.log(routeContext.isNavigationBoxOpen);
-  }, [routeContext.isNavigationBoxOpen]);
+
   return (
     <DmContext.Provider
       value={{
@@ -89,7 +87,7 @@ function DirectMessagesMain() {
           <CurrentDms />
         </div>
         <div
-          className={`flex-[.68] bg-[#FFFBF2] relative pt-[42px]"
+          className={`flex-[.68] bg-[#FFFBF2] relative pt-[42px]
             ${
               routeContext.isNavigationBoxOpen
                 ? "sm:max-md:absolute sm:max-md:z-[-1] z:max-sm:hidden"

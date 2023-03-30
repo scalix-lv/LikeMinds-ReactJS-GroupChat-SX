@@ -24,10 +24,11 @@ function Navigation() {
   const navigate = (link) => {};
   return (
     <>
-      <Box
+      <div
         style={{
           margin: "0 12px",
         }}
+        className="z:max-md:hidden mx-3"
       >
         {navArr.map((block, blockIndex) => {
           return (
@@ -47,7 +48,7 @@ function Navigation() {
             </Link>
           );
         })}
-      </Box>
+      </div>
     </>
   );
 }

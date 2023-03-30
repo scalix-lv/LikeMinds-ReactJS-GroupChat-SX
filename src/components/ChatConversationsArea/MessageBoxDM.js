@@ -131,7 +131,11 @@ function MessageBoxDM({
           replyConversationObject={replyConversationObject}
           conversationObject={conversationObject}
         />
-        <MoreOptions convoId={convoId} convoObject={conversationObject} />
+        {conversationObject.deleted_by == undefined ? (
+          <MoreOptions convoId={convoId} convoObject={conversationObject} />
+        ) : (
+          <div className="w-12px" />
+        )}
       </Box>
       <div>
         {conversationReactions.map((reactionObject, reactionObjectIndex) => {
@@ -170,7 +174,7 @@ function StringBox({
 
   return (
     <div
-      className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all"
+      className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all z:max-sm:min-w-[242px] z:max-sm:max-w-[282px]"
       style={{
         background:
           userId === userContext.currentUser.id ? "#ECF3FF" : "#FFFFFF",
@@ -216,7 +220,7 @@ function StringBox({
                       <img
                         src={item.url}
                         alt=""
-                        className="m-1 w-full max-h-[230px]"
+                        className="m-1 max-w-full max-h-[230px] w-auto h-auto mx-auto"
                         key={item.url}
                         onClick={() => {
                           setMediaData({ mediaObj: dataObj, type: "image" });
@@ -536,6 +540,7 @@ function MoreOptions({ convoId, userId, convoObject }) {
         onClose={handleCloseEmoji}
       >
         <EmojiPicker
+          autoFocusSearch={false}
           onEmojiClick={(e) => {
             addReaction(e.emoji, convoId, dmContext.currentChatroom.id).then(
               (r) => {

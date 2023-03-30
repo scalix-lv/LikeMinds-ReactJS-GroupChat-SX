@@ -19,11 +19,11 @@ const TitleBox = styled(Box)({
 function Tittle({ title, memberCount }) {
   return (
     <Box className="flex">
-      <TitleBox>
+      <div className="w-full flex border-b border-b-[#adadad] my-0 mr-[120px] ml-[28px] pt-0 px-0 pb-[10px] shadow-none z:max-md:mr-6">
         <TitleArea title={title} memberCount={memberCount} />
         <Gap />
         <OptionArea />
-      </TitleBox>
+      </div>
       <Box className="flex" />
     </Box>
   );

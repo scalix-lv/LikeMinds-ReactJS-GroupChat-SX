@@ -84,13 +84,13 @@ function Sidenav({ setOpenMenu, openMenu }) {
           />
         );
       })}
-      <div
+      {/* <div
         variant="contained"
         className="hidden z:max-md:block mx-auto p-1 bg-blue-600 text-center text-xs text-white cursor-pointer"
         onClick={() => setOpenMenu(!openMenu)}
       >
         open layout
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -100,6 +100,8 @@ function NavBlock({ title, Icon, path }) {
   function changeCurrentPath() {
     sessionStorage.setItem("routeContext", path);
     useNavContext.setCurrentRoute(path);
+    // for responsiveness
+    useNavContext.setIsNavigationBoxOpen(!useNavContext.isNavigationBoxOpen);
   }
   return (
     <Link to={path} style={{ ...linkCss }} onClick={changeCurrentPath}>

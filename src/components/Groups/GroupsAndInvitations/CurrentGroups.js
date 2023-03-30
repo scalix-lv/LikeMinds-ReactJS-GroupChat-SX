@@ -19,7 +19,7 @@ import { Link, NavLink } from "react-router-dom";
 import { groupMainPath, groupPath } from "../../../routes";
 import cancelIcon from "../../../assets/svg/cancel.svg";
 import acceptIcon from "../../../assets/svg/accept.svg";
-import { GroupContext } from "../../../Main";
+import { GroupContext, RouteContext } from "../../../Main";
 import {
   ChatRoomContext,
   fn,
@@ -114,8 +114,7 @@ function CurrentGroups() {
 }
 
 function PublicGroup({}) {
-  const [shouldOpen, setShouldOpen] = useState(true);
-  const [loadMoreGroups, shouldLoadMoreGroups] = useState(true);
+  const routeContext = useContext(RouteContext);
   const { status } = useParams();
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
@@ -181,6 +180,9 @@ function PublicGroup({}) {
                     } else {
                       markRead(group.chatroom.id);
                     }
+                    routeContext.setIsNavigationBoxOpen(
+                      !routeContext.isNavigationBoxOpen
+                    );
                   }}
                   key={group.chatroom.id + groupIndex + group.chatroom.header}
                 >
@@ -239,6 +241,7 @@ function UnjoinedGroup({ groupTitle, group }) {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const chatroomContext = useContext(ChatRoomContext);
+  const routeContext = useContext(RouteContext);
   const navigate = useNavigate();
   async function joinGroup() {
     try {
@@ -254,7 +257,12 @@ function UnjoinedGroup({ groupTitle, group }) {
   }
 
   return (
-    <div className="flex justify-between leading-5 py-4 px-5 border-[#EEEEEE] border-t-[1px]">
+    <div
+      className="flex justify-between leading-5 py-4 px-5 border-[#EEEEEE] border-t-[1px]"
+      onClick={() => {
+        routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
+      }}
+    >
       <Typography
         sx={{
           marginTop: "6px",

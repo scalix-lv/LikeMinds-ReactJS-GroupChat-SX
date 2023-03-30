@@ -147,7 +147,7 @@ function ChatRoomAreaDM() {
                   }
                   return (
                     <div
-                      className="ml-[28px] mr-[114px] pt-5 z:max-md:mr-[28px]"
+                      className="ml-[28px] mr-[114px] pt-5 z:max-md:mr-[28px] z:max-sm:ml-2  z:max-sm:mr-0"
                       key={convo.id}
                     >
                       {convo.date != lastConvoDate ? (

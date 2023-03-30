@@ -85,7 +85,7 @@ function Main() {
       >
         <ThemeProvider theme={newTheme}>
           <div className="flex w-[100vw] fixed h-[65px] z-10">
-            {/* <Header /> */}
+            <Header />
           </div>
 
           <div className="flex flex-1 h-full customHeight mt-[65px]">
