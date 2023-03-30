@@ -9,6 +9,7 @@ import {
   allChatroomMembersDm,
   dmChatFeed,
   getChatRoomDetails,
+  log,
   markRead,
 } from "../../../sdkFunctions";
 import { directMessageChatPath } from "../../../routes";
@@ -24,7 +25,6 @@ function CurrentDms() {
   const dmContext = useContext(DmContext);
   const userContext = useContext(UserContext);
   const { status } = useParams();
-  // console.log(status);
   const [openAllUsers, setOpenAllUsers] = useState(true);
   const [totalMembersFiltered, setTotalMembersFiltered] = useState(null);
   const [lastCaughtPageAllMembers, setLastCaughtPageAllMembers] = useState(1);
@@ -260,16 +260,18 @@ function CurrentDms() {
   }, [status]);
 
   useEffect(() => {
-    const query = ref(db, `/collabcards/${getCurrentChatroomID()}`);
+    const query = ref(db, `/collabcards/${status}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
-        let chatroomId = getCurrentChatroomID();
+        let chatroomId = status;
         markRead(chatroomId).then(() => {
-          getChatroomConversations(chatroomId, 100, dmContext);
+          getChatroomConversations(chatroomId, 100, dmContext)
+            .then((E) => log("hitting"))
+            .catch((e) => log(e));
         });
       }
     });
-  }, []);
+  }, [status]);
 
   return (
     <Box>

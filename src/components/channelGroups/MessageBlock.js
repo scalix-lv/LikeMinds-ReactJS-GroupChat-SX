@@ -15,7 +15,7 @@ function MessageBlock({ conversationObject, userId }) {
   const currentUser = userContext.currentUser.id;
   let { pathname } = useLocation();
   pathname = pathname.split("/")[1];
-  log(pathname);
+  // log(pathname);
   const { step } = useParams();
 
   // // console.log(step);
