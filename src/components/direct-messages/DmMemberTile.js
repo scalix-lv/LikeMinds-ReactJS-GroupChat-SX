@@ -3,6 +3,7 @@ import { Button, Snackbar } from "@mui/material";
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { myClient, UserContext } from "../..";
+import { RouteContext } from "../../Main";
 import { directMessageChatPath, directMessageInfoPath } from "../../routes";
 import { createDM, getChatRoomDetails, requestDM } from "../../sdkFunctions";
 import { DmContext } from "./DirectMessagesMain";
@@ -73,7 +74,7 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
   const navigate = useNavigate();
   let dmContext = useContext(DmContext);
   let userContext = useContext(UserContext);
-  // // // console.log(profile);
+  const routeContext = useContext(RouteContext);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState("");
   return (
@@ -82,6 +83,9 @@ function DmMemberTile({ profile, profileIndex, selectedId, setSelectedId }) {
       style={{
         backgroundColor:
           dmContext.currentChatroom?.id == profile?.id ? "#ECF3FF" : "#FFFFFF",
+      }}
+      onClick={() => {
+        routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
       }}
     >
       <div className="flex flex-col">

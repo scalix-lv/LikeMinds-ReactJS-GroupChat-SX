@@ -39,6 +39,7 @@ function Main() {
   const [openNavBar, setOpenNavBar] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState("");
+  const [openMenu, setOpenMenu] = useState(false);
   function refreshGroups() {
     setRefreshState(!refreshState);
   }
@@ -67,8 +68,8 @@ function Main() {
       value={{
         currentRoute: currentRoute,
         setCurrentRoute: setCurrentRoute,
-        isNavigationBoxOpen: openNavBar,
-        setIsNavigationBoxOpen: setOpenNavBar,
+        isNavigationBoxOpen: openMenu,
+        setIsNavigationBoxOpen: setOpenMenu,
       }}
     >
       <GroupContext.Provider
@@ -89,7 +90,7 @@ function Main() {
 
           <div className="flex flex-1 h-full customHeight mt-[65px]">
             <div className="flex-[.085] border-r-[1px] border-[#eeeeee]">
-              <Sidenav />
+              <Sidenav setOpenMenu={setOpenMenu} openMenu={openMenu} />
             </div>
             <div className="flex-[.915]">
               <Outlet />

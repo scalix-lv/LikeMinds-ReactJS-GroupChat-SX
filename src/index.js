@@ -7,8 +7,6 @@ import LikeMinds from "likeminds-chat-beta";
 
 export const myClient = new LikeMinds({
   apiKey: process.env.REACT_APP_API_KEY,
-  baseUrl: process.env.REACT_APP_BASE_URL,
-  baseUrlCaravan: process.env.REACT_APP_BASE_URL_CARAVAN,
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

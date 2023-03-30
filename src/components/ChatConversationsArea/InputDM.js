@@ -33,7 +33,7 @@ import { DmContext } from "../direct-messages/DirectMessagesMain";
 function InputDM({ updateHeight }) {
   const ref = useRef();
   return (
-    <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
+    <Box className="pt-[20px] pb-[5px] px-[40px] bg-white z:max-md:pl-2 ">
       <InputSearchField updateHeight={updateHeight} inputRef={ref} />
       <InputOptions inputRef={ref} />
     </Box>
@@ -64,25 +64,6 @@ function InputSearchField({ updateHeight, inputRef }) {
     if (!response.error) {
       let conversations = response.data;
       sessionStorage.setItem("dmLastConvo", conversations[0].id);
-
-      // for (let convo of conversations) {
-      //   if (convo.date === lastDate) {
-      //     conversationToBeSetArray.push(convo);
-      //     lastDate = convo.date;
-      //   } else {
-      //     if (conversationToBeSetArray.length !== 0) {
-      //       newConversationArray.push(conversationToBeSetArray);
-      //       conversationToBeSetArray = [];
-      //       conversationToBeSetArray.push(convo);
-      //       lastDate = convo.date;
-      //     } else {
-      //       conversationToBeSetArray.push(convo);
-      //       lastDate = convo.date;
-      //     }
-      //   }
-      // }
-      // newConversationArray.push(conversationToBeSetArray);
-
       setConversationArray(conversations);
     } else {
       // // console.log(response.errorMessage);
@@ -90,18 +71,14 @@ function InputSearchField({ updateHeight, inputRef }) {
   };
   let handleSendMessage = async () => {
     try {
-      // // console.log(dmContext.currentChatroom.chat_request_state);
-      // let dmContext =
       if (
         dmContext.currentChatroom.chat_request_state === null &&
         dmContext.currentChatroom.member.state != 1 &&
         dmContext.currentChatroom.chatroom_with_user.state != 1
       ) {
-        // // console.log("sending request");
         let textMessage = dmContext.messageText;
         dmContext.setMessageText("");
         let call = await dmAction(0, dmContext.currentChatroom.id, textMessage);
-        // // console.log(call);
         let chatroomCall = await getChatRoomDetails(
           myClient,
           dmContext.currentChatroom.id
@@ -110,31 +87,21 @@ function InputSearchField({ updateHeight, inputRef }) {
         dmContext.setCurrentProfile(chatroomCall.data);
         return;
       }
-      // // console.log("Inside This Block");
       let isRepliedConvo = dmContext.isConversationSelected;
-      // // console.log("Inside This Block2");
       let { messageText, setMessageText } = dmContext;
-      // // console.log("Inside This Block3");
       let [text, setText] = [messageText, setMessageText];
-      // // console.log("Inside This Block4");
       let inputContext = {
         mediaFiles: dmContext.mediaAttachments,
         audioFiles: dmContext.audioAttachments,
         docFiles: dmContext.documentAttachments,
       };
-      // // console.log("Inside This Block5");
       let filesArray = mergeInputFiles(inputContext);
-      // // console.log("Inside This Block6");
       let res = null;
-      // // console.log("Inside This Block7");
       let tv = text;
-      // // console.log("Inside This Block8");
       if (tv.length != 0) {
         if (!filesArray.length) {
-          // // console.log("1");
           res = await fnew(false, 0, tv, setText, isRepliedConvo);
         } else {
-          // // console.log("2");
           res = await fnew(
             true,
             filesArray.length,
@@ -145,13 +112,10 @@ function InputSearchField({ updateHeight, inputRef }) {
         }
         updateHeight();
       } else if (filesArray.length > 0) {
-        // // console.log("3");
         res = await fnew(true, filesArray.length, tv, setText, isRepliedConvo);
         updateHeight();
       }
       ref.current.removeAttribute("disabled");
-      // // console.log("HERE IS IT");
-
       if (res != null && filesArray.length > 0) {
         let index = 0;
         for (let newFile of filesArray) {
@@ -189,11 +153,11 @@ function InputSearchField({ updateHeight, inputRef }) {
             url: fileUploadRes.Location,
           });
 
-          await getChatroomConversations(
-            dmContext.currentChatroom.id,
-            100,
-            dmContext.setCurrentChatroomConversations
-          );
+          // await getChatroomConversations(
+          //   dmContext.currentChatroom.id,
+          //   100,
+          //   dmContext.setCurrentChatroomConversations
+          // );
           // // console.log(inputRef);
           updateHeight();
           if (inputRef.current) {
@@ -251,20 +215,17 @@ function InputSearchField({ updateHeight, inputRef }) {
       dmContext.setMediaAttachments([]);
       dmContext.setDocumentAttachments([]);
       // // console.log(dmContext.currentChatroom.id);
-      await getChatroomConversations(
-        dmContext.currentChatroom.id,
-        100,
-        dmContext.setCurrentChatroomConversations
-      );
+      // await getChatroomConversations(
+      //   dmContext.currentChatroom.id,
+      //   100,
+      //   dmContext.setCurrentChatroomConversations
+      // );
       updateHeight();
       return { error: false, data: callRes };
     } catch (error) {
       return { error: true, errorMessage: error };
     }
   };
-
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
 
   const [openReplyBox, setOpenReplyBox] = useState(false);
 
