@@ -29,7 +29,7 @@ function GroupInfo() {
           chatroom_id: gc.activeGroup.chatroom.id,
           is_secret: isSecret,
           page: page,
-          page_size: 10,
+          page_size: page == 1 ? 20 : 10,
         });
         if (call.participants.length < 10) {
           setLoadMore(false);
