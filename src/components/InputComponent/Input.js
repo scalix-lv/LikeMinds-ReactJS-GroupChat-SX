@@ -92,11 +92,18 @@ function InputSearchField({ updateHeight }) {
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const ref = useRef();
+
   const conversationContext = useContext(ConversationContext);
   const inputContext = useContext(InputContext);
   const selectedConversationContext = useContext(
     CurrentSelectedConversationContext
   );
+  const [disable, setDisable] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      setDisable(false);
+    }, 300);
+  }, [disable]);
   const fn = async (chatroomId, pageNo, setConversationArray) => {
     let optionObject = {
       chatroomID: chatroomId,
@@ -136,6 +143,7 @@ function InputSearchField({ updateHeight }) {
   let handleSendMessage = async () => {
     try {
       let isRepliedConvo = selectedConversationContext.isSelected;
+      setDisable(true);
       let { text, setText } = inputContext;
       let filesArray = mergeInputFiles(inputContext);
       let res = null;
@@ -343,6 +351,7 @@ function InputSearchField({ updateHeight }) {
           <img src={SendIcon} alt="send" />
         </IconButton>
         <MentionsInput
+          disabled={disable}
           className="mentions"
           inputRef={ref}
           spellCheck="false"
