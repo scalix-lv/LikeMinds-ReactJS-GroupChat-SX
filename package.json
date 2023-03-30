@@ -1,6 +1,6 @@
 {
   "name": "likeminds-chat-sx-rt",
-  "version": "1.3",
+  "version": "1.3.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
