@@ -231,7 +231,7 @@ const GroupChatArea = () => {
                         }
                         return (
                           <div
-                            className="ml-[28px] mr-[114px] pt-5"
+                            className="ml-[28px] mr-[114px] pt-5 z:max-md:mr-[28px] z:max-sm:ml-2  z:max-sm:mr-0"
                             key={convo.id}
                           >
                             {convo.date != lastConvoDate ? (
@@ -252,7 +252,7 @@ const GroupChatArea = () => {
                       }}
                     />
                     <div ref={ref}></div>
-                    <div className="fixed bottom-0 w-[62.1%]">
+                    <div className="fixed bottom-0 w-[62.1%] sm:max-md:w-[90%] z:max-sm:w-[85%]">
                       {groupContext.activeGroup.chatroom.member_can_message ? (
                         <Input updateHeight={updateHeight} />
                       ) : (

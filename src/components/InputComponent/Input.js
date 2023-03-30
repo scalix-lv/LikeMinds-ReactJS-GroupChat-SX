@@ -66,7 +66,7 @@ function Input({ updateHeight }) {
   const [textVal, setTextVal] = useState("");
 
   return (
-    <Box className="pt-[20px] pb-[5px] px-[40px] bg-white ">
+    <Box className="pt-[20px] pb-[5px] px-[40px] bg-white z:max-md:pl-2 ">
       <InputContext.Provider
         value={{
           audioFiles,
@@ -133,7 +133,6 @@ function InputSearchField({ updateHeight }) {
       // // console.log(response.errorMessage);
     }
   };
-  let count = 1;
   let handleSendMessage = async () => {
     try {
       let isRepliedConvo = selectedConversationContext.isSelected;
@@ -224,7 +223,6 @@ function InputSearchField({ updateHeight }) {
     isRepliedConvo
   ) => {
     try {
-      // // console.log("checkpoint " + count++);
       let config = {
         text: tv.toString(),
         created_at: Date.now(),
@@ -243,35 +241,11 @@ function InputSearchField({ updateHeight }) {
       }
 
       let callRes = await myClient.onConversationsCreate(config);
-
-      // let oldConversationArr = conversationContext.conversationsArray;
-      // let oldLength = oldConversationArr.length;
-      // let newConvoArr = [...oldConversationArr];
-
-      // // console.log("3");
-      // if (
-      //   callRes.conversation.date === oldConversationArr[oldLength - 1][0].date
-      // ) {
-      //   callRes.conversation.member = userContext.currentUser;
-      //   newConvoArr[oldLength - 1].push(callRes.conversation);
-      // } else {
-      //   callRes.conversation.member = userContext.currentUser;
-      //   newConvoArr.push([...callRes.conversation]);
-      // }
-      // // console.log("4");
-      // conversationContext.setConversationArray(newConvoArr);
-
       setTextVal("");
       inputContext.setText("");
       selectedConversationContext.setIsSelected(false);
       selectedConversationContext.setConversationObject(null);
       clearInputFiles(inputContext);
-
-      // await getChatroomConversationArray(
-      //   groupContext.activeGroup.chatroom.id,
-      //   1000,
-      //   conversationContext
-      // );
 
       return { error: false, data: callRes };
     } catch (error) {

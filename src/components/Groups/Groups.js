@@ -11,7 +11,7 @@ import {
 } from "../groupChatArea/GroupChatArea";
 import "./Groups.css";
 import { Button } from "@mui/material";
-import { GroupContext } from "../../Main";
+import { GroupContext, RouteContext } from "../../Main";
 import { communityId, myClient, UserContext } from "../..";
 import {
   getAllChatroomMember,
@@ -173,6 +173,7 @@ function Groups(props) {
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
   const [memberList, setMemberList] = useState([]);
+  const routeContext = useContext(RouteContext);
   useEffect(() => {
     if (Object.keys(groupContext.activeGroup).length == 0) {
       if (sessionStorage.getItem("groupContext")) {
@@ -255,8 +256,6 @@ function Groups(props) {
           community_id: groupContext.activeGroup?.community?.id,
           page: pgNo,
         });
-        // console.table()\c
-        // // console.log(call);
         list = list.concat(call.members);
         pgNo = pgNo + 1;
         if (call.members.length < 10) {
@@ -312,7 +311,15 @@ function Groups(props) {
             }}
           >
             <div className="flex overflow-hidden customHeight flex-1">
-              <div className="flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel relative">
+              <div
+                className={`flex-[.32] bg-white border-r-[1px] border-[#eeeeee] pt-[20px] overflow-auto feed-panel relative
+              ${
+                routeContext.isNavigationBoxOpen
+                  ? "z:max-sm:flex-1 sm:max-md:flex-[.85]"
+                  : "z:max-md:hidden"
+              }
+              `}
+              >
                 {/* Search Bar */}
                 <SearchbarGroups />
 
@@ -322,7 +329,13 @@ function Groups(props) {
                 {/* All Public Groups */}
               </div>
               {Object.keys(groupContext.activeGroup).length > 0 ? (
-                <div className="flex-[.68] bg-[#FFFBF2] relative pt-[42px]">
+                <div
+                  className={`flex-[.68] bg-[#FFFBF2] relative pt-[42px] ${
+                    routeContext.isNavigationBoxOpen
+                      ? "sm:max-md:absolute sm:max-md:z-[-1] z:max-sm:hidden"
+                      : "z:max-md:flex-[1]"
+                  }`}
+                >
                   <Outlet />
                 </div>
               ) : null}
