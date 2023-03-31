@@ -22,7 +22,7 @@ function MessageBlock({ conversationObject, userId }) {
 
   return (
     <Box
-      className="flex py-2 px-0 h-full overflow-auto"
+      className="flex py-2 px-0 h-full overflow-auto overflow-x-hidden"
       sx={{
         flexDirection: userId === currentUser ? "row-reverse" : "row",
       }}
