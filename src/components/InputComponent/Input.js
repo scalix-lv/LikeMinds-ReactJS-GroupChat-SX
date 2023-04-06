@@ -6,7 +6,13 @@ import {
   MenuList,
   TextField,
 } from "@mui/material";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import SendIcon from "./../../assets/svg/send.svg";
 import styled from "@emotion/styled";
 import smiley from "./../../assets/svg/smile.svg";
@@ -289,10 +295,24 @@ function InputSearchField({ updateHeight }) {
     enter: false,
     shift: false,
   };
-
   useEffect(() => {
     inputContext.setTextVal("");
   }, [groupContext.activeGroup]);
+  let handleDebounce = useCallback((search, callback) => {
+    debounce(() => {
+      log("here");
+    }, 1000);
+  });
+  // getTaggingMembers(search, 1)
+  //       .then((r) => {
+  //         let a = r.map((item) => {
+  //           item.display = item.name;
+  //           return item;
+  //         });
+  //         log(a);
+  //         callback(a);
+  //       })
+  //       .catch(log);
   return (
     <Box
       sx={{
@@ -387,7 +407,7 @@ function InputSearchField({ updateHeight }) {
           <Mention
             trigger="@"
             data={memberDetailsArray}
-            markup="<<__display__|route://member_profile/__id__?member_id=__id__&community_id=__community__>>"
+            markup="<<__display__|route://member/__id__>>"
             style={{
               backgroundColor: "#daf4fa",
             }}
