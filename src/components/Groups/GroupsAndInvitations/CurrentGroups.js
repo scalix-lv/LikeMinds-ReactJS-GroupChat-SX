@@ -13,6 +13,7 @@ import {
   joinChatRoom,
   log,
   markRead,
+  renderGroupFeed,
 } from "../../../sdkFunctions";
 import { myClient, UserContext } from "../../..";
 import { Link, NavLink } from "react-router-dom";
@@ -31,6 +32,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams, useNavigate } from "react-router-dom";
 import { DmContext } from "../../direct-messages/DirectMessagesMain";
 import FeedSkeleton from "../../skeletons/FeedSkeleton";
+import { list } from "postcss";
 
 function CurrentGroups() {
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(true);
@@ -119,6 +121,8 @@ function PublicGroup({}) {
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
   const [invitationListLength, setInvitationListLength] = useState(0);
+  const [lmj, setLmj] = useState(true);
+  const [lmu, setLmu] = useState(false);
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
@@ -142,6 +146,70 @@ function PublicGroup({}) {
     }
   }
 
+  function renderFeeds() {
+    let listings = [];
+    for (let [key, val] of Object.entries(chatroomContext.feedObjects)) {
+      if (key == "secretFeed") {
+        listings.push(<InvitedGroupList list={val} />);
+        continue;
+      }
+      if (key == "joinedFeed") {
+        listings.push(
+          val.map((group, groupIndex) => {
+            return (
+              <Link
+                to={groupMainPath + "/" + group.chatroom.id}
+                onClick={() => {
+                  if (status != group.chatroom.id) {
+                    groupContext.setShowLoadingBar(true);
+                  } else {
+                    markRead(group.chatroom.id);
+                  }
+                  routeContext.setIsNavigationBoxOpen(
+                    !routeContext.isNavigationBoxOpen
+                  );
+                }}
+                key={group.chatroom.id + groupIndex + group.chatroom.header}
+              >
+                <div>
+                  <PublicGroupTile
+                    key={group.chatroom.id + groupIndex}
+                    groupTitle={group.chatroom.header}
+                    group={group}
+                  />
+                </div>
+              </Link>
+            );
+          })
+        );
+        continue;
+      }
+      if (key == "unjoinedFeed") {
+        listings.push(
+          val.map((group, groupIndex) => {
+            return (
+              <UnjoinedGroup
+                groupTitle={group.header}
+                group={group}
+                key={group.title + groupIndex}
+              />
+            );
+          })
+        );
+      }
+    }
+    return listings;
+  }
+  useEffect(() => {
+    renderGroupFeed(
+      chatroomContext.feedObjects,
+      chatroomContext.setFeedObjects,
+      lmj,
+      setLmj,
+      lmu,
+      setLmu
+    );
+  }, []);
   return (
     <Box>
       <div
@@ -162,15 +230,18 @@ function PublicGroup({}) {
               );
             }}
             dataLength={
-              chatroomContext.chatRoomList.length + invitationListLength
+              // chatroomContext.chatRoomList.length + invitationListLength
+              chatroomContext.feedObjects.secretFeed.length +
+              chatroomContext.feedObjects.joinedFeed.length +
+              chatroomContext.feedObjects.unjoinedFeed.length
             }
             scrollableTarget="homefeedContainer"
           >
-            <InvitedGroupList
+            {/* <InvitedGroupList
               callBack={setInvitationListLength}
               listLength={invitationListLength}
-            />
-            {chatroomContext.chatRoomList.map((group, groupIndex) => {
+            /> */}
+            {/* {chatroomContext.chatRoomList.map((group, groupIndex) => {
               return (
                 <Link
                   to={groupMainPath + "/" + group.chatroom.id}
@@ -195,7 +266,8 @@ function PublicGroup({}) {
                   </div>
                 </Link>
               );
-            })}
+            })} */}
+            {renderFeeds()}
           </InfiniteScroll>
         )}
       </div>
@@ -347,56 +419,56 @@ function GroupInviteTile({ title, response, id }) {
   );
 }
 
-const InvitedGroupList = ({ callBack, listLength }) => {
+const InvitedGroupList = ({ list }) => {
   const [loadMore, setLoadMore] = useState(true);
-  const [list, setList] = useState([]);
+  // const [list, setList] = useState([]);
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
   const navigate = useNavigate();
-  const getInvitations = async () => {
-    try {
-      let pageNo = 1;
-      let shouldCall = true;
-      let res = [];
-      let pageSize = 10;
-      while (shouldCall) {
-        const call = await myClient.getInvites({
-          channel_type: 1,
-          page: pageNo++,
-          page_size: pageSize,
-        });
-        const inviteArray = call.user_invites;
-        res = res.concat(inviteArray);
-        if (inviteArray.length < pageSize) {
-          shouldCall = false;
-        }
-      }
-      setList(res);
-      callBack(res.length);
-    } catch (error) {
-      log(error);
-    }
-  };
+  // const getInvitations = async () => {
+  //   try {
+  //     let pageNo = 1;
+  //     let shouldCall = true;
+  //     let res = [];
+  //     let pageSize = 10;
+  //     while (shouldCall) {
+  //       const call = await myClient.getInvites({
+  //         channel_type: 1,
+  //         page: pageNo++,
+  //         page_size: pageSize,
+  //       });
+  //       const inviteArray = call.user_invites;
+  //       res = res.concat(inviteArray);
+  //       if (inviteArray.length < pageSize) {
+  //         shouldCall = false;
+  //       }
+  //     }
+  //     setList(res);
+  //     callBack(res.length);
+  //   } catch (error) {
+  //     log(error);
+  //   }
+  // };
   // not required currently as complete pagination is happening synchronously
-  const refreshInvitations = async () => {
-    try {
-      let pageSize = 10;
-      let call = await myClient.getInvites({
-        channel_type: 1,
-        page: 1,
-        page_size: pageSize,
-      });
+  // const refreshInvitations = async () => {
+  //   try {
+  //     let pageSize = 10;
+  //     let call = await myClient.getInvites({
+  //       channel_type: 1,
+  //       page: 1,
+  //       page_size: pageSize,
+  //     });
 
-      const inviteArray = call.user_invites;
-      if (inviteArray.length < pageSize) {
-        setLoadMore(false);
-        // pageSize;
-      }
-      setList(inviteArray);
-    } catch (e) {
-      log(e);
-    }
-  };
+  //     const inviteArray = call.user_invites;
+  //     if (inviteArray.length < pageSize) {
+  //       setLoadMore(false);
+  //       // pageSize;
+  //     }
+  //     setList(inviteArray);
+  //   } catch (e) {
+  //     log(e);
+  //   }
+  // };
 
   const invitationResponse = async (channel_id, response) => {
     try {
@@ -423,7 +495,7 @@ const InvitedGroupList = ({ callBack, listLength }) => {
     }
   };
   useEffect(() => {
-    getInvitations();
+    // getInvitations();
   }, [groupContext.activeGroup]);
 
   // useEffect(() => {

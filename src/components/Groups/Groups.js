@@ -28,6 +28,8 @@ export const ChatRoomContext = createContext({
   setUnjoined: () => {},
   setShouldLoadMoreHomeFeed: () => {},
   setShouldLoadMoreUnjoinedFeed: () => {},
+  feedObjects: [],
+  setFeedObjects: () => {},
 });
 
 // for getting the list  of chatroom
@@ -173,6 +175,11 @@ function Groups(props) {
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
   const [memberList, setMemberList] = useState([]);
+  const [feedObjects, setFeedObjects] = useState({
+    secretFeed: [],
+    joinedFeed: [],
+    unJoinedFeed: [],
+  });
   const routeContext = useContext(RouteContext);
   useEffect(() => {
     if (Object.keys(groupContext.activeGroup).length == 0) {
@@ -301,6 +308,8 @@ function Groups(props) {
               refreshHomeFeed(setChatRoomsList, setShouldLoadMoreHomeFeed);
               refreshUnjoinedFeed(setUnjoined, setShouldLoadMoreUnjoinedFeed);
             },
+            feedObjects: feedObjects,
+            setFeedObjects: setFeedObjects,
           }}
         >
           <ConversationContext.Provider

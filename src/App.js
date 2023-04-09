@@ -23,7 +23,7 @@ import DirectMessagesMain from "./components/direct-messages/DirectMessagesMain"
 import "./App.css";
 import { useEffect, useState } from "react";
 import { UserContext } from ".";
-import { initiateSDK } from "./sdkFunctions";
+import { initiateSDK, log } from "./sdkFunctions";
 import ChatArea from "./components/direct-messages/ChatArea";
 import Error from "./components/errorPage/Error";
 
@@ -90,14 +90,15 @@ function App() {
   const [community, setCommunity] = useState({});
   useEffect(() => {
     // 2nd arg for userid
-    initiateSDK(false, "", "")
+    initiateSDK(false, "53208f29-5d15-473e-ab70-5fd77605be0f", "ANkit")
       .then((res) => {
+        log(res);
         setCommunity(res?.data?.community);
         setCurrentUser(res?.data?.user);
         sessionStorage.setItem("communityId", res?.data?.community?.id);
       })
       .catch((error) => {
-        // // console.log("Error =>", error);
+        console.log("Error =>", error);
       });
   }, []);
 
@@ -111,7 +112,7 @@ function App() {
           setCommunity: setCommunity,
         }}
       >
-        {Object.keys(currentUser).length > 0 ? (
+        {Object.keys(currentUser)?.length > 0 ? (
           <>
             <RouterProvider router={router} />
           </>
