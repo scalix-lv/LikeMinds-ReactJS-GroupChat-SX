@@ -501,3 +501,215 @@ export function log(str) {
     console.log(str);
   }
 }
+
+const getInvitations = async (obj) => {
+  try {
+    let pageNo = 1;
+    let shouldCall = true;
+    let res = [];
+    let pageSize = 10;
+    while (shouldCall) {
+      const call = await myClient.getInvites({
+        channel_type: 1,
+        page: pageNo++,
+        page_size: pageSize,
+      });
+      const inviteArray = call.user_invites;
+      res = res.concat(inviteArray);
+      if (inviteArray.length < pageSize) {
+        shouldCall = false;
+      }
+    }
+    obj.secretFeed = res;
+    // callBack(res.length);
+  } catch (error) {
+    log(error);
+  }
+};
+
+export const renderGroupFeed = async (
+  feedObjects,
+  setFeedObjects,
+  loadMoreJoined,
+  setLoadMoreJoined,
+  loadMoreUnjoined,
+  setLoadMoreUnjoined
+) => {
+  try {
+    const { secretFeed, joinedFeed, unjoinedFeed } = feedObjects;
+    let newFeedObjects = {
+      secretFeed: [...secretFeed],
+      joinedFeed: [...joinedFeed],
+      unjoinedFeed: [...unjoinedFeed],
+    };
+    await getInvitations(newFeedObjects);
+    if (loadMoreJoined) {
+      let feedLength = newFeedObjects.joinedFeed.length;
+      let pgNo = Math.floor(feedLength / 10) + 1;
+      let call = await myClient.getHomeFeedData({
+        communityId: sessionStorage.getItem("communityId"),
+        page: pgNo,
+      });
+      if (call.my_chatrooms.length < 10) {
+        log("here");
+        setLoadMoreJoined(false);
+        setLoadMoreUnjoined(true);
+      }
+      let newJoinedFeed = newFeedObjects.joinedFeed.concat(call.my_chatrooms);
+      newFeedObjects.joinedFeed = newJoinedFeed;
+    }
+    if (loadMoreUnjoined) {
+      log("in the unjoined section");
+      let feedLength = newFeedObjects.unjoinedFeed.length;
+      let pgNo = Math.floor(feedLength / 10) + 1;
+      let call = await myClient.fetchFeedData({
+        community_id: sessionStorage.getItem("communityId"),
+        page: pgNo,
+        order_type: 0,
+      });
+      if (call.chatrooms.length < 10) {
+        setLoadMoreUnjoined(false);
+      }
+      let newunJoinedFeed = newFeedObjects.unjoinedFeed.concat(call.chatrooms);
+      newFeedObjects.unjoinedFeed = newunJoinedFeed;
+    }
+    log(newFeedObjects);
+    setFeedObjects(newFeedObjects);
+  } catch (error) {
+    log(error);
+  }
+};
+
+export const refreshGroupFeed = async (
+  feedObjects,
+  setFeedObjects,
+  loadMoreJoined,
+  setLoadMoreJoined,
+  loadMoreUnjoined,
+  setLoadMoreUnjoined
+) => {
+  try {
+    let newFeedObjects = {
+      secretFeed: [],
+      joinedFeed: [],
+      unjoinedFeed: [],
+    };
+    await getInvitations(newFeedObjects);
+    if (loadMoreJoined) {
+      let feedLength = newFeedObjects.joinedFeed.length;
+      let pgNo = Math.floor(feedLength / 10) + 1;
+      let call = await myClient.getHomeFeedData({
+        communityId: sessionStorage.getItem("communityId"),
+        page: 1,
+      });
+      if (call.my_chatrooms.length < 10) {
+        setLoadMoreJoined(false);
+        setLoadMoreUnjoined(true);
+      }
+      let newJoinedFeed = newFeedObjects.joinedFeed.concat(call.my_chatrooms);
+      newFeedObjects.joinedFeed = newJoinedFeed;
+    }
+    newFeedObjects.unjoinedFeed = [];
+    setFeedObjects(newFeedObjects);
+  } catch (error) {
+    log(error);
+  }
+};
+
+export const renderDmFeed = async (
+  feedObjects,
+  setFeedObjects,
+  loadMoreJoined,
+  setLoadMoreJoined,
+  loadMoreUnjoined,
+  setLoadMoreUnjoined
+) => {
+  try {
+    const { secretFeed, joinedFeed, unjoinedFeed } = feedObjects;
+    let newFeedObjects = {
+      joinedFeed: [...joinedFeed],
+      unjoinedFeed: [...unjoinedFeed],
+    };
+    if (loadMoreJoined) {
+      let feedLength = newFeedObjects.joinedFeed.length;
+      let pgNo = Math.floor(feedLength / 10) + 1;
+      let call = await myClient.DmChatroom({
+        communityId: sessionStorage.getItem("communityId"),
+        page: pgNo,
+      });
+      if (call.dm_chatrooms.length < 10) {
+        log("here");
+        setLoadMoreJoined(false);
+        setLoadMoreUnjoined(true);
+      }
+      let newJoinedFeed = newFeedObjects.joinedFeed.concat(call.dm_chatrooms);
+      newFeedObjects.joinedFeed = newJoinedFeed;
+    }
+    if (loadMoreUnjoined) {
+      let feedLength = newFeedObjects.unjoinedFeed.length;
+      let pgNo = Math.floor(feedLength / 10) + 1;
+      let call = await myClient.dmAllMembers({
+        community_id: sessionStorage.getItem("communityId"),
+        page: pgNo,
+        member_state: 4,
+      });
+      if (call.members.length < 10) {
+        setLoadMoreUnjoined(false);
+      }
+      let newunJoinedFeed = newFeedObjects.unjoinedFeed.concat(call.members);
+      newFeedObjects.unjoinedFeed = newunJoinedFeed;
+    }
+    log(newFeedObjects);
+    setFeedObjects(newFeedObjects);
+  } catch (error) {
+    log(error);
+  }
+};
+export const refreshDmFeed = async (
+  feedObjects,
+  setFeedObjects,
+  loadMoreJoined,
+  setLoadMoreJoined,
+  loadMoreUnjoined,
+  setLoadMoreUnjoined
+) => {
+  try {
+    let newFeedObjects = {
+      joinedFeed: [],
+      unjoinedFeed: [],
+    };
+    if (loadMoreJoined) {
+      let feedLength = newFeedObjects.joinedFeed.length;
+      let pgNo = Math.floor(feedLength / 10) + 1;
+      let call = await myClient.DmChatroom({
+        communityId: sessionStorage.getItem("communityId"),
+        page: pgNo,
+      });
+      if (call.dm_chatrooms.length < 10) {
+        log("here");
+        setLoadMoreJoined(false);
+        setLoadMoreUnjoined(true);
+      }
+      let newJoinedFeed = newFeedObjects.joinedFeed.concat(call.dm_chatrooms);
+      newFeedObjects.joinedFeed = newJoinedFeed;
+    }
+    if (loadMoreUnjoined) {
+      let feedLength = newFeedObjects.unjoinedFeed.length;
+      let pgNo = Math.floor(feedLength / 10) + 1;
+      let call = await myClient.dmAllMembers({
+        community_id: sessionStorage.getItem("communityId"),
+        page: pgNo,
+        member_state: 4,
+      });
+      if (call.members.length < 10) {
+        setLoadMoreUnjoined(false);
+      }
+      let newunJoinedFeed = newFeedObjects.unjoinedFeed.concat(call.members);
+      newFeedObjects.unjoinedFeed = newunJoinedFeed;
+    }
+    newFeedObjects.unjoinedFeed = [];
+    setFeedObjects(newFeedObjects);
+  } catch (error) {
+    log(error);
+  }
+};

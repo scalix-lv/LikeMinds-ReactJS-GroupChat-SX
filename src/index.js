@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import LikeMinds from "likeminds-chat-beta";
+import { log } from "./sdkFunctions";
 
 export const myClient = new LikeMinds({
   // apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
@@ -13,6 +14,7 @@ export const myClient = new LikeMinds({
   baseUrl: process.env.REACT_APP_BASE_URL,
   baseUrlCaravan: process.env.REACT_APP_BASE_URL_CARAVAN,
 });
+log(myClient);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
