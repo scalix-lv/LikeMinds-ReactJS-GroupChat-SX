@@ -298,11 +298,11 @@ function InputSearchField({ updateHeight }) {
   useEffect(() => {
     inputContext.setTextVal("");
   }, [groupContext.activeGroup]);
-  let handleDebounce = useCallback((search, callback) => {
-    debounce(() => {
-      log("here");
-    }, 1000);
-  });
+  // let handleDebounce = useCallback((search, callback) => {
+  //   debounce(() => {
+  //     log("here");
+  //   }, 1000);
+  // });
   // getTaggingMembers(search, 1)
   //       .then((r) => {
   //         let a = r.map((item) => {
