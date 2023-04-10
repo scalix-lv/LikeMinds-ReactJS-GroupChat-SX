@@ -90,15 +90,14 @@ function App() {
   const [community, setCommunity] = useState({});
   useEffect(() => {
     // 2nd arg for userid
-    initiateSDK(false, "53208f29-5d15-473e-ab70-5fd77605be0f", "ANkit")
+    initiateSDK(false, "36011b36-dc6d-43b3-ae68-9251f36063ac", "")
       .then((res) => {
-        log(res);
         setCommunity(res?.data?.community);
         setCurrentUser(res?.data?.user);
         sessionStorage.setItem("communityId", res?.data?.community?.id);
       })
       .catch((error) => {
-        console.log("Error =>", error);
+        // // console.log("Error =>", error);
       });
   }, []);
 
