@@ -13,7 +13,12 @@
     "emoji-picker-react": "^4.4.7",
     "firebase": "^9.15.0",
     "html-react-parser": "^3.0.4",
+<<<<<<< refs/remotes/origin/feature/LM-8334_userTaggingRouteCorrection
     "likeminds-chat-beta": "^1.1.16",
+=======
+    "likeminds-chat-beta": "^1.1.19",
+    "lodash.debounce": "^4.0.8",
+>>>>>>> local
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
