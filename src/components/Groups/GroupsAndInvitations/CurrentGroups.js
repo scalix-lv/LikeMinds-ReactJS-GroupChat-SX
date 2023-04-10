@@ -75,13 +75,13 @@ function CurrentGroups() {
 
       <PublicGroup groupList={chatroomContext.chatRoomsList} />
 
-      <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
+      {/* <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
         <span>All Public Groups</span>
         <IconButton onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}>
           {!shouldOpenPublicCard ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
         </IconButton>
-      </div>
-      <Collapse in={shouldOpenPublicCard}>
+      </div> */}
+      {/* <Collapse in={shouldOpenPublicCard}>
         <div className="max-h-[400px] overflow-auto" id="unjoinedContainer">
           {chatroomContext.unJoined.length == 0 ? (
             <FeedSkeleton />
@@ -110,7 +110,7 @@ function CurrentGroups() {
             </InfiniteScroll>
           )}
         </div>
-      </Collapse>
+      </Collapse> */}
     </Box>
   );
 }
@@ -121,8 +121,9 @@ function PublicGroup({}) {
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
   const [invitationListLength, setInvitationListLength] = useState(0);
-  const [lmj, setLmj] = useState(true);
-  const [lmu, setLmu] = useState(false);
+  const { lmj, lmu, setLmj, setLmu } = chatroomContext;
+  // const [lmj, setLmj] = useState(true);
+  // const [lmu, setLmu] = useState(false);
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
@@ -185,6 +186,22 @@ function PublicGroup({}) {
         continue;
       }
       if (key == "unjoinedFeed") {
+        // if (val.length > 0) {
+        //   listings.push(
+        //     <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
+        //       <span>All Public Groups</span>
+        //       {/* <IconButton
+        //         onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}
+        //       >
+        //         {!shouldOpenPublicCard ? (
+        //           <ArrowDropDownIcon />
+        //         ) : (
+        //           <ArrowDropUpIcon />
+        //         )}
+        //       </IconButton> */}
+        //     </div>
+        //   );
+        // }
         listings.push(
           val.map((group, groupIndex) => {
             return (
@@ -221,12 +238,15 @@ function PublicGroup({}) {
           <FeedSkeleton />
         ) : (
           <InfiniteScroll
-            hasMore={chatroomContext.shouldLoadMoreHomeFeed}
+            hasMore={lmu || lmj}
             next={() => {
-              paginateHomeFeed(
-                chatroomContext.chatRoomList,
-                chatroomContext.setChatRoomList,
-                chatroomContext.setShouldLoadMoreHomeFeed
+              renderGroupFeed(
+                chatroomContext.feedObjects,
+                chatroomContext.setFeedObjects,
+                lmj,
+                setLmj,
+                lmu,
+                setLmu
               );
             }}
             dataLength={
