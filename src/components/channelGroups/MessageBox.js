@@ -272,7 +272,11 @@ function StringBox({
               {replyConversationObject?.member?.name}
             </div>
             <div className="text-[#323232] font-[300] text-[12px]">
-              {replyConversationObject?.answer}
+              {parse(
+                linkConverter(
+                  tagExtracter(replyConversationObject?.answer, userContext)
+                )
+              )}
             </div>
           </div>
         ) : null}

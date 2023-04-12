@@ -13,6 +13,7 @@ import {
   joinChatRoom,
   log,
   markRead,
+  renderGroupFeed,
 } from "../../../sdkFunctions";
 import { myClient, UserContext } from "../../..";
 import { Link, NavLink } from "react-router-dom";
@@ -31,6 +32,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams, useNavigate } from "react-router-dom";
 import { DmContext } from "../../direct-messages/DirectMessagesMain";
 import FeedSkeleton from "../../skeletons/FeedSkeleton";
+import { list } from "postcss";
 
 function CurrentGroups() {
   const [shouldOpenPublicCard, setShouldPublicCard] = useState(true);
@@ -73,13 +75,13 @@ function CurrentGroups() {
 
       <PublicGroup groupList={chatroomContext.chatRoomsList} />
 
-      <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
+      {/* <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
         <span>All Public Groups</span>
         <IconButton onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}>
           {!shouldOpenPublicCard ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
         </IconButton>
-      </div>
-      <Collapse in={shouldOpenPublicCard}>
+      </div> */}
+      {/* <Collapse in={shouldOpenPublicCard}>
         <div className="max-h-[400px] overflow-auto" id="unjoinedContainer">
           {chatroomContext.unJoined.length == 0 ? (
             <FeedSkeleton />
@@ -108,7 +110,7 @@ function CurrentGroups() {
             </InfiniteScroll>
           )}
         </div>
-      </Collapse>
+      </Collapse> */}
     </Box>
   );
 }
@@ -119,6 +121,9 @@ function PublicGroup({}) {
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
   const [invitationListLength, setInvitationListLength] = useState(0);
+  const { lmj, lmu, setLmj, setLmu } = chatroomContext;
+  // const [lmj, setLmj] = useState(true);
+  // const [lmu, setLmu] = useState(false);
   // for gettingChatRoom()
   async function getChatRoomData(chatroomId) {
     try {
@@ -142,35 +147,136 @@ function PublicGroup({}) {
     }
   }
 
+  function renderFeeds() {
+    log("running");
+    let listings = [];
+    for (let [key, val] of Object.entries(chatroomContext.feedObjects)) {
+      if (key == "secretFeed") {
+        listings.push(<InvitedGroupList list={val} />);
+        continue;
+      }
+      if (key == "joinedFeed") {
+        listings.push(
+          val.map((group, groupIndex) => {
+            return (
+              <Link
+                to={groupMainPath + "/" + group.chatroom.id}
+                onClick={() => {
+                  if (status != group.chatroom.id) {
+                    groupContext.setShowLoadingBar(true);
+                  } else {
+                    markRead(group.chatroom.id);
+                  }
+                  routeContext.setIsNavigationBoxOpen(
+                    !routeContext.isNavigationBoxOpen
+                  );
+                }}
+                key={group.chatroom.id + groupIndex + group.chatroom.header}
+              >
+                <div>
+                  <PublicGroupTile
+                    key={group.chatroom.id + groupIndex}
+                    groupTitle={group.chatroom.header}
+                    group={group}
+                  />
+                </div>
+              </Link>
+            );
+          })
+        );
+        continue;
+      }
+      if (key == "unjoinedFeed") {
+        if (val.length > 0) {
+          listings.push(
+            <div
+              className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center"
+              key="header-uq"
+            >
+              <span>All Public Groups</span>
+              {/* <IconButton
+                onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}
+              >
+                {!shouldOpenPublicCard ? (
+                  <ArrowDropDownIcon />
+                ) : (
+                  <ArrowDropUpIcon />
+                )}
+              </IconButton> */}
+            </div>
+          );
+        }
+        listings.push(
+          val.map((group, groupIndex) => {
+            return (
+              <UnjoinedGroup
+                groupTitle={group.header}
+                group={group}
+                key={group.title + groupIndex}
+              />
+            );
+          })
+        );
+      }
+    }
+    return listings;
+  }
+  useEffect(() => {
+    chatroomContext.setShowCircularProgress(true);
+    const fn = async () => {
+      renderGroupFeed(
+        chatroomContext.feedObjects,
+        chatroomContext.setFeedObjects,
+        lmj,
+        setLmj,
+        lmu,
+        setLmu
+      )
+        .then((r) => {
+          chatroomContext.setShowCircularProgress(false);
+        })
+        .catch((e) => log(e));
+    };
+    fn();
+  }, []);
+  useEffect(() => {
+    log(chatroomContext);
+  });
   return (
     <Box>
       <div
         id="homefeedContainer"
-        className="min-h-[350px] max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
+        className="h-[100vh] overflow-auto border-b border-solid border-[#EEEEEE]"
       >
         {" "}
-        {chatroomContext.chatRoomList.length === 0 ? (
+        {chatroomContext.feedObjects.joinedFeed.length === 0 ? (
           <FeedSkeleton />
         ) : (
           <InfiniteScroll
-            hasMore={chatroomContext.shouldLoadMoreHomeFeed}
+            hasMore={lmu || lmj}
             next={() => {
-              paginateHomeFeed(
-                chatroomContext.chatRoomList,
-                chatroomContext.setChatRoomList,
-                chatroomContext.setShouldLoadMoreHomeFeed
+              renderGroupFeed(
+                chatroomContext.feedObjects,
+                chatroomContext.setFeedObjects,
+                lmj,
+                setLmj,
+                lmu,
+                setLmu
               );
             }}
             dataLength={
-              chatroomContext.chatRoomList.length + invitationListLength
+              // chatroomContext.chatRoomList.length + invitationListLength
+              chatroomContext.feedObjects.secretFeed.length +
+              chatroomContext.feedObjects.joinedFeed.length +
+              chatroomContext.feedObjects.unjoinedFeed.length
             }
             scrollableTarget="homefeedContainer"
           >
-            <InvitedGroupList
+            {/* <InvitedGroupList
               callBack={setInvitationListLength}
               listLength={invitationListLength}
-            />
-            {chatroomContext.chatRoomList.map((group, groupIndex) => {
+            /> */}
+            {/* {chatroomContext.chatRoomList.map((group, groupIndex) => {
               return (
                 <Link
                   to={groupMainPath + "/" + group.chatroom.id}
@@ -195,7 +301,8 @@ function PublicGroup({}) {
                   </div>
                 </Link>
               );
-            })}
+            })} */}
+            {renderFeeds()}
           </InfiniteScroll>
         )}
       </div>
@@ -347,56 +454,56 @@ function GroupInviteTile({ title, response, id }) {
   );
 }
 
-const InvitedGroupList = ({ callBack, listLength }) => {
+const InvitedGroupList = ({ list }) => {
   const [loadMore, setLoadMore] = useState(true);
-  const [list, setList] = useState([]);
+  // const [list, setList] = useState([]);
   const chatroomContext = useContext(ChatRoomContext);
   const groupContext = useContext(GroupContext);
   const navigate = useNavigate();
-  const getInvitations = async () => {
-    try {
-      let pageNo = 1;
-      let shouldCall = true;
-      let res = [];
-      let pageSize = 10;
-      while (shouldCall) {
-        const call = await myClient.getInvites({
-          channel_type: 1,
-          page: pageNo++,
-          page_size: pageSize,
-        });
-        const inviteArray = call.user_invites;
-        res = res.concat(inviteArray);
-        if (inviteArray.length < pageSize) {
-          shouldCall = false;
-        }
-      }
-      setList(res);
-      callBack(res.length);
-    } catch (error) {
-      log(error);
-    }
-  };
+  // const getInvitations = async () => {
+  //   try {
+  //     let pageNo = 1;
+  //     let shouldCall = true;
+  //     let res = [];
+  //     let pageSize = 10;
+  //     while (shouldCall) {
+  //       const call = await myClient.getInvites({
+  //         channel_type: 1,
+  //         page: pageNo++,
+  //         page_size: pageSize,
+  //       });
+  //       const inviteArray = call.user_invites;
+  //       res = res.concat(inviteArray);
+  //       if (inviteArray.length < pageSize) {
+  //         shouldCall = false;
+  //       }
+  //     }
+  //     setList(res);
+  //     callBack(res.length);
+  //   } catch (error) {
+  //     log(error);
+  //   }
+  // };
   // not required currently as complete pagination is happening synchronously
-  const refreshInvitations = async () => {
-    try {
-      let pageSize = 10;
-      let call = await myClient.getInvites({
-        channel_type: 1,
-        page: 1,
-        page_size: pageSize,
-      });
+  // const refreshInvitations = async () => {
+  //   try {
+  //     let pageSize = 10;
+  //     let call = await myClient.getInvites({
+  //       channel_type: 1,
+  //       page: 1,
+  //       page_size: pageSize,
+  //     });
 
-      const inviteArray = call.user_invites;
-      if (inviteArray.length < pageSize) {
-        setLoadMore(false);
-        // pageSize;
-      }
-      setList(inviteArray);
-    } catch (e) {
-      log(e);
-    }
-  };
+  //     const inviteArray = call.user_invites;
+  //     if (inviteArray.length < pageSize) {
+  //       setLoadMore(false);
+  //       // pageSize;
+  //     }
+  //     setList(inviteArray);
+  //   } catch (e) {
+  //     log(e);
+  //   }
+  // };
 
   const invitationResponse = async (channel_id, response) => {
     try {
@@ -423,7 +530,7 @@ const InvitedGroupList = ({ callBack, listLength }) => {
     }
   };
   useEffect(() => {
-    getInvitations();
+    // getInvitations();
   }, [groupContext.activeGroup]);
 
   // useEffect(() => {
