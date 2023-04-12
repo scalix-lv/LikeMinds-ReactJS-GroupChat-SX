@@ -287,15 +287,19 @@ function InputSearchField({ updateHeight }) {
       return { error: true, errorMessage: error };
     }
   };
-  async function getTaggingMembers(searchString, pageNo) {
+  async function getTaggingMembers(searchString, pageNo, isSecret) {
     try {
       let call = await myClient.getTaggingList({
         chatroomId: status,
         page: pageNo,
         pageSize: 10,
         searchName: searchString,
+        isSecret: isSecret,
       });
       // log(call);
+      if (isSecret) {
+        return call.chatroom_participants;
+      }
       return call.community_members;
     } catch (error) {
       log(error);
@@ -466,7 +470,12 @@ function InputSearchField({ updateHeight }) {
             trigger="@"
             data={(search, callback) => {
               timeOut.current = setTimeout(() => {
-                getTaggingMembers(search, 1).then((val) => {
+                log(groupContext.activeGroup.chatroom.is_secret);
+                getTaggingMembers(
+                  search,
+                  1,
+                  groupContext.activeGroup.chatroom.is_secret
+                ).then((val) => {
                   let arr = val.map((item) => {
                     item.display = item.name;
                     return item;
@@ -479,9 +488,9 @@ function InputSearchField({ updateHeight }) {
                   setMemberDetailsArray(arr);
                   callback(arr);
                 });
-              }, 2000);
+              }, 100);
             }}
-            markup="<<__display__|route://member_profile/__id__?member_id=__id__&community_id=__community__>>"
+            markup="<<__display__|route://member/__id__>>"
             style={{
               backgroundColor: "#daf4fa",
             }}

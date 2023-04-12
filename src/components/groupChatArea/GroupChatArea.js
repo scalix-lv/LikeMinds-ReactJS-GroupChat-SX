@@ -151,12 +151,8 @@ const GroupChatArea = () => {
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
         updateHeight();
-        getChatroomConversationArray(
-          groupContext.activeGroup.chatroom.id,
-          100,
-          conversationContext
-        );
-        chatRoomContext.refreshChatroomContext();
+        getChatroomConversationArray(status, 100, conversationContext);
+        // chatRoomContext.refreshChatroomContext();
       }
     });
   }, [status]);

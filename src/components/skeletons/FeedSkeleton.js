@@ -2,7 +2,7 @@ import { Skeleton } from "@mui/material";
 import React from "react";
 
 function FeedSkeleton() {
-  const arr = Array(6).fill(null);
+  const arr = Array(20).fill(null);
   return (
     <div>
       {arr.map((item, index) => {

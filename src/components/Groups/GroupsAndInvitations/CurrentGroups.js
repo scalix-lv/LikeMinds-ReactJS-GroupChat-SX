@@ -148,6 +148,7 @@ function PublicGroup({}) {
   }
 
   function renderFeeds() {
+    log("running");
     let listings = [];
     for (let [key, val] of Object.entries(chatroomContext.feedObjects)) {
       if (key == "secretFeed") {
@@ -186,22 +187,25 @@ function PublicGroup({}) {
         continue;
       }
       if (key == "unjoinedFeed") {
-        // if (val.length > 0) {
-        //   listings.push(
-        //     <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
-        //       <span>All Public Groups</span>
-        //       {/* <IconButton
-        //         onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}
-        //       >
-        //         {!shouldOpenPublicCard ? (
-        //           <ArrowDropDownIcon />
-        //         ) : (
-        //           <ArrowDropUpIcon />
-        //         )}
-        //       </IconButton> */}
-        //     </div>
-        //   );
-        // }
+        if (val.length > 0) {
+          listings.push(
+            <div
+              className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center"
+              key="header-uq"
+            >
+              <span>All Public Groups</span>
+              {/* <IconButton
+                onClick={() => setShouldPublicCard(!shouldOpenPublicCard)}
+              >
+                {!shouldOpenPublicCard ? (
+                  <ArrowDropDownIcon />
+                ) : (
+                  <ArrowDropUpIcon />
+                )}
+              </IconButton> */}
+            </div>
+          );
+        }
         listings.push(
           val.map((group, groupIndex) => {
             return (
@@ -227,14 +231,17 @@ function PublicGroup({}) {
       setLmu
     );
   }, []);
+  useEffect(() => {
+    log(chatroomContext);
+  });
   return (
     <Box>
       <div
         id="homefeedContainer"
-        className="min-h-[350px] max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
+        className="h-[100vh] overflow-auto border-b border-solid border-[#EEEEEE]"
       >
         {" "}
-        {chatroomContext.chatRoomList.length === 0 ? (
+        {chatroomContext.feedObjects.joinedFeed.length === 0 ? (
           <FeedSkeleton />
         ) : (
           <InfiniteScroll

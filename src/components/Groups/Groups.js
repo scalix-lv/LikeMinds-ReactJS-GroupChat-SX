@@ -206,23 +206,23 @@ function Groups(props) {
     sessionStorage.removeItem("last_message_id");
   }, [groupContext.activeGroup]);
 
-  useEffect(() => {
-    // loading the list of chatrooms (already joined)
-    fn(
-      chatRoomsList,
-      setChatRoomsList,
-      setShouldLoadMoreHomeFeed,
-      userContext.community.id,
-      serialObject,
-      setSerialObject
-    );
-    getUnjoinedList(
-      unJoined,
-      setUnjoined,
-      setShouldLoadMoreUnjoinedFeed,
-      userContext.community.id
-    );
-  }, []);
+  // useEffect(() => {
+  //   // loading the list of chatrooms (already joined)
+  //   fn(
+  //     chatRoomsList,
+  //     setChatRoomsList,
+  //     setShouldLoadMoreHomeFeed,
+  //     userContext.community.id,
+  //     serialObject,
+  //     setSerialObject
+  //   );
+  //   getUnjoinedList(
+  //     unJoined,
+  //     setUnjoined,
+  //     setShouldLoadMoreUnjoinedFeed,
+  //     userContext.community.id
+  //   );
+  // }, []);
 
   useEffect(() => {
     async function getAllMembers() {
@@ -284,7 +284,7 @@ function Groups(props) {
               refreshGroupFeed(
                 feedObjects,
                 setFeedObjects,
-                lmj,
+                true,
                 setLmj,
                 lmu,
                 setLmu
