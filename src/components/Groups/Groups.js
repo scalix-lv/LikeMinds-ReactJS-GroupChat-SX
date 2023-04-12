@@ -10,13 +10,14 @@ import {
   StyledBox,
 } from "../groupChatArea/GroupChatArea";
 import "./Groups.css";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { GroupContext, RouteContext } from "../../Main";
 import { communityId, myClient, UserContext } from "../..";
 import {
   getAllChatroomMember,
   getChatRoomDetails,
   getUnjoinedRooms,
+  refreshGroupFeed,
 } from "../../sdkFunctions";
 export const ChatRoomContext = createContext({
   chatRoomList: [],
@@ -28,6 +29,14 @@ export const ChatRoomContext = createContext({
   setUnjoined: () => {},
   setShouldLoadMoreHomeFeed: () => {},
   setShouldLoadMoreUnjoinedFeed: () => {},
+  feedObjects: {},
+  setFeedObjects: () => {},
+  lmj: Boolean,
+  setLmj: () => {},
+  lmu: Boolean,
+  setLmu: () => {},
+  setShowCircularProgress: () => {},
+  showCircularProgress: Boolean,
 });
 
 // for getting the list  of chatroom
@@ -160,6 +169,7 @@ export const paginateUnjoinedFeed = async (
 
 function Groups(props) {
   const { children } = props;
+
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const [serialObject, setSerialObject] = useState({});
@@ -173,6 +183,14 @@ function Groups(props) {
   const [isSelected, setIsSelected] = useState(false);
   const [conversationObject, setConversationObject] = useState({});
   const [memberList, setMemberList] = useState([]);
+  const [feedObjects, setFeedObjects] = useState({
+    secretFeed: [],
+    joinedFeed: [],
+    unjoinedFeed: [],
+  });
+  const [lmj, setLmj] = useState(true);
+  const [lmu, setLmu] = useState(false);
+  const [showCircularProgress, setShowCircularProgress] = useState(false);
   const routeContext = useContext(RouteContext);
   useEffect(() => {
     if (Object.keys(groupContext.activeGroup).length == 0) {
@@ -192,58 +210,23 @@ function Groups(props) {
     sessionStorage.removeItem("last_message_id");
   }, [groupContext.activeGroup]);
 
-  // temporary removal
   // useEffect(() => {
-  //   if (Object.keys(groupContext.activeGroup).length === 0) {
-  //   } else {
-  //     fn(
-  //       chatRoomsList,
-  //       setChatRoomsList,
-  //       setShouldLoadMoreHomeFeed,
-  //       userContext.community.id,
-  //       serialObject,
-  //       setSerialObject
-  //     );
-
-  //     if (unJoined.length == 0) {
-  //       return;
-  //     }
-  //     if (groupContext.activeGroup.chatroom != undefined) {
-  //       getChatRoomDetails(
-  //         myClient,
-  //         groupContext.activeGroup?.chatroom?.id
-  //       ).then((res) => {
-  //         if (res.data) {
-  //           let unJoineds = [...unJoined];
-  //           for (let uc of unJoineds) {
-  //             if (uc.id == res.data.chatroom.id) {
-  //               uc.follow_status = true;
-  //             }
-  //           }
-  //           setUnjoined(unJoineds);
-  //         }
-  //       });
-  //     }
-  //   }
-  // }, [groupContext.activeGroup]);
-
-  useEffect(() => {
-    // loading the list of chatrooms (already joined)
-    fn(
-      chatRoomsList,
-      setChatRoomsList,
-      setShouldLoadMoreHomeFeed,
-      userContext.community.id,
-      serialObject,
-      setSerialObject
-    );
-    getUnjoinedList(
-      unJoined,
-      setUnjoined,
-      setShouldLoadMoreUnjoinedFeed,
-      userContext.community.id
-    );
-  }, []);
+  //   // loading the list of chatrooms (already joined)
+  //   fn(
+  //     chatRoomsList,
+  //     setChatRoomsList,
+  //     setShouldLoadMoreHomeFeed,
+  //     userContext.community.id,
+  //     serialObject,
+  //     setSerialObject
+  //   );
+  //   getUnjoinedList(
+  //     unJoined,
+  //     setUnjoined,
+  //     setShouldLoadMoreUnjoinedFeed,
+  //     userContext.community.id
+  //   );
+  // }, []);
 
   useEffect(() => {
     async function getAllMembers() {
@@ -298,9 +281,27 @@ function Groups(props) {
             setShouldLoadMoreHomeFeed: setShouldLoadMoreHomeFeed,
             setShouldLoadMoreUnjoinedFeed: setShouldLoadMoreUnjoinedFeed,
             refreshChatroomContext: () => {
-              refreshHomeFeed(setChatRoomsList, setShouldLoadMoreHomeFeed);
-              refreshUnjoinedFeed(setUnjoined, setShouldLoadMoreUnjoinedFeed);
+              // refreshHomeFeed(setChatRoomsList, setShouldLoadMoreHomeFeed);
+              // refreshUnjoinedFeed(setUnjoined, setShouldLoadMoreUnjoinedFeed);
+              setLmj(true);
+              setLmu(false);
+              refreshGroupFeed(
+                feedObjects,
+                setFeedObjects,
+                true,
+                setLmj,
+                lmu,
+                setLmu
+              );
             },
+            feedObjects: feedObjects,
+            setFeedObjects: setFeedObjects,
+            lmj,
+            setLmj,
+            lmu,
+            setLmu,
+            setShowCircularProgress,
+            showCircularProgress,
           }}
         >
           <ConversationContext.Provider
@@ -336,6 +337,7 @@ function Groups(props) {
                       : "z:max-md:flex-[1]"
                   }`}
                 >
+                  {/* {showCircularProgress ? <CircularProgress /> : null} */}
                   <Outlet />
                 </div>
               ) : null}

@@ -90,9 +90,11 @@ export function MoreOptions() {
           <MenuItem
             key={item.id}
             onClick={() => {
+              log(item);
               if (item.id === 6 || item.id === 8) {
                 muteNotifications(item.id);
-              } else if (item.id === 15) {
+              } else if (item.id === 15 || item.id === 9) {
+                log("here");
                 leaveGroup();
               }
             }}

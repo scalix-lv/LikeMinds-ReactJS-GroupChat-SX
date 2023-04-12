@@ -23,7 +23,7 @@ import DirectMessagesMain from "./components/direct-messages/DirectMessagesMain"
 import "./App.css";
 import { useEffect, useState } from "react";
 import { UserContext } from ".";
-import { initiateSDK } from "./sdkFunctions";
+import { initiateSDK, log } from "./sdkFunctions";
 import ChatArea from "./components/direct-messages/ChatArea";
 import Error from "./components/errorPage/Error";
 
@@ -111,7 +111,7 @@ function App() {
           setCommunity: setCommunity,
         }}
       >
-        {Object.keys(currentUser).length > 0 ? (
+        {Object.keys(currentUser)?.length > 0 ? (
           <>
             <RouterProvider router={router} />
           </>

@@ -25,6 +25,7 @@ import {
   getConversationsForGroup,
   getString,
   getUsername,
+  log,
   mergeInputFiles,
 } from "../../sdkFunctions";
 import EmojiPicker from "emoji-picker-react";
@@ -35,6 +36,8 @@ import MessageBox from "../channelGroups/MessageBox";
 import { Close } from "@mui/icons-material";
 import "./Input.css";
 import { getChatroomConversationArray } from "../groupChatArea/GroupChatArea";
+import { useParams } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
 const StyledInputWriteComment = styled(TextField)({
   background: "#F9F9F9",
   borderRadius: "20px",
@@ -90,15 +93,39 @@ function Input({ updateHeight }) {
 
 function InputSearchField({ updateHeight }) {
   const groupContext = useContext(GroupContext);
-  const userContext = useContext(UserContext);
+  const [searchString, setSearchString] = useState("");
+  const [loadMoreMembers, setLoadMoreMembers] = useState(true);
+  const [debounceBool, setDebounceBool] = useState(true);
   const ref = useRef();
-
+  const { status } = useParams();
   const conversationContext = useContext(ConversationContext);
   const inputContext = useContext(InputContext);
   const selectedConversationContext = useContext(
     CurrentSelectedConversationContext
   );
   const [disable, setDisable] = useState(false);
+  const [throttleScroll, setThrottleScroll] = useState(true);
+  let timeOut = useRef(null);
+  let suggestionsRef = useRef(null);
+  const cbRef = useRef(null);
+  useEffect(() => {
+    if (throttleScroll == false) {
+      setTimeout(() => {
+        setThrottleScroll(true);
+      }, 1000);
+    }
+  });
+  useEffect(() => {
+    return () => {
+      if (timeOut.current != null) {
+        clearTimeout(timeOut.current);
+      }
+    };
+  });
+  let keyObj = {
+    shift: false,
+    enter: false,
+  };
   useEffect(() => {
     setTimeout(() => {
       setDisable(false);
@@ -260,6 +287,24 @@ function InputSearchField({ updateHeight }) {
       return { error: true, errorMessage: error };
     }
   };
+  async function getTaggingMembers(searchString, pageNo, isSecret) {
+    try {
+      let call = await myClient.getTaggingList({
+        chatroomId: status,
+        page: pageNo,
+        pageSize: 10,
+        searchName: searchString,
+        isSecret: isSecret,
+      });
+      // log(call);
+      if (isSecret) {
+        return call.chatroom_participants;
+      }
+      return call.community_members;
+    } catch (error) {
+      log(error);
+    }
+  }
 
   const [openReplyBox, setOpenReplyBox] = useState(false);
 
@@ -268,27 +313,6 @@ function InputSearchField({ updateHeight }) {
   }, [selectedConversationContext.conversationObject]);
 
   const [memberDetailsArray, setMemberDetailsArray] = useState([]);
-  useEffect(() => {
-    let memberArr = [];
-
-    if (groupContext.activeGroup.membersDetail?.length > 0) {
-      for (let member of groupContext.activeGroup?.membersDetail) {
-        memberArr.push({
-          id: member.id,
-          display: member.name,
-          community: groupContext.activeGroup.community.id,
-          imageUrl: member.image_url,
-        });
-      }
-    }
-
-    setMemberDetailsArray(memberArr);
-  }, [groupContext.activeGroup]);
-
-  let keyObj = {
-    enter: false,
-    shift: false,
-  };
 
   useEffect(() => {
     inputContext.setTextVal("");
@@ -383,11 +407,90 @@ function InputSearchField({ updateHeight }) {
               keyObj.shift = false;
             }
           }}
+          customSuggestionsContainer={(children) => {
+            return (
+              <div
+                className="max-h-[400px] overflow-auto hello_world"
+                ref={suggestionsRef}
+                onScroll={() => {
+                  if (!loadMoreMembers || !throttleScroll) {
+                    return;
+                  }
+                  let current = suggestionsRef.current.scrollTop;
+                  let currentHeight = suggestionsRef.current.clientHeight;
+                  currentHeight = currentHeight.toString();
+                  if (current >= currentHeight) {
+                    setThrottleScroll(false);
+                    // console.log("calling paginate");
+                    log(cbRef);
+                    let pgNo = Math.floor(memberDetailsArray.length / 10) + 1;
+                    getTaggingMembers(searchString, pgNo).then((val) => {
+                      let arr = val.map((item) => {
+                        item.display = item.name;
+                        return item;
+                      });
+                      if (arr.length < 10) {
+                        setLoadMoreMembers(false);
+                      }
+                      log(memberDetailsArray);
+                      let n = [...memberDetailsArray].concat(arr);
+                      setMemberDetailsArray(n);
+                      log(n);
+                      cbRef.current(n);
+                    });
+                  }
+                }}
+                onClick={() => {
+                  log(children);
+                }}
+              >
+                {/* <InfiniteScroll
+                  dataLength={memberDetailsArray.length}
+                  hasMore={true}
+                  next={() => {
+                    let pgNo = Math.floor(memberDetailsArray.length / 10) + 1;
+                    getTaggingMembers("ank", pgNo).then((val) => {
+                      let arr = val.map((item) => {
+                        item.display = item.name;
+                        return item;
+                      });
+                      let n = [...memberDetailsArray].concat(arr);
+                      log(cbRef);
+                      cbRef.current(n);
+                    });
+                  }}
+                > */}
+                {children}
+                {/* </InfiniteScroll> */}
+              </div>
+            );
+          }}
         >
           <Mention
             trigger="@"
-            data={memberDetailsArray}
-            markup="<<__display__|route://member_profile/__id__?member_id=__id__&community_id=__community__>>"
+            data={(search, callback) => {
+              timeOut.current = setTimeout(() => {
+                log(groupContext.activeGroup.chatroom.is_secret);
+                getTaggingMembers(
+                  search,
+                  1,
+                  groupContext.activeGroup.chatroom.is_secret
+                ).then((val) => {
+                  let arr = val.map((item) => {
+                    item.display = item.name;
+                    return item;
+                  });
+                  if (loadMoreMembers.length < 10) {
+                    setLoadMoreMembers(false);
+                  }
+                  cbRef.current = callback;
+                  setSearchString(search);
+                  setMemberDetailsArray(arr);
+                  callback(arr);
+                });
+              }, 100);
+            }}
+            markup="<<__display__|route://member/__id__>>"
             style={{
               backgroundColor: "#daf4fa",
             }}
@@ -400,9 +503,10 @@ function InputSearchField({ updateHeight }) {
               index,
               focused
             ) => {
+              // log(suggestion);
               return (
                 <div className={`user ${focused ? "focused" : ""}`}>
-                  {suggestion.imageUrl.length > 0 ? (
+                  {suggestion.imageUrl?.length > 0 ? (
                     <div className="imgBlock">
                       <img src={suggestion.imageUrl} alt="profile_image" />
                     </div>
@@ -414,6 +518,9 @@ function InputSearchField({ updateHeight }) {
                   <span
                     style={{
                       color: "#323232",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
                     {suggestion.display}
