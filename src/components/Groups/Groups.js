@@ -10,7 +10,7 @@ import {
   StyledBox,
 } from "../groupChatArea/GroupChatArea";
 import "./Groups.css";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { GroupContext, RouteContext } from "../../Main";
 import { communityId, myClient, UserContext } from "../..";
 import {
@@ -35,6 +35,8 @@ export const ChatRoomContext = createContext({
   setLmj: () => {},
   lmu: Boolean,
   setLmu: () => {},
+  setShowCircularProgress: () => {},
+  showCircularProgress: Boolean,
 });
 
 // for getting the list  of chatroom
@@ -167,6 +169,7 @@ export const paginateUnjoinedFeed = async (
 
 function Groups(props) {
   const { children } = props;
+
   const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const [serialObject, setSerialObject] = useState({});
@@ -187,6 +190,7 @@ function Groups(props) {
   });
   const [lmj, setLmj] = useState(true);
   const [lmu, setLmu] = useState(false);
+  const [showCircularProgress, setShowCircularProgress] = useState(false);
   const routeContext = useContext(RouteContext);
   useEffect(() => {
     if (Object.keys(groupContext.activeGroup).length == 0) {
@@ -206,23 +210,23 @@ function Groups(props) {
     sessionStorage.removeItem("last_message_id");
   }, [groupContext.activeGroup]);
 
-  useEffect(() => {
-    // loading the list of chatrooms (already joined)
-    fn(
-      chatRoomsList,
-      setChatRoomsList,
-      setShouldLoadMoreHomeFeed,
-      userContext.community.id,
-      serialObject,
-      setSerialObject
-    );
-    getUnjoinedList(
-      unJoined,
-      setUnjoined,
-      setShouldLoadMoreUnjoinedFeed,
-      userContext.community.id
-    );
-  }, []);
+  // useEffect(() => {
+  //   // loading the list of chatrooms (already joined)
+  //   fn(
+  //     chatRoomsList,
+  //     setChatRoomsList,
+  //     setShouldLoadMoreHomeFeed,
+  //     userContext.community.id,
+  //     serialObject,
+  //     setSerialObject
+  //   );
+  //   getUnjoinedList(
+  //     unJoined,
+  //     setUnjoined,
+  //     setShouldLoadMoreUnjoinedFeed,
+  //     userContext.community.id
+  //   );
+  // }, []);
 
   useEffect(() => {
     async function getAllMembers() {
@@ -284,7 +288,7 @@ function Groups(props) {
               refreshGroupFeed(
                 feedObjects,
                 setFeedObjects,
-                lmj,
+                true,
                 setLmj,
                 lmu,
                 setLmu
@@ -296,6 +300,8 @@ function Groups(props) {
             setLmj,
             lmu,
             setLmu,
+            setShowCircularProgress,
+            showCircularProgress,
           }}
         >
           <ConversationContext.Provider
@@ -331,6 +337,7 @@ function Groups(props) {
                       : "z:max-md:flex-[1]"
                   }`}
                 >
+                  {/* {showCircularProgress ? <CircularProgress /> : null} */}
                   <Outlet />
                 </div>
               ) : null}

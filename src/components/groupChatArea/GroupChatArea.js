@@ -151,12 +151,8 @@ const GroupChatArea = () => {
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
         updateHeight();
-        getChatroomConversationArray(
-          groupContext.activeGroup.chatroom.id,
-          100,
-          conversationContext
-        );
-        chatRoomContext.refreshChatroomContext();
+        getChatroomConversationArray(status, 100, conversationContext);
+        // chatRoomContext.refreshChatroomContext();
       }
     });
   }, [status]);
@@ -181,7 +177,9 @@ const GroupChatArea = () => {
   }, [status]);
   return (
     <div>
-      {groupContext.showLoadingBar == false && showLoader == false ? (
+      {groupContext.showLoadingBar == false &&
+      showLoader == false &&
+      chatRoomContext.showCircularProgress == false ? (
         !!groupContext.activeGroup.chatroom.is_secret &&
         !groupContext.activeGroup.chatroom.secret_chatroom_participants?.includes(
           userContext.currentUser.id
