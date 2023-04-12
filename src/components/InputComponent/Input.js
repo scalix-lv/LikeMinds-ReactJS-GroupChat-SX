@@ -518,6 +518,9 @@ function InputSearchField({ updateHeight }) {
                   <span
                     style={{
                       color: "#323232",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
                     {suggestion.display}

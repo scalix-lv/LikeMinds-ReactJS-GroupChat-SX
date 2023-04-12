@@ -583,6 +583,7 @@ export const renderGroupFeed = async (
     }
     log(newFeedObjects);
     setFeedObjects(newFeedObjects);
+    return true;
   } catch (error) {
     log(error);
   }

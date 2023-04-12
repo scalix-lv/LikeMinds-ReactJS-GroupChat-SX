@@ -222,14 +222,22 @@ function PublicGroup({}) {
     return listings;
   }
   useEffect(() => {
-    renderGroupFeed(
-      chatroomContext.feedObjects,
-      chatroomContext.setFeedObjects,
-      lmj,
-      setLmj,
-      lmu,
-      setLmu
-    );
+    chatroomContext.setShowCircularProgress(true);
+    const fn = async () => {
+      renderGroupFeed(
+        chatroomContext.feedObjects,
+        chatroomContext.setFeedObjects,
+        lmj,
+        setLmj,
+        lmu,
+        setLmu
+      )
+        .then((r) => {
+          chatroomContext.setShowCircularProgress(false);
+        })
+        .catch((e) => log(e));
+    };
+    fn();
   }, []);
   useEffect(() => {
     log(chatroomContext);

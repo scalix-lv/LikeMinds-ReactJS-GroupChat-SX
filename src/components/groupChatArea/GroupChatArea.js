@@ -177,7 +177,9 @@ const GroupChatArea = () => {
   }, [status]);
   return (
     <div>
-      {groupContext.showLoadingBar == false && showLoader == false ? (
+      {groupContext.showLoadingBar == false &&
+      showLoader == false &&
+      chatRoomContext.showCircularProgress == false ? (
         !!groupContext.activeGroup.chatroom.is_secret &&
         !groupContext.activeGroup.chatroom.secret_chatroom_participants?.includes(
           userContext.currentUser.id
