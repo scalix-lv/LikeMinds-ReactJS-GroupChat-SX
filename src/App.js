@@ -97,7 +97,7 @@ function App() {
         sessionStorage.setItem("communityId", res?.data?.community?.id);
       })
       .catch((error) => {
-        // // console.log("Error =>", error);
+        log("Error =>", error);
       });
   }, []);
 

@@ -235,7 +235,10 @@ function PublicGroup({}) {
         .then((r) => {
           chatroomContext.setShowCircularProgress(false);
         })
-        .catch((e) => log(e));
+        .catch((e) => {
+          chatroomContext.setShowCircularProgress(false);
+          log(e);
+        });
     };
     fn();
   }, []);
