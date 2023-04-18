@@ -7,11 +7,9 @@ import LikeMinds from "likeminds-chat-beta";
 import { log } from "./sdkFunctions";
 
 export const myClient = new LikeMinds({
-  apiKey: "45c469dc-06e1-4f05-914e-dd02419eb53f",
+  apiKey: process.env.REACT_APP_API_KEY,
   xPlatformCode: process.env.REACT_APP_XPLATFORM_CODE,
   xVersionCode: process.env.REACT_APP_XVERSION_CODE,
-  baseUrl: "https://betaauth.likeminds.community",
-  baseUrlCaravan: "https://beta.likeminds.community",
 });
 log(myClient);
 
