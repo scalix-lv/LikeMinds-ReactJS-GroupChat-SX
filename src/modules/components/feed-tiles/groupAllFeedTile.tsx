@@ -29,7 +29,9 @@ export default function GroupAllFeedTile({
       generalContext.setShowLoadingBar(true);
       let call = await joinChatRoom(chatroomId, userContext.currentUser.id);
       // chatroomContext.refreshChatroomContext();
-      let joinEvent = new CustomEvent("joinEvent");
+      let joinEvent = new CustomEvent("joinEvent", {
+        detail: chatroomId,
+      });
       document.dispatchEvent(joinEvent);
       if (!call.error) {
         navigate(groupMainPath + "/" + chatroomId);

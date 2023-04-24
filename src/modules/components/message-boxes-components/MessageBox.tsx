@@ -253,12 +253,14 @@ function StringBox({
                     return (
                       <>
                         {itemIndex <= 3 ? (
-                          <div className="m-1 w-[146px] h-[146px] float-left rounded-md overflow-hidden relative">
+                          <div
+                            className="m-1 w-[146px] h-[146px] float-left rounded-md overflow-hidden relative"
+                            key={item.url}
+                          >
                             <img
                               src={item.url}
                               alt=""
                               className="w-full h-full"
-                              key={item.url}
                               onClick={() => {
                                 setMediaData({
                                   mediaObj: dataObj,
@@ -367,7 +369,7 @@ function StringBox({
                           <img
                             src={item.url}
                             className="h-[120px] w-[120px]"
-                            key={replyConversationObject?.id}
+                            key={item.url}
                           />
                         );
                       }

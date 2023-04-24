@@ -26,6 +26,7 @@ import DmMemberTile from "../feed-tiles/DmAllMemberTiles";
 import Searchbar from "../feed-search-bar";
 import GroupInviteTile from "../feed-tiles/invitationTiles";
 import { myClient } from "../../..";
+import { onValue, ref } from "firebase/database";
 
 const Feeds: React.FC = () => {
   const [loadMoreHomeFeed, setLoadMoreHomeFeed] = useState<boolean>(true);
@@ -56,8 +57,9 @@ const Feeds: React.FC = () => {
       log(error);
     }
   };
-  const joinChatroomContextRefresh = async () => {
+  const joinChatroomContextRefresh = async (e: any) => {
     try {
+      const id = e.detail;
       const feedcall: any = await getChatRoomDetails(myClient, id);
       generalContext.setCurrentProfile(feedcall.data);
       generalContext.setCurrentChatroom(feedcall.data.chatroom);
@@ -146,10 +148,61 @@ function GroupFeedContainer({
     setAllFeed,
   } = feedContext;
   const navigate = useNavigate();
+  async function refreshHomeFeed() {
+    try {
+      const communityId = sessionStorage.getItem("communityId");
+      let groupHomeFeedCall: any = await myClient.getHomeFeedData({
+        communityId: communityId!,
+        page: 1,
+      });
+      if (homeFeed.length < 10) {
+        setHomeFeed!(groupHomeFeedCall.my_chatrooms);
+      } else {
+        let newHomeFeed = groupHomeFeedCall.my_chatrooms;
+        const firstFeedEl: any = homeFeed[0];
+        const firstFeedId = firstFeedEl?.chatroom.id;
+        let index;
+        for (let ind in newHomeFeed) {
+          if (newHomeFeed[ind]?.chatroom?.id == firstFeedId) {
+            index = ind;
+            break;
+          }
+        }
+        let newFeedFirstHalf = newHomeFeed.slice(0, index);
+        let oldFeed = homeFeed.map((item: any) => {
+          if (newFeedFirstHalf.includes(item.chatroom.id)) {
+            return null;
+          } else {
+            return item;
+          }
+        });
+        let newFeedRestHalf = oldFeed.filter((item) => {
+          return item != null;
+        });
+        newHomeFeed = newFeedFirstHalf.concat(newFeedRestHalf);
+        log(newHomeFeed);
+        setHomeFeed!(newHomeFeed);
+      }
+    } catch (error) {
+      log(error);
+    }
+  }
   useEffect(() => {
     let chatroomObject: any = homeFeed[0];
     let id = chatroomObject?.chatroom.id;
     navigate(groupMainPath + "/" + id);
+  }, []);
+  const fb = myClient.fbInstance();
+  useEffect(() => {
+    const communityId = sessionStorage.getItem("communityId");
+    log(communityId);
+    let query = ref(fb, `community/${communityId}`);
+    return onValue(query, (snapshot) => {
+      if (snapshot.exists()) {
+        log(snapshot.val());
+        refreshHomeFeed();
+      }
+    });
   }, []);
   return (
     <div
@@ -171,7 +224,7 @@ function GroupFeedContainer({
             setShouldLoadMoreAll
           );
         }}
-        dataLength={homeFeed.length}
+        dataLength={homeFeed.length + secretChatrooms.length + allFeed.length}
         loader={null}
         scrollableTarget="home-feed-container"
       >
