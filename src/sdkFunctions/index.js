@@ -28,6 +28,7 @@ export const getChatRoomDetails = async (myClient, chatRoomId) => {
       page: 1,
     };
     const chatRoomResponse = await myClient.getChatroom(params);
+
     // // console.log(chatRoomResponse);
     return jsonReturnHandler(chatRoomResponse, null);
   } catch (error) {
@@ -188,9 +189,14 @@ export async function getAllChatroomMember(
 // userContext.
 
 export function mergeInputFiles(inputContext) {
-  let { mediaFiles, audioFiles, docFiles } = inputContext;
+  let { mediaAttachments, documentAttachments, audioAttachments } =
+    inputContext;
 
-  let newArr = [...mediaFiles, ...audioFiles, ...docFiles];
+  let newArr = [
+    ...mediaAttachments,
+    ...documentAttachments,
+    ...audioAttachments,
+  ];
   return newArr;
 }
 
@@ -228,15 +234,15 @@ export async function joinNewGroup(collabId, userID, value) {
   }
 }
 
-export async function leaveChatRoom(collabId, userId, refreshContext) {
+export async function leaveChatRoom(collabId, userId) {
   try {
     const leaveCall = await myClient.leaveChatroom({
       collabcard_id: collabId,
       member_id: userId,
       value: false,
     });
-    if (refreshContext !== null && refreshContext !== undefined) {
-      refreshContext();
+    if (!leaveCall.success) {
+      throw false;
     }
     return jsonReturnHandler(leaveCall, null);
   } catch (error) {
@@ -244,14 +250,14 @@ export async function leaveChatRoom(collabId, userId, refreshContext) {
   }
 }
 
-export async function leaveSecretChatroom(collabId, userId, refreshContext) {
+export async function leaveSecretChatroom(collabId, userId) {
   try {
     const leaveCall = await myClient.leaveSecretChatroom({
       chatroom_id: collabId,
       member_id: userId,
     });
-    if (refreshContext !== null && refreshContext !== undefined) {
-      refreshContext();
+    if (!leaveCall.success) {
+      throw false;
     }
     return jsonReturnHandler(leaveCall, null);
   } catch (error) {
@@ -417,7 +423,6 @@ export async function requestDM(memberId, communityId) {
 
 export async function canDirectMessage(chatroomId) {
   try {
-    // // console.log(chatroomId);
     let call = await myClient.canDmFeed({
       community_id: sessionStorage.getItem("communityId"),
       req_from: chatroomId,
@@ -501,233 +506,3 @@ export function log(str) {
     console.log(str);
   }
 }
-
-const getInvitations = async (obj) => {
-  try {
-    let pageNo = 1;
-    let shouldCall = true;
-    let res = [];
-    let pageSize = 10;
-    while (shouldCall) {
-      const call = await myClient.getInvites({
-        channel_type: 1,
-        page: pageNo++,
-        page_size: pageSize,
-      });
-      const inviteArray = call.user_invites;
-      res = res.concat(inviteArray);
-      if (inviteArray.length < pageSize) {
-        shouldCall = false;
-      }
-    }
-    obj.secretFeed = res;
-    // callBack(res.length);
-  } catch (error) {
-    log(error);
-  }
-};
-
-export const renderGroupFeed = async (
-  feedObjects,
-  setFeedObjects,
-  loadMoreJoined,
-  setLoadMoreJoined,
-  loadMoreUnjoined,
-  setLoadMoreUnjoined
-) => {
-  try {
-    const { secretFeed, joinedFeed, unjoinedFeed } = feedObjects;
-    let newFeedObjects = {
-      secretFeed: [...secretFeed],
-      joinedFeed: [...joinedFeed],
-      unjoinedFeed: [...unjoinedFeed],
-    };
-    let loadUnjoinedBool = false;
-    await getInvitations(newFeedObjects);
-    if (loadMoreJoined) {
-      let cRooms = [];
-      for (let i = 0; i < 3; i++) {
-        let feedLength = newFeedObjects.joinedFeed.length;
-        let pgNo =
-          Math.floor(feedLength / 10) + 1 + Math.floor(cRooms.length / 10);
-        let call = await myClient.getHomeFeedData({
-          communityId: sessionStorage.getItem("communityId"),
-          page: pgNo,
-        });
-        cRooms = cRooms.concat(call.my_chatrooms);
-        if (call.my_chatrooms.length < 10) {
-          log("here");
-          setLoadMoreJoined(false);
-          setLoadMoreUnjoined(true);
-          loadUnjoinedBool = true;
-          break;
-        }
-      }
-      let newJoinedFeed = newFeedObjects.joinedFeed.concat(cRooms);
-      newFeedObjects.joinedFeed = newJoinedFeed;
-    }
-    if (loadMoreUnjoined || loadUnjoinedBool) {
-      log("in the unjoined section");
-      let feedLength = newFeedObjects.unjoinedFeed.length;
-      let pgNo = Math.floor(feedLength / 10) + 1;
-      let call = await myClient.fetchFeedData({
-        community_id: sessionStorage.getItem("communityId"),
-        page: pgNo,
-        order_type: 0,
-      });
-      if (call.chatrooms.length < 10) {
-        setLoadMoreUnjoined(false);
-      }
-      let newunJoinedFeed = newFeedObjects.unjoinedFeed.concat(call.chatrooms);
-      newFeedObjects.unjoinedFeed = newunJoinedFeed;
-    }
-    log(newFeedObjects);
-    setFeedObjects(newFeedObjects);
-    return true;
-  } catch (error) {
-    log(error);
-  }
-};
-
-export const refreshGroupFeed = async (
-  feedObjects,
-  setFeedObjects,
-  loadMoreJoined,
-  setLoadMoreJoined,
-  loadMoreUnjoined,
-  setLoadMoreUnjoined
-) => {
-  try {
-    let newFeedObjects = {
-      secretFeed: [],
-      joinedFeed: [],
-      unjoinedFeed: [...feedObjects.unjoinedFeed],
-    };
-    let loadUnjoinedBool = false;
-    await getInvitations(newFeedObjects);
-    if (loadMoreJoined) {
-      let cRooms = [];
-      for (let i = 0; i < 3; i++) {
-        let feedLength = newFeedObjects.joinedFeed.length;
-        let pgNo =
-          Math.floor(feedLength / 10) + 1 + Math.floor(cRooms.length / 10);
-        let call = await myClient.getHomeFeedData({
-          communityId: sessionStorage.getItem("communityId"),
-          page: pgNo,
-        });
-        cRooms = cRooms.concat(call.my_chatrooms);
-        if (call.my_chatrooms.length < 10) {
-          log("here");
-          setLoadMoreJoined(false);
-          setLoadMoreUnjoined(true);
-          loadUnjoinedBool = true;
-          break;
-        }
-      }
-      let newJoinedFeed = newFeedObjects.joinedFeed.concat(cRooms);
-      newFeedObjects.joinedFeed = newJoinedFeed;
-    }
-    // newFeedObjects.unjoinedFeed = [];
-    setFeedObjects(newFeedObjects);
-  } catch (error) {
-    log(error);
-  }
-};
-
-export const renderDmFeed = async (
-  feedObjects,
-  setFeedObjects,
-  loadMoreJoined,
-  setLoadMoreJoined,
-  loadMoreUnjoined,
-  setLoadMoreUnjoined
-) => {
-  try {
-    const { secretFeed, joinedFeed, unjoinedFeed } = feedObjects;
-    let newFeedObjects = {
-      joinedFeed: [...joinedFeed],
-      unjoinedFeed: [...unjoinedFeed],
-    };
-    if (loadMoreJoined) {
-      let feedLength = newFeedObjects.joinedFeed.length;
-      let pgNo = Math.floor(feedLength / 10) + 1;
-      let call = await myClient.DmChatroom({
-        communityId: sessionStorage.getItem("communityId"),
-        page: pgNo,
-      });
-      if (call.dm_chatrooms.length < 10) {
-        log("here");
-        setLoadMoreJoined(false);
-        setLoadMoreUnjoined(true);
-      }
-      let newJoinedFeed = newFeedObjects.joinedFeed.concat(call.dm_chatrooms);
-      newFeedObjects.joinedFeed = newJoinedFeed;
-    }
-    if (loadMoreUnjoined) {
-      let feedLength = newFeedObjects.unjoinedFeed.length;
-      let pgNo = Math.floor(feedLength / 10) + 1;
-      let call = await myClient.dmAllMembers({
-        community_id: sessionStorage.getItem("communityId"),
-        page: pgNo,
-        member_state: 4,
-      });
-      if (call.members.length < 10) {
-        setLoadMoreUnjoined(false);
-      }
-      let newunJoinedFeed = newFeedObjects.unjoinedFeed.concat(call.members);
-      newFeedObjects.unjoinedFeed = newunJoinedFeed;
-    }
-    log(newFeedObjects);
-    setFeedObjects(newFeedObjects);
-  } catch (error) {
-    log(error);
-  }
-};
-export const refreshDmFeed = async (
-  feedObjects,
-  setFeedObjects,
-  loadMoreJoined,
-  setLoadMoreJoined,
-  loadMoreUnjoined,
-  setLoadMoreUnjoined
-) => {
-  try {
-    let newFeedObjects = {
-      joinedFeed: [],
-      unjoinedFeed: [],
-    };
-    if (loadMoreJoined) {
-      let feedLength = newFeedObjects.joinedFeed.length;
-      let pgNo = Math.floor(feedLength / 10) + 1;
-      let call = await myClient.DmChatroom({
-        communityId: sessionStorage.getItem("communityId"),
-        page: pgNo,
-      });
-      if (call.dm_chatrooms.length < 10) {
-        log("here");
-        setLoadMoreJoined(false);
-        setLoadMoreUnjoined(true);
-      }
-      let newJoinedFeed = newFeedObjects.joinedFeed.concat(call.dm_chatrooms);
-      newFeedObjects.joinedFeed = newJoinedFeed;
-    }
-    if (loadMoreUnjoined) {
-      let feedLength = newFeedObjects.unjoinedFeed.length;
-      let pgNo = Math.floor(feedLength / 10) + 1;
-      let call = await myClient.dmAllMembers({
-        community_id: sessionStorage.getItem("communityId"),
-        page: pgNo,
-        member_state: 4,
-      });
-      if (call.members.length < 10) {
-        setLoadMoreUnjoined(false);
-      }
-      let newunJoinedFeed = newFeedObjects.unjoinedFeed.concat(call.members);
-      newFeedObjects.unjoinedFeed = newunJoinedFeed;
-    }
-    newFeedObjects.unjoinedFeed = [];
-    setFeedObjects(newFeedObjects);
-  } catch (error) {
-    log(error);
-  }
-};
