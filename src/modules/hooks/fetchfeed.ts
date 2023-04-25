@@ -19,7 +19,11 @@ export function useFetchFeed(
   setShouldLoadMoreHome: React.Dispatch<boolean>,
   setShouldLoadMoreAll: React.Dispatch<boolean>,
   loadMoreHome: any,
-  loadMoreAll: any
+  loadMoreAll: any,
+  setShouldLoadDmMoreHome: React.Dispatch<boolean>,
+  setShouldLoadDmMoreAll: React.Dispatch<boolean>,
+  loadDmMoreHomeFeed: any,
+  loadDmMoreAllFeed: any
 ) {
   const { mode, operation = "", id = "" } = useParams();
   const feedContext = useContext(FeedContext);
@@ -46,14 +50,14 @@ export function useFetchFeed(
           }
           case "direct-messages": {
             fetchActiveHomeFeeds({
-              setFeedList: feedContext.setHomeFeed,
-              currentFeedList: feedContext.homeFeed,
-              setShouldLoadMore: setShouldLoadMoreHome,
+              setFeedList: feedContext.setDmHomeFeed,
+              currentFeedList: feedContext.dmHomeFeed,
+              setShouldLoadMore: setShouldLoadDmMoreHome,
             });
             fetchAllDMFeeds({
-              setShouldLoadMore: setShouldLoadMoreAll,
-              currentFeedList: feedContext.allFeed,
-              setFeedList: feedContext.setAllFeed,
+              setShouldLoadMore: setShouldLoadDmMoreAll,
+              currentFeedList: feedContext.dmAllFeed,
+              setFeedList: feedContext.setDmAllFeed,
             });
           }
         }
@@ -245,7 +249,6 @@ export async function loadGroupFeed(
         });
         cRooms = cRooms.concat(call.my_chatrooms);
         if (call.my_chatrooms.length < 10) {
-          log("here");
           setLoadMoreHome(false);
           setLoadMoreAll(true);
           loadUnjoinedBool = true;
@@ -256,7 +259,6 @@ export async function loadGroupFeed(
       setHomeFeed(newJoinedFeed);
     }
     if (loadMoreAll || loadUnjoinedBool) {
-      log("in the unjoined section");
       let feedLength = allFeed.length;
       let pgNo = Math.floor(feedLength / 10) + 1;
       let call = await myClient.fetchFeedData({

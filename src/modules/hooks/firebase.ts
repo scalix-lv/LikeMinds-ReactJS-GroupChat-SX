@@ -11,21 +11,14 @@ export function useFirebaseChatConversations(
   const db = myClient.fbInstance();
   const { mode, id } = useParams();
   useEffect(() => {
-    log("running on id : " + id + "on mode :" + mode);
-    const query = ref(db, `/collabcards/${id}`);
+    const query = ref(db, `collabcards`);
 
-    switch (mode) {
-      case "groups": {
-        log("running on here");
-        return onValue(query, (snapshot) => {
-          if (snapshot.exists()) {
-            log(snapshot.val());
-            getChatroomConversations(id, 100).then((res: any) => {
-              setBufferMessage(null);
-            });
-          }
+    return onValue(query, (snapshot: any) => {
+      if (snapshot.exists()) {
+        getChatroomConversations(id, 100).then((res: any) => {
+          setBufferMessage(null);
         });
       }
-    }
+    });
   }, [id]);
 }

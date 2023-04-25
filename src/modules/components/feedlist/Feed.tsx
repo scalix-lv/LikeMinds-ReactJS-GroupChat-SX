@@ -6,7 +6,12 @@ import {
   groupMainPath,
   groupPath,
 } from "../../../routes";
-import { getChatRoomDetails, log, markRead } from "../../../sdkFunctions";
+import {
+  dmChatFeed,
+  getChatRoomDetails,
+  log,
+  markRead,
+} from "../../../sdkFunctions";
 import { FeedContext } from "../../contexts/feedContext";
 import { GeneralContext } from "../../contexts/generalContext";
 import { RouteContext } from "../../contexts/routeContext";
@@ -31,12 +36,16 @@ import { onValue, ref } from "firebase/database";
 const Feeds: React.FC = () => {
   const [loadMoreHomeFeed, setLoadMoreHomeFeed] = useState<boolean>(true);
   const [loadMoreAllFeed, setLoadMoreAllFeed] = useState<boolean>(true);
+  const [loadDmMoreHomeFeed, setLoadDmMoreHomeFeed] = useState<boolean>(true);
+  const [loadDmMoreAllFeed, setLoadDmMoreAllFeed] = useState<boolean>(true);
   const { mode, id } = useParams();
   const feedContext = useContext(FeedContext);
   const { homeFeed, setHomeFeed, allFeed, setAllFeed } = feedContext;
   const generalContext = useContext(GeneralContext);
-  const routeContext = useContext(RouteContext);
   const navigate = useNavigate();
+  useEffect(() => {
+    log("inside feed");
+  });
   const leaveChatroomContextRefresh = async () => {
     try {
       let newHomeFeed = [];
@@ -83,7 +92,11 @@ const Feeds: React.FC = () => {
     setLoadMoreHomeFeed,
     setLoadMoreAllFeed,
     loadMoreHomeFeed,
-    loadMoreAllFeed
+    loadMoreAllFeed,
+    setLoadDmMoreHomeFeed,
+    setLoadDmMoreAllFeed,
+    loadDmMoreHomeFeed,
+    loadDmMoreAllFeed
   );
   useEffect(() => {
     document.addEventListener("leaveEvent", leaveChatroomContextRefresh);
@@ -109,10 +122,10 @@ const Feeds: React.FC = () => {
       case "direct-messages": {
         return (
           <DirectMessagesFeedContainer
-            loadMoreHome={loadMoreHomeFeed}
-            loadMoreAll={loadMoreAllFeed}
-            setShouldLoadMoreHome={setLoadMoreHomeFeed}
-            setShouldLoadMoreAll={setLoadMoreAllFeed}
+            loadMoreHome={loadDmMoreHomeFeed}
+            loadMoreAll={loadDmMoreAllFeed}
+            setShouldLoadMoreHome={setLoadDmMoreHomeFeed}
+            setShouldLoadMoreAll={setLoadDmMoreAllFeed}
           />
         );
       }
@@ -169,8 +182,11 @@ function GroupFeedContainer({
           }
         }
         let newFeedFirstHalf = newHomeFeed.slice(0, index);
+        let newFeedFirstHalfIDs = newFeedFirstHalf.map((item: any) => {
+          return item.chatroom.id;
+        });
         let oldFeed = homeFeed.map((item: any) => {
-          if (newFeedFirstHalf.includes(item.chatroom.id)) {
+          if (newFeedFirstHalfIDs.includes(item.chatroom.id)) {
             return null;
           } else {
             return item;
@@ -180,30 +196,47 @@ function GroupFeedContainer({
           return item != null;
         });
         newHomeFeed = newFeedFirstHalf.concat(newFeedRestHalf);
-        log(newHomeFeed);
         setHomeFeed!(newHomeFeed);
       }
     } catch (error) {
       log(error);
     }
   }
+  function localRefreshHomeFeed(e: any) {
+    let topFeed: any = [];
+    let newHomeFeed = homeFeed.filter((item: any) => {
+      if (item.chatroom.id == e.detail) {
+        topFeed.push(item);
+      }
+      return item.chatroom.id != e.detail;
+    });
+    newHomeFeed = topFeed.concat(newHomeFeed);
+    setHomeFeed!(newHomeFeed);
+  }
   useEffect(() => {
-    let chatroomObject: any = homeFeed[0];
-    let id = chatroomObject?.chatroom.id;
-    navigate(groupMainPath + "/" + id);
+    if (id === "") {
+      let chatroomObject: any = homeFeed[0];
+      let chatroomId = chatroomObject?.chatroom.id;
+      navigate(groupMainPath + "/" + chatroomId);
+    }
   }, []);
   const fb = myClient.fbInstance();
   useEffect(() => {
     const communityId = sessionStorage.getItem("communityId");
-    log(communityId);
     let query = ref(fb, `community/${communityId}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
-        log(snapshot.val());
-        refreshHomeFeed();
+        let chatroomId = snapshot.val()["chatroom_id"];
+        if (chatroomId != id) refreshHomeFeed();
       }
     });
-  }, []);
+  }, [id]);
+  useEffect(() => {
+    document.addEventListener("sentMessage", localRefreshHomeFeed);
+    return () => {
+      document.removeEventListener("sentMessage", localRefreshHomeFeed);
+    };
+  });
   return (
     <div
       id="home-feed-container"
@@ -290,13 +323,66 @@ function DirectMessagesFeedContainer({
 }: any) {
   const { mode, id = "" } = useParams();
   const feedContext = useContext(FeedContext);
-  const { homeFeed, setHomeFeed, allFeed, setAllFeed } = feedContext;
+  const { dmHomeFeed, setDmHomeFeed, dmAllFeed, setDmAllFeed } = feedContext;
   const navigate = useNavigate();
+  const db = myClient.fbInstance();
+  const allFeed = dmAllFeed;
+  const setAllFeed = setDmAllFeed;
+  async function refreshHomeFeed() {
+    try {
+      const communityId = sessionStorage.getItem("communityId");
+      let call: any = await dmChatFeed(communityId!, 1);
+      const chatrooms = call.data.dm_chatrooms;
+      if (dmHomeFeed.length < 10) {
+        setDmHomeFeed!(chatrooms);
+      } else {
+        let newHomeFeed = chatrooms;
+        const firstFeedEl: any = dmHomeFeed[0];
+        const firstFeedId = firstFeedEl?.chatroom.id;
+        let index;
+        for (let ind in newHomeFeed) {
+          if (newHomeFeed[ind]?.chatroom?.id == firstFeedId) {
+            index = ind;
+            break;
+          }
+        }
+        let newFeedFirstHalf = newHomeFeed.slice(0, index);
+        let newFeedFirstHalfIDs = newFeedFirstHalf.map((item: any) => {
+          return item.chatroom.id;
+        });
+        let oldFeed = dmHomeFeed.map((item: any) => {
+          if (newFeedFirstHalfIDs.includes(item.chatroom.id)) {
+            return null;
+          } else {
+            return item;
+          }
+        });
+        let newFeedRestHalf = oldFeed.filter((item) => {
+          return item != null;
+        });
+        newHomeFeed = newFeedFirstHalf.concat(newFeedRestHalf);
+        setDmHomeFeed!(newHomeFeed);
+      }
+    } catch (error) {
+      log(error);
+    }
+  }
   useEffect(() => {
-    let chatroomObject: any = homeFeed[0];
-    let id = chatroomObject?.chatroom.id;
-    navigate(directMessageChatPath + "/" + id);
+    if (id === "") {
+      let chatroomObject: any = dmHomeFeed[0];
+      let chatroomId = chatroomObject?.chatroom.id;
+      navigate(directMessageChatPath + "/" + chatroomId);
+    }
   }, []);
+  useEffect(() => {
+    const query = ref(db, "collabcards");
+    onValue(query, (snapshot) => {
+      if (snapshot.exists()) {
+        refreshHomeFeed();
+        // }
+      }
+    });
+  }, [id]);
   return (
     <>
       <div
@@ -308,15 +394,15 @@ function DirectMessagesFeedContainer({
           next={() => {
             fetchActiveHomeFeeds({
               setShouldLoadMore: setShouldLoadMoreHome,
-              currentFeedList: homeFeed,
-              setFeedList: setHomeFeed,
+              currentFeedList: dmHomeFeed,
+              setFeedList: setDmHomeFeed,
             });
           }}
-          dataLength={homeFeed.length}
+          dataLength={dmHomeFeed.length}
           loader={null}
           scrollableTarget="home-feed-container"
         >
-          {homeFeed.map((group: any) => {
+          {dmHomeFeed.map((group: any) => {
             return <DmTile key={group.chatroom.id} profile={group} />;
           })}
         </InfiniteScroll>

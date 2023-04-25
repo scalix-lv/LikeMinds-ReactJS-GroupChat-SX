@@ -81,6 +81,11 @@ const sendMessage = async (
     }
 
     let createConversationCall = await myClient.onConversationsCreate(config);
+    document.dispatchEvent(
+      new CustomEvent("sentMessage", {
+        detail: chatroom_id,
+      })
+    );
     setBufferMessage(createConversationCall.conversation);
     // render local changes here
 
