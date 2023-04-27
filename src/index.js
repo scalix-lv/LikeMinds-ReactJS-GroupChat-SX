@@ -10,8 +10,6 @@ export const myClient = new LikeMinds({
   apiKey: process.env.REACT_APP_API_KEY,
   xPlatformCode: process.env.REACT_APP_XPLATFORM_CODE,
   xVersionCode: process.env.REACT_APP_XVERSION_CODE,
-  baseUrl: process.env.REACT_APP_BASE_URL,
-  baseUrlCaravan: process.env.REACT_APP_BASE_URL_CARAVAN,
 });
 log(myClient);
 
