@@ -8,26 +8,20 @@ import {
   leaveSecretChatroom,
   log,
 } from "../sdkFunctions";
-
-import { myClient } from "..";
-import { UserContext } from "../modules/contexts/userContext";
+import { GroupContext } from "../Main";
+import { myClient, UserContext } from "..";
 import leaveIcon from "../assets/svg/leave.svg";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  directMessageInfoPath,
-  directMessagePath,
-  groupMainPath,
-} from "../routes";
-import ChatroomContext from "../modules/contexts/chatroomContext";
-import { GeneralContext } from "../modules/contexts/generalContext";
-import { leaveChatroomContextRefresh } from "../modules/hooks/fetchfeed";
-import { FeedContext } from "../modules/contexts/feedContext";
+import { useNavigate } from "react-router-dom";
+import { ChatRoomContext } from "../components/Groups/Groups";
+import { DmContext } from "../components/direct-messages/DirectMessagesMain";
+import { directMessageInfoPath, directMessagePath } from "../routes";
 
 export function MoreOptions() {
   const [open, setOpen] = useState(false);
+  const groupContext = useContext(GroupContext);
   const userContext = useContext(UserContext);
   const [anchor, setAnchor] = useState(null);
-  const generalContext = useContext(GeneralContext);
+  const chatroomContext = useContext(ChatRoomContext);
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
@@ -35,37 +29,44 @@ export function MoreOptions() {
   async function muteNotifications(id) {
     try {
       let call = await myClient.muteNotification({
-        chatroom_id: generalContext.currentChatroom.id,
+        chatroom_id: groupContext.activeGroup.chatroom.id,
         value: id == 6 ? true : false,
       });
       closeMenu();
       let refreshCall = await getChatRoomDetails(
         myClient,
-        generalContext.currentChatroom.id
+        groupContext.activeGroup.chatroom.id
       );
-      generalContext.setCurrentProfile(refreshCall.data);
-      generalContext.setCurrentChatroom(refreshCall.data.chatroom);
+      groupContext.activeGroup(refreshCall.data);
     } catch (error) {
       log(error);
     }
   }
 
-  async function leaveGroup() {
-    try {
-      if (!!generalContext.currentChatroom.is_secret) {
-        await leaveSecretChatroom(
-          generalContext.currentChatroom.id,
-          userContext.currentUser.id
-        );
-      } else {
-        await leaveChatRoom(
-          generalContext.currentChatroom.id,
-          userContext.currentUser.id
-        );
-      }
-      return generalContext.currentChatroom.id;
-    } catch (error) {
-      log(error);
+  let navigate = useNavigate();
+  function leaveGroup() {
+    if (!!groupContext.activeGroup.chatroom.is_secret) {
+      leaveSecretChatroom(
+        groupContext.activeGroup.chatroom.id,
+        userContext.currentUser.id
+      )
+        .then((r) => {
+          chatroomContext.refreshChatroomContext();
+        })
+        .catch((r) => {});
+
+      navigate("/groups/");
+    } else {
+      leaveChatRoom(
+        groupContext.activeGroup.chatroom.id,
+        userContext.currentUser.id
+      )
+        .then((r) => {
+          chatroomContext.refreshChatroomContext();
+        })
+        .catch((r) => {});
+
+      navigate("/groups/");
     }
   }
 
@@ -81,7 +82,7 @@ export function MoreOptions() {
         horizontal: "left",
       }}
     >
-      {generalContext.currentProfile?.chatroom_actions?.map((item) => {
+      {groupContext.activeGroup.chatroom_actions.map((item) => {
         if (item.id === 2) {
           return null;
         }
@@ -89,13 +90,12 @@ export function MoreOptions() {
           <MenuItem
             key={item.id}
             onClick={() => {
+              log(item);
               if (item.id === 6 || item.id === 8) {
                 muteNotifications(item.id);
-              } else if (item.id === 15 || item.id == 9) {
-                leaveGroup().then((id) => {
-                  let leaveEvent = new CustomEvent("leaveEvent");
-                  document.dispatchEvent(leaveEvent);
-                });
+              } else if (item.id === 15 || item.id === 9) {
+                log("here");
+                leaveGroup();
               }
             }}
             sx={{
@@ -103,7 +103,7 @@ export function MoreOptions() {
               color: "#323232",
             }}
           >
-            <img src={leaveIcon} alt="leave" className="mr-2" />
+            {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
             {item.title}
           </MenuItem>
         );
@@ -125,10 +125,46 @@ export function MoreOptions() {
   );
 }
 
+async function getChatroomConversations(chatroomId, pageNo, dmContext) {
+  if (chatroomId == null) {
+    return;
+  }
+  // // console.log(chatroomId);
+  let optionObject = {
+    chatroomID: chatroomId,
+    page: pageNo,
+  };
+  let response = await getConversationsForGroup(optionObject);
+  if (!response.error) {
+    let conversations = response.data;
+    let conversationToBeSetArray = [];
+    let newConversationArray = [];
+    let lastDate = "";
+    for (let convo of conversations) {
+      if (convo.date === lastDate) {
+        conversationToBeSetArray.push(convo);
+        lastDate = convo.date;
+      } else {
+        if (conversationToBeSetArray.length != 0) {
+          newConversationArray.push(conversationToBeSetArray);
+          conversationToBeSetArray = [];
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
+        } else {
+          conversationToBeSetArray.push(convo);
+          lastDate = convo.date;
+        }
+      }
+    }
+    newConversationArray.push(conversationToBeSetArray);
+    dmContext.setCurrentChatroomConversations(newConversationArray);
+  } else {
+    // // console.log(response.errorMessage);
+  }
+}
 export function MoreOptionsDM() {
   const [open, setOpen] = useState(false);
-  const chatroomContext = useContext(ChatroomContext);
-  const generalContext = useContext(GeneralContext);
+  const dmContext = useContext(DmContext);
   const userContext = useContext(UserContext);
   const [anchor, setAnchor] = useState(null);
   const [showSnackBar, setShowSnackBar] = useState(false);
@@ -140,9 +176,13 @@ export function MoreOptionsDM() {
 
   let navigate = useNavigate();
   function leaveGroup() {
-    leaveChatRoom(generalContext.currentChatroom.id, userContext.currentUser.id)
+    leaveChatRoom(
+      dmContext.currentChatroom.id,
+      userContext.currentUser.id,
+      dmContext.refreshContext()
+    )
       .then((r) => {
-        generalContext.setCurrentChatroom({});
+        dmContext.setCurrentChatroom({});
         navigate(directMessagePath);
       })
       .catch((r) => {
@@ -153,17 +193,17 @@ export function MoreOptionsDM() {
   async function muteNotifications(id) {
     try {
       let call = await myClient.muteNotification({
-        chatroom_id: generalContext.currentChatroom.id,
+        chatroom_id: dmContext.currentChatroom.id,
         value: id == 6 ? true : false,
       });
 
       closeMenu();
       let refreshCall = await getChatRoomDetails(
         myClient,
-        generalContext.currentChatroom.id
+        dmContext.currentChatroom.id
       );
-      generalContext.setCurrentChatroom(refreshCall.data.chatroom);
-      generalContext.setCurrentProfile(refreshCall.data);
+      dmContext.setCurrentChatroom(refreshCall.data.chatroom);
+      dmContext.setCurrentProfile(refreshCall.data);
       setShowSnackBar(true);
       setSnackbarMessage("Notifications " + (id == 6 ? "muted" : "unmuted"));
     } catch (error) {
@@ -172,22 +212,22 @@ export function MoreOptionsDM() {
   }
   async function block(id) {
     let call = await myClient.blockCR({
-      chatroom_id: generalContext.currentChatroom.id,
+      chatroom_id: dmContext.currentChatroom.id,
       status: id === 27 ? 0 : 1,
     });
     closeMenu();
-    // let callRefresh = await getChatroomConversations(
-    //   generalContext.currentChatroom.id,
-    //   100,
-    //   generalContext
-    // );
+    let callRefresh = await getChatroomConversations(
+      dmContext.currentChatroom.id,
+      1000,
+      dmContext
+    );
 
     let callChatroomRefresh = await getChatRoomDetails(
       myClient,
-      generalContext.currentChatroom.id
+      dmContext.currentChatroom.id
     );
-    generalContext.setCurrentChatroom(callChatroomRefresh.data.chatroom);
-    generalContext.setCurrentProfile(callChatroomRefresh.data);
+    dmContext.setCurrentChatroom(callChatroomRefresh.data.chatroom);
+    dmContext.setCurrentProfile(callChatroomRefresh.data);
   }
 
   const MenuBox = (
@@ -202,50 +242,45 @@ export function MoreOptionsDM() {
         horizontal: "left",
       }}
     >
-      {generalContext.currentProfile.chatroom_actions.map(
-        (option, optionIndex) => {
-          return (
-            <MenuItem
-              key={option.id}
-              onClick={() => {
-                if (option.id === 6 || option.id === 8) {
-                  muteNotifications(option.id);
-                } else if (option.id == 27) {
-                  block(option.id);
-                } else {
-                  navigate(directMessageInfoPath, {
-                    state: {
-                      memberId:
-                        userContext.currentUser.id ===
-                        chatroomContext.currentChatroom.member.id
-                          ? chatroomContext.currentChatroom.chatroom_with_user
-                              .id
-                          : chatroomContext.currentChatroom.member.id,
-                      communityId: userContext.community.id,
-                    },
-                  });
-                }
-              }}
-              sx={{
-                fontSize: "14px",
-                color: "#323232",
-              }}
-            >
-              {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
-              {option.title}
-            </MenuItem>
-          );
-        }
-      )}
+      {dmContext.currentProfile.chatroom_actions.map((option, optionIndex) => {
+        return (
+          <MenuItem
+            key={option.id}
+            onClick={() => {
+              if (option.id === 6 || option.id === 8) {
+                muteNotifications(option.id);
+              } else if (option.id == 27) {
+                block(option.id);
+              } else {
+                navigate(directMessageInfoPath, {
+                  state: {
+                    memberId:
+                      userContext.currentUser.id ===
+                      dmContext.currentChatroom.member.id
+                        ? dmContext.currentChatroom.chatroom_with_user.id
+                        : dmContext.currentChatroom.member.id,
+                    communityId: userContext.community.id,
+                  },
+                });
+              }
+            }}
+            sx={{
+              fontSize: "14px",
+              color: "#323232",
+            }}
+          >
+            {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
+            {option.title}
+          </MenuItem>
+        );
+      })}
     </Menu>
   );
   return (
     <span
       style={{
         display:
-          generalContext.currentChatroom.chat_request_state == 0
-            ? "none"
-            : "inline",
+          dmContext.currentChatroom.chat_request_state == 0 ? "none" : "inline",
       }}
     >
       <Snackbar
