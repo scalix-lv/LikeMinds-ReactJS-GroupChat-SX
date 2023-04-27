@@ -622,9 +622,6 @@ function DialogBoxMediaDisplay({
   shouldOpen,
   mediaData,
 }: dialogBoxType) {
-  useEffect(() => {
-    log(mediaData);
-  });
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
       {mediaData !== null && mediaData?.type === "image"
