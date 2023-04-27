@@ -14,12 +14,14 @@ const ChatroomWrapper: React.FC = () => {
   const [conversationList, setConversationList] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState({});
   const [isSelectedConversation, setIsSelectedConversation] = useState(false);
+  // the below will control the title chatroom
+  const [showTitle, setShowTitle] = useState(false);
   const generalContext = useContext(GeneralContext);
   const userContext = useContext(UserContext);
-  const { mode, operation = "" } = useParams();
+  const { mode, operation = "", id = "" } = useParams();
   function getChatroomDisplayName() {
     if (mode == "groups") {
-      return;
+      return generalContext?.currentChatroom?.header;
     }
     let currentUserId = userContext?.currentUser?.id;
     let generalContextUserIds = generalContext?.currentChatroom?.member?.id;
@@ -27,6 +29,19 @@ const ChatroomWrapper: React.FC = () => {
       return generalContext?.currentChatroom?.chatroom_with_user?.name;
     else return generalContext?.currentChatroom?.member?.name;
   }
+  useEffect(() => {
+    if (id != "" && id !== undefined) {
+      generalContext.setShowLoadingBar(true);
+      setShowTitle(false);
+    }
+    return () => {
+      generalContext.setShowLoadingBar(true);
+      setShowTitle(false);
+    };
+  }, [id]);
+  useEffect(() => {
+    setShowTitle(true);
+  }, [generalContext?.currentChatroom]);
   return (
     <ChatroomContext.Provider
       value={{
@@ -38,22 +53,21 @@ const ChatroomWrapper: React.FC = () => {
         setIsSelectedConversation,
       }}
     >
-      {operation != "" && generalContext.showLoadingBar == false ? (
-        <Tittle
-          title={
-            mode === "groups"
-              ? generalContext?.currentChatroom?.header
-              : getChatroomDisplayName()
-          }
-          memberCount={
-            mode == "groups"
-              ? generalContext?.currentProfile?.participant_count
-              : null
-          }
-          chatroomUrl={generalContext.chatroomUrl}
-        />
+      {operation != "" && showTitle ? (
+        <>
+          <Tittle
+            title={getChatroomDisplayName()}
+            memberCount={
+              mode == "groups"
+                ? generalContext?.currentProfile?.participant_count
+                : null
+            }
+            chatroomUrl={generalContext.chatroomUrl}
+          />
+
+          {getChatroomComponents(operation)}
+        </>
       ) : null}
-      {getChatroomComponents(operation)}
     </ChatroomContext.Provider>
   );
 };

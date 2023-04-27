@@ -5,6 +5,7 @@ import { Snackbar } from "@mui/material";
 import { RouteContext } from "../../contexts/routeContext";
 import { GeneralContext } from "../../contexts/generalContext";
 import Container from "../container";
+import Header from "../header";
 
 const Switch: React.FC = () => {
   const { mode, operation = "", id = "" } = useParams();
@@ -21,6 +22,7 @@ const Switch: React.FC = () => {
     <>
       <div className="flex w-[100%] h-[65px] z-10 top-0">
         {/* <Header /> */}
+        <Header />
       </div>
       <GeneralContext.Provider
         value={{

@@ -22,7 +22,6 @@ export default function DmTile({ profile }: any) {
         textDecoration: "none",
       }}
       onClick={() => {
-        generalContext.setShowLoadingBar(true);
         routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
         setUnreadMessages(0);
       }}
