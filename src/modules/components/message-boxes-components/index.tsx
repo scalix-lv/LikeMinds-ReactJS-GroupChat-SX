@@ -16,6 +16,7 @@ function RegularBox({ convoArray }: regularBoxType) {
             userId={conversation.member.id}
             conversationObject={conversation}
             key={conversation.id}
+            index={1}
           />
         );
       })}
