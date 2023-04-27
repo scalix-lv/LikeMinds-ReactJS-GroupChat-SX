@@ -6,7 +6,7 @@ import {
   MenuItem,
   Snackbar,
 } from "@mui/material";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { myClient } from "../../..";
 import { UserContext } from "../../contexts/userContext";
@@ -224,7 +224,7 @@ function StringBox({
                   .filter((item: any) => {
                     return item.type === "image";
                   })
-                  .map((item: any, dataObj: any) => {
+                  .map((item: any, index: any, dataObj: any) => {
                     return (
                       <img
                         src={item.url}
@@ -600,17 +600,20 @@ function DialogBoxMediaDisplay({
   shouldOpen,
   mediaData,
 }: dialogBoxType) {
+  useEffect(() => {
+    log(mediaData);
+  });
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
-      {mediaData !== null && mediaData.type === "image"
-        ? mediaData?.mediaObj.map((item: any, itemIndex: any) => {
+      {mediaData !== null && mediaData?.type === "image"
+        ? mediaData?.mediaObj?.map((item: any, itemIndex: any) => {
             return (
               <>
                 <img src={item?.url} alt="img" className="max-w-[700px]" />
               </>
             );
           })
-        : mediaData?.mediaObj.map((item: any, itemIndex: any) => {
+        : mediaData?.mediaObj?.map((item: any, itemIndex: any) => {
             return (
               <>
                 <video

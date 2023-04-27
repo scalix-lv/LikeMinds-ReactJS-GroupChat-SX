@@ -99,9 +99,6 @@ function MatchTileFields({ title, match, showJoinButton }: any) {
 
   async function joinGroup() {
     try {
-      if (status != match.chatroom.id) {
-        generalContext.setShowLoadingBar(true);
-      }
       let call = await joinChatRoom(
         match.chatroom.id,
         userContext.currentUser.id

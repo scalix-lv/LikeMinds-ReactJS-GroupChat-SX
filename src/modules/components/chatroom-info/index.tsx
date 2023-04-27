@@ -86,9 +86,7 @@ function ParticipantTile({ profile }: any) {
   return (
     <div
       className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center cursor-pointer"
-      onClick={() => {
-        navigate(groupPersonalInfoPath + "/" + profile?.id);
-      }}
+      onClick={() => {}}
     >
       <div className="flex items-center">
         <div className="w-[36px] h-[36px] uppercase border-[1px] border-[#eeeeee] bg-[#eeeeee] mr-2.5 rounded-[5px] flex justify-center items-center">

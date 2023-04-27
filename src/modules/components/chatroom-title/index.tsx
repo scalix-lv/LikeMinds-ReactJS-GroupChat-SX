@@ -30,19 +30,40 @@ const Tittle = ({ title, memberCount, chatroomUrl }: propsTitle) => {
 };
 
 function TitleArea({ title, memberCount, chatroomUrl }: propsTitle) {
+  const { mode } = useParams();
   const { id = "" } = useParams();
   return (
-    <Link to={groupInfoPath + "/" + id} className="grow">
+    <Link
+      to={mode == "groups" ? groupInfoPath + "/" + id : ""}
+      className="grow"
+    >
       <Box className="text-left">
         {/* For Group Title */}
 
         <span className="font-semibold text-xl leading-6 cursor-pointer">
-          {chatroomUrl ? (
+          {chatroomUrl && mode == "groups" ? (
             <img
               src={chatroomUrl}
               alt=""
               className="h-[40px] w-[40px] rounded inline mr-2"
             />
+          ) : title?.length > 0 && mode == "groups" ? (
+            <span
+              style={{
+                textTransform: "capitalize",
+                fontSize: "14px",
+                border: "0.5px solid black",
+                color: "black",
+                backgroundColor: "skyblue",
+                borderRadius: "25%",
+                padding: "8px",
+                marginRight: "8px",
+                height: "50px",
+                width: "50px",
+              }}
+            >
+              {title?.substring(0, 1)}
+            </span>
           ) : null}
           {title ? title : ""}
         </span>

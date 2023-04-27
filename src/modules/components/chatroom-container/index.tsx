@@ -105,7 +105,6 @@ const ChatContainer: React.FC = () => {
       return false;
     }
   };
-
   useEffect(() => {
     async function loadChatAndMarkReadChatroom() {
       try {
@@ -126,7 +125,9 @@ const ChatContainer: React.FC = () => {
     setNewHeight();
     setPageNo(1);
   }, [generalContext?.currentChatroom?.id]);
+
   // firebase listener
+
   useFirebaseChatConversations(getChatroomConversations, setBufferMessage);
   if (generalContext?.currentChatroom?.chat_request_state == 0) {
     if (
