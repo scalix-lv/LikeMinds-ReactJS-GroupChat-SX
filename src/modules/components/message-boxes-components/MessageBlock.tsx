@@ -6,9 +6,10 @@ import MessageBox from "./MessageBox";
 type msgBlockType = {
   conversationObject: any;
   userId: any;
+  index: any;
 };
 
-function MessageBlock({ conversationObject, userId }: msgBlockType) {
+function MessageBlock({ conversationObject, userId, index }: msgBlockType) {
   const userContext = useContext(UserContext);
   const [convoDetails, setConvoDetails] = useState(conversationObject);
   const currentUser = userContext.currentUser.id;
@@ -38,6 +39,7 @@ function MessageBlock({ conversationObject, userId }: msgBlockType) {
         convoId={conversationObject.id}
         conversationReactions={conversationObject.reactions}
         conversationObject={conversationObject}
+        index={index}
       />
     </Box>
   );
