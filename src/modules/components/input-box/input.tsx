@@ -115,7 +115,8 @@ const sendMessage = async (
           fileType = "image";
         }
         index++;
-        myClient.uploadMedia(uploadConfig).then((fileResponse: any) => {
+
+        await myClient.uploadMedia(uploadConfig).then((fileResponse: any) => {
           let onUploadConfig = {
             conversation_id: parseInt(createConversationCall.id),
             files_count: 1,
