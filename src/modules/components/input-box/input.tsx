@@ -145,7 +145,7 @@ async function localHandleConversation(
   media: any,
   setBufferMessage: any
 ) {
-  log(media);
+  // log(media);
   let count = 1;
   if (conversation.has_files) {
     for (let file of media) {
