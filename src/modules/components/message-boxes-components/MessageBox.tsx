@@ -61,6 +61,7 @@ type messageBoxType = {
   conversationReactions: any;
   conversationObject: any;
   replyConversationObject: any;
+  index: any;
 };
 function MessageBoxDM({
   username,
@@ -72,6 +73,7 @@ function MessageBoxDM({
   conversationReactions,
   conversationObject,
   replyConversationObject,
+  index,
 }: messageBoxType) {
   let userContext = useContext(UserContext);
   let generalContext = useContext(GeneralContext);
@@ -145,7 +147,11 @@ function MessageBoxDM({
           replyConversationObject={replyConversationObject}
           conversationObject={conversationObject}
         />
-        <MoreOptions convoId={convoId} convoObject={conversationObject} />
+        <MoreOptions
+          convoId={convoId}
+          convoObject={conversationObject}
+          index={index}
+        />
       </Box>
       <div>
         {conversationReactions.map(
@@ -409,9 +415,10 @@ function TimeBox({ time }: any) {
 type moreOptionsType = {
   convoId: any;
   convoObject: any;
+  index: any;
 };
 
-function MoreOptions({ convoId, convoObject }: moreOptionsType) {
+function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
   const userContext = useContext(UserContext);
   const chatroomContext = useContext(ChatroomContext);
   const generalContext = useContext(GeneralContext);
@@ -438,6 +445,29 @@ function MoreOptions({ convoId, convoObject }: moreOptionsType) {
       document.removeEventListener("click", handleCloseFunction);
     };
   });
+  function updateMessageLocally(emoji: any) {
+    let newConvoArr = [...chatroomContext.conversationList];
+    let reactionTemplate = {
+      member: {
+        id: userContext?.currentUser?.id,
+        image_url: "",
+        name: userContext?.currentUser?.name,
+      },
+      reaction: emoji,
+      updated_at: Date.now(),
+    };
+    let newConvoObject = newConvoArr[index];
+    newConvoObject?.reactions.push(reactionTemplate);
+    chatroomContext.setConversationList(newConvoArr);
+  }
+  function deleteMessageLocally() {
+    let newConvoArr = [...chatroomContext.conversationList];
+
+    let newConvoObject = newConvoArr[index];
+    newConvoObject.deleted_by = userContext?.currentUser?.id;
+    chatroomContext.setConversationList(newConvoArr);
+  }
+
   async function onClickhandlerReport(id: any, reason: any, convoid: any) {
     try {
       const deleteCall = await myClient.pushReport({
@@ -491,7 +521,7 @@ function MoreOptions({ convoId, convoObject }: moreOptionsType) {
       clickFunction: () => {
         deleteChatFromDM([convoId])
           .then((r) => {
-            getChatroomConversations(convoObject.chatroom_id, 100);
+            deleteMessageLocally();
           })
           .catch((e) => {
             // console.log(e);
