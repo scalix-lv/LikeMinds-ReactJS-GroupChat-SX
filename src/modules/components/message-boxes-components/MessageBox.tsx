@@ -608,7 +608,7 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
               convoId,
               generalContext.currentChatroom.id
             ).then((r) => {
-              getChatroomConversations(generalContext.currentChatroom.id, 100);
+              updateMessageLocally(e.emoji);
             });
 
             handleCloseEmoji();
