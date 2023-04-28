@@ -198,6 +198,7 @@ const ChatContainer: React.FC = () => {
                 <MessageBlock
                   userId={convo.member.id}
                   conversationObject={convo}
+                  index={index}
                 />
               </div>
             );

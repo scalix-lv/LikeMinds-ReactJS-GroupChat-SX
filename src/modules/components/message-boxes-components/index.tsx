@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import MessageBlock from "./MessageBlock";
+import ChatroomContext from "../../contexts/chatroomContext";
 
 type regularBoxType = {
   convoArray: any;
 };
 
 function RegularBox({ convoArray }: regularBoxType) {
+  const chatroomContext = useContext(ChatroomContext);
   return (
     <div className="ml-[28px] mr-[114px] pt-5">
       <DateSpecifier dateString={convoArray[0].date} />
@@ -16,6 +18,7 @@ function RegularBox({ convoArray }: regularBoxType) {
             userId={conversation.member.id}
             conversationObject={conversation}
             key={conversation.id}
+            index={chatroomContext.conversationList.length - 1}
           />
         );
       })}
