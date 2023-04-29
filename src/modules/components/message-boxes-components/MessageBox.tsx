@@ -16,6 +16,7 @@ import moreIcon from "../../../assets/svg/more-vertical.svg";
 import pdfIcon from "../../../assets/svg/pdf-document.svg";
 import EmojiPicker from "emoji-picker-react";
 import parse from "html-react-parser";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   addReaction,
   deleteChatFromDM,
@@ -31,6 +32,7 @@ import ChatroomContext from "../../contexts/chatroomContext";
 import { GeneralContext } from "../../contexts/generalContext";
 import ImageAndMedia from "./ImageAndMedia";
 import AttachmentsHolder from "./AttachmentsHolder";
+import MediaCarousel from "../carousel";
 
 async function getChatroomConversations(
   chatroomId: any,
@@ -249,8 +251,8 @@ function StringBox({
           <div className="w-full mb-1">
             <AttachmentsHolder
               attachmentsObject={attachmentObject}
-              setMediaDisplay={setMediaData}
-              setModel={setDisplayMediaModel}
+              setMediaData={setMediaData}
+              setMediaDisplayModel={setDisplayMediaModel}
             />
 
             {/* {(() => {
@@ -661,7 +663,7 @@ function DialogBoxMediaDisplay({
 }: dialogBoxType) {
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
-      {mediaData !== null && mediaData?.type === "image"
+      {/* {mediaData !== null && mediaData?.type === "image"
         ? mediaData?.mediaObj?.map((item: any, itemIndex: any) => {
             return (
               <>
@@ -683,7 +685,8 @@ function DialogBoxMediaDisplay({
                 </video>
               </>
             );
-          })}
+          })} */}
+      <MediaCarousel mediaArray={mediaData?.mediaObj} />
     </Dialog>
   );
 }

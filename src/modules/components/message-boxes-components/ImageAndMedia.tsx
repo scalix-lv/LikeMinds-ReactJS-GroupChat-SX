@@ -1,14 +1,27 @@
 import React from "react";
+import MediaCarousel from "../carousel";
 
 type ImageAndMediaType = {
   mediaArray: any;
+  setMediaDisplayModel: any;
+  setMediaData: any;
 };
-const ImageAndMedia = ({ mediaArray }: ImageAndMediaType) => {
+const ImageAndMedia = ({
+  mediaArray,
+  setMediaDisplayModel,
+  setMediaData,
+}: ImageAndMediaType) => {
   return (
     <>
       <div className="flex">
         {mediaArray?.length === 1 ? (
-          <div className="w-full">
+          <div
+            className="w-full"
+            onClick={() => {
+              setMediaData({ mediaObj: mediaArray, type: "image" });
+              setMediaDisplayModel(true);
+            }}
+          >
             {mediaArray[0].type == "image" ? (
               <img
                 src={mediaArray[0].url!}
@@ -30,7 +43,13 @@ const ImageAndMedia = ({ mediaArray }: ImageAndMediaType) => {
           </div>
         ) : (
           <>
-            <div className="max-w-[50%] h-full">
+            <div
+              className="max-w-[50%] h-full"
+              onClick={() => {
+                setMediaData({ mediaObj: mediaArray, type: "image" });
+                setMediaDisplayModel(true);
+              }}
+            >
               {mediaArray[0].type == "image" ? (
                 <img
                   src={mediaArray[0].url!}

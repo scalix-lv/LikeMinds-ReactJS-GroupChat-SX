@@ -1,20 +1,25 @@
+import { useState } from "react";
 import ImageAndMedia from "./ImageAndMedia";
 import { attType } from "./MessageBox";
 type AttachmentHolderType = {
   attachmentsObject: attType;
-  setMediaDisplay: any;
-  setModel: any;
+  setMediaDisplayModel: any;
+  setMediaData: any;
 };
 
 const AttachmentsHolder = ({
   attachmentsObject,
-  setMediaDisplay,
-  setModel,
+  setMediaDisplayModel,
+  setMediaData,
 }: AttachmentHolderType) => {
   return (
     <>
       {attachmentsObject.mediaAttachments?.length > 0 ? (
-        <ImageAndMedia mediaArray={attachmentsObject.mediaAttachments} />
+        <ImageAndMedia
+          mediaArray={attachmentsObject.mediaAttachments}
+          setMediaDisplayModel={setMediaDisplayModel}
+          setMediaData={setMediaData}
+        />
       ) : null}
       {attachmentsObject.audioAttachments?.length > 0 ? (
         <>
