@@ -29,6 +29,8 @@ import {
 import { directMessageInfoPath } from "../../../routes";
 import ChatroomContext from "../../contexts/chatroomContext";
 import { GeneralContext } from "../../contexts/generalContext";
+import ImageAndMedia from "./ImageAndMedia";
+import AttachmentsHolder from "./AttachmentsHolder";
 
 async function getChatroomConversations(
   chatroomId: any,
@@ -173,6 +175,11 @@ function ReactionIndicator({ reaction }: any) {
   return <span className="text-normal mx-1">{reaction}</span>;
 }
 
+export type attType = {
+  mediaAttachments: any[];
+  audioAttachments: any[];
+  docAttachments: any[];
+};
 function StringBox({
   username,
   messageString,
@@ -186,7 +193,23 @@ function StringBox({
   const userContext = useContext(UserContext);
   const [displayMediaModal, setDisplayMediaModel] = useState(false);
   const [mediaData, setMediaData] = useState<any>(null);
-
+  const [attachmentObject, setAttachmentObject] = useState<attType>({
+    mediaAttachments: [],
+    audioAttachments: [],
+    docAttachments: [],
+  });
+  useEffect(() => {
+    let att = {
+      ...attachmentObject,
+    };
+    attachments?.forEach((element: any) => {
+      const type = element.type.split("/")[0];
+      if (type == "image" || type == "video") {
+        att.mediaAttachments.push(element);
+      }
+    });
+    setAttachmentObject(att);
+  }, [attachments]);
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all z:max-sm:min-w-[242px] z:max-sm:max-w-[282px]"
@@ -224,7 +247,13 @@ function StringBox({
       ) : (
         <div className="flex w-full flex-col">
           <div className="w-full mb-1">
-            {(() => {
+            <AttachmentsHolder
+              attachmentsObject={attachmentObject}
+              setMediaDisplay={setMediaData}
+              setModel={setDisplayMediaModel}
+            />
+
+            {/* {(() => {
               if (attachments !== null && attachments.length < 2) {
                 return attachments
                   .filter((item: any) => {
@@ -357,7 +386,7 @@ function StringBox({
                       </video>
                     );
                   })
-              : null}
+              : null} */}
           </div>
 
           {replyConversationObject != null ? (
