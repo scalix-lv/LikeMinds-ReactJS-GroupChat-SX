@@ -1,7 +1,7 @@
 import LikeMinds from "likeminds-chat-beta";
 import { myClient } from "..";
-export const jsonReturnHandler = (data, error) => {
-  let returnObject = {
+export const jsonReturnHandler = (data: any, error: any) => {
+  let returnObject: any = {
     error: false,
   };
   if (!Boolean(error)) {
@@ -13,18 +13,21 @@ export const jsonReturnHandler = (data, error) => {
   return returnObject;
 };
 
-export const createNewClient = (key) => {
+export const createNewClient = (key: string) => {
   const client = new LikeMinds({
     apiKey: key,
   });
   return client;
 };
 
-export const getChatRoomDetails = async (myClient, chatRoomId) => {
+export const getChatRoomDetails = async (
+  myClient: LikeMinds,
+  chatRoomId: string
+) => {
   try {
     // // console.log(chatRoomId);
     const params = {
-      chatroom_id: chatRoomId,
+      chatroomId: chatRoomId,
       page: 1,
     };
     const chatRoomResponse = await myClient.getChatroom(params);
@@ -37,7 +40,7 @@ export const getChatRoomDetails = async (myClient, chatRoomId) => {
   }
 };
 
-export const getConversationsForGroup = async (optionObject) => {
+export const getConversationsForGroup = async (optionObject: any) => {
   try {
     let conversationCall = await myClient.getConversations(optionObject);
     return jsonReturnHandler(conversationCall.conversations, null);
@@ -46,20 +49,20 @@ export const getConversationsForGroup = async (optionObject) => {
   }
 };
 
-export function parseMessageString(message) {
+export function parseMessageString(message: string) {
   let newMessage = " " + message + " ";
 }
-export function getUsername(str) {
+export function getUsername(str: string) {
   let userMatchString = /(?<=<<)(@*).+(?=\|)/gs;
   let userName = str.match(userMatchString);
   return userName;
 }
-export function getUserLink(str) {
+export function getUserLink(str: string) {
   let userMatchString = /(?<=\|).+(?=>>)/gs;
   let userName = str.match(userMatchString);
   return userName;
 }
-export function getString(str) {
+export function getString(str: string) {
   if (!Boolean(getUsername(str))) {
     let userMatchString = /.+/gs;
     let userName = str.match(userMatchString);
@@ -71,9 +74,13 @@ export function getString(str) {
   }
 }
 
-export async function createNewConversation(val, groupContext, options) {
+export async function createNewConversation(
+  val: string,
+  groupContext: any,
+  options: any
+) {
   let { has_files, count } = options;
-  let configObject = {
+  let configObject: any = {
     text: val.toString(),
     created_at: Date.now(),
     has_files: has_files,
@@ -104,9 +111,9 @@ export async function getReportingOptions() {
   }
 }
 
-export async function addReaction(reaction, convoId, chatId) {
+export async function addReaction(reaction: any, convoId: any, chatId: any) {
   try {
-    const reactionCall = await myClient.addAction({
+    const reactionCall = await myClient.putReaction({
       chatroom_id: chatId,
       conversation_id: convoId,
       reaction: reaction,
@@ -117,12 +124,13 @@ export async function addReaction(reaction, convoId, chatId) {
   }
 }
 
-export async function pushReport(convoId, tagId, reason) {
+export async function pushReport(convoId:any, tagId:any, reason:any, reportedMemberId: any) {
   try {
     const pushReportCall = await myClient.pushReport({
       conversation_id: convoId,
       tag_id: tagId,
       reason: reason,
+      reported_Member_id: 
     });
     return jsonReturnHandler(pushReportCall, null);
   } catch (error) {
@@ -265,7 +273,7 @@ export async function leaveSecretChatroom(collabId, userId) {
   }
 }
 
-export function tagExtracter(str, userContext, state) {
+export function tagExtracter(str:any, userContext:any, state?:any) {
   if (state === 1) {
     let splitArr = str.split(
       `<<${userContext.currentUser.name}|route://member/${userContext.currentUser.id}>>`
@@ -335,9 +343,9 @@ function seviceWorker() {
 }
 
 // for joining the group
-export async function joinChatRoom(collabId, userId) {
+export async function joinChatRoom(collabId: any, userId: any) {
   try {
-    const joinCall = await myClient.leaveChatroom({
+    const joinCall = await myClient.followChatroom({
       collabcard_id: collabId,
       member_id: userId,
       value: true,

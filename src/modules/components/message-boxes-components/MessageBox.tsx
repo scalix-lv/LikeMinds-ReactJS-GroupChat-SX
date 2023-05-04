@@ -468,36 +468,23 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
     chatroomContext.setConversationList(newConvoArr);
   }
 
-  async function onClickhandlerReport(id: any, reason: any, convoid: any) {
+  async function onClickhandlerReport(
+    id: any,
+    reason: any,
+    convoid: any,
+    reportedMemberId: any
+  ) {
     try {
       const deleteCall = await myClient.pushReport({
         tag_id: id,
         reason: reason,
         conversation_id: convoid,
+        reported_Member_id: reportedMemberId,
       });
       setShouldShowBlock(!shouldShow);
       // // console.log(deleteCall);
     } catch (error) {
       // // console.log(error);
-    }
-  }
-
-  async function getChatroomConversations(chatroomId: any, pageNo: any) {
-    if (chatroomId == null) {
-      return;
-    }
-    // // console.log(chatroomId);
-    let optionObject = {
-      chatroomID: chatroomId,
-      page: pageNo,
-    };
-    let response: any = await getConversationsForGroup(optionObject);
-    if (!response.error) {
-      let conversations = response.data;
-
-      chatroomContext.setConversationList(conversations);
-    } else {
-      // // console.log(response.errorMessage);
     }
   }
 
@@ -594,6 +581,7 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
           closeBox={() => {
             setShouldShowBlock(false);
           }}
+          reportedMemberId={convoObject.member.user_unique_id}
         />
       </Dialog>
       <Menu

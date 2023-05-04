@@ -64,7 +64,7 @@ const sendMessage = async (
     if (messageText.trim() === "" && filesArray.length === 0) {
       return;
     }
-    let config: ConversationCreateData = {
+    let config: any = {
       text: message,
       created_at: Date.now(),
       chatroom_id: chatroom_id,
@@ -80,7 +80,7 @@ const sendMessage = async (
       setIsSelectedConversation(false);
     }
 
-    let createConversationCall = await myClient.onConversationsCreate(config);
+    let createConversationCall = await myClient.postConversation(config);
     document.dispatchEvent(
       new CustomEvent("sentMessage", {
         detail: chatroom_id,
@@ -128,7 +128,7 @@ const sendMessage = async (
             type: fileType,
             url: fileResponse.Location,
           };
-          myClient.onUploadFile(onUploadConfig);
+          myClient.putMultimedia(onUploadConfig);
         });
       }
     }

@@ -9,6 +9,7 @@ function ReportConversationDialogBox({
   shouldShow,
   onClick,
   closeBox,
+  reportedMemberId,
 }) {
   const [reasonArr, setReasonArr] = useState([]);
   useEffect(() => {
@@ -43,27 +44,29 @@ function ReportConversationDialogBox({
                   name={item.name}
                   conversationid={convoId}
                   onClickhandler={onClick}
+                  reportedMemberId={reportedMemberId}
                 />
               );
             })}
           </div>
-
-          {/* <button
-            type="button"
-            className="border rounded-[20px] py-2 px-3 m-1 text-sm text=[#fff] bg-[#ccc] w-[90px] mx-auto"
-          >
-            Report
-          </button> */}
         </div>
       </div>
     </div>
   );
 }
 
-function ReportedReasonBlock({ id, name, onClickhandler, conversationid }) {
+function ReportedReasonBlock({
+  id,
+  name,
+  onClickhandler,
+  conversationid,
+  reportedMemberId,
+}) {
   return (
     <div
-      onClick={() => [onClickhandler(id, name, conversationid)]}
+      onClick={() => {
+        onClickhandler(id, name, conversationid, reportedMemberId);
+      }}
       className="inline-block border rounded-[20px] py-2 px-3 mr-2 mb-2 text-sm text=[#9b9b9b]"
     >
       {name}

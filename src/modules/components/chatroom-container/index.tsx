@@ -131,8 +131,8 @@ const ChatContainer: React.FC = () => {
   });
 
   // firebase listener
-
   useFirebaseChatConversations(getChatroomConversations, setBufferMessage);
+
   if (generalContext?.currentChatroom?.chat_request_state == 0) {
     if (
       userContext.currentUser?.id ==

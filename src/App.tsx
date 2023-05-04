@@ -8,7 +8,9 @@ function App() {
   const [currentUser, setCurrentUser] = useState();
   const [community, setCommunity] = useState();
   useEffect(() => {
-    initiateSDK(false, "", "")
+    initiateSDK(false, "2f7b84cf-50fb-4cf6-9741-ff3bd9db1ec9", "Ankit SDK 55")
+      // 0d6f9958-a2db-46aa-a4b1-c40d268b767b
+      // initiateSDK(false, "0d6f9958-a2db-46aa-a4b1-c40d268b767b", "")
       .then((res: any) => {
         setCommunity(res?.data?.community);
         setCurrentUser(res?.data?.user);

@@ -34,7 +34,7 @@ export function MoreOptions() {
   }
   async function muteNotifications(id) {
     try {
-      let call = await myClient.muteNotification({
+      let call = await myClient.muteChatroom({
         chatroom_id: generalContext.currentChatroom.id,
         value: id == 6 ? true : false,
       });
