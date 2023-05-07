@@ -13,7 +13,7 @@ const ImageAndMedia = ({
 }: ImageAndMediaType) => {
   return (
     <>
-      <div className="flex">
+      <div className="flex w-full">
         {mediaArray?.length === 1 ? (
           <div
             className="w-full"
@@ -44,7 +44,7 @@ const ImageAndMedia = ({
         ) : (
           <>
             <div
-              className="max-w-[50%] h-full"
+              className="max-w-[50%] h-full grow"
               onClick={() => {
                 setMediaData({ mediaObj: mediaArray, type: "image" });
                 setMediaDisplayModel(true);
@@ -70,24 +70,14 @@ const ImageAndMedia = ({
               )}
             </div>
             <div
-              className="w-full"
+              className="max-w-[50%] grow flex justify-center items-center bg-slate-400"
               style={{
                 opacity: "50%",
               }}
             >
-              <div
-                className="flex justify-center items-center grow bg-contain h-full"
-                style={{
-                  background: `url(${mediaArray[1]?.url})`,
-                  backgroundSize: "cover",
-                  backgroundRepeat: "no-repeat",
-                  position: "relative",
-                }}
-              >
-                <span className="text-xl text-black  text-center">
-                  + {(mediaArray.length - 1).toString()}
-                </span>
-              </div>
+              <span className="text-xl text-black  text-center">
+                + {(mediaArray.length - 1).toString()}
+              </span>
             </div>
           </>
         )}

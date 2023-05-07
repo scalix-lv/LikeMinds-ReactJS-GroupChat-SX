@@ -208,6 +208,10 @@ function StringBox({
       const type = element.type.split("/")[0];
       if (type == "image" || type == "video") {
         att.mediaAttachments.push(element);
+      } else if (type === "audio") {
+        att.audioAttachments.push(element);
+      } else if (type === "pdf") {
+        att.docAttachments.push(element);
       }
     });
     setAttachmentObject(att);
@@ -248,7 +252,7 @@ function StringBox({
         </span>
       ) : (
         <div className="flex w-full flex-col">
-          <div className="w-full mb-1">
+          <div className="w-full mb-1 h-full">
             <AttachmentsHolder
               attachmentsObject={attachmentObject}
               setMediaData={setMediaData}
