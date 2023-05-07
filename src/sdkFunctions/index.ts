@@ -102,7 +102,7 @@ export async function createNewConversation(
 
 export async function getReportingOptions() {
   try {
-    let rep = await myClient.getReportTags({
+    let rep = await myClient.getRepoyrtTags({
       type: 0,
     });
     return jsonReturnHandler(rep, null);
@@ -138,9 +138,9 @@ export async function pushReport(convoId:any, tagId:any, reason:any, reportedMem
   }
 }
 
-export async function initiateSDK(is_guest, user_unique_id, user_name) {
+export async function initiateSDK(is_guest:boolean, user_unique_id:string, user_name:string) {
   try {
-    let initiateCall = await myClient.initSDK({
+    let initiateCall = await myClient.initiateUser({
       is_guest,
       user_unique_id,
       user_name,
@@ -151,11 +151,11 @@ export async function initiateSDK(is_guest, user_unique_id, user_name) {
   }
 }
 
-export async function getTaggingList(communityId, chatroomId) {
+export async function getTaggingList(chatroomId:number) {
   try {
     let tagListCall = await myClient.getTaggingList({
-      community_id: communityId,
-      chatroom_id: chatroomId,
+      chatroomId: parseInt(chatroomId),
+      p
     });
     return jsonReturnHandler(tagListCall, null);
   } catch (error) {
@@ -358,7 +358,7 @@ export async function joinChatRoom(collabId: any, userId: any) {
   }
 }
 
-export async function markRead(chatroomId) {
+export async function markRead(chatroomId:any) {
   try {
     const markCall = await myClient.markRead({
       chatroom_id: chatroomId,
