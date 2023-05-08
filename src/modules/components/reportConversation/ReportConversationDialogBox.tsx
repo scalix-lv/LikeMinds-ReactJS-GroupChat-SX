@@ -1,20 +1,24 @@
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getReportingOptions } from "../../../sdkFunctions";
 
-// myClient.onUploadFile
+type ReportConversationDialogBoxType = {
+  convoId: any;
+  onClick: any;
+  closeBox: any;
+  reportedMemberId: any;
+};
 function ReportConversationDialogBox({
   convoId,
-  shouldShow,
   onClick,
   closeBox,
   reportedMemberId,
-}) {
+}: ReportConversationDialogBoxType) {
   const [reasonArr, setReasonArr] = useState([]);
   useEffect(() => {
     getReportingOptions()
-      .then((r) => setReasonArr(r.data.report_tags))
+      .then((r: any) => setReasonArr(r.data.report_tags))
       .catch((e) => {
         // console.log(e);
       });
@@ -37,14 +41,15 @@ function ReportConversationDialogBox({
         </p>
         <div className="mt-3 w-full text-center">
           <div className="my-3 w-full text-left">
-            {reasonArr.map((item, index) => {
+            {reasonArr.map((item: any, index) => {
               return (
                 <ReportedReasonBlock
-                  id={item.id}
-                  name={item.name}
+                  id={item?.id}
+                  name={item?.name}
                   conversationid={convoId}
                   onClickhandler={onClick}
                   reportedMemberId={reportedMemberId}
+                  key={item?.id}
                 />
               );
             })}
@@ -54,14 +59,20 @@ function ReportConversationDialogBox({
     </div>
   );
 }
-
+type ReasonType = {
+  id: any;
+  name: any;
+  onClickhandler: any;
+  conversationid: any;
+  reportedMemberId: any;
+};
 function ReportedReasonBlock({
   id,
   name,
   onClickhandler,
   conversationid,
   reportedMemberId,
-}) {
+}: ReasonType) {
   return (
     <div
       onClick={() => {

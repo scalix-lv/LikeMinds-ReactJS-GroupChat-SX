@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useEffect, useState } from "react";
 import "./App.css";
 import RouteProvider from "./modules/components/routes";
@@ -17,7 +19,7 @@ function App() {
         sessionStorage.setItem("communityId", res?.data?.community?.id);
       })
       .catch((error) => {
-        // // console.log("Error =>", error);
+        console.log("Error =>", error);
       });
   }, []);
   return (
