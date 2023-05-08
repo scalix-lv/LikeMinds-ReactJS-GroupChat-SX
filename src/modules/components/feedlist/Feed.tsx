@@ -165,8 +165,7 @@ function GroupFeedContainer({
   async function refreshHomeFeed() {
     try {
       const communityId = sessionStorage.getItem("communityId");
-      let groupHomeFeedCall: any = await myClient.getHomeFeedData({
-        communityId: communityId!,
+      let groupHomeFeedCall: any = await myClient.getHomeFeed({
         page: 1,
       });
       if (homeFeed.length < 10) {
