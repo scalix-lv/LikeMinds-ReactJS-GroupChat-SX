@@ -7,7 +7,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { myClient } from "../../..";
 import { UserContext } from "../../contexts/userContext";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
@@ -16,6 +16,7 @@ import moreIcon from "../../../assets/svg/more-vertical.svg";
 import pdfIcon from "../../../assets/svg/pdf-document.svg";
 import EmojiPicker from "emoji-picker-react";
 import parse from "html-react-parser";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   addReaction,
   deleteChatFromDM,
@@ -29,6 +30,9 @@ import {
 import { directMessageInfoPath } from "../../../routes";
 import ChatroomContext from "../../contexts/chatroomContext";
 import { GeneralContext } from "../../contexts/generalContext";
+import ImageAndMedia from "./ImageAndMedia";
+import AttachmentsHolder from "./AttachmentsHolder";
+import MediaCarousel from "../carousel";
 
 async function getChatroomConversations(
   chatroomId: any,
@@ -173,6 +177,11 @@ function ReactionIndicator({ reaction }: any) {
   return <span className="text-normal mx-1">{reaction}</span>;
 }
 
+export type attType = {
+  mediaAttachments: any[];
+  audioAttachments: any[];
+  docAttachments: any[];
+};
 function StringBox({
   username,
   messageString,
@@ -186,7 +195,27 @@ function StringBox({
   const userContext = useContext(UserContext);
   const [displayMediaModal, setDisplayMediaModel] = useState(false);
   const [mediaData, setMediaData] = useState<any>(null);
-
+  const [attachmentObject, setAttachmentObject] = useState<attType>({
+    mediaAttachments: [],
+    audioAttachments: [],
+    docAttachments: [],
+  });
+  useEffect(() => {
+    let att = {
+      ...attachmentObject,
+    };
+    attachments?.forEach((element: any) => {
+      const type = element.type.split("/")[0];
+      if (type == "image" || type == "video") {
+        att.mediaAttachments.push(element);
+      } else if (type === "audio") {
+        att.audioAttachments.push(element);
+      } else if (type === "pdf") {
+        att.docAttachments.push(element);
+      }
+    });
+    setAttachmentObject(att);
+  }, [attachments]);
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all z:max-sm:min-w-[242px] z:max-sm:max-w-[282px]"
@@ -223,8 +252,14 @@ function StringBox({
         </span>
       ) : (
         <div className="flex w-full flex-col">
-          <div className="w-full mb-1">
-            {(() => {
+          <div className="w-full mb-1 h-full">
+            <AttachmentsHolder
+              attachmentsObject={attachmentObject}
+              setMediaData={setMediaData}
+              setMediaDisplayModel={setDisplayMediaModel}
+            />
+
+            {/* {(() => {
               if (attachments !== null && attachments.length < 2) {
                 return attachments
                   .filter((item: any) => {
@@ -357,7 +392,7 @@ function StringBox({
                       </video>
                     );
                   })
-              : null}
+              : null} */}
           </div>
 
           {replyConversationObject != null ? (
@@ -468,36 +503,23 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
     chatroomContext.setConversationList(newConvoArr);
   }
 
-  async function onClickhandlerReport(id: any, reason: any, convoid: any) {
+  async function onClickhandlerReport(
+    id: any,
+    reason: any,
+    convoid: any,
+    reportedMemberId: any
+  ) {
     try {
       const deleteCall = await myClient.pushReport({
-        tag_id: id,
+        tag_id: parseInt(id?.toString()),
         reason: reason,
         conversation_id: convoid,
+        reported_Member_id: reportedMemberId,
       });
       setShouldShowBlock(!shouldShow);
       // // console.log(deleteCall);
     } catch (error) {
       // // console.log(error);
-    }
-  }
-
-  async function getChatroomConversations(chatroomId: any, pageNo: any) {
-    if (chatroomId == null) {
-      return;
-    }
-    // // console.log(chatroomId);
-    let optionObject = {
-      chatroomID: chatroomId,
-      page: pageNo,
-    };
-    let response: any = await getConversationsForGroup(optionObject);
-    if (!response.error) {
-      let conversations = response.data;
-
-      chatroomContext.setConversationList(conversations);
-    } else {
-      // // console.log(response.errorMessage);
     }
   }
 
@@ -559,9 +581,13 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
         {options.map((option) => {
           if (
             option.title === "Report" &&
-            (convoObject.member != undefined
-              ? convoObject.member.id == userContext.currentUser.id
-              : convoObject.member_id == userContext.currentUser.id)
+            convoObject.member?.id === userContext.currentUser.id
+          ) {
+            return null;
+          }
+          if (
+            option.title === "delete" &&
+            convoObject.member?.id !== userContext.currentUser.id
           ) {
             return null;
           }
@@ -589,11 +615,11 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
       >
         <ReportConversationDialogBox
           convoId={convoId}
-          shouldShow={shouldShow}
           onClick={onClickhandlerReport}
           closeBox={() => {
             setShouldShowBlock(false);
           }}
+          reportedMemberId={convoObject.member?.member_id}
         />
       </Dialog>
       <Menu
@@ -632,29 +658,7 @@ function DialogBoxMediaDisplay({
 }: dialogBoxType) {
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
-      {mediaData !== null && mediaData?.type === "image"
-        ? mediaData?.mediaObj?.map((item: any, itemIndex: any) => {
-            return (
-              <>
-                <img src={item?.url} alt="img" className="max-w-[700px]" />
-              </>
-            );
-          })
-        : mediaData?.mediaObj?.map((item: any, itemIndex: any) => {
-            return (
-              <>
-                <video
-                  className="w-[500] h-max-[200px]"
-                  controls
-                  key={item?.url}
-                >
-                  <source src={item?.url} type="video/mp4" />
-                  <source src={item?.url} type="video/ogg" />
-                  Your browser does not support the video tag.
-                </video>
-              </>
-            );
-          })}
+      <MediaCarousel mediaArray={mediaData?.mediaObj} />
     </Dialog>
   );
 }

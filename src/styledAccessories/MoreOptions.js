@@ -32,9 +32,10 @@ export function MoreOptions() {
     setOpen(false);
     setAnchor(null);
   }
+  const { mode } = useParams()
   async function muteNotifications(id) {
     try {
-      let call = await myClient.muteNotification({
+      let call = await myClient.muteChatroom({
         chatroom_id: generalContext.currentChatroom.id,
         value: id == 6 ? true : false,
       });
@@ -52,15 +53,16 @@ export function MoreOptions() {
 
   async function leaveGroup() {
     try {
+      log(userContext.currentUser)
       if (!!generalContext.currentChatroom.is_secret) {
         await leaveSecretChatroom(
           generalContext.currentChatroom.id,
-          userContext.currentUser.id
+          userContext.currentUser?.user_unique_id
         );
       } else {
         await leaveChatRoom(
           generalContext.currentChatroom.id,
-          userContext.currentUser.id
+          userContext.currentUser?.user_unique_id
         );
       }
       return generalContext.currentChatroom.id;
@@ -85,6 +87,9 @@ export function MoreOptions() {
         if (item.id === 2) {
           return null;
         }
+        if (item.id === 21 && mode === "direct-messages") {
+          return null
+        }
         return (
           <MenuItem
             key={item.id}
@@ -103,7 +108,7 @@ export function MoreOptions() {
               color: "#323232",
             }}
           >
-            <img src={leaveIcon} alt="leave" className="mr-2" />
+            {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
             {item.title}
           </MenuItem>
         );
@@ -176,12 +181,6 @@ export function MoreOptionsDM() {
       status: id === 27 ? 0 : 1,
     });
     closeMenu();
-    // let callRefresh = await getChatroomConversations(
-    //   generalContext.currentChatroom.id,
-    //   100,
-    //   generalContext
-    // );
-
     let callChatroomRefresh = await getChatRoomDetails(
       myClient,
       generalContext.currentChatroom.id
@@ -217,9 +216,9 @@ export function MoreOptionsDM() {
                     state: {
                       memberId:
                         userContext.currentUser.id ===
-                        chatroomContext.currentChatroom.member.id
+                          chatroomContext.currentChatroom.member.id
                           ? chatroomContext.currentChatroom.chatroom_with_user
-                              .id
+                            .id
                           : chatroomContext.currentChatroom.member.id,
                       communityId: userContext.community.id,
                     },
