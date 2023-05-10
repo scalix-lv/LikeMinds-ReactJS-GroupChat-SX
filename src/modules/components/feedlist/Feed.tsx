@@ -164,7 +164,6 @@ function GroupFeedContainer({
   const navigate = useNavigate();
   async function refreshHomeFeed() {
     try {
-      const communityId = sessionStorage.getItem("communityId");
       let groupHomeFeedCall: any = await myClient.getHomeFeed({
         page: 1,
       });
@@ -277,6 +276,7 @@ function GroupFeedContainer({
                   title={group.chatroom.header}
                   id={group.chatroom.id}
                   response={invitationResponse}
+                  refreshHomeFeed={refreshHomeFeed}
                 />
               );
             })}

@@ -1,5 +1,10 @@
 import { myClient } from "../../..";
-import { log, mergeInputFiles } from "../../../sdkFunctions";
+import {
+  getChatRoomDetails,
+  log,
+  mergeInputFiles,
+  sendDmRequest,
+} from "../../../sdkFunctions";
 import { chatroomContextType } from "../../contexts/chatroomContext";
 import { InputFieldContextType } from "../../contexts/inputFieldContext";
 type ConversationCreateData = {
@@ -22,13 +27,24 @@ type UploadConfigType = {
   url: string;
 };
 const sendMessage = async (
+  chat_request_state: any,
   chatroomContext: chatroomContextType,
   chatroom_id: number,
   inputFieldContext: InputFieldContextType,
   setBufferMessage: any,
-  setEnableInputBox: any
+  setEnableInputBox: any,
+  mode: any
 ) => {
   try {
+    if (chat_request_state === null && mode === "direct-messages") {
+      await sendDmRequest(chatroom_id, inputFieldContext.messageText);
+      document.dispatchEvent(
+        new CustomEvent("joinEvent", {
+          detail: chatroom_id,
+        })
+      );
+      return;
+    }
     setEnableInputBox(true);
     const {
       conversationList,
@@ -115,7 +131,7 @@ const sendMessage = async (
           fileType = "image";
         }
         index++;
-
+        log(newFile);
         await myClient.uploadMedia(uploadConfig).then((fileResponse: any) => {
           let onUploadConfig = {
             conversation_id: parseInt(createConversationCall.id),
