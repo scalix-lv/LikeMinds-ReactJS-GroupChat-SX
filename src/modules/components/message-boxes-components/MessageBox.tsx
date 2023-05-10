@@ -7,7 +7,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { myClient } from "../../..";
 import { UserContext } from "../../contexts/userContext";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
@@ -503,36 +503,23 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
     chatroomContext.setConversationList(newConvoArr);
   }
 
-  async function onClickhandlerReport(id: any, reason: any, convoid: any) {
+  async function onClickhandlerReport(
+    id: any,
+    reason: any,
+    convoid: any,
+    reportedMemberId: any
+  ) {
     try {
       const deleteCall = await myClient.pushReport({
-        tag_id: id,
+        tag_id: parseInt(id?.toString()),
         reason: reason,
         conversation_id: convoid,
+        reported_Member_id: reportedMemberId,
       });
       setShouldShowBlock(!shouldShow);
       // // console.log(deleteCall);
     } catch (error) {
       // // console.log(error);
-    }
-  }
-
-  async function getChatroomConversations(chatroomId: any, pageNo: any) {
-    if (chatroomId == null) {
-      return;
-    }
-    // // console.log(chatroomId);
-    let optionObject = {
-      chatroomID: chatroomId,
-      page: pageNo,
-    };
-    let response: any = await getConversationsForGroup(optionObject);
-    if (!response.error) {
-      let conversations = response.data;
-
-      chatroomContext.setConversationList(conversations);
-    } else {
-      // // console.log(response.errorMessage);
     }
   }
 
@@ -594,9 +581,13 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
         {options.map((option) => {
           if (
             option.title === "Report" &&
-            (convoObject.member != undefined
-              ? convoObject.member.id == userContext.currentUser.id
-              : convoObject.member_id == userContext.currentUser.id)
+            convoObject.member?.id === userContext.currentUser.id
+          ) {
+            return null;
+          }
+          if (
+            option.title === "delete" &&
+            convoObject.member?.id !== userContext.currentUser.id
           ) {
             return null;
           }
@@ -624,11 +615,11 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
       >
         <ReportConversationDialogBox
           convoId={convoId}
-          shouldShow={shouldShow}
           onClick={onClickhandlerReport}
           closeBox={() => {
             setShouldShowBlock(false);
           }}
+          reportedMemberId={convoObject.member?.member_id}
         />
       </Dialog>
       <Menu
@@ -667,29 +658,6 @@ function DialogBoxMediaDisplay({
 }: dialogBoxType) {
   return (
     <Dialog open={shouldOpen} onClose={onClose}>
-      {/* {mediaData !== null && mediaData?.type === "image"
-        ? mediaData?.mediaObj?.map((item: any, itemIndex: any) => {
-            return (
-              <>
-                <img src={item?.url} alt="img" className="max-w-[700px]" />
-              </>
-            );
-          })
-        : mediaData?.mediaObj?.map((item: any, itemIndex: any) => {
-            return (
-              <>
-                <video
-                  className="w-[500] h-max-[200px]"
-                  controls
-                  key={item?.url}
-                >
-                  <source src={item?.url} type="video/mp4" />
-                  <source src={item?.url} type="video/ogg" />
-                  Your browser does not support the video tag.
-                </video>
-              </>
-            );
-          })} */}
       <MediaCarousel mediaArray={mediaData?.mediaObj} />
     </Dialog>
   );

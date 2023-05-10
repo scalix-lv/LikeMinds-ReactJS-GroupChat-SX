@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useEffect, useState } from "react";
 import "./App.css";
 import RouteProvider from "./modules/components/routes";
@@ -8,7 +10,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState();
   const [community, setCommunity] = useState();
   useEffect(() => {
-    initiateSDK(false, "60d19927-8b66-4f78-af91-c6005950847c", "Earfuls12")
+    initiateSDK(false, "", "")
       .then((res: any) => {
         setCommunity(res?.data?.community);
         setCurrentUser(res?.data?.user);

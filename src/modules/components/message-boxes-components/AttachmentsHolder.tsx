@@ -1,4 +1,3 @@
-import { useState } from "react";
 import ImageAndMedia from "./ImageAndMedia";
 import { attType } from "./MessageBox";
 import pdfIcon from "../../../assets/svg/pdf-document.svg";

@@ -1,6 +1,3 @@
-import React from "react";
-import MediaCarousel from "../carousel";
-
 type ImageAndMediaType = {
   mediaArray: any;
   setMediaDisplayModel: any;
@@ -26,6 +23,7 @@ const ImageAndMedia = ({
               <img
                 src={mediaArray[0].url!}
                 className="max-w-full max-h-full block h-auto w-auto"
+                alt={""}
               />
             ) : (
               <video
@@ -53,6 +51,7 @@ const ImageAndMedia = ({
               {mediaArray[0].type == "image" ? (
                 <img
                   src={mediaArray[0].url!}
+                  alt=""
                   className="max-w-full max-h-full block h-auto w-auto"
                 />
               ) : (
