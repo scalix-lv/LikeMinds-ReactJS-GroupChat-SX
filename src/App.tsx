@@ -8,14 +8,14 @@ function App() {
   const [currentUser, setCurrentUser] = useState();
   const [community, setCommunity] = useState();
   useEffect(() => {
-    initiateSDK(false, "", "")
+    initiateSDK(false, "60d19927-8b66-4f78-af91-c6005950847c", "Earfuls12")
       .then((res: any) => {
         setCommunity(res?.data?.community);
         setCurrentUser(res?.data?.user);
         sessionStorage.setItem("communityId", res?.data?.community?.id);
       })
       .catch((error) => {
-        // // console.log("Error =>", error);
+        console.log("Error =>", error);
       });
   }, []);
   return (
