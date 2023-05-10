@@ -27,6 +27,7 @@ import ReplyBox from "./replyContainer";
 import { myClient } from "../../..";
 import InputFieldContext from "../../contexts/inputFieldContext";
 import { INPUT_BOX_DEBOUNCE_TIME } from "../../constants/constants";
+import { GeneralContext } from "../../contexts/generalContext";
 const StyledInputWriteComment = styled(TextField)({
   background: "#F9F9F9",
   borderRadius: "20px",
@@ -68,9 +69,10 @@ function InputSearchField({ setBufferMessage }: any) {
   const [enableInputBox, setEnableInputBox] = useState(false);
   const chatroomContext = useContext(ChatroomContext);
   const inputFieldContext = useContext(InputFieldContext);
+  const generalContext = useContext(GeneralContext);
   const { messageText, setMessageText } = inputFieldContext;
   const inputBoxRef = useRef<any>(null);
-  const { id = "" } = useParams();
+  const { id = "", mode } = useParams();
   useEffect(() => {
     if (enableInputBox) {
       setTimeout(() => {
@@ -145,11 +147,13 @@ function InputSearchField({ setBufferMessage }: any) {
         <IconButton
           onClick={() => {
             sendMessage(
+              generalContext.currentChatroom.chat_request_state,
               chatroomContext,
               parseInt(id),
               inputFieldContext,
               setBufferMessage,
-              setEnableInputBox
+              setEnableInputBox,
+              mode
             );
           }}
           className="absolute right-[8.6%] top-[9.5%] "
@@ -185,11 +189,13 @@ function InputSearchField({ setBufferMessage }: any) {
             } else if (keyObj.enter == true && keyObj.shift == false) {
               e.preventDefault();
               sendMessage(
+                generalContext.currentChatroom.chat_request_state,
                 chatroomContext,
                 parseInt(id),
                 inputFieldContext,
                 setBufferMessage,
-                setEnableInputBox
+                setEnableInputBox,
+                mode
               );
             }
           }}

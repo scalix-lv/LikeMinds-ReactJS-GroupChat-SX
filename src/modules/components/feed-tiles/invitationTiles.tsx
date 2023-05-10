@@ -6,22 +6,16 @@ import { Box, IconButton, Typography } from "@mui/material";
 import cancelIcon from "../../../assets/svg/cancel.svg";
 import acceptIcon from "../../../assets/svg/accept.svg";
 
-export default function GroupInviteTile({ title, response, id }: any) {
-  const generalContext = useContext(GeneralContext);
+export default function GroupInviteTile({
+  title,
+  response,
+  id,
+  refreshHomeFeed,
+}: any) {
   return (
-    // <Link
-    //   to={groupMainPath + "/" + id}
-    //   onClick={() => {
-    //     generalContext.setShowLoadingBar(true);
-    //   }}
-
-    // >
     <div
       key={id}
       className="bg-white flex justify-between py-2.5 px-5 border-t border-[#EEEEEE] cursor-pointer"
-      //   style={{
-      //     background: id == status ? "rgb(236, 243, 255)" : "white",
-      //   }}
     >
       <Box>
         <Typography
@@ -47,7 +41,9 @@ export default function GroupInviteTile({ title, response, id }: any) {
         <IconButton
           disableRipple={true}
           onClick={() => {
-            response(id, 2);
+            response(id, 2).then((res: any) => {
+              refreshHomeFeed();
+            });
           }}
           className="cursor-pointer"
         >

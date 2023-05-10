@@ -98,8 +98,7 @@ export async function fetchActiveGroupFeeds({
   try {
     const currentChatroomLength = currentFeedList.length;
     const pageNo = Math.floor(currentChatroomLength / 10) + 1;
-    const call = await myClient.getHomeFeedData({
-      communityId: parseInt(sessionStorage.getItem("communityId")!),
+    const call = await myClient.getHomeFeed({
       page: pageNo,
     });
     const chatrooms = call.my_chatrooms;
@@ -130,10 +129,9 @@ export async function fetchAllGroupFeeds({
   try {
     const currentChatroomLength = currentFeedList.length;
     const pageNo = Math.floor(currentChatroomLength / 10) + 1;
-    const call = await myClient.fetchFeedData({
-      community_id: parseInt(sessionStorage.getItem("communityId")!),
+    const call = await myClient.getExploreFeed({
       page: pageNo,
-      order_type: 0,
+      orderType: 0,
     });
     const chatrooms = call.chatrooms;
     if (chatrooms.length < 10) {
@@ -243,8 +241,7 @@ export async function loadGroupFeed(
         let feedLength = homeFeed.length;
         let pgNo =
           Math.floor(feedLength / 10) + 1 + Math.floor(cRooms.length / 10);
-        let call = await myClient.getHomeFeedData({
-          communityId: communityId,
+        let call = await myClient.getHomeFeed({
           page: pgNo,
         });
         cRooms = cRooms.concat(call.my_chatrooms);
@@ -261,10 +258,9 @@ export async function loadGroupFeed(
     if (loadMoreAll || loadUnjoinedBool) {
       let feedLength = allFeed.length;
       let pgNo = Math.floor(feedLength / 10) + 1;
-      let call = await myClient.fetchFeedData({
-        community_id: parseInt(communityId),
+      let call = await myClient.getExploreFeed({
         page: pgNo,
-        order_type: 0,
+        orderType: 0,
       });
       if (call.chatrooms.length < 10) {
         setLoadMoreAll(false);
