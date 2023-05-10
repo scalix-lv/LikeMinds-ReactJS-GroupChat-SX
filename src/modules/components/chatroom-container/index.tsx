@@ -138,23 +138,27 @@ const ChatContainer: React.FC = () => {
       userContext.currentUser?.id ==
       generalContext.currentChatroom.chat_requested_by[0]?.id
     ) {
-      <LetThemAcceptInvite
-        title={
-          userContext.currentUser.id ===
-          generalContext.currentChatroom.member.id
-            ? generalContext.currentChatroom.chatroom_with_user.name
-            : generalContext.currentChatroom.member.name
-        }
-      />;
+      return (
+        <LetThemAcceptInvite
+          title={
+            userContext.currentUser.id ===
+            generalContext.currentChatroom.member.id
+              ? generalContext.currentChatroom.chatroom_with_user.name
+              : generalContext.currentChatroom.member.name
+          }
+        />
+      );
     } else {
-      <AcceptTheirInviteFirst
-        title={
-          userContext.currentUser.id ===
-          generalContext.currentChatroom.member.id
-            ? generalContext.currentChatroom.chatroom_with_user.name
-            : generalContext.currentChatroom.member.name
-        }
-      />;
+      return (
+        <AcceptTheirInviteFirst
+          title={
+            userContext.currentUser.id ===
+            generalContext.currentChatroom.member.id
+              ? generalContext.currentChatroom.chatroom_with_user.name
+              : generalContext.currentChatroom.member.name
+          }
+        />
+      );
     }
   }
   return (

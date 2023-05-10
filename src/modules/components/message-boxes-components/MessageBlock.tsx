@@ -12,7 +12,7 @@ type msgBlockType = {
 function MessageBlock({ conversationObject, userId, index }: msgBlockType) {
   const userContext = useContext(UserContext);
   const [convoDetails, setConvoDetails] = useState(conversationObject);
-  const currentUser = userContext.currentUser.id;
+  const currentUser = userContext.currentUser?.id;
 
   return (
     <Box

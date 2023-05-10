@@ -42,7 +42,7 @@ export const getChatRoomDetails = async (
 
 export const getConversationsForGroup = async (optionObject) => {
   try {
-    const conversationCall = await myClient.getConversations(optionObject)
+    const conversationCall = await myClient.getConversation(optionObject)
     return jsonReturnHandler(conversationCall.conversations, null)
   } catch (error) {
     return jsonReturnHandler(null, error)
@@ -100,7 +100,7 @@ export async function createNewConversation(
 
 export async function getReportingOptions() {
   try {
-    const rep = await myClient.getRepoyrtTags({
+    const rep = await myClient.getReportTags({
       type: 0
     })
     return jsonReturnHandler(rep, null)
@@ -242,7 +242,7 @@ export async function joinNewGroup(collabId, userID, value) {
 
 export async function leaveChatRoom(collabId, userId) {
   try {
-    const leaveCall = await myClient.leaveChatroom({
+    const leaveCall = await myClient.followChatroom({
       collabcard_id: collabId,
       member_id: userId,
       value: false
@@ -260,7 +260,9 @@ export async function leaveSecretChatroom(collabId, userId) {
   try {
     const leaveCall = await myClient.leaveSecretChatroom({
       chatroom_id: collabId,
-      member_id: userId
+      // member_id: userId
+      is_secret: true
+
     })
     if (!leaveCall.success) {
       throw false
@@ -391,8 +393,7 @@ export async function canDmHomeFeed(communityId) {
 
 export async function dmChatFeed(communityId, pageNo) {
   try {
-    const dmFeedCall = await myClient.DmChatroom({
-      community_id: communityId,
+    const dmFeedCall = await myClient.fetchDMFeed({
       page: pageNo
     })
     return jsonReturnHandler(dmFeedCall, null)
@@ -416,11 +417,10 @@ export async function allChatroomMembersDm(communityId, page) {
 
 export async function requestDM(memberId, communityId) {
   try {
-    const call = await myClient.reqDmFeed({
-      community_id: communityId,
-      member_id: memberId
+    log(memberId)
+    const call = await myClient.checkDMLimit({
+      memberId: memberId
     })
-
     return jsonReturnHandler(call, null)
   } catch (error) {
     return jsonReturnHandler(null, error)
@@ -441,9 +441,21 @@ export async function canDirectMessage(chatroomId) {
 
 export async function createDM(memberId) {
   try {
-    const call = await myClient.onCreateDM({
-      community_id: sessionStorage.getItem('communityId'),
+    const call = await myClient.createDMChatroom({
       member_id: memberId
+    })
+    return jsonReturnHandler(call, null)
+  } catch (error) {
+    return jsonReturnHandler(null, error)
+  }
+}
+
+export async function sendDmRequest(chatroomId, messageText) {
+  try {
+    let call = await myClient.sendDMRequest({
+      chat_request_state: 0,
+      chatroom_id: chatroomId,
+      text: messageText
     })
     return jsonReturnHandler(call, null)
   } catch (error) {
@@ -487,10 +499,11 @@ export async function undoBlock(chatroomId) {
 
 export async function deleteChatFromDM(idArr) {
   try {
-    const call = await myClient.deleteMsg({
+    const call = await myClient.deleteConversation({
       conversation_ids: idArr,
       reason: 'none'
     })
+    return true
   } catch (error) {
     // // console.log(error);
     return error
