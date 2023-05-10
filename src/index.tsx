@@ -11,8 +11,8 @@ const root = ReactDOM.createRoot(
 );
 export const myClient = new LikeMinds({
   apiKey: process.env.REACT_APP_API_KEY!,
-  xPlatformCode: "rt",
-  xVersionCode: "26",
+  xPlatformCode: process.env.REACT_APP_XPLATFORM_CODE,
+  xVersionCode: process.env.REACT_APP_XVERSION_CODE,
 });
 log(myClient);
 
