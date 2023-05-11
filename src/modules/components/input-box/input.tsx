@@ -1,5 +1,10 @@
 import { myClient } from "../../..";
-import { log, mergeInputFiles } from "../../../sdkFunctions";
+import {
+  getChatRoomDetails,
+  log,
+  mergeInputFiles,
+  sendDmRequest,
+} from "../../../sdkFunctions";
 import { chatroomContextType } from "../../contexts/chatroomContext";
 import { InputFieldContextType } from "../../contexts/inputFieldContext";
 type ConversationCreateData = {
@@ -22,13 +27,24 @@ type UploadConfigType = {
   url: string;
 };
 const sendMessage = async (
+  chat_request_state: any,
   chatroomContext: chatroomContextType,
   chatroom_id: number,
   inputFieldContext: InputFieldContextType,
   setBufferMessage: any,
-  setEnableInputBox: any
+  setEnableInputBox: any,
+  mode: any
 ) => {
   try {
+    if (chat_request_state === null && mode === "direct-messages") {
+      await sendDmRequest(chatroom_id, inputFieldContext.messageText);
+      document.dispatchEvent(
+        new CustomEvent("joinEvent", {
+          detail: chatroom_id,
+        })
+      );
+      return;
+    }
     setEnableInputBox(true);
     const {
       conversationList,
@@ -64,7 +80,7 @@ const sendMessage = async (
     if (messageText.trim() === "" && filesArray.length === 0) {
       return;
     }
-    let config: ConversationCreateData = {
+    let config: any = {
       text: message,
       created_at: Date.now(),
       chatroom_id: chatroom_id,
@@ -80,7 +96,7 @@ const sendMessage = async (
       setIsSelectedConversation(false);
     }
 
-    let createConversationCall = await myClient.onConversationsCreate(config);
+    let createConversationCall = await myClient.postConversation(config);
     document.dispatchEvent(
       new CustomEvent("sentMessage", {
         detail: chatroom_id,
@@ -115,7 +131,7 @@ const sendMessage = async (
           fileType = "image";
         }
         index++;
-
+        log(newFile);
         await myClient.uploadMedia(uploadConfig).then((fileResponse: any) => {
           let onUploadConfig = {
             conversation_id: parseInt(createConversationCall.id),
@@ -128,7 +144,7 @@ const sendMessage = async (
             type: fileType,
             url: fileResponse.Location,
           };
-          myClient.onUploadFile(onUploadConfig);
+          myClient.putMultimedia(onUploadConfig);
         });
       }
     }
