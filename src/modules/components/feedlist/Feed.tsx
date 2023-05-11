@@ -162,6 +162,7 @@ function GroupFeedContainer({
     setAllFeed,
   } = feedContext;
   const navigate = useNavigate();
+
   async function refreshHomeFeed() {
     try {
       let groupHomeFeedCall: any = await myClient.getHomeFeed({
@@ -236,6 +237,10 @@ function GroupFeedContainer({
       }
     });
   }, [id]);
+  useEffect(() => {
+    feedContext.setDmAllFeed!([]);
+    feedContext.setDmHomeFeed!([]);
+  }, [mode]);
   useEffect(() => {
     document.addEventListener("sentMessage", localRefreshHomeFeed);
     return () => {
@@ -399,6 +404,10 @@ function DirectMessagesFeedContainer({
       }
     });
   }, [id]);
+  useEffect(() => {
+    feedContext.setAllFeed!([]);
+    feedContext.setHomeFeed!([]);
+  }, [mode]);
   return (
     <>
       <div
