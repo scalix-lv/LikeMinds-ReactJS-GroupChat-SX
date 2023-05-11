@@ -25,16 +25,18 @@ export async function reqDM(
   setSnackBarMessage: any
 ) {
   try {
+    // log(profile);
     let call: any = await requestDM(profile.id, userContext.community.id);
     // // console.log(call);
     // let i = 1;
 
     if (call.data === undefined) {
       alert(call.data.error_message);
-
       return;
-    } else if (!call.data.is_request_dm_limit_exceeded) {
-      if (call.data.chatroom_id != null) {
+    } else {
+      let callData = call.data;
+
+      if (!!callData.chatroomId) {
         let profileData: any = await getChatRoomDetails(
           myClient,
           call.data.chatroom_id
@@ -55,23 +57,26 @@ export async function reqDM(
         dmContext.setCurrentChatroom(profileData.data.chatroom);
         return profileData.data.chatroom.id;
       } else {
-        let createDmCall: any = await createDM(profile.id);
-        // // console.log(createDmCall);
-        let chatroomDetailsCall: any = await getChatRoomDetails(
-          myClient,
-          createDmCall.data.chatroom.id
-        );
-        // // console.log(chatroomDetailsCall);
-        dmContext.setCurrentProfile(chatroomDetailsCall.data);
-        dmContext.setCurrentChatroom(chatroomDetailsCall.data.chatroom);
-        return chatroomDetailsCall.data.chatroom.id;
+        let dmRequestLimit = callData.is_request_dm_limit_exceeded;
+        if (!dmRequestLimit) {
+          let createDmCall: any = await createDM(profile.id);
+          // // console.log(createDmCall);
+          let chatroomDetailsCall: any = await getChatRoomDetails(
+            myClient,
+            createDmCall.data.chatroom.id
+          );
+          // // console.log(chatroomDetailsCall);
+          dmContext.setCurrentProfile(chatroomDetailsCall.data);
+          dmContext.setCurrentChatroom(chatroomDetailsCall.data.chatroom);
+          return chatroomDetailsCall.data.chatroom.id;
+        } else {
+          alert(`now message at , ${call.data.new_request_dm_timestamp}`);
+        }
       }
-      // navigate(directMessageChatPath);
-    } else {
-      alert(`now message at , ${call.data.new_request_dm_timestamp}`);
     }
+    // navigate(directMessageChatPath);
   } catch (error) {
-    console.log(error);
+    log(error);
     throw error;
   }
 }
