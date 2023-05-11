@@ -403,7 +403,7 @@ function DirectMessagesFeedContainer({
     <>
       <div
         id="home-feed-container"
-        className="min-h-[350px] max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
+        className="max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
       >
         {dmHomeFeed.length > 0 ? (
           <InfiniteScroll
