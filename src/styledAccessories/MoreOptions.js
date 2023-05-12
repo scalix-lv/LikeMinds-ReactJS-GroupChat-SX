@@ -22,12 +22,16 @@ import ChatroomContext from "../modules/contexts/chatroomContext";
 import { GeneralContext } from "../modules/contexts/generalContext";
 import { leaveChatroomContextRefresh } from "../modules/hooks/fetchfeed";
 import { FeedContext } from "../modules/contexts/feedContext";
+import MemberDialogBox from "../modules/components/members-dialog-box";
 
 export function MoreOptions() {
   const [open, setOpen] = useState(false);
   const userContext = useContext(UserContext);
   const [anchor, setAnchor] = useState(null);
+  const [openInviteDialogBox, setOpenInviteDialogBox] = useState(false)
   const generalContext = useContext(GeneralContext);
+  const { id = "" } = useParams()
+  log(userContext)
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
@@ -83,6 +87,21 @@ export function MoreOptions() {
         horizontal: "left",
       }}
     >
+      {
+        generalContext.currentChatroom.is_secret ? (
+          <MenuItem
+            key={"secretChatroomDialog"}
+            onClick={() => {
+              setOpenInviteDialogBox(true)
+            }}
+            sx={{
+              fontSize: "14px",
+              color: "#323232",
+            }}>
+            Invite Participants
+          </MenuItem>
+        ) : null
+      }
       {generalContext.currentProfile?.chatroom_actions?.map((item) => {
         if (item.id === 2) {
           return null;
@@ -126,6 +145,10 @@ export function MoreOptions() {
         <MoreVertIcon />
       </IconButton>
       {MenuBox}
+      <MemberDialogBox open={openInviteDialogBox} onClose={() => {
+        setOpenInviteDialogBox(false)
+      }}
+        id={id} />
     </span>
   );
 }
