@@ -53,6 +53,12 @@ export function useFetchFeed(
               setFeedList: feedContext.setDmHomeFeed,
               currentFeedList: feedContext.dmHomeFeed,
               setShouldLoadMore: setShouldLoadDmMoreHome,
+            }).then((res: any) => {
+              document.dispatchEvent(
+                new CustomEvent("feedLoaded", {
+                  detail: true,
+                })
+              );
             });
             fetchAllDMFeeds({
               setShouldLoadMore: setShouldLoadDmMoreAll,

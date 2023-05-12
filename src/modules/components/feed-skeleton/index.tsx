@@ -1,6 +1,20 @@
 import { Skeleton } from "@mui/material";
+import { useEffect, useState } from "react";
 
 export default function SkeletonFeed() {
+  const [removeFeed, setRemoveFeed] = useState(false);
+  function changeSkeleton() {
+    setRemoveFeed(true);
+  }
+  useEffect(() => {
+    document.addEventListener("feedLoaded", changeSkeleton);
+    return () => {
+      document.removeEventListener("feedLoaded", changeSkeleton);
+    };
+  });
+  if (removeFeed) {
+    return null;
+  }
   return (
     <>
       {Array(30)

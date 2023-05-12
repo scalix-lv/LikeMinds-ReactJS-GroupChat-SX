@@ -162,6 +162,7 @@ function GroupFeedContainer({
     setAllFeed,
   } = feedContext;
   const navigate = useNavigate();
+
   async function refreshHomeFeed() {
     try {
       let groupHomeFeedCall: any = await myClient.getHomeFeed({
@@ -236,6 +237,10 @@ function GroupFeedContainer({
       }
     });
   }, [id]);
+  useEffect(() => {
+    feedContext.setDmAllFeed!([]);
+    feedContext.setDmHomeFeed!([]);
+  }, [mode]);
   useEffect(() => {
     document.addEventListener("sentMessage", localRefreshHomeFeed);
     return () => {
@@ -399,11 +404,15 @@ function DirectMessagesFeedContainer({
       }
     });
   }, [id]);
+  useEffect(() => {
+    feedContext.setAllFeed!([]);
+    feedContext.setHomeFeed!([]);
+  }, [mode]);
   return (
     <>
       <div
         id="home-feed-container"
-        className="min-h-[350px] max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
+        className="max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
       >
         {dmHomeFeed.length > 0 ? (
           <InfiniteScroll
