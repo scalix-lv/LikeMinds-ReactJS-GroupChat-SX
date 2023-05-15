@@ -258,143 +258,7 @@ function StringBox({
               setMediaData={setMediaData}
               setMediaDisplayModel={setDisplayMediaModel}
             />
-
-            {/* {(() => {
-              if (attachments !== null && attachments.length < 2) {
-                return attachments
-                  .filter((item: any) => {
-                    return item.type === "image";
-                  })
-                  .map((item: any, index: any, dataObj: any) => {
-                    return (
-                      <img
-                        src={item.url}
-                        alt=""
-                        className="m-1 w-full max-h-[230px]"
-                        key={item.url}
-                        onClick={() => {
-                          setMediaData({ mediaObj: dataObj, type: "image" });
-                          setDisplayMediaModel(true);
-                        }}
-                      />
-                    );
-                  });
-              }
-              return null;
-            })()}
-
-            {attachments != null && attachments.length > 1
-              ? attachments
-                  .filter((item: any) => {
-                    return item.type === "image";
-                    // Why was the limit for only two photos made here
-                    // && itemIndex < 2;
-                  })
-                  .map((item: any, itemIndex: any, dataObj: any) => {
-                    return (
-                      <>
-                        {itemIndex <= 3 ? (
-                          <div
-                            className="m-1 w-[146px] h-[146px] float-left rounded-md overflow-hidden relative"
-                            key={item.url}
-                          >
-                            <img
-                              src={item.url}
-                              alt=""
-                              className="w-full h-full"
-                              onClick={() => {
-                                setMediaData({
-                                  mediaObj: dataObj,
-                                  type: "image",
-                                });
-                                setDisplayMediaModel(true);
-                              }}
-                            />
-
-                            {itemIndex === 3 && dataObj.length > 4 ? (
-                              <div className="absolute text-white text-4 font-700 top-0 left-0 w-[146px] h-[146px] customBg flex justify-center items-center">
-                                + {dataObj.length - (itemIndex + 1)}
-                              </div>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </>
-                    );
-                  })
-              : null}
-
-            {attachments != null
-              ? attachments
-                  .filter((item: any) => {
-                    return item.type === "audio";
-                  })
-                  .map((item: any) => {
-                    return (
-                      <audio
-                        controls
-                        src={item.url}
-                        className="my-2 w-[230]"
-                        key={item.url}
-                      >
-                        {" "}
-                        <a href={item.url}>Download audio</a>
-                      </audio>
-                    );
-                  })
-              : null}
-            {attachments !== null
-              ? attachments
-                  .filter((item: any) => {
-                    return item.type === "pdf";
-                  })
-                  .map((item: any) => {
-                    return (
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mb-2 w-[200px] flex"
-                        key={item.url}
-                      >
-                        <img src={pdfIcon} alt="pdf" className="w-[24px]" />
-                        <span className="text-[#323232] text-[14px] ml-2 mt-1">
-                          {item.name}
-                        </span>
-                        <br />
-                      </a>
-                    );
-                  })
-              : null}
-
-            {attachments != null
-              ? attachments
-                  .filter((item: any) => {
-                    return item.type === "video";
-                  })
-                  .map((item: any, dataObj: any) => {
-                    return (
-                      <video
-                        controls={true}
-                        preload="none"
-                        className="my-2 w-[200] h-max-[200px] "
-                        key={item.url}
-                        onClick={() => {
-                          setMediaData({
-                            mediaObj: dataObj,
-                            type: "video",
-                          });
-                          setDisplayMediaModel(true);
-                        }}
-                      >
-                        <source src={item.url} type="video/mp4" />
-                        <source src={item.url} type="video/ogg" />
-                        Your browser does not support the video tag.
-                      </video>
-                    );
-                  })
-              : null} */}
           </div>
-
           {replyConversationObject != null ? (
             <div className="flex flex-col border-[1px] border-l-[5px] border-[#70A9FF] py-1 px-2 rounded-[5px] mb-1">
               <div className="text-[#70A9FF] font-bold text-[12px]">
@@ -527,7 +391,6 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
     {
       title: "Reply",
       clickFunction: () => {
-        log("clicking reply");
         chatroomContext.setIsSelectedConversation(true);
         chatroomContext.setSelectedConversation(convoObject);
       },
@@ -552,6 +415,10 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
             // chatroomContext.setSnackBarMessage("Error in Deleing Message");
           });
       },
+    },
+    {
+      title: "Reply Privately",
+      clickFunction: () => {},
     },
   ];
 
@@ -588,6 +455,14 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
           if (
             option.title === "delete" &&
             convoObject.member?.id !== userContext.currentUser.id
+          ) {
+            return null;
+          }
+          if (
+            option.title === "Reply Privately" &&
+            generalContext.currentChatroom.type !== 7 &&
+            generalContext.currentChatroom.type !== 0 &&
+            convoObject.member?.id === userContext.currentUser?.id
           ) {
             return null;
           }

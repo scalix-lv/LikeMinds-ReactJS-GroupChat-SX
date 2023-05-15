@@ -14,7 +14,6 @@ export const myClient = new LikeMinds({
   xPlatformCode: process.env.REACT_APP_XPLATFORM_CODE,
   xVersionCode: process.env.REACT_APP_XVERSION_CODE,
 });
-log(myClient);
 
 root.render(
   <BrowserRouter>

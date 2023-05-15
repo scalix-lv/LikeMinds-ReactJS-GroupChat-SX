@@ -1,6 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getConversationsForGroup, log, markRead } from "../../../sdkFunctions";
+import {
+  checkDMStatus,
+  getConversationsForGroup,
+  log,
+  markRead,
+} from "../../../sdkFunctions";
 import ChatroomContext from "../../contexts/chatroomContext";
 import Input from "../input-box";
 import { DateSpecifier } from "../message-boxes-components";
@@ -110,6 +115,7 @@ const ChatContainer: React.FC = () => {
       try {
         await getChatroomConversations(id, 100);
         await markRead(id);
+        await checkDMStatus(id);
       } catch (error) {
         log(error);
       }
@@ -175,9 +181,7 @@ const ChatContainer: React.FC = () => {
           }
           let node = scrollTop.current!;
           let current = node.scrollTop;
-          let currentHeight = scrollTop?.current?.scrollHeight;
-          currentHeight = currentHeight;
-          if (current < 200 && current % 150 == 0) {
+          if (current < 200 && current % 150 === 0) {
             paginateChatroomConversations(id, 50)
               .then((res) => setPageNo((p) => p + 1))
               .then(() => {
@@ -223,7 +227,12 @@ const ChatContainer: React.FC = () => {
           />
         ) : null}
       </div>
-      <Input setBufferMessage={setBufferMessage} />
+      <Input
+        disableInputBox={
+          generalContext.currentChatroom.chat_request_state === 2
+        }
+        setBufferMessage={setBufferMessage}
+      />
     </>
   );
 };
