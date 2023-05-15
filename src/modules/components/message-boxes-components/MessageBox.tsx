@@ -7,7 +7,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { myClient } from "../../..";
 import { UserContext } from "../../contexts/userContext";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
@@ -27,7 +27,7 @@ import {
   tagExtracter,
   undoBlock,
 } from "../../../sdkFunctions";
-import { directMessageInfoPath } from "../../../routes";
+import { directMessageChatPath, directMessageInfoPath } from "../../../routes";
 import ChatroomContext from "../../contexts/chatroomContext";
 import { GeneralContext } from "../../contexts/generalContext";
 import ImageAndMedia from "./ImageAndMedia";
@@ -323,6 +323,7 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
   const generalContext = useContext(GeneralContext);
   const [anchor, setAnchor] = useState(null);
   const [shouldShow, setShouldShowBlock] = useState(false);
+  const navigate = useNavigate();
   let open = Boolean(anchor);
   const [anchorEl, setAnchorEl] = useState(null);
   const ref2 = useRef(null);
@@ -381,7 +382,6 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
         reported_Member_id: reportedMemberId,
       });
       setShouldShowBlock(!shouldShow);
-      // // console.log(deleteCall);
     } catch (error) {
       // // console.log(error);
     }
@@ -409,16 +409,45 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
             deleteMessageLocally();
           })
           .catch((e) => {
-            // console.log(e);
             generalContext.setShowSnackBar(true);
             generalContext.setSnackBarMessage(" error occoured");
-            // chatroomContext.setSnackBarMessage("Error in Deleing Message");
           });
       },
     },
     {
       title: "Reply Privately",
-      clickFunction: () => {},
+      clickFunction: async () => {
+        try {
+          let checkDMLimitCall: any = await myClient.checkDMLimit({
+            memberId: convoObject?.member?.id,
+          });
+          log(checkDMLimitCall);
+          if (checkDMLimitCall.chatroom_id) {
+            navigate(
+              directMessageChatPath + "/" + checkDMLimitCall.chatroom_id
+            );
+          } else {
+            if (!checkDMLimitCall.is_request_dm_limit_exceeded) {
+              let createChatroomCall: any = await myClient.createDMChatroom({
+                member_id: convoObject?.member?.id,
+              });
+              log(
+                directMessageChatPath + "/" + createChatroomCall?.chatroom?.id
+              );
+              navigate(
+                directMessageChatPath + "/" + createChatroomCall?.chatroom?.id
+              );
+            } else {
+              generalContext.setShowSnackBar(true);
+              generalContext.setSnackBarMessage(
+                `Limit Exceeded, new request timeout : ${checkDMLimitCall.new_request_dm_timestamp}`
+              );
+            }
+          }
+        } catch (error) {
+          log(error);
+        }
+      },
     },
   ];
 
@@ -462,7 +491,8 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
             option.title === "Reply Privately" &&
             generalContext.currentChatroom.type !== 7 &&
             generalContext.currentChatroom.type !== 0 &&
-            convoObject.member?.id === userContext.currentUser?.id
+            convoObject.member?.id === userContext.currentUser?.id &&
+            chatroomContext.showReplyPrivately
           ) {
             return null;
           }

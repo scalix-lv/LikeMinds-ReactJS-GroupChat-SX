@@ -65,7 +65,7 @@ const ChatContainer: React.FC = () => {
   const getChatroomConversations = async (chatroomId: string, pageNo: any) => {
     let optionObject = {
       chatroomID: chatroomId,
-      page: pageNo,
+      paginateBy: pageNo,
     };
     let response: any = await getConversationsForGroup(optionObject);
     if (!response.error) {
@@ -84,7 +84,7 @@ const ChatContainer: React.FC = () => {
   ) => {
     let optionObject = {
       chatroomID: chatroomId,
-      page: pageNo,
+      paginateBy: pageNo,
       conversation_id: sessionStorage.getItem("dmLastConvo"),
       scroll_direction: 0,
     };
@@ -115,7 +115,13 @@ const ChatContainer: React.FC = () => {
       try {
         await getChatroomConversations(id, 100);
         await markRead(id);
-        await checkDMStatus(id);
+        let call: any = await checkDMStatus(id);
+        if (call?.data?.showDM) {
+          chatroomContext.setShowReplyPrivately(true);
+          const cta: String = call?.data?.cta;
+          let showListParams = cta.split("show_list=")[1];
+          chatroomContext.setReplyPrivatelyMode(parseInt(showListParams));
+        }
       } catch (error) {
         log(error);
       }

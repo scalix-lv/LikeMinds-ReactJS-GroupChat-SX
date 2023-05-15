@@ -531,8 +531,8 @@ export async function checkDMStatus(id) {
     let call = await myClient.checkDMStatus({
       requestFrom: "group_channel"
     })
-    log(call)
+    return jsonReturnHandler(call.data, null)
   } catch (error) {
-
+    return jsonReturnHandler(null, error)
   }
 }
