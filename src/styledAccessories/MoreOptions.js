@@ -1,17 +1,14 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IconButton, Menu, MenuItem, Snackbar } from "@mui/material";
 import {
   getChatRoomDetails,
-  getConversationsForGroup,
   leaveChatRoom,
   leaveSecretChatroom,
   log,
 } from "../sdkFunctions";
-
 import { myClient } from "..";
 import { UserContext } from "../modules/contexts/userContext";
-import leaveIcon from "../assets/svg/leave.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   directMessageInfoPath,
@@ -20,8 +17,6 @@ import {
 } from "../routes";
 import ChatroomContext from "../modules/contexts/chatroomContext";
 import { GeneralContext } from "../modules/contexts/generalContext";
-import { leaveChatroomContextRefresh } from "../modules/hooks/fetchfeed";
-import { FeedContext } from "../modules/contexts/feedContext";
 import MemberDialogBox from "../modules/components/members-dialog-box";
 
 export function MoreOptions() {
@@ -30,12 +25,23 @@ export function MoreOptions() {
   const [anchor, setAnchor] = useState(null);
   const [openInviteDialogBox, setOpenInviteDialogBox] = useState(false)
   const generalContext = useContext(GeneralContext);
+  const [shouldShowInviteBox, setShouldShowInviteBox] = useState(false)
   const { id = "" } = useParams()
   log(userContext)
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
   }
+  useEffect(() => {
+    myClient.getProfile({
+      userId: userContext.currentUser.id
+    }).then(res => {
+      log(res)
+      if (res?.member?.state === 1) {
+        setShouldShowInviteBox(true)
+      }
+    })
+  }, [id])
   const { mode } = useParams()
   async function muteNotifications(id) {
     try {
@@ -88,7 +94,7 @@ export function MoreOptions() {
       }}
     >
       {
-        generalContext.currentChatroom.is_secret ? (
+        generalContext.currentChatroom.is_secret && shouldShowInviteBox ? (
           <MenuItem
             key={"secretChatroomDialog"}
             onClick={() => {
