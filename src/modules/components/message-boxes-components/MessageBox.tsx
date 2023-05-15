@@ -491,10 +491,18 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
             option.title === "Reply Privately" &&
             generalContext.currentChatroom.type !== 7 &&
             generalContext.currentChatroom.type !== 0 &&
-            convoObject.member?.id === userContext.currentUser?.id &&
+            convoObject.member?.id == userContext.currentUser?.id &&
             chatroomContext.showReplyPrivately
           ) {
             return null;
+          }
+          if (option.title === "Reply Privately") {
+            if (
+              chatroomContext.replyPrivatelyMode === 2 &&
+              convoObject?.member?.state === 4
+            ) {
+              return null;
+            }
           }
           return (
             <MenuItem
