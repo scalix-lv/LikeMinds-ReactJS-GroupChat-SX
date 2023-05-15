@@ -1,6 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getConversationsForGroup, log, markRead } from "../../../sdkFunctions";
+import {
+  checkDMStatus,
+  getConversationsForGroup,
+  log,
+  markRead,
+} from "../../../sdkFunctions";
 import ChatroomContext from "../../contexts/chatroomContext";
 import Input from "../input-box";
 import { DateSpecifier } from "../message-boxes-components";
@@ -60,7 +65,7 @@ const ChatContainer: React.FC = () => {
   const getChatroomConversations = async (chatroomId: string, pageNo: any) => {
     let optionObject = {
       chatroomID: chatroomId,
-      page: pageNo,
+      paginateBy: pageNo,
     };
     let response: any = await getConversationsForGroup(optionObject);
     if (!response.error) {
@@ -79,7 +84,7 @@ const ChatContainer: React.FC = () => {
   ) => {
     let optionObject = {
       chatroomID: chatroomId,
-      page: pageNo,
+      paginateBy: pageNo,
       conversation_id: sessionStorage.getItem("dmLastConvo"),
       scroll_direction: 0,
     };
@@ -110,6 +115,13 @@ const ChatContainer: React.FC = () => {
       try {
         await getChatroomConversations(id, 100);
         await markRead(id);
+        let call: any = await checkDMStatus(id);
+        if (call?.data?.showDM) {
+          chatroomContext.setShowReplyPrivately(true);
+          const cta: String = call?.data?.cta;
+          let showListParams = cta.split("show_list=")[1];
+          chatroomContext.setReplyPrivatelyMode(parseInt(showListParams));
+        }
       } catch (error) {
         log(error);
       }
@@ -175,9 +187,7 @@ const ChatContainer: React.FC = () => {
           }
           let node = scrollTop.current!;
           let current = node.scrollTop;
-          let currentHeight = scrollTop?.current?.scrollHeight;
-          currentHeight = currentHeight;
-          if (current < 200 && current % 150 == 0) {
+          if (current < 200 && current % 150 === 0) {
             paginateChatroomConversations(id, 50)
               .then((res) => setPageNo((p) => p + 1))
               .then(() => {
@@ -223,7 +233,12 @@ const ChatContainer: React.FC = () => {
           />
         ) : null}
       </div>
-      <Input setBufferMessage={setBufferMessage} />
+      <Input
+        disableInputBox={
+          generalContext.currentChatroom.chat_request_state === 2
+        }
+        setBufferMessage={setBufferMessage}
+      />
     </>
   );
 };

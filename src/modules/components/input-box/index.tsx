@@ -38,7 +38,7 @@ const StyledInputWriteComment = styled(TextField)({
   },
 });
 
-function Input({ updateHeight, setBufferMessage }: any) {
+function Input({ setBufferMessage, disableInputBox }: any) {
   const [messageText, setMessageText] = useState("");
   const [audioAttachments, setAudioAttachments] = useState([]);
   const [mediaAttachments, setMediaAttachments] = useState([]);
@@ -57,14 +57,17 @@ function Input({ updateHeight, setBufferMessage }: any) {
       }}
     >
       <Box className="pt-[20px] pb-[5px] px-[40px] bg-white z:max-md:pl-2 ">
-        <InputSearchField setBufferMessage={setBufferMessage} />
+        <InputSearchField
+          setBufferMessage={setBufferMessage}
+          disableInputBox={disableInputBox}
+        />
         <InputOptions />
       </Box>
     </InputFieldContext.Provider>
   );
 }
 
-function InputSearchField({ setBufferMessage }: any) {
+function InputSearchField({ setBufferMessage, disableInputBox }: any) {
   const [memberDetailsArray, setMemberDetailsArray] = useState<Array<any>>([]);
   const [enableInputBox, setEnableInputBox] = useState(false);
   const chatroomContext = useContext(ChatroomContext);
@@ -169,7 +172,7 @@ function InputSearchField({ setBufferMessage }: any) {
           <img src={SendIcon} alt="send" />
         </IconButton>
         <MentionsInput
-          disabled={enableInputBox}
+          disabled={enableInputBox || disableInputBox}
           className="mentions"
           spellCheck="false"
           placeholder="Write a Comment..."

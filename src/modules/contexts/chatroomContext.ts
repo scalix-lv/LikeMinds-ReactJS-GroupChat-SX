@@ -7,6 +7,10 @@ export type chatroomContextType = {
   setSelectedConversation: any;
   isSelectedConversation: any;
   setIsSelectedConversation: any;
+  showReplyPrivately: any;
+  setShowReplyPrivately: any;
+  replyPrivatelyMode: any;
+  setReplyPrivatelyMode: any;
 };
 
 const ChatroomContext = createContext<chatroomContextType>({
@@ -16,6 +20,10 @@ const ChatroomContext = createContext<chatroomContextType>({
   setSelectedConversation: null,
   isSelectedConversation: false,
   setIsSelectedConversation: null,
+  showReplyPrivately: false,
+  setShowReplyPrivately: null,
+  replyPrivatelyMode: null,
+  setReplyPrivatelyMode: null,
 });
 
 export default ChatroomContext;
