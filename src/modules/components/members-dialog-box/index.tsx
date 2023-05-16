@@ -183,7 +183,10 @@ export default function MemberDialogBox({
           ) : null}
           {members?.map((member: any, index: any) => {
             return (
-              <div className="mx-6 py-1 border-b" key={member?.id}>
+              <div
+                className="mx-6 py-5 border-b border-[#eeeee]"
+                key={member?.id}
+              >
                 <Checkbox
                   onClick={(e: any) => {
                     // e.target.checked = !e.target?.checked!;
@@ -195,7 +198,29 @@ export default function MemberDialogBox({
                     }
                     setCheckedMembers(newCheckedList);
                   }}
+                  style={{
+                    marginLeft: "0px",
+                  }}
                 />
+                {member?.image_url.length > 0 ? (
+                  <img
+                    className="h-9 w-9 border rounded mr-[9px]"
+                    alt=""
+                    src={member?.image_url}
+                    style={{
+                      display: "inline",
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="h-9 w-9  mr-[9px] text-center bg-[#a6a6a6] border border-[#a6a6a6] rounded pt-1"
+                    style={{
+                      display: "inline-block",
+                    }}
+                  >
+                    {member.name.split("")[0]?.toUpperCase()}
+                  </div>
+                )}
                 <span className="font-medium">{member?.name}</span>
               </div>
             );
