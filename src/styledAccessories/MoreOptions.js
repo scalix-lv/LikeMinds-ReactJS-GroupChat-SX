@@ -25,23 +25,23 @@ export function MoreOptions() {
   const [anchor, setAnchor] = useState(null);
   const [openInviteDialogBox, setOpenInviteDialogBox] = useState(false)
   const generalContext = useContext(GeneralContext);
-  const [shouldShowInviteBox, setShouldShowInviteBox] = useState(false)
+  // const [shouldShowInviteBox, setShouldShowInviteBox] = useState(false)
   const { id = "" } = useParams()
   log(userContext)
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
   }
-  useEffect(() => {
-    myClient.getProfile({
-      userId: userContext.currentUser.id
-    }).then(res => {
-      log(res)
-      if (res?.member?.state === 1) {
-        setShouldShowInviteBox(true)
-      }
-    })
-  }, [id])
+  // useEffect(() => {
+  //   myClient.getProfile({
+  //     userId: userContext?.currentUser?.id
+  //   }).then(res => {
+  //     log(res)
+  //     if (res?.member?.state === 1) {
+  //       setShouldShowInviteBox(true)
+  //     }
+  //   })
+  // }, [id])
   const { mode } = useParams()
   async function muteNotifications(id) {
     try {
@@ -94,7 +94,7 @@ export function MoreOptions() {
       }}
     >
       {
-        generalContext.currentChatroom.is_secret && shouldShowInviteBox ? (
+        generalContext.currentChatroom.is_secret && userContext.currentUser?.state === 1 ? (
           <MenuItem
             key={"secretChatroomDialog"}
             onClick={() => {

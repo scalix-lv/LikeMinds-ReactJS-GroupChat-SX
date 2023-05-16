@@ -7,7 +7,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { myClient } from "../../..";
 import { UserContext } from "../../contexts/userContext";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
@@ -27,7 +27,11 @@ import {
   tagExtracter,
   undoBlock,
 } from "../../../sdkFunctions";
-import { directMessageChatPath, directMessageInfoPath } from "../../../routes";
+import {
+  directMessageChatPath,
+  directMessageInfoPath,
+  directMessagePath,
+} from "../../../routes";
 import ChatroomContext from "../../contexts/chatroomContext";
 import { GeneralContext } from "../../contexts/generalContext";
 import ImageAndMedia from "./ImageAndMedia";
@@ -324,6 +328,7 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
   const [anchor, setAnchor] = useState(null);
   const [shouldShow, setShouldShowBlock] = useState(false);
   const navigate = useNavigate();
+  const { mode = "" } = useParams();
   let open = Boolean(anchor);
   const [anchorEl, setAnchorEl] = useState(null);
   const ref2 = useRef(null);
@@ -421,21 +426,35 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
           let checkDMLimitCall: any = await myClient.checkDMLimit({
             memberId: convoObject?.member?.id,
           });
-          log(checkDMLimitCall);
+          let isReplyParam;
+          if (
+            userContext.currentUser?.memberState === 1 ||
+            convoObject.member.state === 1
+          ) {
+            isReplyParam = 1;
+          } else {
+            isReplyParam = 2;
+          }
+
           if (checkDMLimitCall.chatroom_id) {
             navigate(
-              directMessageChatPath + "/" + checkDMLimitCall.chatroom_id
+              directMessageChatPath +
+                "/" +
+                checkDMLimitCall.chatroom_id +
+                "/" +
+                isReplyParam
             );
           } else {
             if (!checkDMLimitCall.is_request_dm_limit_exceeded) {
               let createChatroomCall: any = await myClient.createDMChatroom({
                 member_id: convoObject?.member?.id,
               });
-              log(
-                directMessageChatPath + "/" + createChatroomCall?.chatroom?.id
-              );
               navigate(
-                directMessageChatPath + "/" + createChatroomCall?.chatroom?.id
+                directMessageChatPath +
+                  "/" +
+                  createChatroomCall?.chatroom?.id +
+                  "/" +
+                  isReplyParam
               );
             } else {
               generalContext.setShowSnackBar(true);
@@ -488,15 +507,18 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
             return null;
           }
           if (
-            option.title === "Reply Privately" &&
-            generalContext.currentChatroom.type !== 7 &&
-            generalContext.currentChatroom.type !== 0 &&
-            convoObject.member?.id == userContext.currentUser?.id &&
-            chatroomContext.showReplyPrivately
+            (option.title === "Reply Privately" &&
+              generalContext.currentChatroom.type !== 7 &&
+              generalContext.currentChatroom.type !== 0 &&
+              chatroomContext.showReplyPrivately) ||
+            (option.title === "Reply Privately" && mode === "direct-messages")
           ) {
             return null;
           }
           if (option.title === "Reply Privately") {
+            if (convoObject.member?.id === userContext.currentUser?.id) {
+              return null;
+            }
             if (
               chatroomContext.replyPrivatelyMode === 2 &&
               convoObject?.member?.state === 4
