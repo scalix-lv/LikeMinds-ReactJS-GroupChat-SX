@@ -28,15 +28,6 @@ import { myClient } from "../../..";
 import InputFieldContext from "../../contexts/inputFieldContext";
 import { INPUT_BOX_DEBOUNCE_TIME } from "../../constants/constants";
 import { GeneralContext } from "../../contexts/generalContext";
-const StyledInputWriteComment = styled(TextField)({
-  background: "#F9F9F9",
-  borderRadius: "20px",
-  ".MuiInputBase-input.MuiFilledInput-input": {
-    padding: "16px",
-    borderBottom: "none",
-    borderRadius: "20px",
-  },
-});
 
 function Input({ setBufferMessage, disableInputBox }: any) {
   const [messageText, setMessageText] = useState("");
