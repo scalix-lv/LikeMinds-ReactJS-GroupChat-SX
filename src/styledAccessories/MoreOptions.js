@@ -94,11 +94,12 @@ export function MoreOptions() {
       }}
     >
       {
-        generalContext.currentChatroom.is_secret && userContext.currentUser?.state === 1 ? (
+        generalContext.currentChatroom.is_secret && userContext.currentUser?.memberState === 1 ? (
           <MenuItem
             key={"secretChatroomDialog"}
             onClick={() => {
               setOpenInviteDialogBox(true)
+              closeMenu()
             }}
             sx={{
               fontSize: "14px",
