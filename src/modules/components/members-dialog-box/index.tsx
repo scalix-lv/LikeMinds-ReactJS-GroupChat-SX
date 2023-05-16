@@ -199,7 +199,8 @@ export default function MemberDialogBox({
                     setCheckedMembers(newCheckedList);
                   }}
                   style={{
-                    marginLeft: "0px",
+                    padding: "0px",
+                    paddingRight: "9px",
                   }}
                 />
                 {member?.image_url.length > 0 ? (
