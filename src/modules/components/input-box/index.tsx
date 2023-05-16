@@ -76,6 +76,7 @@ function InputSearchField({ setBufferMessage, disableInputBox }: any) {
   const { messageText, setMessageText } = inputFieldContext;
   const inputBoxRef = useRef<any>(null);
   const { id = "", mode } = useParams();
+  const [chatRequestVariable, setChatRequestVariable] = useState<any>(null);
   useEffect(() => {
     if (enableInputBox) {
       setTimeout(() => {
@@ -114,6 +115,17 @@ function InputSearchField({ setBufferMessage, disableInputBox }: any) {
     getAllMembers();
   }, [id]);
   useEffect(() => {
+    let currentChatroom = generalContext.currentChatroom;
+    if (
+      currentChatroom.member?.state === 1 ||
+      currentChatroom.chatroom_with_user?.state === 1
+    ) {
+      setChatRequestVariable(1);
+    } else {
+      setChatRequestVariable(0);
+    }
+  }, [generalContext.currentChatroom]);
+  useEffect(() => {
     if (!!inputBoxRef.current) {
       inputBoxRef?.current?.focus();
     }
@@ -151,6 +163,7 @@ function InputSearchField({ setBufferMessage, disableInputBox }: any) {
           onClick={() => {
             sendMessage(
               generalContext.currentChatroom.chat_request_state,
+              chatRequestVariable,
               chatroomContext,
               parseInt(id),
               inputFieldContext,
@@ -193,6 +206,7 @@ function InputSearchField({ setBufferMessage, disableInputBox }: any) {
               e.preventDefault();
               sendMessage(
                 generalContext.currentChatroom.chat_request_state,
+                chatRequestVariable,
                 chatroomContext,
                 parseInt(id),
                 inputFieldContext,

@@ -142,6 +142,16 @@ const ChatContainer: React.FC = () => {
     };
   });
 
+  useEffect(() => {
+    function reloadChatroom() {
+      getChatroomConversations(id, 100);
+    }
+    document.addEventListener("addedByStateOne", reloadChatroom);
+    return () => {
+      document.removeEventListener("addedByStateOne", reloadChatroom);
+    };
+  }, [id]);
+
   // firebase listener
   useFirebaseChatConversations(getChatroomConversations, setBufferMessage);
 

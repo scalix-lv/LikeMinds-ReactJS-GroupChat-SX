@@ -9,6 +9,7 @@ import {
 import {
   dmChatFeed,
   getChatRoomDetails,
+  getConversationsForGroup,
   log,
   markRead,
 } from "../../../sdkFunctions";
@@ -83,7 +84,6 @@ const Feeds: React.FC = () => {
       });
       setHomeFeed!(newHomeFeed);
       setAllFeed!(newAllFeed);
-      // navigate(groupMainPath + "/" + id);
     } catch (error) {
       log(error);
     }
