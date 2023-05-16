@@ -137,7 +137,7 @@ function MessageBoxDM({
   return (
     <div>
       <Box className="flex mb-4">
-        <Snackbar
+        {/* <Snackbar
           open={generalContext.showSnackBar}
           message={generalContext.snackBarMessage}
           autoHideDuration={1000}
@@ -145,7 +145,7 @@ function MessageBoxDM({
             generalContext.setShowSnackBar(false);
             generalContext.setSnackBarMessage("");
           }}
-        />
+        /> */}
         <StringBox
           username={username}
           messageString={messageString}
@@ -407,7 +407,7 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
       },
     },
     {
-      title: "delete",
+      title: "Delete",
       clickFunction: () => {
         deleteChatFromDM([convoId])
           .then((r) => {
@@ -501,7 +501,7 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
             return null;
           }
           if (
-            option.title === "delete" &&
+            option.title === "Delete" &&
             convoObject.member?.id !== userContext.currentUser.id
           ) {
             return null;

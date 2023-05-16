@@ -5,12 +5,13 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import search from "../../../assets/search.png";
 import { myClient } from "../../..";
 import { log } from "../../../sdkFunctions";
 import { CheckBox } from "@mui/icons-material";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { GeneralContext } from "../../contexts/generalContext";
 
 type MemberDialogBoxType = {
   open: boolean;
@@ -24,9 +25,10 @@ export default function MemberDialogBox({
 }: MemberDialogBoxType) {
   const [searchKey, setSearchKey] = useState("");
   const [members, setMembers] = useState([]);
-  const [checkedMembers, setCheckedMembers] = useState<any[]>([]);
+  const [checkedMembers, setCheckedMembers] = useState<any>({});
   const [shouldLoadMore, setShouldLoadMore] = useState(true);
   const dialogRef = useRef(null);
+  const generalContext = useContext(GeneralContext);
   const infiniteScrollRef = useRef<any>(null);
   useEffect(() => {
     if (searchKey.length > 0) {
@@ -48,7 +50,7 @@ export default function MemberDialogBox({
     try {
       let call = await myClient.getAllMembers({
         chatroomId: id,
-        page: pg,
+        page: Math.floor(pg),
       });
       if (call.members.length < 10) {
         setShouldLoadMore(false);
@@ -66,18 +68,36 @@ export default function MemberDialogBox({
   }
 
   async function addAllMembers() {
+    const addedParticants = Object.keys(checkedMembers).filter((item: any) => {
+      if (checkedMembers[item]) {
+        return checkedMembers[item];
+      }
+    });
+    if (addedParticants.length === 0) {
+      generalContext.setSnackBarMessage(
+        "Select atleast one participant to send invite"
+      );
+      generalContext.setShowSnackBar(true);
+      return;
+    }
     await myClient.sendInvites({
       chatroom_id: id,
       is_secret: true,
-      chatroom_participants: checkedMembers,
+      chatroom_participants: addedParticants,
     });
+    generalContext.setSnackBarMessage(
+      "Selected participants invited successfully"
+    );
+    generalContext.setShowSnackBar(true);
     onClose();
+    setSearchKey("");
   }
 
   useEffect(() => {
     function addClickListener(e: any) {
       if (e?.target?.contains(dialogRef?.current)) {
         onClose();
+        setSearchKey("");
       }
     }
     document.addEventListener("click", addClickListener);
@@ -89,6 +109,9 @@ export default function MemberDialogBox({
   useEffect(() => {
     setShouldLoadMore(true);
   }, [searchKey]);
+  useEffect(() => {
+    log(members);
+  }, [members]);
 
   return (
     <Dialog
@@ -149,14 +172,27 @@ export default function MemberDialogBox({
           loader={null}
           scrollableTarget="memberlist"
         >
+          {members.length === 0 ? (
+            <div className="mx-6 py-1 border-b text-center mt-5">
+              <span className="font-medium">
+                No member found
+                <br />
+                <br />
+              </span>
+            </div>
+          ) : null}
           {members?.map((member: any, index: any) => {
             return (
-              <div className="mx-6 py-1 border-b" key={member?.id + index}>
+              <div className="mx-6 py-1 border-b" key={member?.id}>
                 <Checkbox
-                  onChange={(e) => {
-                    e.target.checked = !e.target.checked;
-                    let newCheckedList: any = [...checkedMembers];
-                    newCheckedList.push(member?.id);
+                  onClick={(e: any) => {
+                    // e.target.checked = !e.target?.checked!;
+                    let newCheckedList: any = { ...checkedMembers };
+                    if (e.target.checked) {
+                      newCheckedList[member?.id] = true;
+                    } else {
+                      newCheckedList[member?.id] = false;
+                    }
                     setCheckedMembers(newCheckedList);
                   }}
                 />
@@ -175,7 +211,10 @@ export default function MemberDialogBox({
         </button>
         <button
           className="w-[93px] h-[34px] py-[5px] border border-[#3884F7] rounded-[5px] text-[#3884F7] mr-4"
-          onClick={onClose}
+          onClick={() => {
+            setSearchKey("");
+            onClose();
+          }}
         >
           Cancel
         </button>

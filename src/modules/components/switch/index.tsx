@@ -64,6 +64,9 @@ const Switch: React.FC = () => {
               setShowSnackBar(false);
               setSnackBarMessage("");
             }}
+            sx={{
+              boxShadow: "none",
+            }}
           />
         </RouteContext.Provider>
       </GeneralContext.Provider>
