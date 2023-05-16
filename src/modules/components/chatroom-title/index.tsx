@@ -41,13 +41,13 @@ function TitleArea({ title, memberCount, chatroomUrl }: propsTitle) {
         {/* For Group Title */}
 
         <span className="font-semibold text-xl leading-6 cursor-pointer">
-          {chatroomUrl && mode == "groups" ? (
+          {chatroomUrl && mode === "groups" ? (
             <img
               src={chatroomUrl}
               alt=""
               className="h-[40px] w-[40px] rounded inline mr-2"
             />
-          ) : title?.length > 0 && mode == "groups" ? (
+          ) : title?.length > 0 && mode === "groups" ? (
             <span
               style={{
                 textTransform: "capitalize",
