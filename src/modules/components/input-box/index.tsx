@@ -138,7 +138,7 @@ function InputSearchField({ setBufferMessage, disableInputBox }: any) {
       setMemberDetailsArray(list);
     }
 
-    getAllMembers();
+    // getAllMembers();
   }, [id]);
   useEffect(() => {
     let currentChatroom = generalContext.currentChatroom;
