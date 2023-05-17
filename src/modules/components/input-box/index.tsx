@@ -28,17 +28,8 @@ import { myClient } from "../../..";
 import InputFieldContext from "../../contexts/inputFieldContext";
 import { INPUT_BOX_DEBOUNCE_TIME } from "../../constants/constants";
 import { GeneralContext } from "../../contexts/generalContext";
-const StyledInputWriteComment = styled(TextField)({
-  background: "#F9F9F9",
-  borderRadius: "20px",
-  ".MuiInputBase-input.MuiFilledInput-input": {
-    padding: "16px",
-    borderBottom: "none",
-    borderRadius: "20px",
-  },
-});
 
-function Input({ updateHeight, setBufferMessage }: any) {
+function Input({ setBufferMessage, disableInputBox }: any) {
   const [messageText, setMessageText] = useState("");
   const [audioAttachments, setAudioAttachments] = useState([]);
   const [mediaAttachments, setMediaAttachments] = useState([]);
@@ -57,22 +48,61 @@ function Input({ updateHeight, setBufferMessage }: any) {
       }}
     >
       <Box className="pt-[20px] pb-[5px] px-[40px] bg-white z:max-md:pl-2 ">
-        <InputSearchField setBufferMessage={setBufferMessage} />
+        <InputSearchField
+          setBufferMessage={setBufferMessage}
+          disableInputBox={disableInputBox}
+        />
         <InputOptions />
       </Box>
     </InputFieldContext.Provider>
   );
 }
 
-function InputSearchField({ setBufferMessage }: any) {
+function InputSearchField({ setBufferMessage, disableInputBox }: any) {
   const [memberDetailsArray, setMemberDetailsArray] = useState<Array<any>>([]);
   const [enableInputBox, setEnableInputBox] = useState(false);
+  const [searchString, setSearchString] = useState("");
+  const [loadMoreMembers, setLoadMoreMembers] = useState<any>(true);
+  const [debounceBool, setDebounceBool] = useState(true);
   const chatroomContext = useContext(ChatroomContext);
   const inputFieldContext = useContext(InputFieldContext);
   const generalContext = useContext(GeneralContext);
   const { messageText, setMessageText } = inputFieldContext;
   const inputBoxRef = useRef<any>(null);
   const { id = "", mode } = useParams();
+  const [chatRequestVariable, setChatRequestVariable] = useState<any>(null);
+  const [throttleScroll, setThrottleScroll] = useState(true);
+  let timeOut = useRef<any>(null);
+  let suggestionsRef = useRef<any>(null);
+  const cbRef = useRef<any>(null);
+  async function getTaggingMembers(searchString: any, pageNo: any) {
+    try {
+      let call = await myClient.getTaggingList({
+        chatroomId: parseInt(id),
+        page: pageNo,
+        pageSize: 10,
+        searchName: searchString,
+      });
+      // log(call);
+      return call.community_members;
+    } catch (error) {
+      log(error);
+    }
+  }
+  useEffect(() => {
+    if (throttleScroll == false) {
+      setTimeout(() => {
+        setThrottleScroll(true);
+      }, 1000);
+    }
+  });
+  useEffect(() => {
+    return () => {
+      if (timeOut.current != null) {
+        clearTimeout(timeOut.current);
+      }
+    };
+  });
   useEffect(() => {
     if (enableInputBox) {
       setTimeout(() => {
@@ -108,8 +138,19 @@ function InputSearchField({ setBufferMessage }: any) {
       setMemberDetailsArray(list);
     }
 
-    getAllMembers();
+    // getAllMembers();
   }, [id]);
+  useEffect(() => {
+    let currentChatroom = generalContext.currentChatroom;
+    if (
+      currentChatroom.member?.state === 1 ||
+      currentChatroom.chatroom_with_user?.state === 1
+    ) {
+      setChatRequestVariable(1);
+    } else {
+      setChatRequestVariable(0);
+    }
+  }, [generalContext.currentChatroom]);
   useEffect(() => {
     if (!!inputBoxRef.current) {
       inputBoxRef?.current?.focus();
@@ -148,6 +189,7 @@ function InputSearchField({ setBufferMessage }: any) {
           onClick={() => {
             sendMessage(
               generalContext.currentChatroom.chat_request_state,
+              chatRequestVariable,
               chatroomContext,
               parseInt(id),
               inputFieldContext,
@@ -169,11 +211,52 @@ function InputSearchField({ setBufferMessage }: any) {
           <img src={SendIcon} alt="send" />
         </IconButton>
         <MentionsInput
-          disabled={enableInputBox}
+          disabled={enableInputBox || disableInputBox}
           className="mentions"
           spellCheck="false"
           placeholder="Write a Comment..."
           value={messageText}
+          customSuggestionsContainer={(children) => {
+            return (
+              <div
+                className="max-h-[400px] overflow-auto hello_world"
+                ref={suggestionsRef}
+                onScroll={() => {
+                  if (!loadMoreMembers || !throttleScroll) {
+                    return;
+                  }
+                  let current = suggestionsRef?.current?.scrollTop;
+                  let currentHeight = suggestionsRef?.current?.clientHeight;
+                  currentHeight = currentHeight.toString();
+                  if (current >= currentHeight) {
+                    setThrottleScroll(false);
+
+                    log(cbRef);
+                    let pgNo = Math.floor(memberDetailsArray.length / 10) + 1;
+                    getTaggingMembers(searchString, pgNo).then((val) => {
+                      let arr = val.map((item: any) => {
+                        item.display = item.name;
+                        return item;
+                      });
+                      // if (arr.length < 10) {
+                      //   setLoadMoreMembers(false);
+                      // }
+                      log(memberDetailsArray);
+                      let n = [...memberDetailsArray].concat(arr);
+                      setMemberDetailsArray(n);
+                      log(n);
+                      cbRef.current(n);
+                    });
+                  }
+                }}
+                onClick={() => {
+                  log(children);
+                }}
+              >
+                {children}
+              </div>
+            );
+          }}
           onChange={(event) => setMessageText(event.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -190,6 +273,7 @@ function InputSearchField({ setBufferMessage }: any) {
               e.preventDefault();
               sendMessage(
                 generalContext.currentChatroom.chat_request_state,
+                chatRequestVariable,
                 chatroomContext,
                 parseInt(id),
                 inputFieldContext,
@@ -211,7 +295,23 @@ function InputSearchField({ setBufferMessage }: any) {
         >
           <Mention
             trigger="@"
-            data={memberDetailsArray}
+            data={(search, callback) => {
+              timeOut.current = setTimeout(() => {
+                getTaggingMembers(search, 1).then((val) => {
+                  let arr = val.map((item: any) => {
+                    item.display = item.name;
+                    return item;
+                  });
+                  if (arr.length < 10) {
+                    setLoadMoreMembers(false);
+                  }
+                  cbRef.current = callback;
+                  setSearchString(search);
+                  setMemberDetailsArray(arr);
+                  callback(arr);
+                });
+              }, 2000);
+            }}
             markup="<<__display__|route://member/__id__>>"
             style={{
               backgroundColor: "#daf4fa",
@@ -227,13 +327,13 @@ function InputSearchField({ setBufferMessage }: any) {
             ) => {
               return (
                 <div className={`user ${focused ? "focused" : ""}`}>
-                  {suggestion.imageUrl.length > 0 ? (
+                  {suggestion?.imageUrl?.length > 0 ? (
                     <div className="imgBlock">
-                      <img src={suggestion.imageUrl} alt="profile_image" />
+                      <img src={suggestion?.imageUrl} alt="profile_image" />
                     </div>
                   ) : (
                     <div className="imgBlock">
-                      <span>{suggestion.display[0]}</span>
+                      <span>{suggestion?.display[0]}</span>
                     </div>
                   )}
                   <span
