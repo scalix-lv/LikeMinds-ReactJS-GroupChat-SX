@@ -28,6 +28,7 @@ type UploadConfigType = {
 };
 const sendMessage = async (
   chat_request_state: any,
+  state: any,
   chatroomContext: chatroomContextType,
   chatroom_id: number,
   inputFieldContext: InputFieldContextType,
@@ -37,12 +38,16 @@ const sendMessage = async (
 ) => {
   try {
     if (chat_request_state === null && mode === "direct-messages") {
-      await sendDmRequest(chatroom_id, inputFieldContext.messageText);
+      await sendDmRequest(chatroom_id, inputFieldContext.messageText, state);
       document.dispatchEvent(
         new CustomEvent("joinEvent", {
           detail: chatroom_id,
         })
       );
+      if (state === 1) {
+        document.dispatchEvent(new CustomEvent("addedByStateOne"));
+        inputFieldContext.setMessageText("");
+      }
       return;
     }
     setEnableInputBox(true);
@@ -71,12 +76,12 @@ const sendMessage = async (
       documentAttachments: [...documentAttachments],
     };
     let filesArray = mergeInputFiles(mediaContext);
-    // clean the chatrom context
+
     setMessageText("");
     setAudioAttachments([]);
     setMediaAttachments([]);
     setDocumentAttachments([]);
-    // ||||||||||||||||||||||
+
     if (messageText.trim() === "" && filesArray.length === 0) {
       return;
     }

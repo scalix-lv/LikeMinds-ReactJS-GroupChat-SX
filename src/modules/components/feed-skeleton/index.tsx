@@ -19,9 +19,9 @@ export default function SkeletonFeed() {
     <>
       {Array(30)
         .fill(0)
-        .map((item: any) => {
+        .map((item: any, index: any) => {
           return (
-            <div className="px-4 py-4 border">
+            <div className="px-4 py-4 border" key={index}>
               <Skeleton height={32} />
             </div>
           );

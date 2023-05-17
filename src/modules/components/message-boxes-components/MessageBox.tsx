@@ -7,7 +7,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { myClient } from "../../..";
 import { UserContext } from "../../contexts/userContext";
 import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
@@ -27,7 +27,11 @@ import {
   tagExtracter,
   undoBlock,
 } from "../../../sdkFunctions";
-import { directMessageInfoPath } from "../../../routes";
+import {
+  directMessageChatPath,
+  directMessageInfoPath,
+  directMessagePath,
+} from "../../../routes";
 import ChatroomContext from "../../contexts/chatroomContext";
 import { GeneralContext } from "../../contexts/generalContext";
 import ImageAndMedia from "./ImageAndMedia";
@@ -133,7 +137,7 @@ function MessageBoxDM({
   return (
     <div>
       <Box className="flex mb-4">
-        <Snackbar
+        {/* <Snackbar
           open={generalContext.showSnackBar}
           message={generalContext.snackBarMessage}
           autoHideDuration={1000}
@@ -141,7 +145,7 @@ function MessageBoxDM({
             generalContext.setShowSnackBar(false);
             generalContext.setSnackBarMessage("");
           }}
-        />
+        /> */}
         <StringBox
           username={username}
           messageString={messageString}
@@ -258,143 +262,7 @@ function StringBox({
               setMediaData={setMediaData}
               setMediaDisplayModel={setDisplayMediaModel}
             />
-
-            {/* {(() => {
-              if (attachments !== null && attachments.length < 2) {
-                return attachments
-                  .filter((item: any) => {
-                    return item.type === "image";
-                  })
-                  .map((item: any, index: any, dataObj: any) => {
-                    return (
-                      <img
-                        src={item.url}
-                        alt=""
-                        className="m-1 w-full max-h-[230px]"
-                        key={item.url}
-                        onClick={() => {
-                          setMediaData({ mediaObj: dataObj, type: "image" });
-                          setDisplayMediaModel(true);
-                        }}
-                      />
-                    );
-                  });
-              }
-              return null;
-            })()}
-
-            {attachments != null && attachments.length > 1
-              ? attachments
-                  .filter((item: any) => {
-                    return item.type === "image";
-                    // Why was the limit for only two photos made here
-                    // && itemIndex < 2;
-                  })
-                  .map((item: any, itemIndex: any, dataObj: any) => {
-                    return (
-                      <>
-                        {itemIndex <= 3 ? (
-                          <div
-                            className="m-1 w-[146px] h-[146px] float-left rounded-md overflow-hidden relative"
-                            key={item.url}
-                          >
-                            <img
-                              src={item.url}
-                              alt=""
-                              className="w-full h-full"
-                              onClick={() => {
-                                setMediaData({
-                                  mediaObj: dataObj,
-                                  type: "image",
-                                });
-                                setDisplayMediaModel(true);
-                              }}
-                            />
-
-                            {itemIndex === 3 && dataObj.length > 4 ? (
-                              <div className="absolute text-white text-4 font-700 top-0 left-0 w-[146px] h-[146px] customBg flex justify-center items-center">
-                                + {dataObj.length - (itemIndex + 1)}
-                              </div>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </>
-                    );
-                  })
-              : null}
-
-            {attachments != null
-              ? attachments
-                  .filter((item: any) => {
-                    return item.type === "audio";
-                  })
-                  .map((item: any) => {
-                    return (
-                      <audio
-                        controls
-                        src={item.url}
-                        className="my-2 w-[230]"
-                        key={item.url}
-                      >
-                        {" "}
-                        <a href={item.url}>Download audio</a>
-                      </audio>
-                    );
-                  })
-              : null}
-            {attachments !== null
-              ? attachments
-                  .filter((item: any) => {
-                    return item.type === "pdf";
-                  })
-                  .map((item: any) => {
-                    return (
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mb-2 w-[200px] flex"
-                        key={item.url}
-                      >
-                        <img src={pdfIcon} alt="pdf" className="w-[24px]" />
-                        <span className="text-[#323232] text-[14px] ml-2 mt-1">
-                          {item.name}
-                        </span>
-                        <br />
-                      </a>
-                    );
-                  })
-              : null}
-
-            {attachments != null
-              ? attachments
-                  .filter((item: any) => {
-                    return item.type === "video";
-                  })
-                  .map((item: any, dataObj: any) => {
-                    return (
-                      <video
-                        controls={true}
-                        preload="none"
-                        className="my-2 w-[200] h-max-[200px] "
-                        key={item.url}
-                        onClick={() => {
-                          setMediaData({
-                            mediaObj: dataObj,
-                            type: "video",
-                          });
-                          setDisplayMediaModel(true);
-                        }}
-                      >
-                        <source src={item.url} type="video/mp4" />
-                        <source src={item.url} type="video/ogg" />
-                        Your browser does not support the video tag.
-                      </video>
-                    );
-                  })
-              : null} */}
           </div>
-
           {replyConversationObject != null ? (
             <div className="flex flex-col border-[1px] border-l-[5px] border-[#70A9FF] py-1 px-2 rounded-[5px] mb-1">
               <div className="text-[#70A9FF] font-bold text-[12px]">
@@ -459,6 +327,8 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
   const generalContext = useContext(GeneralContext);
   const [anchor, setAnchor] = useState(null);
   const [shouldShow, setShouldShowBlock] = useState(false);
+  const navigate = useNavigate();
+  const { mode = "" } = useParams();
   let open = Boolean(anchor);
   const [anchorEl, setAnchorEl] = useState(null);
   const ref2 = useRef(null);
@@ -517,7 +387,6 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
         reported_Member_id: reportedMemberId,
       });
       setShouldShowBlock(!shouldShow);
-      // // console.log(deleteCall);
     } catch (error) {
       // // console.log(error);
     }
@@ -527,7 +396,6 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
     {
       title: "Reply",
       clickFunction: () => {
-        log("clicking reply");
         chatroomContext.setIsSelectedConversation(true);
         chatroomContext.setSelectedConversation(convoObject);
       },
@@ -539,18 +407,65 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
       },
     },
     {
-      title: "delete",
+      title: "Delete",
       clickFunction: () => {
         deleteChatFromDM([convoId])
           .then((r) => {
             deleteMessageLocally();
           })
           .catch((e) => {
-            // console.log(e);
             generalContext.setShowSnackBar(true);
             generalContext.setSnackBarMessage(" error occoured");
-            // chatroomContext.setSnackBarMessage("Error in Deleing Message");
           });
+      },
+    },
+    {
+      title: "Reply Privately",
+      clickFunction: async () => {
+        try {
+          let checkDMLimitCall: any = await myClient.checkDMLimit({
+            memberId: convoObject?.member?.id,
+          });
+          let isReplyParam;
+          if (
+            userContext.currentUser?.memberState === 1 ||
+            convoObject.member.state === 1
+          ) {
+            isReplyParam = 1;
+          } else {
+            isReplyParam = 2;
+          }
+
+          if (checkDMLimitCall.chatroom_id) {
+            navigate(
+              directMessageChatPath +
+                "/" +
+                checkDMLimitCall.chatroom_id +
+                "/" +
+                isReplyParam
+            );
+          } else {
+            if (!checkDMLimitCall.is_request_dm_limit_exceeded) {
+              let createChatroomCall: any = await myClient.createDMChatroom({
+                member_id: convoObject?.member?.id,
+              });
+              navigate(
+                directMessageChatPath +
+                  "/" +
+                  createChatroomCall?.chatroom?.id +
+                  "/" +
+                  isReplyParam
+              );
+            } else {
+              generalContext.setShowSnackBar(true);
+              generalContext.setSnackBarMessage(
+                `Limit Exceeded, new request timeout : ${checkDMLimitCall.new_request_dm_timestamp}`
+              );
+            }
+          }
+        } catch (error) {
+          log(error);
+        }
       },
     },
   ];
@@ -586,10 +501,30 @@ function MoreOptions({ convoId, convoObject, index }: moreOptionsType) {
             return null;
           }
           if (
-            option.title === "delete" &&
+            option.title === "Delete" &&
             convoObject.member?.id !== userContext.currentUser.id
           ) {
             return null;
+          }
+          if (
+            (option.title === "Reply Privately" &&
+              generalContext.currentChatroom.type !== 7 &&
+              generalContext.currentChatroom.type !== 0 &&
+              chatroomContext.showReplyPrivately) ||
+            (option.title === "Reply Privately" && mode === "direct-messages")
+          ) {
+            return null;
+          }
+          if (option.title === "Reply Privately") {
+            if (convoObject.member?.id === userContext.currentUser?.id) {
+              return null;
+            }
+            if (
+              chatroomContext.replyPrivatelyMode === 2 &&
+              convoObject?.member?.state === 4
+            ) {
+              return null;
+            }
           }
           return (
             <MenuItem

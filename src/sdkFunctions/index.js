@@ -360,7 +360,7 @@ export async function joinChatRoom(collabId, userId) {
 
 export async function markRead(chatroomId) {
   try {
-    const markCall = await myClient.markRead({
+    const markCall = await myClient.markReadChatroom({
       chatroom_id: chatroomId
     })
     return jsonReturnHandler(markCall, null)
@@ -450,10 +450,10 @@ export async function createDM(memberId) {
   }
 }
 
-export async function sendDmRequest(chatroomId, messageText) {
+export async function sendDmRequest(chatroomId, messageText, state) {
   try {
     let call = await myClient.sendDMRequest({
-      chat_request_state: 0,
+      chat_request_state: state,
       chatroom_id: chatroomId,
       text: messageText
     })
@@ -523,5 +523,16 @@ export function getDmMember(str, currentUser) {
 export function log(str) {
   if (process.env.NODE_ENV === 'development') {
     console.log(str)
+  }
+}
+
+export async function checkDMStatus(id) {
+  try {
+    let call = await myClient.checkDMStatus({
+      requestFrom: "group_channel"
+    })
+    return jsonReturnHandler(call.data, null)
+  } catch (error) {
+    return jsonReturnHandler(null, error)
   }
 }

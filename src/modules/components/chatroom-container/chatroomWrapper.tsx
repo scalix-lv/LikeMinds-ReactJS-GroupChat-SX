@@ -14,7 +14,8 @@ const ChatroomWrapper: React.FC = () => {
   const [conversationList, setConversationList] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState({});
   const [isSelectedConversation, setIsSelectedConversation] = useState(false);
-  // the below will control the title chatroom
+  const [showReplyPrivately, setShowReplyPrivately] = useState(false);
+  const [replyPrivatelyMode, setReplyPrivatelyMode] = useState(null);
   const [showTitle, setShowTitle] = useState(false);
   const generalContext = useContext(GeneralContext);
   const userContext = useContext(UserContext);
@@ -58,6 +59,10 @@ const ChatroomWrapper: React.FC = () => {
         setSelectedConversation,
         isSelectedConversation,
         setIsSelectedConversation,
+        showReplyPrivately,
+        setShowReplyPrivately,
+        replyPrivatelyMode,
+        setReplyPrivatelyMode,
       }}
     >
       {operation != "" && showTitle ? (
