@@ -11,7 +11,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [community, setCommunity] = useState();
   useEffect(() => {
-    initiateSDK(false, "d3e22b1a-a749-4da3-8b19-a42a796cd5b1", "Sasuke")
+    initiateSDK(false, "", "")
       .then((res: any) => {
         setCommunity(res?.data?.community);
         setCurrentUser(res?.data?.user);
@@ -22,12 +22,12 @@ function App() {
       });
   }, []);
   useEffect(() => {
-    if (currentUser?.memberState != undefined) {
+    if (currentUser?.memberState !== undefined) {
       return;
     }
     myClient
-      .getProfile({
-        userId: currentUser?.id,
+      .getMemberState({
+        memberId: currentUser?.id,
       })
       .then((res: any) => {
         let newUserObject = { ...currentUser };
