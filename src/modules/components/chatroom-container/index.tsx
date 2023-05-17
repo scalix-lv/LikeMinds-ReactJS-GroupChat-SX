@@ -85,8 +85,8 @@ const ChatContainer: React.FC = () => {
     let optionObject = {
       chatroomID: chatroomId,
       paginateBy: pageNo,
-      conversation_id: sessionStorage.getItem("dmLastConvo"),
-      scroll_direction: 0,
+      conversationID: sessionStorage.getItem("dmLastConvo"),
+      scrollDirection: 0,
     };
     let response: any = await getConversationsForGroup(optionObject);
     if (!response.error) {
