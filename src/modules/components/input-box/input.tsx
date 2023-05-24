@@ -1,12 +1,13 @@
-import { myClient } from "../../..";
-import {
-  getChatRoomDetails,
-  log,
-  mergeInputFiles,
-  sendDmRequest,
-} from "../../../sdkFunctions";
-import { chatroomContextType } from "../../contexts/chatroomContext";
-import { InputFieldContextType } from "../../contexts/inputFieldContext";
+/* eslint-disable no-loop-func */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-use-before-define */
+/* eslint-disable camelcase */
+import { myClient } from '../../..';
+import { log, mergeInputFiles, sendDmRequest } from '../../../sdkFunctions';
+import { chatroomContextType } from '../../contexts/chatroomContext';
+import { InputFieldContextType } from '../../contexts/inputFieldContext';
+
 type ConversationCreateData = {
   chatroom_id: any;
   created_at: any;
@@ -37,16 +38,12 @@ const sendMessage = async (
   mode: any
 ) => {
   try {
-    if (chat_request_state === null && mode === "direct-messages") {
+    if (chat_request_state === null && mode === 'direct-messages') {
       await sendDmRequest(chatroom_id, inputFieldContext.messageText, state);
-      document.dispatchEvent(
-        new CustomEvent("joinEvent", {
-          detail: chatroom_id,
-        })
-      );
+      document.dispatchEvent(new CustomEvent('joinEvent', { detail: chatroom_id }));
       if (state === 1) {
-        document.dispatchEvent(new CustomEvent("addedByStateOne"));
-        inputFieldContext.setMessageText("");
+        document.dispatchEvent(new CustomEvent('addedByStateOne'));
+        inputFieldContext.setMessageText('');
       }
       return;
     }
@@ -57,7 +54,7 @@ const sendMessage = async (
       selectedConversation,
       setSelectedConversation,
       isSelectedConversation,
-      setIsSelectedConversation,
+      setIsSelectedConversation
     } = chatroomContext;
     const {
       messageText,
@@ -67,29 +64,29 @@ const sendMessage = async (
       mediaAttachments,
       setMediaAttachments,
       documentAttachments,
-      setDocumentAttachments,
+      setDocumentAttachments
     } = inputFieldContext;
-    let message = messageText;
-    let mediaContext = {
+    const message = messageText;
+    const mediaContext = {
       mediaAttachments: [...mediaAttachments],
       audioAttachments: [...audioAttachments],
-      documentAttachments: [...documentAttachments],
+      documentAttachments: [...documentAttachments]
     };
-    let filesArray = mergeInputFiles(mediaContext);
+    const filesArray = mergeInputFiles(mediaContext);
 
-    setMessageText("");
+    setMessageText('');
     setAudioAttachments([]);
     setMediaAttachments([]);
     setDocumentAttachments([]);
 
-    if (messageText.trim() === "" && filesArray.length === 0) {
+    if (messageText.trim() === '' && filesArray.length === 0) {
       return;
     }
-    let config: any = {
+    const config: any = {
       text: message,
       created_at: Date.now(),
-      chatroom_id: chatroom_id,
-      has_files: false,
+      chatroom_id,
+      has_files: false
     };
     if (filesArray.length) {
       config.has_files = true;
@@ -101,53 +98,43 @@ const sendMessage = async (
       setIsSelectedConversation(false);
     }
 
-    let createConversationCall = await myClient.postConversation(config);
-    document.dispatchEvent(
-      new CustomEvent("sentMessage", {
-        detail: chatroom_id,
-      })
-    );
+    const createConversationCall = await myClient.postConversation(config);
+    document.dispatchEvent(new CustomEvent('sentMessage', { detail: chatroom_id }));
 
-    localHandleConversation(
-      createConversationCall.conversation,
-      filesArray,
-      setBufferMessage
-    );
+    localHandleConversation(createConversationCall.conversation, filesArray, setBufferMessage);
     // render local changes here
 
     // above this point
 
     if (filesArray.length) {
       let index = 0;
-      for (let newFile of filesArray) {
-        let uploadConfig = {
-          messageId: parseInt(createConversationCall.id),
+      for (const newFile of filesArray) {
+        const uploadConfig = {
+          messageId: parseInt(createConversationCall.id, 10),
           chatroomId: chatroom_id,
-          file: newFile,
+          file: newFile
         };
-        let fileType = "";
-        if (filesArray[0].type.split("/")[1] === "pdf") {
-          fileType = "pdf";
-        } else if (filesArray[0].type.split("/")[0] === "audio") {
-          fileType = "audio";
-        } else if (filesArray[0].type.split("/")[0] === "video") {
-          fileType = "video";
+        let fileType = '';
+        if (filesArray[0].type.split('/')[1] === 'pdf') {
+          fileType = 'pdf';
+        } else if (filesArray[0].type.split('/')[0] === 'audio') {
+          fileType = 'audio';
+        } else if (filesArray[0].type.split('/')[0] === 'video') {
+          fileType = 'video';
         } else {
-          fileType = "image";
+          fileType = 'image';
         }
         index++;
         log(newFile);
         await myClient.uploadMedia(uploadConfig).then((fileResponse: any) => {
-          let onUploadConfig = {
-            conversation_id: parseInt(createConversationCall.id),
+          const onUploadConfig = {
+            conversation_id: parseInt(createConversationCall.id, 10),
             files_count: 1,
-            index: index,
-            meta: {
-              size: newFile.size,
-            },
+            index,
+            meta: { size: newFile.size },
             name: newFile.name,
             type: fileType,
-            url: fileResponse.Location,
+            url: fileResponse.Location
           };
           myClient.putMultimedia(onUploadConfig);
         });
@@ -158,26 +145,19 @@ const sendMessage = async (
   }
 };
 
-function deliverMessage() {}
 export { sendMessage };
 
-async function localHandleConversation(
-  conversation: any,
-  media: any,
-  setBufferMessage: any
-) {
+async function localHandleConversation(conversation: any, media: any, setBufferMessage: any) {
   // log(media);
   let count = 1;
   if (conversation.has_files) {
-    for (let file of media) {
-      let attachmentTemplate = {
+    for (const file of media) {
+      const attachmentTemplate = {
         url: URL.createObjectURL(file),
         index: count++,
-        type: file.type.split("/")[0],
+        type: file.type.split('/')[0],
         name: file.name,
-        meta: {
-          size: file.size,
-        },
+        meta: { size: file.size }
       };
       conversation?.attachments?.push(attachmentTemplate);
     }

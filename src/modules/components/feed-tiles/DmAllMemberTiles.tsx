@@ -1,20 +1,14 @@
-import { Margin } from "@mui/icons-material";
-import { Button, Snackbar } from "@mui/material";
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Button, Snackbar } from '@mui/material';
+import { useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 // import { myClient, UserContext } from "../..";
-import { myClient } from "../../..";
-import { UserContext } from "../../contexts/userContext";
-import { RouteContext } from "../../contexts/routeContext";
-import { directMessageChatPath, directMessageInfoPath } from "../../../routes";
+import { myClient } from '../../..';
+import { UserContext } from '../../contexts/userContext';
+import { RouteContext } from '../../contexts/routeContext';
+import { directMessageChatPath, directMessageInfoPath } from '../../../routes';
 // import { createDM, getChatRoomDetails, requestDM } from "../../sdkFunctions";
-import {
-  createDM,
-  getChatRoomDetails,
-  log,
-  requestDM,
-} from "../../../sdkFunctions";
-import { GeneralContext } from "../../contexts/generalContext";
+import { createDM, getChatRoomDetails, log, requestDM } from '../../../sdkFunctions';
+import { GeneralContext } from '../../contexts/generalContext';
 // import { DmContext } from "./DirectMessagesMain";
 
 export async function reqDM(
@@ -26,54 +20,47 @@ export async function reqDM(
 ) {
   try {
     // log(profile);
-    let call: any = await requestDM(profile.id, userContext.community.id);
+    const call: any = await requestDM(profile.id, userContext.community.id);
     // // console.log(call);
     // let i = 1;
 
     if (call.data === undefined) {
       alert(call.data.error_message);
       return;
-    } else {
-      let callData = call.data;
-
-      if (!!callData.chatroomId) {
-        let profileData: any = await getChatRoomDetails(
-          myClient,
-          call.data.chatroom_id
-        );
-        if (profileData.error) {
-          throw "Error";
-        }
-        // // console.log(profileData.error);
-
-        if (profileData.data == undefined) {
-          setOpenSnackBar(true);
-          setSnackBarMessage("An Error Occoured");
-          return;
-        }
-
-        // // console.log(profileData);
-        dmContext.setCurrentProfile(profileData.data);
-        dmContext.setCurrentChatroom(profileData.data.chatroom);
-        return profileData.data.chatroom.id;
-      } else {
-        let dmRequestLimit = callData.is_request_dm_limit_exceeded;
-        if (!dmRequestLimit) {
-          let createDmCall: any = await createDM(profile.id);
-          // // console.log(createDmCall);
-          let chatroomDetailsCall: any = await getChatRoomDetails(
-            myClient,
-            createDmCall.data.chatroom.id
-          );
-          // // console.log(chatroomDetailsCall);
-          dmContext.setCurrentProfile(chatroomDetailsCall.data);
-          dmContext.setCurrentChatroom(chatroomDetailsCall.data.chatroom);
-          return chatroomDetailsCall.data.chatroom.id;
-        } else {
-          alert(`now message at , ${call.data.new_request_dm_timestamp}`);
-        }
-      }
     }
+    const callData = call.data;
+
+    if (callData.chatroomId) {
+      const profileData: any = await getChatRoomDetails(myClient, call.data.chatroom_id);
+      if (profileData.error) {
+        // eslint-disable-next-line no-throw-literal
+        throw 'Error';
+      }
+      // // console.log(profileData.error);
+
+      if (profileData.data === undefined) {
+        setOpenSnackBar(true);
+        setSnackBarMessage('An Error Occoured');
+        return;
+      }
+
+      // // console.log(profileData);
+      dmContext.setCurrentProfile(profileData.data);
+      dmContext.setCurrentChatroom(profileData.data.chatroom);
+      return profileData.data.chatroom.id;
+    }
+    const dmRequestLimit = callData.is_request_dm_limit_exceeded;
+    if (!dmRequestLimit) {
+      const createDmCall: any = await createDM(profile.id);
+      // // console.log(createDmCall);
+      const chatroomDetailsCall: any = await getChatRoomDetails(myClient, createDmCall.data.chatroom.id);
+      // // console.log(chatroomDetailsCall);
+      dmContext.setCurrentProfile(chatroomDetailsCall.data);
+      dmContext.setCurrentChatroom(chatroomDetailsCall.data.chatroom);
+      return chatroomDetailsCall.data.chatroom.id;
+    }
+    alert(`now message at , ${call.data.new_request_dm_timestamp}`);
+
     // navigate(directMessageChatPath);
   } catch (error) {
     log(error);
@@ -81,32 +68,25 @@ export async function reqDM(
   }
 }
 
-function DmMemberTile({ profile }: any) {
+const DmMemberTile = ({ profile }: any) => {
   const navigate = useNavigate();
-  let dmContext = useContext(GeneralContext);
-  let userContext = useContext(UserContext);
+  const dmContext = useContext(GeneralContext);
+  const userContext = useContext(UserContext);
   const routeContext = useContext(RouteContext);
   const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState("");
+  const [snackBarMessage, setSnackBarMessage] = useState('');
   return (
     <div
       className="flex justify-between items-center py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
-      style={{
-        backgroundColor:
-          dmContext.currentChatroom?.id == profile?.id ? "#ECF3FF" : "#FFFFFF",
-      }}
+      style={{ backgroundColor: dmContext.currentChatroom?.id === profile?.id ? '#ECF3FF' : '#FFFFFF' }}
       onClick={() => {
         routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
       }}
     >
       <div className="flex flex-col">
-        <div className="text-[#323232] text-[16px] capitalize">
-          {profile.name}
-        </div>
+        <div className="text-[#323232] text-[16px] capitalize">{profile.name}</div>
         {profile.custom_title ? (
-          <div className="text-[12px] text-[#ADADAD]">
-            {profile.custom_title}
-          </div>
+          <div className="text-[12px] text-[#ADADAD]">{profile.custom_title}</div>
         ) : (
           <div className="text-[12px] text-[#ADADAD]">Other</div>
         )}
@@ -116,32 +96,24 @@ function DmMemberTile({ profile }: any) {
       <Button
         variant="contained"
         sx={{
-          background: "#3884F7",
-          width: "87px",
-          height: "34px",
-          marginRight: "12px",
-          color: "white",
-          ":hover": {
-            background: "grey",
-          },
+          background: '#3884F7',
+          width: '87px',
+          height: '34px',
+          marginRight: '12px',
+          color: 'white',
+          ':hover': { background: 'grey' }
         }}
         onClick={() => {
           dmContext.setShowLoadingBar(true);
-          reqDM(
-            profile,
-            userContext,
-            dmContext,
-            setOpenSnackBar,
-            setSnackBarMessage
-          )
+          reqDM(profile, userContext, dmContext, setOpenSnackBar, setSnackBarMessage)
             .then((r) => {
-              navigate(directMessageChatPath + "/" + r);
+              navigate(`${directMessageChatPath}/${r}`);
               dmContext.setShowLoadingBar(false);
             })
-            .catch((e) => {
+            .catch(() => {
               dmContext.setShowLoadingBar(false);
               setOpenSnackBar(true);
-              setSnackBarMessage("Error occoured while loading");
+              setSnackBarMessage('Error occoured while loading');
             });
         }}
       >
@@ -152,15 +124,15 @@ function DmMemberTile({ profile }: any) {
         state={{
           communityId: userContext.community.id,
           memberId: profile.id,
-          isFromAllMembers: true,
+          isFromAllMembers: true
         }}
       >
         <Button
           sx={{
-            width: "107px",
-            height: "34px",
-            paddingX: "3px",
-            fontSize: "12px",
+            width: '107px',
+            height: '34px',
+            paddingX: '3px',
+            fontSize: '12px'
           }}
           variant="outlined"
           // onClick={routeToProfile}
@@ -178,6 +150,6 @@ function DmMemberTile({ profile }: any) {
       ) : null}
     </div>
   );
-}
+};
 
 export default DmMemberTile;

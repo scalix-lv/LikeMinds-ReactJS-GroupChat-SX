@@ -1,26 +1,22 @@
-import { useContext, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { directMessageChatPath } from "../../../routes";
-import { RouteContext } from "../../contexts/routeContext";
-import { UserContext } from "../../contexts/userContext";
-import { Typography } from "@mui/material";
-import { GeneralContext } from "../../contexts/generalContext";
+import { useContext, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { Typography } from '@mui/material';
+import { directMessageChatPath } from '../../../routes';
+import { RouteContext } from '../../contexts/routeContext';
+import { UserContext } from '../../contexts/userContext';
+import { GeneralContext } from '../../contexts/generalContext';
 
-export default function DmTile({ profile }: any) {
+const DmTile = ({ profile }: any) => {
   const userContext = useContext(UserContext);
   const generalContext = useContext(GeneralContext);
-  const { id = "" } = useParams();
+  const { id = '' } = useParams();
   const routeContext = useContext(RouteContext);
-  const [unreadMessages, setUnreadMessages] = useState(
-    profile.unseen_conversation_count
-  );
+  const [unreadMessages, setUnreadMessages] = useState(profile.unseen_conversation_count);
   return (
     <Link
       // key={profile.chatroom.id.toString()}
-      to={directMessageChatPath + "/" + profile.chatroom.id}
-      style={{
-        textDecoration: "none",
-      }}
+      to={`${directMessageChatPath}/${profile.chatroom.id}`}
+      style={{ textDecoration: 'none' }}
       onClick={() => {
         routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
         setUnreadMessages(0);
@@ -28,18 +24,12 @@ export default function DmTile({ profile }: any) {
     >
       <div
         className="flex justify-between py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
-        style={{
-          backgroundColor:
-            id === profile?.chatroom?.id.toString() ? "#ECF3FF" : "#FFFFFF",
-        }}
+        style={{ backgroundColor: id === profile?.chatroom?.id.toString() ? '#ECF3FF' : '#FFFFFF' }}
       >
         <Typography
-          component={"span"}
+          component="span"
           className="text-base font-normal"
-          sx={{
-            color:
-              id === profile?.chatroom?.id.toString() ? "#3884F7" : "#323232",
-          }}
+          sx={{ color: id === profile?.chatroom?.id.toString() ? '#3884F7' : '#323232' }}
         >
           {userContext.currentUser.id === profile.chatroom.member.id
             ? profile.chatroom.chatroom_with_user.name
@@ -47,19 +37,19 @@ export default function DmTile({ profile }: any) {
         </Typography>
 
         <Typography
-          component={"span"}
+          component="span"
           className="text-sm font-light"
           sx={{
             color:
-              unreadMessages != undefined
+              unreadMessages !== undefined
                 ? unreadMessages > 0
-                  ? "#3884F7"
-                  : "#323232"
-                : profile.unread_messages != undefined
+                  ? '#3884F7'
+                  : '#323232'
+                : profile.unread_messages !== undefined
                 ? profile.unread_messages > 0
-                  ? "#3884F7"
-                  : "#323232"
-                : "white",
+                  ? '#3884F7'
+                  : '#323232'
+                : 'white'
             // display: shouldNotShow ? 'none' : 'inline'
           }}
         >
@@ -68,4 +58,6 @@ export default function DmTile({ profile }: any) {
       </div>
     </Link>
   );
-}
+};
+
+export default DmTile;

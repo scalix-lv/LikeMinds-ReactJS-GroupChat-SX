@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 export type InputFieldContextType = {
   messageText: any;
@@ -12,14 +12,14 @@ export type InputFieldContextType = {
 };
 
 const InputFieldContext = createContext<InputFieldContextType>({
-  messageText: "",
+  messageText: '',
   setMessageText: null,
   audioAttachments: [],
   setAudioAttachments: null,
   mediaAttachments: [],
   setMediaAttachments: null,
   documentAttachments: [],
-  setDocumentAttachments: null,
+  setDocumentAttachments: null
 });
 
 export default InputFieldContext;

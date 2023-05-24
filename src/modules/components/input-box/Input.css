@@ -36,7 +36,7 @@
   max-height: 50px;
   overflow: auto !important;
   line-height: 26px;
-  font-family: "Lato" !important;
+  font-family: 'Lato' !important;
 }
 
 .mentions__suggestions__list {
