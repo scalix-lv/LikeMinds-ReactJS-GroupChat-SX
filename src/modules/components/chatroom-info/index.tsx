@@ -1,32 +1,52 @@
-import { IconButton } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import backIcon from "../../../assets/svg/arrow-left.svg";
-import rightArrow from "../../../assets/svg/right-arrow.svg";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { GeneralContext } from "../../contexts/generalContext";
-import { myClient } from "../../..";
-import { groupMainPath, groupPersonalInfoPath } from "../../../routes";
-import { log } from "../../../sdkFunctions";
-function GroupInfo() {
+import { IconButton } from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import backIcon from '../../../assets/svg/arrow-left.svg';
+import rightArrow from '../../../assets/svg/right-arrow.svg';
+import { GeneralContext } from '../../contexts/generalContext';
+import { myClient } from '../../..';
+import { groupMainPath } from '../../../routes';
+import { log } from '../../../sdkFunctions';
+import routeVariable from '../../../enums/routeVariables';
+
+const ParticipantTile = ({ profile }: any) => (
+  <div className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center cursor-pointer">
+    <div className="flex items-center">
+      <div className="w-[36px] h-[36px] uppercase border-[1px] border-[#eeeeee] bg-[#eeeeee] mr-2.5 rounded-[5px] flex justify-center items-center">
+        {profile?.name[0]}
+      </div>
+      <div className="font-bold text-sm capitalize">{profile.name}</div>
+    </div>
+
+    <IconButton className="w-[32px] h-[32px]">
+      <img src={rightArrow} alt="arrow icon" />
+    </IconButton>
+  </div>
+);
+
+const GroupInfo = () => {
   const gc = useContext(GeneralContext);
   const [participantList, setParticipantList] = useState([]);
   const [loadMode, setLoadMore] = useState(true);
-  const { id = "" } = useParams();
-  let callFn = (isSecret: any) => {
+  const params = useParams();
+  const id: any = params[routeVariable.id];
+  const mode: any = params[routeVariable.mode];
+  const operation: any = params[routeVariable.operation];
+  const callFn = (isSecret: any) => {
     const getMemberList = async (isSecret: any) => {
       try {
-        let page = Math.floor(participantList.length / 20) + 1;
-        let call = await myClient.viewParticipants({
-          chatroom_id: parseInt(id),
+        const page = Math.floor(participantList.length / 20) + 1;
+        const call = await myClient.viewParticipants({
+          chatroom_id: parseInt(id, 10),
           is_secret: isSecret,
-          page: page,
-          page_size: 20,
+          page,
+          page_size: 20
         });
         if (call.participants.length < 20) {
           setLoadMore(false);
         }
-        let newList = participantList.concat(call.participants);
+        const newList = participantList.concat(call.participants);
         setParticipantList(newList);
       } catch (error) {
         log(error);
@@ -45,23 +65,18 @@ function GroupInfo() {
     <div className=" w-full customHeight">
       <div className="mr-[120px] ml-[20px] mt-[10px] h-full z:max-md:mr-[28px]">
         <div className="flex">
-          <Link to={groupMainPath + "/" + id}>
+          <Link to={`${groupMainPath}/${id}`}>
             <IconButton>
               <img src={backIcon} alt="back icon" />
             </IconButton>
           </Link>
-          <div className="text-[20px] mt-[8px] font-[700] leading-[24px] text-[#3884F7]">
-            Group Info
-          </div>
+          <div className="text-[20px] mt-[8px] font-[700] leading-[24px] text-[#3884F7]">Group Info</div>
         </div>
 
         {/* Member list */}
         <div className="ml-1 pl-[5px] h-full">
           <div className="text-4 font-[700] text-[#323232]">Participants</div>
-          <div
-            className="py-[18px] overflow-auto max-h-[70%]"
-            id="participant-list"
-          >
+          <div className="py-[18px] overflow-auto max-h-[70%]" id="participant-list">
             <InfiniteScroll
               next={() => callFn(gc.currentChatroom.is_secret)}
               hasMore={loadMode}
@@ -69,9 +84,9 @@ function GroupInfo() {
               scrollableTarget="participant-list"
               loader={null}
             >
-              {participantList?.map((profile: any) => {
-                return <ParticipantTile key={profile.id} profile={profile} />;
-              })}
+              {participantList?.map((profile: any) => (
+                <ParticipantTile key={profile.id} profile={profile} />
+              ))}
             </InfiniteScroll>
           </div>
         </div>
@@ -79,26 +94,6 @@ function GroupInfo() {
       </div>
     </div>
   );
-}
+};
 
-function ParticipantTile({ profile }: any) {
-  const navigate = useNavigate();
-  return (
-    <div
-      className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center cursor-pointer"
-      onClick={() => {}}
-    >
-      <div className="flex items-center">
-        <div className="w-[36px] h-[36px] uppercase border-[1px] border-[#eeeeee] bg-[#eeeeee] mr-2.5 rounded-[5px] flex justify-center items-center">
-          {profile?.name[0]}
-        </div>
-        <div className="font-bold text-sm capitalize">{profile.name}</div>
-      </div>
-
-      <IconButton className="w-[32px] h-[32px]">
-        <img src={rightArrow} alt="arrow icon" />
-      </IconButton>
-    </div>
-  );
-}
 export default GroupInfo;

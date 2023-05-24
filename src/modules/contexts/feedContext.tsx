@@ -1,22 +1,26 @@
-import React, { createContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { log } from "../../sdkFunctions";
-import Feeds from "../components/feedlist/Feed";
+/* eslint-disable no-use-before-define */
+/* eslint-disable react/jsx-no-constructed-context-values */
+/* eslint-disable react/require-default-props */
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import Feeds from '../components/feedlist/Feed';
+import routeVariable from '../../enums/routeVariables';
 
 type childrenType = {
   children?: any;
 };
 
-const FeedContextProvider: React.FC<childrenType> = ({
-  children,
-}: childrenType) => {
+const FeedContextProvider: React.FC<childrenType> = () => {
   const [homeFeed, setHomeFeed] = useState<Array<any>>([]);
   const [allFeed, setAllFeed] = useState<Array<any>>([]);
   const [dmHomeFeed, setDmHomeFeed] = useState<Array<any>>([]);
   const [dmAllFeed, setDmAllFeed] = useState<Array<any>>([]);
   const [secretChatrooms, setSecretChatrooms] = useState<Array<any>>([]);
   const [modeCounter, setModeCounter] = useState(0);
-  const { mode } = useParams();
+  const params = useParams();
+  const id: any = params[routeVariable.id];
+  const mode: any = params[routeVariable.mode];
+  const operation: any = params[routeVariable.operation];
   const setComponent = () => {
     switch (modeCounter) {
       case 1: {
@@ -33,12 +37,8 @@ const FeedContextProvider: React.FC<childrenType> = ({
     setModeCounter(0);
   }, [mode]);
   useEffect(() => {
-    if (modeCounter == 0) {
-      if (
-        homeFeed.length == 0 &&
-        allFeed.length == 0 &&
-        secretChatrooms.length == 0
-      ) {
+    if (modeCounter === 0) {
+      if (homeFeed.length === 0 && allFeed.length === 0 && secretChatrooms.length === 0) {
         setModeCounter(1);
       }
     }
@@ -55,25 +55,26 @@ const FeedContextProvider: React.FC<childrenType> = ({
         setAllFeed,
         setSecretChatrooms,
         setDmHomeFeed,
-        setDmAllFeed,
+        setDmAllFeed
       }}
     >
-      {setComponent()}
+      {/* {setComponent()} */}
+      <Feeds />
     </FeedContext.Provider>
   );
 };
 
 type feedContext = {
-  homeFeed: Array<{}>;
-  allFeed: Array<{}>;
-  secretChatrooms: Array<{}>;
-  dmHomeFeed: Array<{}>;
-  dmAllFeed: Array<{}>;
-  setHomeFeed: React.Dispatch<Array<{}>> | null;
-  setAllFeed: React.Dispatch<Array<{}>> | null;
-  setSecretChatrooms: React.Dispatch<Array<{}>> | null;
-  setDmHomeFeed: React.Dispatch<Array<{}>> | null;
-  setDmAllFeed: React.Dispatch<Array<{}>> | null;
+  homeFeed: Array<any>;
+  allFeed: Array<any>;
+  secretChatrooms: Array<any>;
+  dmHomeFeed: Array<any>;
+  dmAllFeed: Array<any>;
+  setHomeFeed: React.Dispatch<Array<any>> | null;
+  setAllFeed: React.Dispatch<Array<any>> | null;
+  setSecretChatrooms: React.Dispatch<Array<any>> | null;
+  setDmHomeFeed: React.Dispatch<Array<any>> | null;
+  setDmAllFeed: React.Dispatch<Array<any>> | null;
 };
 
 export const FeedContext = React.createContext<feedContext>({
@@ -86,7 +87,7 @@ export const FeedContext = React.createContext<feedContext>({
   setAllFeed: null,
   setSecretChatrooms: null,
   setDmHomeFeed: null,
-  setDmAllFeed: null,
+  setDmAllFeed: null
 });
 
 export default FeedContextProvider;

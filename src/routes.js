@@ -1,25 +1,24 @@
-export const mainPath = "/";
+export const mainPath = '/community';
 
 // path for forums
-export const forumPath = "/forums";
+export const forumPath = '/forums';
 
 // path for groups
-export const groupPath = "/groups";
-export const groupMainPath = "/groups/main";
-export const groupInfoPath = "/groups/info";
-export const groupAcceptInvitePath = "/groups/accept-invite";
-export const groupPersonalInfoPath = "/groups/personal-info";
+export const groupPath = `${mainPath}/groups`;
+export const groupMainPath = `${mainPath}/groups/main`;
+export const groupInfoPath = `${mainPath}/groups/info`;
+export const groupAcceptInvitePath = `${mainPath}/groups/accept-invite`;
+export const groupPersonalInfoPath = `${mainPath}/groups/personal-info`;
 
 // path for events
-export const eventsPath = "events";
+export const eventsPath = 'events';
 
 // path for dms
-export const directMessagePath = "/direct-messages";
-export const directMessageChatPath = directMessagePath + "/main";
-export const directMessageInfoPath = directMessagePath + "/info";
-export const directMessageAcceptInvitePath =
-  directMessagePath + "/accept-invite";
+export const directMessagePath = `${mainPath}/direct-messages`;
+export const directMessageChatPath = `${directMessagePath}/main`;
+export const directMessageInfoPath = `${directMessagePath}/info`;
+export const directMessageAcceptInvitePath = `${directMessagePath}/accept-invite`;
 // export cont DmMainPath = directMessagePath + "/"
 
 // path for added by me
-export const addedByMePath = "/added-by-me";
+export const addedByMePath = '/added-by-me';
