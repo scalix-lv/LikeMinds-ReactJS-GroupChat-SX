@@ -1,4 +1,5 @@
-import { createContext } from "react";
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { createContext } from 'react';
 
 export const GeneralContext = createContext<{
   showSnackBar: any;
@@ -16,7 +17,7 @@ export const GeneralContext = createContext<{
 }>({
   showSnackBar: false,
   setSnackBarMessage: () => {},
-  snackBarMessage: "",
+  snackBarMessage: '',
   setShowSnackBar: () => {},
   showLoadingBar: false,
   setShowLoadingBar: () => {},
@@ -24,6 +25,6 @@ export const GeneralContext = createContext<{
   setCurrentChatroom: () => {},
   currentProfile: {},
   setCurrentProfile: null,
-  chatroomUrl: "",
-  setChatroomUrl: null,
+  chatroomUrl: '',
+  setChatroomUrl: null
 });

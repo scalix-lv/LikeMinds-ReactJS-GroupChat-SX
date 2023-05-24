@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 export type chatroomContextType = {
   conversationList: any;
@@ -23,7 +23,7 @@ const ChatroomContext = createContext<chatroomContextType>({
   showReplyPrivately: false,
   setShowReplyPrivately: null,
   replyPrivatelyMode: null,
-  setReplyPrivatelyMode: null,
+  setReplyPrivatelyMode: null
 });
 
 export default ChatroomContext;

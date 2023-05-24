@@ -1,9 +1,7 @@
-import { myClient } from "..";
+import { myClient } from '..';
 
-export async function searchChatroom(searchString){
-    try {
-        let call = await myClient.searchChatroom()
-    } catch (error) {
-        
-    }
+export async function searchChatroom(searchString) {
+  try {
+    let call = await myClient.searchChatroom();
+  } catch (error) {}
 }

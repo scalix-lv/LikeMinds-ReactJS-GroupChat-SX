@@ -1,7 +1,7 @@
-import { Box } from "@mui/material";
-import { useContext, useState } from "react";
-import { UserContext } from "../../contexts/userContext";
-import MessageBox from "./MessageBox";
+import { Box } from '@mui/material';
+import { useContext, useState } from 'react';
+import { UserContext } from '../../contexts/userContext';
+import MessageBox from './MessageBox';
 
 type msgBlockType = {
   conversationObject: any;
@@ -9,7 +9,7 @@ type msgBlockType = {
   index: any;
 };
 
-function MessageBlock({ conversationObject, userId, index }: msgBlockType) {
+const MessageBlock = ({ conversationObject, userId, index }: msgBlockType) => {
   const userContext = useContext(UserContext);
   const [convoDetails, setConvoDetails] = useState(conversationObject);
   const currentUser = userContext.currentUser?.id;
@@ -17,24 +17,14 @@ function MessageBlock({ conversationObject, userId, index }: msgBlockType) {
   return (
     <Box
       className="flex py-2 px-0 h-full overflow-auto"
-      sx={{
-        flexDirection: userId === currentUser ? "row-reverse" : "row",
-      }}
+      sx={{ flexDirection: userId === currentUser ? 'row-reverse' : 'row' }}
     >
       <MessageBox
         userId={userId}
-        username={
-          convoDetails.member != undefined
-            ? convoDetails.member.name
-            : convoDetails.member_id
-        }
+        username={convoDetails.member !== undefined ? convoDetails.member.name : convoDetails.member_id}
         messageString={convoDetails.answer}
         time={convoDetails.created_at}
-        attachments={
-          convoDetails.attachments !== undefined
-            ? convoDetails.attachments
-            : null
-        }
+        attachments={convoDetails.attachments !== undefined ? convoDetails.attachments : null}
         replyConversationObject={convoDetails?.reply_conversation_object}
         convoId={conversationObject.id}
         conversationReactions={conversationObject.reactions}
@@ -43,6 +33,6 @@ function MessageBlock({ conversationObject, userId, index }: msgBlockType) {
       />
     </Box>
   );
-}
+};
 
 export default MessageBlock;
