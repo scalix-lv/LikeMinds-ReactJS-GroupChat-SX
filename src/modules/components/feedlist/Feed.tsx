@@ -31,6 +31,7 @@ import GroupInviteTile from "../feed-tiles/invitationTiles";
 import { myClient } from "../../..";
 import SkeletonFeed from "../feed-skeleton";
 import routeVariable from "../../../enums/routeVariables";
+import { UserContext } from "../../contexts/userContext";
 
 const Feeds: React.FC = () => {
   const [loadMoreHomeFeed, setLoadMoreHomeFeed] = useState<boolean>(true);
@@ -306,6 +307,9 @@ const GroupFeedContainer = ({
           <SkeletonFeed />
         ) : (
           <>
+            <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
+              <span>Joined Groups</span>
+            </div>
             {secretChatrooms.map((group: any) => (
               <GroupInviteTile
                 title={group.chatroom.header}
@@ -341,7 +345,7 @@ const GroupFeedContainer = ({
               </Link>
             ))}
             <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
-              <span>All Members</span>
+              <span>All Public Groups</span>
             </div>
             {allFeed.map((group: any) => (
               <GroupAllFeedTile
@@ -349,6 +353,7 @@ const GroupFeedContainer = ({
                 chatroomId={group.id}
                 followStatus={group.follow_status}
                 key={group.id}
+                isSecret={group.is_secret}
               />
             ))}
           </>
@@ -368,6 +373,7 @@ const DirectMessagesFeedContainer = ({
   const id: any = params[routeVariable.id];
   const mode: any = params[routeVariable.mode];
   const feedContext = useContext(FeedContext);
+  const userContext = useContext(UserContext);
   const { dmHomeFeed, setDmHomeFeed, dmAllFeed, setDmAllFeed } = feedContext;
   const navigate = useNavigate();
   const db = myClient.fbInstance();
@@ -438,6 +444,9 @@ const DirectMessagesFeedContainer = ({
         id="home-feed-container"
         className="max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
       >
+        <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
+          <span>Direct Messages</span>
+        </div>
         {dmHomeFeed.length > 0 ? (
           <InfiniteScroll
             hasMore={loadMoreHome}
@@ -463,7 +472,7 @@ const DirectMessagesFeedContainer = ({
       <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
         <span>{mode === "groups" ? "All Public Groups" : "All Members"}</span>
       </div>
-      <div className="max-h-[400px] overflow-auto" id="all-feed-container">
+      <div className="max-h-[100%] overflow-auto" id="all-feed-container">
         {dmAllFeed.length > 0 ? (
           <InfiniteScroll
             loader={null}
@@ -478,9 +487,12 @@ const DirectMessagesFeedContainer = ({
               });
             }}
           >
-            {allFeed.map((group: any) => (
-              <DmMemberTile key={group.id} profile={group} />
-            ))}
+            {allFeed.map((group: any) => {
+              if (group?.id === userContext?.currentUser?.id) {
+                return null;
+              }
+              return <DmMemberTile key={group.id} profile={group} />;
+            })}
           </InfiniteScroll>
         ) : (
           <SkeletonFeed />
