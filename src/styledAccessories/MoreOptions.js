@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton, Menu, MenuItem, Snackbar } from '@mui/material';
-import { getChatRoomDetails, leaveChatRoom, leaveSecretChatroom, log } from '../sdkFunctions';
+import { blockUnblockChatroom, getChatRoomDetails, leaveChatRoom, leaveSecretChatroom, log } from '../sdkFunctions';
 import { myClient } from '..';
 import { UserContext } from '../modules/contexts/userContext';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -88,8 +88,55 @@ export function MoreOptions() {
         if (item.id === 2) {
           return null;
         }
-        if (item.id === 21 && mode === 'direct-messages') {
-          return null;
+        if (item.id === 27 && mode === 'direct-messages') {
+          return <MenuItem
+            key={item.id}
+            onClick={() => {
+              blockUnblockChatroom(0, id).then(() => {
+                getChatRoomDetails(myClient, id).then(e => {
+                  generalContext.setCurrentChatroom(e.data.chatroom);
+                  generalContext.setCurrentProfile(e.data);
+                })
+                document.dispatchEvent(new CustomEvent("addedByStateOne"))
+              })
+              closeMenu();
+              document.dispatchEvent(
+                new CustomEvent("setNewHeight")
+              );
+            }}
+            sx={{
+              fontSize: '14px',
+              color: '#323232'
+            }}
+          >
+            {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
+            {item.title}
+          </MenuItem>
+        }
+        if (item.id === 28 && mode === 'direct-messages') {
+          return <MenuItem
+            key={item.id}
+            onClick={() => {
+              blockUnblockChatroom(1, id).then(() => {
+                getChatRoomDetails(myClient, id).then(e => {
+                  generalContext.setCurrentChatroom(e.data.chatroom);
+                  generalContext.setCurrentProfile(e.data);
+                })
+                document.dispatchEvent(new CustomEvent("addedByStateOne"))
+              })
+              closeMenu();
+              document.dispatchEvent(
+                new CustomEvent("setNewHeight")
+              );
+            }}
+            sx={{
+              fontSize: '14px',
+              color: '#323232'
+            }}
+          >
+            {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
+            {item.title}
+          </MenuItem>
         }
         return (
           <MenuItem
@@ -97,13 +144,19 @@ export function MoreOptions() {
             onClick={() => {
               if (item.id === 6 || item.id === 8) {
                 muteNotifications(item.id);
-              } else if (item.id === 15 || item.id == 9) {
+              } else if (item.id === 15 || item.id === 9) {
                 leaveGroup().then((id) => {
-                  log("chatroom left")
                   let leaveEvent = new CustomEvent('leaveEvent');
                   document.dispatchEvent(leaveEvent);
                 });
               }
+              closeMenu();
+              document.dispatchEvent(
+                new CustomEvent("updateHeightOnPagination")
+              );
+              // else if (item.id === 27) {
+              //   blockUnblockChatroom(0, id)
+              // }
             }}
             sx={{
               fontSize: '14px',
