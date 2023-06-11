@@ -432,12 +432,13 @@ export async function dmAction(requestState, chatroomId, text) {
   try {
     const config = {
       chatroom_id: chatroomId,
-      chat_request_state: requestState
+      chat_request_state: requestState,
+
     };
     if (text != null) {
       config.text = text;
     }
-    const call = await myClient.requestDmAction(config);
+    const call = await myClient.sendDMRequest(config);
     return jsonReturnHandler(call, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
@@ -453,12 +454,13 @@ export async function undoBlock(chatroomId) {
   try {
     // let call = await myClient.
     // let call = await m
-    const call = await myClient.blockCR({
+    const call = await myClient.blockMember({
       chatroom_id: chatroomId,
       status: 1
     });
   } catch (error) {
     // // console.log(error);
+
   }
 }
 
