@@ -22,8 +22,6 @@ import { messageStrings } from "../../../enums/strings";
 const ChatContainer: React.FC = () => {
   const params = useParams();
   const id: any = params[routeVariable.id];
-  const mode: any = params[routeVariable.mode];
-  const operation: any = params[routeVariable.operation];
   const chatroomContext = useContext(ChatroomContext);
   const [loadMoreConversations, setLoadMoreConversations] = useState(true);
   const [bufferMessage, setBufferMessage] = useState(null);

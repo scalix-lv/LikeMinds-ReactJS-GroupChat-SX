@@ -33,7 +33,6 @@ export function useFetchFeed(
   const params = useParams();
   const id: any = params[routeVariable.id];
   const mode: any = params[routeVariable.mode];
-  const operation: any = params[routeVariable.operation];
   const feedContext = useContext(FeedContext);
   const generalContext = useContext(GeneralContext);
   const { homeFeed, allFeed, setHomeFeed, setAllFeed, setSecretChatrooms } =
@@ -271,12 +270,14 @@ export async function loadGroupFeed(
     let loadUnjoinedBool = false;
     await getSecretChatroomsInvite(setSecretChatrooms);
     if (loadMoreHome) {
-      log("inside home");
       let cRooms = <any>[];
       for (let i = 0; i < 3; i++) {
         const feedLength = homeFeed.length;
         const pgNo =
           Math.floor(feedLength / 10) + 1 + Math.floor(cRooms.length / 10);
+        if (pgNo === 1) {
+          homeFeed = [];
+        }
         const call = await myClient.getHomeFeed({ page: pgNo });
         cRooms = cRooms.concat(call.my_chatrooms);
         if (call.my_chatrooms.length < 10) {
