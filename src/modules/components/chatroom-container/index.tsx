@@ -101,7 +101,7 @@ const ChatContainer: React.FC = () => {
         setLoadMoreConversations(true);
       }
       let newConversationArray: any = [];
-      sessionStorage.setItem("dmLastConvo", conversations[0].id);
+      sessionStorage.setItem("dmLastConvo", conversations[0]?.id);
 
       newConversationArray = [
         ...conversations,
@@ -142,6 +142,12 @@ const ChatContainer: React.FC = () => {
     document.addEventListener("updateHeightOnPagination", updateHeight);
     return () => {
       document.removeEventListener("updateHeightOnPagination", updateHeight);
+    };
+  });
+  useEffect(() => {
+    document.addEventListener("setNewHeight", setNewHeight);
+    return () => {
+      document.removeEventListener("setNewHeight", setNewHeight);
     };
   });
 

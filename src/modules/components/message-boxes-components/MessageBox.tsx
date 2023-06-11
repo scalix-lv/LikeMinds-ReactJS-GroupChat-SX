@@ -103,8 +103,8 @@ const MessageBoxDM = ({
                         myClient,
                         generalContext.currentChatroom.id
                       ).then((e: any) => {
-                        chatroomContext.setConversationList(e.data.chatroom);
-                        // chatroomContext.setCurrentProfile(e.data);
+                        generalContext.setCurrentChatroom(e.data.chatroom);
+                        generalContext.setCurrentProfile(e.data);
                       });
                     });
                   });
