@@ -31,6 +31,7 @@ import GroupInviteTile from "../feed-tiles/invitationTiles";
 import { myClient } from "../../..";
 import SkeletonFeed from "../feed-skeleton";
 import routeVariable from "../../../enums/routeVariables";
+import { UserContext } from "../../contexts/userContext";
 
 const Feeds: React.FC = () => {
   const [loadMoreHomeFeed, setLoadMoreHomeFeed] = useState<boolean>(true);
@@ -100,6 +101,14 @@ const Feeds: React.FC = () => {
     loadDmMoreHomeFeed,
     loadDmMoreAllFeed
   );
+  // useEffect(() => {
+  //   return () => {
+  //     setLoadDmMoreAllFeed(true);
+  //     setLoadMoreAllFeed(true);
+  //     setLoadDmMoreHomeFeed(true);
+  //     setLoadMoreHomeFeed(true);
+  //   };
+  // }, [mode]);
   useEffect(() => {
     document.addEventListener("leaveEvent", leaveChatroomContextRefresh);
     document.addEventListener("joinEvent", joinChatroomContextRefresh);
@@ -181,7 +190,7 @@ const GroupFeedContainer = ({
         const firstFeedId = firstFeedEl?.chatroom.id;
         let index;
         for (const ind in newHomeFeed) {
-          if (newHomeFeed[ind]?.chatroom?.id == firstFeedId) {
+          if (newHomeFeed[ind]?.chatroom?.id === firstFeedId) {
             index = ind;
             break;
           }
@@ -199,6 +208,7 @@ const GroupFeedContainer = ({
         const newFeedRestHalf = oldFeed.filter((item) => item != null);
         newHomeFeed = newFeedFirstHalf.concat(newFeedRestHalf);
         setHomeFeed!(newHomeFeed);
+        document.dispatchEvent(new CustomEvent("feedLoaded", { detail: true }));
       }
     } catch (error) {
       log(error);
@@ -226,6 +236,7 @@ const GroupFeedContainer = ({
     });
     setSecretChatrooms!(newSecretChatrooms);
   }
+
   useEffect(() => {
     if (mode == "groups" && id == undefined) {
       const chatroomObject: any = homeFeed[0];
@@ -238,21 +249,29 @@ const GroupFeedContainer = ({
   }, [homeFeed]);
   const fb = myClient.fbInstance();
   useEffect(() => {
+    if (id === undefined) {
+      return;
+    }
     const communityId = sessionStorage.getItem("communityId");
     const query = ref(fb, `community/${communityId}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
+        log("the firebase val is");
+        log(snapshot.val());
         const chatroomId = snapshot.val().chatroom_id;
         if (chatroomId != id) refreshHomeFeed();
       }
     });
   }, [id]);
   useEffect(() => {
-    log(id);
-  }, [id]);
-  useEffect(() => {
     feedContext.setDmAllFeed!([]);
     feedContext.setDmHomeFeed!([]);
+  }, [mode]);
+  useEffect(() => {
+    return () => {
+      setShouldLoadMoreAll(true);
+      setShouldLoadMoreHome(true);
+    };
   }, [mode]);
   useEffect(() => {
     document.addEventListener("sentMessage", localRefreshHomeFeed);
@@ -288,6 +307,9 @@ const GroupFeedContainer = ({
           <SkeletonFeed />
         ) : (
           <>
+            <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
+              <span>Joined Groups</span>
+            </div>
             {secretChatrooms.map((group: any) => (
               <GroupInviteTile
                 title={group.chatroom.header}
@@ -323,7 +345,7 @@ const GroupFeedContainer = ({
               </Link>
             ))}
             <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
-              <span>All Members</span>
+              <span>All Public Groups</span>
             </div>
             {allFeed.map((group: any) => (
               <GroupAllFeedTile
@@ -331,6 +353,7 @@ const GroupFeedContainer = ({
                 chatroomId={group.id}
                 followStatus={group.follow_status}
                 key={group.id}
+                isSecret={group.is_secret}
               />
             ))}
           </>
@@ -349,8 +372,8 @@ const DirectMessagesFeedContainer = ({
   const params = useParams();
   const id: any = params[routeVariable.id];
   const mode: any = params[routeVariable.mode];
-  const operation: any = params[routeVariable.operation];
   const feedContext = useContext(FeedContext);
+  const userContext = useContext(UserContext);
   const { dmHomeFeed, setDmHomeFeed, dmAllFeed, setDmAllFeed } = feedContext;
   const navigate = useNavigate();
   const db = myClient.fbInstance();
@@ -393,7 +416,6 @@ const DirectMessagesFeedContainer = ({
     }
   }
   useEffect(() => {
-    log(id);
     if (mode == "direct-messages" && id == "") {
       const chatroomObject: any = dmHomeFeed[0];
       const chatroomIds = chatroomObject?.chatroom?.id;
@@ -405,7 +427,7 @@ const DirectMessagesFeedContainer = ({
   }, [dmHomeFeed]);
   useEffect(() => {
     const query = ref(db, "collabcards");
-    onValue(query, (snapshot) => {
+    return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
         refreshHomeFeed();
         // }
@@ -422,6 +444,9 @@ const DirectMessagesFeedContainer = ({
         id="home-feed-container"
         className="max-h-[400px] overflow-auto border-b border-solid border-[#EEEEEE]"
       >
+        <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
+          <span>Direct Messages</span>
+        </div>
         {dmHomeFeed.length > 0 ? (
           <InfiniteScroll
             hasMore={loadMoreHome}
@@ -447,7 +472,7 @@ const DirectMessagesFeedContainer = ({
       <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
         <span>{mode === "groups" ? "All Public Groups" : "All Members"}</span>
       </div>
-      <div className="max-h-[400px] overflow-auto" id="all-feed-container">
+      <div className="max-h-[100%] overflow-auto" id="all-feed-container">
         {dmAllFeed.length > 0 ? (
           <InfiniteScroll
             loader={null}
@@ -462,9 +487,12 @@ const DirectMessagesFeedContainer = ({
               });
             }}
           >
-            {allFeed.map((group: any) => (
-              <DmMemberTile key={group.id} profile={group} />
-            ))}
+            {allFeed.map((group: any) => {
+              if (group?.id === userContext?.currentUser?.id) {
+                return null;
+              }
+              return <DmMemberTile key={group.id} profile={group} />;
+            })}
           </InfiniteScroll>
         ) : (
           <SkeletonFeed />

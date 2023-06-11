@@ -163,7 +163,7 @@ export async function getAllChatroomMember(chatroomId, communityId, list, setFun
     const pageNoToCall = list.length / 10 + 1;
     const allMemberCall = await myClient.allMembers({
       chatroom_id: chatroomId,
-      community_id: communityId,
+      // community_id: communityId,
       page: pageNoToCall
     });
     if (setTotalMembers) {
@@ -201,7 +201,7 @@ export function clearInputFiles(inputContext) {
 export async function getUnjoinedRooms(community_id, pageNo) {
   try {
     const unjoinedGroups = await myClient.fetchFeedData({
-      community_id,
+      // community_id,
       order_type: 0,
       page: pageNo || 1
     });
@@ -337,7 +337,7 @@ export async function markRead(chatroomId) {
 export async function getDmHomeFeed(communityId) {
   try {
     const dmFeedCall = await myClient.getDMFeed({
-      community_id: communityId
+      // community_id: communityId
     });
     return jsonReturnHandler(dmFeedCall, null);
   } catch (error) {
@@ -348,7 +348,7 @@ export async function getDmHomeFeed(communityId) {
 export async function canDmHomeFeed(communityId) {
   try {
     const dmFeedCall = await myClient.canDMFeed({
-      community_id: communityId
+      // community_id: communityId
     });
     return jsonReturnHandler(dmFeedCall, null);
   } catch (error) {
@@ -370,7 +370,7 @@ export async function dmChatFeed(communityId, pageNo) {
 export async function allChatroomMembersDm(communityId, page) {
   try {
     const feedCall = await myClient.dmAllMembers({
-      community_id: communityId,
+      // community_id: communityId,
       page,
       member_state: 4
     });
@@ -395,7 +395,7 @@ export async function requestDM(memberId, communityId) {
 export async function canDirectMessage(chatroomId) {
   try {
     const call = await myClient.canDmFeed({
-      community_id: sessionStorage.getItem('communityId'),
+      // community_id: sessionStorage.getItem('communityId'),
       req_from: chatroomId
     });
     return jsonReturnHandler(call, null);
@@ -432,12 +432,13 @@ export async function dmAction(requestState, chatroomId, text) {
   try {
     const config = {
       chatroom_id: chatroomId,
-      chat_request_state: requestState
+      chat_request_state: requestState,
+
     };
     if (text != null) {
       config.text = text;
     }
-    const call = await myClient.requestDmAction(config);
+    const call = await myClient.sendDMRequest(config);
     return jsonReturnHandler(call, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
@@ -453,12 +454,13 @@ export async function undoBlock(chatroomId) {
   try {
     // let call = await myClient.
     // let call = await m
-    const call = await myClient.blockCR({
+    const call = await myClient.blockMember({
       chatroom_id: chatroomId,
       status: 1
     });
   } catch (error) {
     // // console.log(error);
+
   }
 }
 
