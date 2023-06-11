@@ -1,16 +1,16 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable no-use-before-define */
-import { Box, Dialog, IconButton, Menu, MenuItem } from '@mui/material';
-import { useContext, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import EmojiPicker from 'emoji-picker-react';
-import parse from 'html-react-parser';
-import { myClient } from '../../..';
-import { UserContext } from '../../contexts/userContext';
-import ReportConversationDialogBox from '../reportConversation/ReportConversationDialogBox';
-import emojiIcon from '../../../assets/svg/smile.svg';
-import moreIcon from '../../../assets/svg/more-vertical.svg';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { Box, Dialog, IconButton, Menu, MenuItem } from "@mui/material";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import EmojiPicker from "emoji-picker-react";
+import parse from "html-react-parser";
+import { myClient } from "../../..";
+import { UserContext } from "../../contexts/userContext";
+import ReportConversationDialogBox from "../reportConversation/ReportConversationDialogBox";
+import emojiIcon from "../../../assets/svg/smile.svg";
+import moreIcon from "../../../assets/svg/more-vertical.svg";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   addReaction,
   deleteChatFromDM,
@@ -19,28 +19,32 @@ import {
   linkConverter,
   log,
   tagExtracter,
-  undoBlock
-} from '../../../sdkFunctions';
-import { directMessageChatPath, directMessageInfoPath } from '../../../routes';
-import ChatroomContext from '../../contexts/chatroomContext';
-import { GeneralContext } from '../../contexts/generalContext';
-import AttachmentsHolder from './AttachmentsHolder';
-import MediaCarousel from '../carousel';
-import routeVariable from '../../../enums/routeVariables';
+  undoBlock,
+} from "../../../sdkFunctions";
+import { directMessageChatPath, directMessageInfoPath } from "../../../routes";
+import ChatroomContext from "../../contexts/chatroomContext";
+import { GeneralContext } from "../../contexts/generalContext";
+import AttachmentsHolder from "./AttachmentsHolder";
+import MediaCarousel from "../carousel";
+import routeVariable from "../../../enums/routeVariables";
 
-async function getChatroomConversations(chatroomId: any, pageNo: any, chatroomContext: any) {
+async function getChatroomConversations(
+  chatroomId: any,
+  pageNo: any,
+  chatroomContext: any
+) {
   if (chatroomId == null) {
     return;
   }
   const optionObject = {
     chatroomID: chatroomId,
-    page: pageNo
+    page: pageNo,
   };
   const response: any = await getConversationsForGroup(optionObject);
   if (!response.error) {
     const conversations = response.data;
-    sessionStorage.setItem('dmLastConvo', conversations[0].id);
-    chatroomContext.setCurrentChatroomConversations(conversations);
+    sessionStorage.setItem("dmLastConvo", conversations[0].id);
+    chatroomContext.setConversationList(conversations);
   } else {
     log(response.errorMessage);
   }
@@ -67,27 +71,38 @@ const MessageBoxDM = ({
   conversationReactions,
   conversationObject,
   replyConversationObject,
-  index
+  index,
 }: messageBoxType) => {
   const userContext = useContext(UserContext);
   const generalContext = useContext(GeneralContext);
 
   const chatroomContext = useContext(ChatroomContext);
+
   if (conversationObject.state !== 0) {
     return (
       <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
         {conversationObject.state === 1 ? (
-          <span id="state-1">{parse(linkConverter(tagExtracter(messageString, userContext, 1)))}</span>
+          <span id="state-1">
+            {parse(linkConverter(tagExtracter(messageString, userContext, 1)))}
+          </span>
         ) : (
           <>
             {parse(linkConverter(tagExtracter(messageString, userContext)))}
-            {conversationObject?.state === 19 && generalContext?.currentChatroom?.chat_request_state === 2 ? (
+            {conversationObject?.state === 19 &&
+            generalContext?.currentChatroom?.chat_request_state === 2 ? (
               <span
                 className="text-[#3884f7] cursor-pointer"
                 onClick={() => {
                   undoBlock(conversationObject.chatroom_id).then(() => {
-                    getChatroomConversations(generalContext.currentChatroom.id, 100, chatroomContext).then(() => {
-                      getChatRoomDetails(myClient, generalContext.currentChatroom.id).then((e: any) => {
+                    getChatroomConversations(
+                      generalContext.currentChatroom.id,
+                      100,
+                      chatroomContext
+                    ).then(() => {
+                      getChatRoomDetails(
+                        myClient,
+                        generalContext.currentChatroom.id
+                      ).then((e: any) => {
                         chatroomContext.setConversationList(e.data.chatroom);
                         // chatroomContext.setCurrentProfile(e.data);
                       });
@@ -95,7 +110,7 @@ const MessageBoxDM = ({
                   });
                 }}
               >
-                {' '}
+                {" "}
                 Tap to Undo
               </span>
             ) : null}
@@ -116,18 +131,33 @@ const MessageBoxDM = ({
           replyConversationObject={replyConversationObject}
           conversationObject={conversationObject}
         />
-        <MoreOptions convoId={convoId} convoObject={conversationObject} index={index} />
+        <MoreOptions
+          convoId={convoId}
+          convoObject={conversationObject}
+          index={index}
+        />
       </Box>
       <div>
-        {conversationReactions.map((reactionObject: any, reactionObjectIndex: any) => (
-          <ReactionIndicator reaction={reactionObject.reaction} key={reactionObjectIndex} />
-        ))}
+        {conversationObject.deleted_by !== undefined ? null : (
+          <>
+            {conversationReactions.map(
+              (reactionObject: any, reactionObjectIndex: any) => (
+                <ReactionIndicator
+                  reaction={reactionObject.reaction}
+                  key={reactionObjectIndex}
+                />
+              )
+            )}
+          </>
+        )}
       </div>
     </div>
   );
 };
 
-const ReactionIndicator = ({ reaction }: any) => <span className="text-normal mx-1">{reaction}</span>;
+const ReactionIndicator = ({ reaction }: any) => (
+  <span className="text-normal mx-1">{reaction}</span>
+);
 
 export type attType = {
   mediaAttachments: any[];
@@ -141,7 +171,7 @@ const StringBox = ({
   userId,
   attachments,
   replyConversationObject,
-  conversationObject
+  conversationObject,
 }: any) => {
   const ref = useRef(null);
   const userContext = useContext(UserContext);
@@ -150,17 +180,17 @@ const StringBox = ({
   const [attachmentObject, setAttachmentObject] = useState<attType>({
     mediaAttachments: [],
     audioAttachments: [],
-    docAttachments: []
+    docAttachments: [],
   });
   useEffect(() => {
     const att = { ...attachmentObject };
     attachments?.forEach((element: any) => {
-      const type = element.type.split('/')[0];
-      if (type === 'image' || type === 'video') {
+      const type = element.type.split("/")[0];
+      if (type === "image" || type === "video") {
         att.mediaAttachments.push(element);
-      } else if (type === 'audio') {
+      } else if (type === "audio") {
         att.audioAttachments.push(element);
-      } else if (type === 'pdf') {
+      } else if (type === "pdf") {
         att.docAttachments.push(element);
       }
     });
@@ -169,7 +199,10 @@ const StringBox = ({
   return (
     <div
       className="flex flex-col py-[16px] px-[20px] min-w-[282px] max-w-[350px] border-[#eeeeee] rounded-[10px] break-all z:max-sm:min-w-[242px] z:max-sm:max-w-[282px]"
-      style={{ background: userId === userContext.currentUser.id ? '#ECF3FF' : '#FFFFFF' }}
+      style={{
+        background:
+          userId === userContext.currentUser.id ? "#ECF3FF" : "#FFFFFF",
+      }}
     >
       <DialogBoxMediaDisplay
         shouldOpen={displayMediaModal}
@@ -182,17 +215,21 @@ const StringBox = ({
             to={directMessageInfoPath}
             state={{
               communityId: userContext.community.id,
-              memberId: userId
+              memberId: userId,
             }}
           >
-            {userId === userContext.currentUser.id ? 'you' : username}
+            {userId === userContext.currentUser.id ? "you" : username}
           </Link>
         </div>
-        <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">{time}</div>
+        <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
+          {time}
+        </div>
       </div>
 
       {conversationObject.deleted_by !== undefined ? (
-        <span className="text-[14px] w-full font-[300] text-[#323232]">This message has been deleted.</span>
+        <span className="text-[14px] w-full font-[300] text-[#323232]">
+          This message has been deleted.
+        </span>
       ) : (
         <div className="flex w-full flex-col">
           <div className="w-full mb-1 h-full">
@@ -204,14 +241,23 @@ const StringBox = ({
           </div>
           {replyConversationObject != null ? (
             <div className="flex flex-col border-[1px] border-l-[5px] border-[#70A9FF] py-1 px-2 rounded-[5px] mb-1">
-              <div className="text-[#70A9FF] font-bold text-[12px]">{replyConversationObject?.member?.name}</div>
+              <div className="text-[#70A9FF] font-bold text-[12px]">
+                {replyConversationObject?.member?.name}
+              </div>
 
               <div className="text-[#323232] font-[300] text-[12px]">
                 {replyConversationObject.attachment_count > 0 ? (
                   <>
                     {replyConversationObject.attachments?.map((item: any) => {
-                      if (item.type === 'image') {
-                        return <img src={item.url} className="h-[120px] w-[120px]" key={item.url} alt="" />;
+                      if (item.type === "image") {
+                        return (
+                          <img
+                            src={item.url}
+                            className="h-[120px] w-[120px]"
+                            key={item.url}
+                            alt=""
+                          />
+                        );
                       }
                       return null;
                     })}
@@ -236,9 +282,9 @@ const StringBox = ({
 const TimeBox = ({ time }: any) => (
   <span
     style={{
-      fontSize: '10px',
+      fontSize: "10px",
       fontWeight: 300,
-      color: '#323232'
+      color: "#323232",
     }}
   >
     {time}
@@ -278,9 +324,9 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
         setAnchor(null);
       }
     };
-    document.addEventListener('click', handleCloseFunction);
+    document.addEventListener("click", handleCloseFunction);
     return () => {
-      document.removeEventListener('click', handleCloseFunction);
+      document.removeEventListener("click", handleCloseFunction);
     };
   });
   function updateMessageLocally(emoji: any) {
@@ -288,13 +334,23 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
     const reactionTemplate = {
       member: {
         id: userContext?.currentUser?.id,
-        image_url: '',
-        name: userContext?.currentUser?.name
+        image_url: "",
+        name: userContext?.currentUser?.name,
       },
       reaction: emoji,
-      updated_at: Date.now()
+      updated_at: Date.now(),
     };
     const newConvoObject = newConvoArr[index];
+    const convoObjectReactionsArray = newConvoObject?.reactions?.filter(
+      (item: any) => {
+        if (item.member.id !== userContext.currentUser.id) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    );
+    newConvoObject.reactions = convoObjectReactionsArray;
     newConvoObject?.reactions.push(reactionTemplate);
     chatroomContext.setConversationList(newConvoArr);
   }
@@ -306,13 +362,18 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
     chatroomContext.setConversationList(newConvoArr);
   }
 
-  async function onClickhandlerReport(id: any, reason: any, convoid: any, reportedMemberId: any) {
+  async function onClickhandlerReport(
+    id: any,
+    reason: any,
+    convoid: any,
+    reportedMemberId: any
+  ) {
     try {
       const deleteCall = await myClient.pushReport({
         tag_id: parseInt(id?.toString(), 10),
         reason,
         conversation_id: convoid,
-        reported_Member_id: reportedMemberId
+        reported_Member_id: reportedMemberId,
       });
       setShouldShowBlock(!shouldShow);
     } catch (error) {
@@ -322,20 +383,20 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
 
   const options = [
     {
-      title: 'Reply',
+      title: "Reply",
       clickFunction: () => {
         chatroomContext.setIsSelectedConversation(true);
         chatroomContext.setSelectedConversation(convoObject);
-      }
+      },
     },
     {
-      title: 'Report',
+      title: "Report",
       clickFunction: () => {
         setShouldShowBlock(!shouldShow);
-      }
+      },
     },
     {
-      title: 'Delete',
+      title: "Delete",
       clickFunction: () => {
         deleteChatFromDM([convoId])
           .then(() => {
@@ -343,27 +404,38 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
           })
           .catch(() => {
             generalContext.setShowSnackBar(true);
-            generalContext.setSnackBarMessage(' error occoured');
+            generalContext.setSnackBarMessage(" error occoured");
           });
-      }
+      },
     },
     {
-      title: 'Reply Privately',
+      title: "Reply Privately",
       clickFunction: async () => {
         try {
-          const checkDMLimitCall: any = await myClient.checkDMLimit({ memberId: convoObject?.member?.id });
+          const checkDMLimitCall: any = await myClient.checkDMLimit({
+            memberId: convoObject?.member?.id,
+          });
           let isReplyParam;
-          if (userContext.currentUser?.memberState === 1 || convoObject.member.state === 1) {
+          if (
+            userContext.currentUser?.memberState === 1 ||
+            convoObject.member.state === 1
+          ) {
             isReplyParam = 1;
           } else {
             isReplyParam = 2;
           }
 
           if (checkDMLimitCall.chatroom_id) {
-            navigate(`${directMessageChatPath}/${checkDMLimitCall.chatroom_id}/${isReplyParam}`);
+            navigate(
+              `${directMessageChatPath}/${checkDMLimitCall.chatroom_id}/${isReplyParam}`
+            );
           } else if (!checkDMLimitCall.is_request_dm_limit_exceeded) {
-            const createChatroomCall: any = await myClient.createDMChatroom({ member_id: convoObject?.member?.id });
-            navigate(`${directMessageChatPath}/${createChatroomCall?.chatroom?.id}/${isReplyParam}`);
+            const createChatroomCall: any = await myClient.createDMChatroom({
+              member_id: convoObject?.member?.id,
+            });
+            navigate(
+              `${directMessageChatPath}/${createChatroomCall?.chatroom?.id}/${isReplyParam}`
+            );
           } else {
             generalContext.setShowSnackBar(true);
             generalContext.setSnackBarMessage(
@@ -373,10 +445,12 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
         } catch (error) {
           log(error);
         }
-      }
-    }
+      },
+    },
   ];
-
+  if (convoObject.deleted_by !== undefined) {
+    return null;
+  }
   return (
     <Box className="flex items-center">
       <IconButton ref={ref2} onClick={handleOpen}>
@@ -393,28 +467,37 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
         <img src={moreIcon} alt="More vertical icon" />
         {/* <MoreVertIcon /> */}
       </IconButton>
-      <Menu sx={{ width: '250px' }} open={open} anchorEl={anchor}>
+      <Menu sx={{ width: "250px" }} open={open} anchorEl={anchor}>
         {options.map((option) => {
-          if (option.title === 'Report' && convoObject.member?.id === userContext.currentUser.id) {
-            return null;
-          }
-          if (option.title === 'Delete' && convoObject.member?.id !== userContext.currentUser.id) {
-            return null;
-          }
           if (
-            (option.title === 'Reply Privately' &&
-              generalContext.currentChatroom.type !== 7 &&
-              generalContext.currentChatroom.type !== 0 &&
-              chatroomContext.showReplyPrivately) ||
-            (option.title === 'Reply Privately' && mode === 'direct-messages')
+            option.title === "Report" &&
+            convoObject.member?.id === userContext.currentUser.id
           ) {
             return null;
           }
-          if (option.title === 'Reply Privately') {
+          if (
+            option.title === "Delete" &&
+            convoObject.member?.id !== userContext.currentUser.id
+          ) {
+            return null;
+          }
+          if (
+            (option.title === "Reply Privately" &&
+              generalContext.currentChatroom.type !== 7 &&
+              generalContext.currentChatroom.type !== 0 &&
+              chatroomContext.showReplyPrivately) ||
+            (option.title === "Reply Privately" && mode === "direct-messages")
+          ) {
+            return null;
+          }
+          if (option.title === "Reply Privately") {
             if (convoObject.member?.id === userContext.currentUser?.id) {
               return null;
             }
-            if (chatroomContext.replyPrivatelyMode === 2 && convoObject?.member?.state === 4) {
+            if (
+              chatroomContext.replyPrivatelyMode === 2 &&
+              convoObject?.member?.state === 4
+            ) {
               return null;
             }
           }
@@ -423,10 +506,10 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
               key={option.title}
               onClick={option.clickFunction}
               sx={{
-                padding: '10px 20px',
-                color: '#323232',
-                borderBottom: '1px solid #eeeeee',
-                fontSize: '14px'
+                padding: "10px 20px",
+                color: "#323232",
+                borderBottom: "1px solid #eeeeee",
+                fontSize: "14px",
               }}
             >
               {option.title}
@@ -449,10 +532,18 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
           reportedMemberId={convoObject.member?.member_id}
         />
       </Dialog>
-      <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={handleCloseEmoji}>
+      <Menu
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleCloseEmoji}
+      >
         <EmojiPicker
           onEmojiClick={(e) => {
-            addReaction(e.emoji, convoId, generalContext.currentChatroom.id).then((_r) => {
+            addReaction(
+              e.emoji,
+              convoId,
+              generalContext.currentChatroom.id
+            ).then((_r) => {
               updateMessageLocally(e.emoji);
             });
 
@@ -470,7 +561,11 @@ type dialogBoxType = {
   mediaData: any;
 };
 
-const DialogBoxMediaDisplay = ({ onClose, shouldOpen, mediaData }: dialogBoxType) => (
+const DialogBoxMediaDisplay = ({
+  onClose,
+  shouldOpen,
+  mediaData,
+}: dialogBoxType) => (
   <Dialog open={shouldOpen} onClose={onClose}>
     <MediaCarousel mediaArray={mediaData?.mediaObj} />
   </Dialog>
@@ -478,9 +573,14 @@ const DialogBoxMediaDisplay = ({ onClose, shouldOpen, mediaData }: dialogBoxType
 
 export default MessageBoxDM;
 
-const ImageConversationView = ({ imageArray, setMediaData, setDisplayMediaModel, item }: any) => {
+const ImageConversationView = ({
+  imageArray,
+  setMediaData,
+  setDisplayMediaModel,
+  item,
+}: any) => {
   function setFunction() {
-    setMediaData({ mediaObj: imageArray, type: 'image' });
+    setMediaData({ mediaObj: imageArray, type: "image" });
     setDisplayMediaModel(true);
   }
   switch (imageArray.length) {

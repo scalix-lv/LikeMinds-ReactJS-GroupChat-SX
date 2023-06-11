@@ -43,7 +43,6 @@ export function useFetchFeed(
       try {
         switch (mode) {
           case "groups": {
-            log("inside groups");
             loadGroupFeed(
               setSecretChatrooms,
               homeFeed,
@@ -58,7 +57,6 @@ export function useFetchFeed(
             break;
           }
           case "direct-messages": {
-            log("inside direct-messages");
             fetchActiveHomeFeeds({
               setFeedList: feedContext.setDmHomeFeed,
               currentFeedList: feedContext.dmHomeFeed,
@@ -82,7 +80,6 @@ export function useFetchFeed(
         log(error);
       }
     }
-    log("fetching feed");
     fetchFeed();
   }, [mode]);
 
@@ -190,7 +187,6 @@ export async function fetchActiveHomeFeeds({
 
 export async function fetchAllDMFeeds({
   setShouldLoadMore,
-
   currentFeedList,
   setFeedList,
 }: fetchAllFeedType) {
@@ -201,12 +197,29 @@ export async function fetchAllDMFeeds({
       sessionStorage.getItem("communityId"),
       pageNo
     );
-    const chatrooms = call.data.members;
-    if (chatrooms.length < 10) {
-      setShouldLoadMore(false);
+
+    if (pageNo === 1) {
+      let chatrooms = call.data.members;
+      for (let index = 1; index < 3; index++) {
+        const call: any = await allChatroomMembersDm(
+          sessionStorage.getItem("communityId"),
+          index + 1
+        );
+        chatrooms = chatrooms.concat(call.data.members);
+        if (call.data.members.length < 10) {
+          setShouldLoadMore(false);
+          break;
+        }
+      }
+      setFeedList(chatrooms);
+    } else {
+      const chatrooms = call.data.members;
+      if (chatrooms.length < 10) {
+        setShouldLoadMore(false);
+      }
+      const newChatrooms = currentFeedList.concat(chatrooms);
+      setFeedList(newChatrooms);
     }
-    const newChatrooms = currentFeedList.concat(chatrooms);
-    setFeedList(newChatrooms);
     return true;
   } catch (error) {
     log(`error under function fetchAllDmFeed: ${error} `);
