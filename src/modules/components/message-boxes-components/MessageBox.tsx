@@ -88,6 +88,7 @@ const MessageBoxDM = ({
         ) : (
           <>
             {parse(linkConverter(tagExtracter(messageString, userContext)))}
+            {/* Showing Tap to undo only if the user that has rejected the chatroom see it */}
             {conversationObject?.state === 19 &&
             generalContext?.currentChatroom?.chat_request_state === 2 &&
             userContext.currentUser.id ===
@@ -214,15 +215,7 @@ const StringBox = ({
       />
       <div className="flex w-full justify-between mb-1 clear-both">
         <div className="text-[12px] leading-[14px] text-[#323232] font-[700] capitalize">
-          <div
-          // to={directMessageInfoPath}
-          // state={{
-          //   communityId: userContext.community.id,
-          //   memberId: userId,
-          // }}
-          >
-            {userId === userContext.currentUser.id ? "you" : username}
-          </div>
+          <div>{userId === userContext.currentUser.id ? "you" : username}</div>
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
           {time}

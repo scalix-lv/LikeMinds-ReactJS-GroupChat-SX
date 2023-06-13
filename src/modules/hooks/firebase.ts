@@ -17,7 +17,6 @@ export function useFirebaseChatConversations(
 
     return onValue(query, (snapshot: any) => {
       if (snapshot.exists()) {
-        log("snap aya h ");
         getChatroomConversations(id, 100).then(() => {
           setBufferMessage(null);
         });

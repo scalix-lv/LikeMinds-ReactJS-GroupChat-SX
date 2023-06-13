@@ -201,7 +201,6 @@ const ChatContainer: React.FC = () => {
         id="chat"
         className="relative overflow-x-hidden overflow-auto flex-[1]
         "
-        // style={{ height: "calc(100vh - 270px)" }}
         ref={scrollTop}
         onScroll={() => {
           if (!loadMoreConversations) {
