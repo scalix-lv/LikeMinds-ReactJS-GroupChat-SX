@@ -85,6 +85,14 @@ export function MoreOptions() {
         </MenuItem>
       ) : null}
       {generalContext.currentProfile?.chatroom_actions?.map((item) => {
+        if (item.id === 21 && mode === "direct-messages") {
+          return <div onClick={() => {
+
+          }} />
+
+
+        }
+
         if (item.id === 2) {
           return null;
         }
@@ -143,7 +151,14 @@ export function MoreOptions() {
             key={item.id}
             onClick={() => {
               if (item.id === 6 || item.id === 8) {
-                muteNotifications(item.id);
+                muteNotifications(item.id).then(res => {
+                  generalContext.setShowSnackBar(true)
+                  if (item.id === 6) {
+                    generalContext.setSnackBarMessage("Chatroom Muted")
+                  } else {
+                    generalContext.setSnackBarMessage("Chatroom Unmuted")
+                  }
+                })
               } else if (item.id === 15 || item.id === 9) {
                 leaveGroup().then((id) => {
                   let leaveEvent = new CustomEvent('leaveEvent');

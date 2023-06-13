@@ -437,9 +437,11 @@ const DirectMessagesFeedContainer = ({
     }
   }, [dmHomeFeed]);
   useEffect(() => {
-    const query = ref(db, "collabcards");
+    const communityId = sessionStorage.getItem("communityId");
+    const query = ref(db, `community/${communityId}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
+        log("snapshot here");
         refreshHomeFeed();
         // }
       }
