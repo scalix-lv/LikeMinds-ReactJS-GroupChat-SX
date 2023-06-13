@@ -102,15 +102,7 @@ const ChatroomWrapper: React.FC = () => {
           {getChatroomComponents(operation!)}
         </>
       ) : (
-        <>
-          <Button
-            onClick={() => {
-              log(generalContext);
-            }}
-          >
-            BTN
-          </Button>
-        </>
+        <></>
       )}
     </ChatroomContext.Provider>
   );
