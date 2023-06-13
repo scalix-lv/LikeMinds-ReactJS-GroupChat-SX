@@ -67,17 +67,21 @@ const ChatContainer: React.FC = () => {
 
   // get chatroom conversations
   const getChatroomConversations = async (chatroomId: string, pageNo: any) => {
-    const optionObject = {
-      chatroomID: chatroomId,
-      paginateBy: pageNo,
-    };
-    const response: any = await getConversationsForGroup(optionObject);
-    if (!response.error) {
-      const conversations = response.data;
-      sessionStorage.setItem("dmLastConvo", conversations[0].id);
-      chatroomContext.setConversationList(conversations);
-    } else {
-      log(response.errorMessage);
+    try {
+      const optionObject = {
+        chatroomID: chatroomId,
+        paginateBy: pageNo,
+      };
+      const response: any = await getConversationsForGroup(optionObject);
+      if (!response.error) {
+        const conversations = response.data;
+        sessionStorage.setItem("dmLastConvo", conversations[0].id);
+        chatroomContext.setConversationList(conversations);
+      } else {
+        log(response.errorMessage);
+      }
+    } catch (e) {
+      log(e);
     }
   };
 
@@ -133,7 +137,7 @@ const ChatContainer: React.FC = () => {
       setNewHeight();
       setPageNo(1);
     });
-  }, [id]);
+  }, [id, generalContext.currentChatroom]);
 
   useEffect(() => {
     generalContext.setShowLoadingBar(false);

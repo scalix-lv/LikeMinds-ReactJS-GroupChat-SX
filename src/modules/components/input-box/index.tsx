@@ -55,7 +55,10 @@ const Input = ({ setBufferMessage, disableInputBox }: any) => {
           setBufferMessage={setBufferMessage}
           disableInputBox={disableInputBox}
         />
-        <InputOptions containerRef={inputBoxContainerRef} />
+        <InputOptions
+          containerRef={inputBoxContainerRef}
+          disableInputBox={disableInputBox}
+        />
       </Box>
     </InputFieldContext.Provider>
   );
@@ -203,6 +206,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
             bottom: "9.5%",
             right: "1%",
             zIndex: 1,
+            display: enableInputBox || disableInputBox ? "none" : "block",
           }}
         >
           {/* <SendIcon className="text-[#3884F7]" /> */}
@@ -212,7 +216,11 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
           disabled={enableInputBox || disableInputBox}
           className="mentions"
           spellCheck="false"
-          placeholder="Write a Comment..."
+          placeholder={
+            enableInputBox || disableInputBox
+              ? "Input box has been disabled"
+              : "Write a Comment..."
+          }
           value={messageText}
           customSuggestionsContainer={(children: any) => (
             <div
@@ -238,9 +246,6 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
                     cbRef.current(n);
                   });
                 }
-              }}
-              onClick={() => {
-                log(children);
               }}
             >
               {children}
@@ -332,7 +337,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
   );
 };
 
-const InputOptions = ({ containerRef }: any) => {
+const InputOptions = ({ containerRef, disableInputBox }: any) => {
   const inputFieldContext = useContext(InputFieldContext);
   const {
     audioAttachments,
@@ -366,6 +371,9 @@ const InputOptions = ({ containerRef }: any) => {
       setFile: setDocumentAttachments,
     },
   ];
+  if (disableInputBox) {
+    return null;
+  }
   return (
     <Box className="flex">
       {optionArr.map((option, _optionIndex) => {
