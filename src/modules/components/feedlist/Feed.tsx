@@ -441,7 +441,6 @@ const DirectMessagesFeedContainer = ({
     const query = ref(db, `community/${communityId}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
-        log("snapshot here");
         refreshHomeFeed();
         // }
       }
