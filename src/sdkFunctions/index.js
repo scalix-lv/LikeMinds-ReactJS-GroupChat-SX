@@ -503,3 +503,16 @@ export async function checkDMStatus(id) {
     return jsonReturnHandler(null, error);
   }
 }
+
+export async function blockUnblockChatroom(status, chatroom) {
+  try {
+    let call = await myClient.blockMember({
+      chatroom_id: chatroom,
+      status: status
+    })
+    return true
+  } catch (error) {
+    log(error)
+    return false
+  }
+}
