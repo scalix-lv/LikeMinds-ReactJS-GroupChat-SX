@@ -77,13 +77,6 @@ export const AcceptTheirInviteFirst = ({ title }: any) => {
     }
   }
 
-  useEffect(() => {
-    return () => {
-      generalContext.setCurrentChatroom({});
-      generalContext.setCurrentProfile({});
-    };
-  }, [mode]);
-
   return (
     <div className="h-full">
       <Box className="flex justify-center items-center flex-col h-[98%]">

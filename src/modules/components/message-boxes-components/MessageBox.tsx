@@ -88,8 +88,12 @@ const MessageBoxDM = ({
         ) : (
           <>
             {parse(linkConverter(tagExtracter(messageString, userContext)))}
+            {/* Showing Tap to undo only if the user that has rejected the chatroom see it */}
             {conversationObject?.state === 19 &&
-            generalContext?.currentChatroom?.chat_request_state === 2 ? (
+            generalContext?.currentChatroom?.chat_request_state === 2 &&
+            userContext.currentUser.id ===
+              generalContext.currentChatroom.chat_requested_by[0].id &&
+            index === chatroomContext.conversationList.length - 1 ? (
               <span
                 className="text-[#3884f7] cursor-pointer"
                 onClick={() => {
@@ -103,8 +107,8 @@ const MessageBoxDM = ({
                         myClient,
                         generalContext.currentChatroom.id
                       ).then((e: any) => {
-                        chatroomContext.setConversationList(e.data.chatroom);
-                        // chatroomContext.setCurrentProfile(e.data);
+                        generalContext.setCurrentChatroom(e.data.chatroom);
+                        generalContext.setCurrentProfile(e.data);
                       });
                     });
                   });
@@ -211,15 +215,7 @@ const StringBox = ({
       />
       <div className="flex w-full justify-between mb-1 clear-both">
         <div className="text-[12px] leading-[14px] text-[#323232] font-[700] capitalize">
-          <Link
-            to={directMessageInfoPath}
-            state={{
-              communityId: userContext.community.id,
-              memberId: userId,
-            }}
-          >
-            {userId === userContext.currentUser.id ? "you" : username}
-          </Link>
+          <div>{userId === userContext.currentUser.id ? "you" : username}</div>
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
           {time}

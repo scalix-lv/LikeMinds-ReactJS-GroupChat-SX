@@ -48,8 +48,14 @@ const Feeds: React.FC = () => {
     log(operation);
   });
   const feedContext = useContext(FeedContext);
-  const { homeFeed, setHomeFeed, allFeed, setAllFeed, dmHomeFeed } =
-    feedContext;
+  const {
+    homeFeed,
+    setHomeFeed,
+    allFeed,
+    setAllFeed,
+    dmHomeFeed,
+    setDmHomeFeed,
+  } = feedContext;
   const generalContext = useContext(GeneralContext);
   const navigate = useNavigate();
   const leaveChatroomContextRefresh = async () => {
@@ -76,17 +82,29 @@ const Feeds: React.FC = () => {
       const feedcall: any = await getChatRoomDetails(myClient, id);
       generalContext.setCurrentProfile(feedcall.data);
       generalContext.setCurrentChatroom(feedcall.data.chatroom);
-      let newHomeFeed = [...homeFeed];
+
+      let newHomeFeed;
+      if (mode === "groups") {
+        newHomeFeed = [...homeFeed];
+      } else {
+        newHomeFeed = [...dmHomeFeed];
+      }
       newHomeFeed = [feedcall.data].concat(newHomeFeed);
-      let newAllFeed = [];
-      newAllFeed = allFeed.map((group: any) => {
-        if (group.id === id) {
-          group.follow_status = true;
-        }
-        return group;
-      });
-      setHomeFeed!(newHomeFeed);
-      setAllFeed!(newAllFeed);
+      if (mode === "groups") {
+        setHomeFeed!(newHomeFeed);
+      } else {
+        setDmHomeFeed!(newHomeFeed);
+      }
+      if (mode === "groups") {
+        let newAllFeed = [];
+        newAllFeed = allFeed.map((group: any) => {
+          if (group.id === id) {
+            group.follow_status = true;
+          }
+          return group;
+        });
+        setAllFeed!(newAllFeed);
+      }
     } catch (error) {
       log(error);
     }
@@ -101,14 +119,7 @@ const Feeds: React.FC = () => {
     loadDmMoreHomeFeed,
     loadDmMoreAllFeed
   );
-  // useEffect(() => {
-  //   return () => {
-  //     setLoadDmMoreAllFeed(true);
-  //     setLoadMoreAllFeed(true);
-  //     setLoadDmMoreHomeFeed(true);
-  //     setLoadMoreHomeFeed(true);
-  //   };
-  // }, [mode]);
+
   useEffect(() => {
     document.addEventListener("leaveEvent", leaveChatroomContextRefresh);
     document.addEventListener("joinEvent", joinChatroomContextRefresh);
@@ -426,7 +437,8 @@ const DirectMessagesFeedContainer = ({
     }
   }, [dmHomeFeed]);
   useEffect(() => {
-    const query = ref(db, "collabcards");
+    const communityId = sessionStorage.getItem("communityId");
+    const query = ref(db, `community/${communityId}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
         refreshHomeFeed();
