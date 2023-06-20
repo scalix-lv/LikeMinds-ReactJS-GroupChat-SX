@@ -4,43 +4,59 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import RouteProvider from "./modules/components/routes";
 import { UserContext } from "./modules/contexts/userContext";
-import { initiateSDK, log } from "./sdkFunctions";
+import { log } from "./sdkFunctions";
 import { myClient } from ".";
+import { initiateSDK, retrieveMemberStates } from "./sdkFunctions/clientSetup";
 
 function App() {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [community, setCommunity] = useState();
+
   useEffect(() => {
-    initiateSDK(false, "", "")
-      .then((res: any) => {
-        setCommunity(res?.data?.community);
-        setCurrentUser(res?.data?.user);
-        sessionStorage.setItem("communityId", res?.data?.community?.id);
-      })
-      .catch((error) => {
+    const initiateClient = async () => {
+      try {
+        let call: any = await initiateSDK(
+          false,
+          "a6c65e80-e4f9-407a-9e1e-6f67aa362ab9",
+          "kurama"
+        );
+        setCommunity(call?.data?.community);
+        setCurrentUser(call?.data?.user);
+        sessionStorage.setItem("communityId", call?.data?.community?.id);
+      } catch (error) {
         log(error);
-      });
+      }
+    };
+    initiateClient();
   }, []);
   useEffect(() => {
-    if (currentUser?.memberState !== undefined) {
-      return;
-    }
-    if (currentUser?.id === undefined) {
-      return;
-    }
-    myClient
-      .getMemberState({
-        memberId: currentUser?.id,
-      })
-      .then((res: any) => {
+    async function settingMemberState() {
+      try {
+        if (
+          currentUser?.id === undefined ||
+          currentUser.memberRights !== undefined
+        ) {
+          return null;
+        }
+        if (currentUser?.memberState !== undefined) {
+          return null;
+        }
+        const res: any = await retrieveMemberStates(currentUser.id);
+
         let newUserObject = { ...currentUser };
-        newUserObject.memberState = res?.member?.state;
-        newUserObject.memberRights = res?.member_rights;
+
+        newUserObject.memberState = res?.data?.member?.state;
+        newUserObject.memberRights = res?.data?.member_rights;
+
         setCurrentUser(newUserObject);
-      });
+      } catch (error) {
+        log(error);
+      }
+    }
+    settingMemberState();
   }, [currentUser]);
 
-  if (currentUser?.id === undefined || currentUser.memberState === undefined) {
+  if (currentUser?.id === null || currentUser?.id === undefined) {
     return null;
   }
 

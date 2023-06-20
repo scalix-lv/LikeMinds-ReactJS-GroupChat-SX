@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import {
   checkDMStatus,
   getConversationsForGroup,
-  log,
+  // log,
   markRead,
 } from "../../../sdkFunctions";
 import ChatroomContext from "../../contexts/chatroomContext";
@@ -19,11 +19,10 @@ import LetThemAcceptInvite, {
 } from "../direct-messages-trans-state";
 import routeVariable from "../../../enums/routeVariables";
 import { messageStrings } from "../../../enums/strings";
+import { events } from "../../../enums/events";
 const ChatContainer: React.FC = () => {
   const params = useParams();
   const id: any = params[routeVariable.id];
-  const mode: any = params[routeVariable.mode];
-  const operation: any = params[routeVariable.operation];
   const chatroomContext = useContext(ChatroomContext);
   const [loadMoreConversations, setLoadMoreConversations] = useState(true);
   const [bufferMessage, setBufferMessage] = useState(null);
@@ -63,21 +62,34 @@ const ChatContainer: React.FC = () => {
         el.scrollHeight.toString()
       );
     }
+    if (!!scrollTop.current) {
+      console.log("|||||||||||||||||||||||||||||||||||");
+      scrollTop.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
+    }
   };
 
   // get chatroom conversations
   const getChatroomConversations = async (chatroomId: string, pageNo: any) => {
-    const optionObject = {
-      chatroomID: chatroomId,
-      paginateBy: pageNo,
-    };
-    const response: any = await getConversationsForGroup(optionObject);
-    if (!response.error) {
-      const conversations = response.data;
-      sessionStorage.setItem("dmLastConvo", conversations[0].id);
-      chatroomContext.setConversationList(conversations);
-    } else {
-      log(response.errorMessage);
+    try {
+      const optionObject = {
+        chatroomID: chatroomId,
+        paginateBy: pageNo,
+      };
+      const response: any = await getConversationsForGroup(optionObject);
+      // console.log(response);
+      if (!response.error) {
+        const conversations = response.data.conversations;
+        sessionStorage.setItem("dmLastConvo", conversations[0].id);
+        chatroomContext.setConversationList(conversations);
+      } else {
+        // log(response.errorMessage);
+      }
+    } catch (e) {
+      // log(e);
     }
   };
 
@@ -94,14 +106,14 @@ const ChatContainer: React.FC = () => {
     };
     const response: any = await getConversationsForGroup(optionObject);
     if (!response.error) {
-      const conversations = response.data;
+      const conversations = response?.data?.conversations;
       if (conversations.length < 50) {
         setLoadMoreConversations(false);
       } else {
         setLoadMoreConversations(true);
       }
       let newConversationArray: any = [];
-      sessionStorage.setItem("dmLastConvo", conversations[0].id);
+      sessionStorage.setItem("dmLastConvo", conversations[0]?.id);
 
       newConversationArray = [
         ...conversations,
@@ -110,7 +122,7 @@ const ChatContainer: React.FC = () => {
       chatroomContext.setConversationList(newConversationArray);
       return true;
     }
-    log(response.errorMessage);
+    // log(response.errorMessage);
     return false;
   };
   useEffect(() => {
@@ -126,22 +138,35 @@ const ChatContainer: React.FC = () => {
           chatroomContext.setReplyPrivatelyMode(parseInt(showListParams, 10));
         }
       } catch (error) {
-        log(error);
+        // log(error);
       }
     }
-    loadChatAndMarkReadChatroom().then(() => {
-      setNewHeight();
-      setPageNo(1);
-    });
-  }, [id]);
+    loadChatAndMarkReadChatroom()
+      .then(() => {
+        setNewHeight();
+        setPageNo(1);
+      })
+      .catch((er) => {
+        // console.log("error here", er);
+      });
+  }, [id, generalContext.currentChatroom]);
 
   useEffect(() => {
     generalContext.setShowLoadingBar(false);
   }, [chatroomContext?.conversationList]);
   useEffect(() => {
-    document.addEventListener("updateHeightOnPagination", updateHeight);
+    document.addEventListener(events.updateHeightOnPagination, updateHeight);
     return () => {
-      document.removeEventListener("updateHeightOnPagination", updateHeight);
+      document.removeEventListener(
+        events.updateHeightOnPagination,
+        updateHeight
+      );
+    };
+  });
+  useEffect(() => {
+    document.addEventListener(events.setNewHeight, setNewHeight);
+    return () => {
+      document.removeEventListener(events.setNewHeight, setNewHeight);
     };
   });
 
@@ -149,9 +174,11 @@ const ChatContainer: React.FC = () => {
     function reloadChatroom() {
       getChatroomConversations(id, 100);
     }
-    document.addEventListener("addedByStateOne", reloadChatroom);
+    document.addEventListener(events.addedByStateOne, reloadChatroom);
+    document.addEventListener(events.leaveEvent, reloadChatroom);
     return () => {
-      document.removeEventListener("addedByStateOne", reloadChatroom);
+      document.removeEventListener(events.addedByStateOne, reloadChatroom);
+      document.removeEventListener(events.leaveEvent, reloadChatroom);
     };
   }, [id]);
 
@@ -191,7 +218,6 @@ const ChatContainer: React.FC = () => {
         id="chat"
         className="relative overflow-x-hidden overflow-auto flex-[1]
         "
-        // style={{ height: "calc(100vh - 270px)" }}
         ref={scrollTop}
         onScroll={() => {
           if (!loadMoreConversations) {
@@ -204,7 +230,7 @@ const ChatContainer: React.FC = () => {
               .then(() => setPageNo((p) => p + 1))
               .then(() => {
                 document.dispatchEvent(
-                  new CustomEvent("updateHeightOnPagination")
+                  new CustomEvent(events.updateHeightOnPagination)
                 );
               });
           }

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import React, { useEffect } from 'react';
-import { Carousel } from 'react-responsive-carousel';
-import { log } from '../../../sdkFunctions';
+import React, { useEffect } from "react";
+import { Carousel } from "react-responsive-carousel";
+import { log } from "../../../sdkFunctions";
 
 type CarouselType = {
   mediaArray: any[];
@@ -11,11 +11,15 @@ const MediaCarousel = ({ mediaArray }: CarouselType) => (
   <div className="border border-black border-solid">
     <Carousel showArrows showThumbs={false}>
       {mediaArray?.map((item: any) => {
-        log(item);
+        // log(item);
         return (
           <>
-            {item?.type === 'image' ? (
-              <img src={item?.url} className="max-w-full max-h-full block h-auto w-auto" alt="" />
+            {item?.type === "image" ? (
+              <img
+                src={item?.url}
+                className="max-w-full max-h-full block h-auto w-auto"
+                alt=""
+              />
             ) : (
               <video
                 controls

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton, Menu, MenuItem, Snackbar } from '@mui/material';
-import { getChatRoomDetails, leaveChatRoom, leaveSecretChatroom, log } from '../sdkFunctions';
+import { blockUnblockChatroom, getChatRoomDetails, leaveChatRoom, leaveSecretChatroom, log } from '../sdkFunctions';
 import { myClient } from '..';
 import { UserContext } from '../modules/contexts/userContext';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,6 +10,7 @@ import ChatroomContext from '../modules/contexts/chatroomContext';
 import { GeneralContext } from '../modules/contexts/generalContext';
 import MemberDialogBox from '../modules/components/members-dialog-box';
 import routeVariable from '../enums/routeVariables';
+import { events } from '../enums/events';
 
 export function MoreOptions() {
   const [open, setOpen] = useState(false);
@@ -22,7 +23,7 @@ export function MoreOptions() {
   let id = params[routeVariable.id];
   let mode = params[routeVariable.mode];
   let operation = params[routeVariable.operation];
-  log(userContext);
+  // log(userContext);
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
@@ -30,9 +31,9 @@ export function MoreOptions() {
 
   async function muteNotifications(id) {
     try {
-      let call = await myClient.muteChatroom({
-        chatroom_id: generalContext.currentChatroom.id,
-        value: id == 6 ? true : false
+      await myClient.muteChatroom({
+        chatroomId: generalContext.currentChatroom.id,
+        value: id === 6 ? true : false
       });
       closeMenu();
       let refreshCall = await getChatRoomDetails(myClient, generalContext.currentChatroom.id);
@@ -45,11 +46,16 @@ export function MoreOptions() {
 
   async function leaveGroup() {
     try {
-      log(userContext.currentUser);
+      // log(userContext.currentUser);
       if (!!generalContext.currentChatroom.is_secret) {
         await leaveSecretChatroom(generalContext.currentChatroom.id, userContext.currentUser?.user_unique_id);
       } else {
         await leaveChatRoom(generalContext.currentChatroom.id, userContext.currentUser?.user_unique_id);
+        document.dispatchEvent(new CustomEvent(events.leaveGroupCommon, {
+          detail: {
+            chatroomId: id
+          }
+        }))
       }
       return generalContext.currentChatroom.id;
     } catch (error) {
@@ -85,25 +91,93 @@ export function MoreOptions() {
         </MenuItem>
       ) : null}
       {generalContext.currentProfile?.chatroom_actions?.map((item) => {
+        if (item.id === 21 && mode === "direct-messages") {
+          return <div onClick={() => {
+
+          }} />
+
+
+        }
+
         if (item.id === 2) {
           return null;
         }
-        if (item.id === 21 && mode === 'direct-messages') {
-          return null;
+        if (item.id === 27 && mode === 'direct-messages') {
+          return <MenuItem
+            key={item.id}
+            onClick={() => {
+              blockUnblockChatroom(0, id).then(() => {
+                getChatRoomDetails(myClient, id).then(e => {
+                  generalContext.setCurrentChatroom(e.data.chatroom);
+                  generalContext.setCurrentProfile(e.data);
+                })
+                document.dispatchEvent(new CustomEvent("addedByStateOne"))
+              })
+              closeMenu();
+              document.dispatchEvent(
+                new CustomEvent("setNewHeight")
+              );
+            }}
+            sx={{
+              fontSize: '14px',
+              color: '#323232'
+            }}
+          >
+            {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
+            {item.title}
+          </MenuItem>
+        }
+        if (item.id === 28 && mode === 'direct-messages') {
+          return <MenuItem
+            key={item.id}
+            onClick={() => {
+              blockUnblockChatroom(1, id).then(() => {
+                getChatRoomDetails(myClient, id).then(e => {
+                  generalContext.setCurrentChatroom(e.data.chatroom);
+                  generalContext.setCurrentProfile(e.data);
+                })
+                document.dispatchEvent(new CustomEvent("addedByStateOne"))
+              })
+              closeMenu();
+              document.dispatchEvent(
+                new CustomEvent("setNewHeight")
+              );
+            }}
+            sx={{
+              fontSize: '14px',
+              color: '#323232'
+            }}
+          >
+            {/* <img src={leaveIcon} alt="leave" className="mr-2" /> */}
+            {item.title}
+          </MenuItem>
         }
         return (
           <MenuItem
             key={item.id}
             onClick={() => {
               if (item.id === 6 || item.id === 8) {
-                muteNotifications(item.id);
-              } else if (item.id === 15 || item.id == 9) {
+                muteNotifications(item.id).then(res => {
+                  generalContext.setShowSnackBar(true)
+                  if (item.id === 6) {
+                    generalContext.setSnackBarMessage("Chatroom Muted")
+                  } else {
+                    generalContext.setSnackBarMessage("Chatroom Unmuted")
+                  }
+                })
+              } else if (item.id === 15 || item.id === 9) {
                 leaveGroup().then((id) => {
-                  log("chatroom left")
                   let leaveEvent = new CustomEvent('leaveEvent');
                   document.dispatchEvent(leaveEvent);
                 });
               }
+              closeMenu();
+              document.dispatchEvent(
+                new CustomEvent("updateHeightOnPagination")
+              );
+              // else if (item.id === 27) {
+              //   blockUnblockChatroom(0, id)
+              // }
             }}
             sx={{
               fontSize: '14px',

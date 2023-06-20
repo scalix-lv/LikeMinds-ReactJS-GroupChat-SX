@@ -88,8 +88,12 @@ const MessageBoxDM = ({
         ) : (
           <>
             {parse(linkConverter(tagExtracter(messageString, userContext)))}
+            {/* Showing Tap to undo only if the user that has rejected the chatroom see it */}
             {conversationObject?.state === 19 &&
-            generalContext?.currentChatroom?.chat_request_state === 2 ? (
+            generalContext?.currentChatroom?.chat_request_state === 2 &&
+            userContext.currentUser.id ===
+              generalContext.currentChatroom.chat_requested_by[0].id &&
+            index === chatroomContext.conversationList.length - 1 ? (
               <span
                 className="text-[#3884f7] cursor-pointer"
                 onClick={() => {
@@ -103,8 +107,8 @@ const MessageBoxDM = ({
                         myClient,
                         generalContext.currentChatroom.id
                       ).then((e: any) => {
-                        chatroomContext.setConversationList(e.data.chatroom);
-                        // chatroomContext.setCurrentProfile(e.data);
+                        generalContext.setCurrentChatroom(e.data.chatroom);
+                        generalContext.setCurrentProfile(e.data);
                       });
                     });
                   });
@@ -211,15 +215,7 @@ const StringBox = ({
       />
       <div className="flex w-full justify-between mb-1 clear-both">
         <div className="text-[12px] leading-[14px] text-[#323232] font-[700] capitalize">
-          <Link
-            to={directMessageInfoPath}
-            state={{
-              communityId: userContext.community.id,
-              memberId: userId,
-            }}
-          >
-            {userId === userContext.currentUser.id ? "you" : username}
-          </Link>
+          <div>{userId === userContext.currentUser.id ? "you" : username}</div>
         </div>
         <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">
           {time}
@@ -370,10 +366,10 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
   ) {
     try {
       const deleteCall = await myClient.pushReport({
-        tag_id: parseInt(id?.toString(), 10),
+        tagId: parseInt(id?.toString(), 10),
         reason,
-        conversation_id: convoid,
-        reported_Member_id: reportedMemberId,
+        conversationId: convoid,
+        reportedMemberId: reportedMemberId,
       });
       setShouldShowBlock(!shouldShow);
     } catch (error) {
@@ -431,7 +427,7 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
             );
           } else if (!checkDMLimitCall.is_request_dm_limit_exceeded) {
             const createChatroomCall: any = await myClient.createDMChatroom({
-              member_id: convoObject?.member?.id,
+              memberId: convoObject?.member?.id,
             });
             navigate(
               `${directMessageChatPath}/${createChatroomCall?.chatroom?.id}/${isReplyParam}`

@@ -1,14 +1,14 @@
-import { IconButton } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import backIcon from '../../../assets/svg/arrow-left.svg';
-import rightArrow from '../../../assets/svg/right-arrow.svg';
-import { GeneralContext } from '../../contexts/generalContext';
-import { myClient } from '../../..';
-import { groupMainPath } from '../../../routes';
-import { log } from '../../../sdkFunctions';
-import routeVariable from '../../../enums/routeVariables';
+import { IconButton } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
+import backIcon from "../../../assets/svg/arrow-left.svg";
+import rightArrow from "../../../assets/svg/right-arrow.svg";
+import { GeneralContext } from "../../contexts/generalContext";
+import { myClient } from "../../..";
+import { groupMainPath } from "../../../routes";
+import { log } from "../../../sdkFunctions";
+import routeVariable from "../../../enums/routeVariables";
 
 const ParticipantTile = ({ profile }: any) => (
   <div className="p-2.5 border-[#eeeeee] border-b-[1px] flex justify-between bg-white items-center cursor-pointer">
@@ -31,8 +31,6 @@ const GroupInfo = () => {
   const [loadMode, setLoadMore] = useState(true);
   const params = useParams();
   const id: any = params[routeVariable.id];
-  const mode: any = params[routeVariable.mode];
-  const operation: any = params[routeVariable.operation];
   const callFn = (isSecret: any) => {
     const getMemberList = async (isSecret: any) => {
       try {
@@ -41,12 +39,12 @@ const GroupInfo = () => {
           chatroom_id: parseInt(id, 10),
           is_secret: isSecret,
           page,
-          page_size: 20
+          page_size: 20,
         });
-        if (call.participants.length < 20) {
+        if (call?.data?.participants?.length < 20) {
           setLoadMore(false);
         }
-        const newList = participantList.concat(call.participants);
+        const newList = participantList.concat(call?.data?.participants);
         setParticipantList(newList);
       } catch (error) {
         log(error);
@@ -70,13 +68,18 @@ const GroupInfo = () => {
               <img src={backIcon} alt="back icon" />
             </IconButton>
           </Link>
-          <div className="text-[20px] mt-[8px] font-[700] leading-[24px] text-[#3884F7]">Group Info</div>
+          <div className="text-[20px] mt-[8px] font-[700] leading-[24px] text-[#3884F7]">
+            Group Info
+          </div>
         </div>
 
         {/* Member list */}
         <div className="ml-1 pl-[5px] h-full">
           <div className="text-4 font-[700] text-[#323232]">Participants</div>
-          <div className="py-[18px] overflow-auto max-h-[70%]" id="participant-list">
+          <div
+            className="py-[18px] overflow-auto max-h-[70%]"
+            id="participant-list"
+          >
             <InfiniteScroll
               next={() => callFn(gc.currentChatroom.is_secret)}
               hasMore={loadMode}

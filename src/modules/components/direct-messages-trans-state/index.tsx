@@ -77,13 +77,6 @@ export const AcceptTheirInviteFirst = ({ title }: any) => {
     }
   }
 
-  useEffect(() => {
-    return () => {
-      generalContext.setCurrentChatroom({});
-      generalContext.setCurrentProfile({});
-    };
-  }, [mode]);
-
   return (
     <div className="h-full">
       <Box className="flex justify-center items-center flex-col h-[98%]">
@@ -152,8 +145,8 @@ export const AcceptTheirInviteFirst = ({ title }: any) => {
               onClick={() => {
                 myClient
                   .inviteAction({
-                    channel_id: id!,
-                    invite_status: 1,
+                    channelId: id!,
+                    inviteStatus: 1,
                   })
                   .then(() => {
                     generalContext.setShowSnackBar(true);
