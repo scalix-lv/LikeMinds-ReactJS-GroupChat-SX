@@ -87,7 +87,7 @@ const ChatroomWrapper: React.FC = () => {
     >
       {operation !== "" &&
       showTitle &&
-      generalContext.currentChatroom?.id !== undefined ? (
+      generalContext.currentChatroom?.id != undefined ? (
         <>
           <Tittle
             title={getChatroomDisplayName()}
@@ -101,9 +101,7 @@ const ChatroomWrapper: React.FC = () => {
 
           {getChatroomComponents(operation!)}
         </>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </ChatroomContext.Provider>
   );
 };
