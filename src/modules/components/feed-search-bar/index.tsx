@@ -30,18 +30,18 @@ const Searchbar = () => {
         }
         setShouldShowLoading(true);
         const callFollowed = await myClient.searchChatroom({
-          follow_status: true,
+          followStatus: true,
           search: searchString,
-          page_size: 200,
+          pageSize: 200,
           page: 1,
-          search_type: "header",
+          searchType: "header",
         });
         const callUnFollowed = await myClient.searchChatroom({
-          follow_status: false,
+          followStatus: false,
           search: searchString,
-          page_size: 200,
+          pageSize: 200,
           page: 1,
-          search_type: "header",
+          searchType: "header",
         });
         const obj = [];
         obj[0] = { "Followed Groups": callFollowed.chatrooms };
