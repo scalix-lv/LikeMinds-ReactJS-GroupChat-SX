@@ -1,25 +1,29 @@
 import { Route, Routes } from "react-router-dom";
 import Switch from "../switch";
 import routeVariable from "../../../enums/routeVariables";
+import { useEffect } from "react";
+import { log } from "../../../sdkFunctions";
 
-const RouteProvider: React.FC = () => (
-  <Routes>
-    <Route path="community/" element={<Switch />} />
-    <Route path={`community/:${routeVariable.mode}`} element={<Switch />} />
-    <Route
-      path={`community/:${routeVariable.mode}/:${routeVariable.operation}`}
-      element={<Switch />}
-    />
-    <Route
-      path={`community/:${routeVariable.mode}/:${routeVariable.operation}/:${routeVariable.id}`}
-      element={<Switch />}
-    />
-    <Route
-      path={`community/:${routeVariable.mode}/:${routeVariable.operation}/:${routeVariable.id}/:${routeVariable.replyPrivatelyVariable}`}
-      element={<Switch />}
-    />
-  </Routes>
-);
+const RouteProvider: React.FC = () => {
+  return (
+    <Routes>
+      <Route path="community/" element={<Switch />} />
+      <Route path={`community/:${routeVariable.mode}`} element={<Switch />} />
+      <Route
+        path={`community/:${routeVariable.mode}/:${routeVariable.operation}`}
+        element={<Switch />}
+      />
+      <Route
+        path={`community/:${routeVariable.mode}/:${routeVariable.operation}/:${routeVariable.id}`}
+        element={<Switch />}
+      />
+      <Route
+        path={`community/:${routeVariable.mode}/:${routeVariable.operation}/:${routeVariable.id}/:${routeVariable.replyPrivatelyVariable}`}
+        element={<Switch />}
+      />
+    </Routes>
+  );
+};
 
 export default RouteProvider;
 

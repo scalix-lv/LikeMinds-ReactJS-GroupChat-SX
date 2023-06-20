@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 import { Box } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { linkCss, linkTextCss, navIconCss } from '../../../styledAccessories/css';
 import dm from '../../../assets/dm.svg';
@@ -11,8 +11,22 @@ import groups from '../../../assets/groups.svg';
 import { RouteContext } from '../../contexts/routeContext';
 
 import { addedByMePath, directMessagePath, eventsPath, forumPath, groupPath } from '../../../routes';
+import { myClient } from '../../..';
+import { log } from '../../../sdkFunctions';
+import { UserContext } from '../../contexts/userContext';
 
 const Sidenav = ({ setOpenMenu, openMenu }) => {
+  const [showNav, setShowNav] = useState(false)
+  const [showDmTab, setShowDMTab] = useState(false)
+  const userContext = useContext(UserContext)
+  useEffect(() => {
+    if (userContext.currentUser?.id === undefined) {
+      return
+    }
+    myClient.checkDMTab().then(e => {
+
+    })
+  })
   const navArray = [
     {
       title: 'Forums',
@@ -45,6 +59,7 @@ const Sidenav = ({ setOpenMenu, openMenu }) => {
   function toggleNavigationBar() {
     routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
   }
+
   return (
     <div className={`relative ${openMenu ? ' z:max-sm:[143px] sm:max-md:w-[241px]' : ''}`}>
       {/* <div

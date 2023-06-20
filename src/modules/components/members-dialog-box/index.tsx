@@ -1,11 +1,11 @@
 /* eslint-disable no-use-before-define */
-import { Checkbox, Dialog } from '@mui/material';
-import { useContext, useEffect, useRef, useState } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import search from '../../../assets/search.png';
-import { myClient } from '../../..';
-import { log } from '../../../sdkFunctions';
-import { GeneralContext } from '../../contexts/generalContext';
+import { Checkbox, Dialog } from "@mui/material";
+import { useContext, useEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import search from "../../../assets/search.png";
+import { myClient } from "../../..";
+import { log } from "../../../sdkFunctions";
+import { GeneralContext } from "../../contexts/generalContext";
 
 type MemberDialogBoxType = {
   open: boolean;
@@ -13,7 +13,7 @@ type MemberDialogBoxType = {
   id: any;
 };
 const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
-  const [searchKey, setSearchKey] = useState('');
+  const [searchKey, setSearchKey] = useState("");
   const [members, setMembers] = useState([]);
   const [checkedMembers, setCheckedMembers] = useState<any>({});
   const [shouldLoadMore, setShouldLoadMore] = useState(true);
@@ -25,9 +25,9 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
       const timeout = setTimeout(async () => {
         const call = await myClient.searchMembers({
           search: searchKey,
-          search_type: 'name',
+          search_type: "name",
           page: 1,
-          page_size: 10
+          page_size: 10,
         });
         setMembers(call.members);
       }, 500);
@@ -39,16 +39,17 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
     try {
       const call = await myClient.getAllMembers({
         chatroomId: id,
-        page: Math.floor(pg)
+        page: Math.floor(pg),
       });
-      if (call.members.length < 10) {
+      console.log("the member call is", call);
+      if (call?.data?.members?.length < 10) {
         setShouldLoadMore(false);
       }
-      if (members.length < 10) {
-        setMembers(call.members);
+      if (members?.length < 10) {
+        setMembers(call?.data?.members);
       } else {
         let newM = [...members];
-        newM = newM.concat(call.members);
+        newM = newM.concat(call?.data?.members);
         setMembers(newM);
       }
     } catch (error) {
@@ -64,31 +65,35 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
       return null;
     });
     if (addedParticants.length === 0) {
-      generalContext.setSnackBarMessage('Select atleast one participant to send invite');
+      generalContext.setSnackBarMessage(
+        "Select atleast one participant to send invite"
+      );
       generalContext.setShowSnackBar(true);
       return;
     }
     await myClient.sendInvites({
-      chatroom_id: id,
-      is_secret: true,
-      chatroom_participants: addedParticants
+      chatroomId: id,
+      isSecret: true,
+      chatroomParticipants: addedParticants,
     });
-    generalContext.setSnackBarMessage('Selected participants invited successfully');
+    generalContext.setSnackBarMessage(
+      "Selected participants invited successfully"
+    );
     generalContext.setShowSnackBar(true);
     onClose();
-    setSearchKey('');
+    setSearchKey("");
   }
 
   useEffect(() => {
     function addClickListener(e: any) {
       if (e?.target?.contains(dialogRef?.current)) {
         onClose();
-        setSearchKey('');
+        setSearchKey("");
       }
     }
-    document.addEventListener('click', addClickListener);
+    document.addEventListener("click", addClickListener);
     return () => {
-      document.removeEventListener('click', addClickListener);
+      document.removeEventListener("click", addClickListener);
     };
   }, []);
 
@@ -96,11 +101,11 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
     setShouldLoadMore(true);
   }, [searchKey]);
   useEffect(() => {
-    log(members);
+    // log(members);
   }, [members]);
 
   return (
-    <Dialog open={open} PaperProps={{ sx: { maxWidth: '662px' } }} fullWidth>
+    <Dialog open={open} PaperProps={{ sx: { maxWidth: "662px" } }} fullWidth>
       <div className="pt-[30px] px-5 pb-3 grow" ref={dialogRef}>
         <div>
           <img src={search} alt="" className="absolute mt-[14px] ml-[14px]" />
@@ -119,19 +124,22 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
           ref={infiniteScrollRef}
           dataLength={members?.length}
           next={() => {
-            if (infiniteScrollRef.current && infiniteScrollRef?.current?.el?.scrollTop === 0) {
+            if (
+              infiniteScrollRef.current &&
+              infiniteScrollRef?.current?.el?.scrollTop === 0
+            ) {
               return;
             }
             const pg = Math.floor(members?.length / 10) + 1;
-            if (searchKey === '') {
+            if (searchKey === "") {
               getMembers(pg);
             } else {
               myClient
                 .searchMembers({
                   search: searchKey,
-                  search_type: 'name',
+                  search_type: "name",
                   page: pg,
-                  page_size: 10
+                  page_size: 10,
                 })
                 .then((res: any) => {
                   if (res.members.length < 10) {
@@ -157,7 +165,10 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
             </div>
           ) : null}
           {members?.map((member: any, _index: any) => (
-            <div className="mx-6 py-5 border-b border-[#eeeee]" key={member?.id}>
+            <div
+              className="mx-6 py-5 border-b border-[#eeeee]"
+              key={member?.id}
+            >
               <Checkbox
                 onClick={(e: any) => {
                   // e.target.checked = !e.target?.checked!;
@@ -170,8 +181,8 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
                   setCheckedMembers(newCheckedList);
                 }}
                 style={{
-                  padding: '0px',
-                  paddingRight: '9px'
+                  padding: "0px",
+                  paddingRight: "9px",
                 }}
               />
               {member?.image_url?.length > 0 ? (
@@ -179,14 +190,14 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
                   className="h-9 w-9 border rounded mr-[9px]"
                   alt=""
                   src={member?.image_url}
-                  style={{ display: 'inline' }}
+                  style={{ display: "inline" }}
                 />
               ) : (
                 <div
                   className="h-9 w-9  mr-[9px] text-center bg-[#a6a6a6] border border-[#a6a6a6] rounded pt-1"
-                  style={{ display: 'inline-block' }}
+                  style={{ display: "inline-block" }}
                 >
-                  {member.name.split('')[0]?.toUpperCase()}
+                  {member.name.split("")[0]?.toUpperCase()}
                 </div>
               )}
               <span className="font-medium">{member?.name}</span>
@@ -204,7 +215,7 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
         <button
           className="w-[93px] h-[34px] py-[5px] border border-[#3884F7] rounded-[5px] text-[#3884F7] mr-4"
           onClick={() => {
-            setSearchKey('');
+            setSearchKey("");
             onClose();
           }}
         >
