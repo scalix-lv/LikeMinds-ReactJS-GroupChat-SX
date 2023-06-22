@@ -63,12 +63,12 @@ const ChatContainer: React.FC = () => {
       );
     }
     if (!!scrollTop.current) {
-      console.log("|||||||||||||||||||||||||||||||||||");
       scrollTop.current.scrollIntoView({
         behavior: "smooth",
         block: "end",
         inline: "nearest",
       });
+      generalContext.setShowLoadingBar(false);
     }
   };
 
@@ -151,9 +151,9 @@ const ChatContainer: React.FC = () => {
       });
   }, [id, generalContext.currentChatroom]);
 
-  useEffect(() => {
-    generalContext.setShowLoadingBar(false);
-  }, [chatroomContext?.conversationList]);
+  // useEffect(() => {
+  //   generalContext.setShowLoadingBar(false);
+  // }, [chatroomContext?.conversationList]);
   useEffect(() => {
     document.addEventListener(events.updateHeightOnPagination, updateHeight);
     return () => {
@@ -271,7 +271,8 @@ const ChatContainer: React.FC = () => {
           />
         ) : null}
       </div>
-      {userContext.currentUser?.memberRights[4]?.is_selected ? (
+      {userContext.currentUser?.hasOwnProperty("memberRights") &&
+      userContext.currentUser?.memberRights[4]?.is_selected ? (
         generalContext?.currentChatroom?.member_can_message === false ? (
           <p className="text-center">
             {messageStrings.chatroomResponseOnlyCMCanRespond}
@@ -279,7 +280,7 @@ const ChatContainer: React.FC = () => {
         ) : (
           <Input
             disableInputBox={
-              generalContext.currentChatroom.chat_request_state === 2
+              generalContext.currentChatroom?.chat_request_state === 2
             }
             setBufferMessage={setBufferMessage}
           />

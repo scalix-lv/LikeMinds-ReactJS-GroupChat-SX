@@ -3,7 +3,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-throw-literal */
 /* eslint-disable camelcase */
-import LikeMinds from 'likeminds-chat-beta';
+// import LikeMinds from 'likeminds-chat-beta';
 import { myClient } from '..';
 export const jsonReturnHandler = (callRes, error) => {
   // log("response hai")
@@ -20,12 +20,12 @@ export const jsonReturnHandler = (callRes, error) => {
   return callRes;
 };
 
-export const createNewClient = (key) => {
-  const client = new LikeMinds({
-    apiKey: key
-  });
-  return client;
-};
+// export const createNewClient = (key) => {
+//   const client = new LikeMinds({
+//     apiKey: key
+//   });
+//   return client;
+// };
 
 export const getChatRoomDetails = async (myClient, chatRoomId) => {
   try {
@@ -302,8 +302,8 @@ export function linkConverter(sampleString) {
 export async function joinChatRoom(collabId, userId) {
   try {
     const joinCall = await myClient.followChatroom({
-      collabcard_id: collabId,
-      member_id: userId,
+      collabcardId: collabId,
+      memberId: userId,
       value: true
     });
     // refreshContext();

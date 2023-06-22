@@ -22,11 +22,11 @@ const Container: React.FC = () => {
             : "z:max-md:flex-[1]"
         }`}
       >
-        {/* {generalContext.showLoadingBar ? (
+        {generalContext.showLoadingBar ? (
           <div className="w-full h-full absolute z-[10] items-center justify-center flex bg-inherit">
             <CircularProgress />
           </div>
-        ) : null} */}
+        ) : null}
         <ChatroomWrapper />
       </div>
     </>

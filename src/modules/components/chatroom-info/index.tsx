@@ -36,10 +36,10 @@ const GroupInfo = () => {
       try {
         const page = Math.floor(participantList.length / 20) + 1;
         const call = await myClient.viewParticipants({
-          chatroom_id: parseInt(id, 10),
-          is_secret: isSecret,
+          chatroomId: parseInt(id, 10),
+          isSecret: isSecret,
           page,
-          page_size: 20,
+          pageSize: 20,
         });
         if (call?.data?.participants?.length < 20) {
           setLoadMore(false);

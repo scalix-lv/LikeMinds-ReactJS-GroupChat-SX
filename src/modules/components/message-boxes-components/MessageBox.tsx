@@ -479,8 +479,8 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
           }
           if (
             (option.title === "Reply Privately" &&
-              generalContext.currentChatroom.type !== 7 &&
-              generalContext.currentChatroom.type !== 0 &&
+              generalContext.currentChatroom?.type !== 7 &&
+              generalContext.currentChatroom?.type !== 0 &&
               chatroomContext.showReplyPrivately) ||
             (option.title === "Reply Privately" && mode === "direct-messages")
           ) {

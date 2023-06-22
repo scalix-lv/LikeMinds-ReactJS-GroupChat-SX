@@ -348,7 +348,6 @@ const GroupFeedContainer = ({
                     generalContext.setChatroomUrl(
                       group?.chatroom?.chatroom_image_url
                     );
-                    generalContext.setShowLoadingBar(true);
                   }
                   routeContext.setIsNavigationBoxOpen(
                     !routeContext.isNavigationBoxOpen
