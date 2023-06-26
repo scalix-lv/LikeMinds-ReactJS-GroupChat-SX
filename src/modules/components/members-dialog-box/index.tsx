@@ -25,9 +25,9 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
       const timeout = setTimeout(async () => {
         const call = await myClient.searchMembers({
           search: searchKey,
-          search_type: "name",
+          searchType: "name",
           page: 1,
-          page_size: 10,
+          pageSize: 10,
         });
         setMembers(call.members);
       }, 500);
@@ -137,9 +137,9 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
               myClient
                 .searchMembers({
                   search: searchKey,
-                  search_type: "name",
+                  searchType: "name",
                   page: pg,
-                  page_size: 10,
+                  pageSize: 10,
                 })
                 .then((res: any) => {
                   if (res.members.length < 10) {

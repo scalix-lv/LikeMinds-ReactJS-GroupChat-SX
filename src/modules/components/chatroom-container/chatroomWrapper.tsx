@@ -11,6 +11,7 @@ import GroupInfo from "../chatroom-info";
 import routeVariable from "../../../enums/routeVariables";
 import { log } from "../../../sdkFunctions";
 import { Button } from "@mui/material";
+import ChannelSearch from "../channel-search";
 
 const getChatroomComponents = (operation: string) => {
   switch (operation) {
@@ -35,6 +36,7 @@ const ChatroomWrapper: React.FC = () => {
   const [showReplyPrivately, setShowReplyPrivately] = useState(false);
   const [replyPrivatelyMode, setReplyPrivatelyMode] = useState(null);
   const [showTitle, setShowTitle] = useState(false);
+  const [openSearch, setOpenSearch] = useState("");
   const generalContext = useContext(GeneralContext);
   const userContext = useContext(UserContext);
   const params = useParams();
@@ -57,19 +59,6 @@ const ChatroomWrapper: React.FC = () => {
     }
     return generalContext?.currentChatroom?.chatroom_image_url;
   }
-  useEffect(() => {
-    if (id !== "" && id !== undefined) {
-      generalContext.setShowLoadingBar(true);
-      setShowTitle(false);
-    }
-    return () => {
-      generalContext.setShowLoadingBar(true);
-      setShowTitle(false);
-    };
-  }, [id]);
-  useEffect(() => {
-    setShowTitle(true);
-  }, [generalContext?.currentChatroom]);
   return (
     <ChatroomContext.Provider
       value={{
@@ -85,9 +74,7 @@ const ChatroomWrapper: React.FC = () => {
         setReplyPrivatelyMode,
       }}
     >
-      {operation !== "" &&
-      showTitle &&
-      generalContext.currentChatroom?.id !== undefined ? (
+      {!openSearch ? (
         <>
           <Tittle
             title={getChatroomDisplayName()}
@@ -97,12 +84,15 @@ const ChatroomWrapper: React.FC = () => {
                 : null
             }
             chatroomUrl={getChatroomImageUrl()}
+            openSearch={openSearch}
+            setOpenSearch={setOpenSearch}
           />
-
           {getChatroomComponents(operation!)}
         </>
       ) : (
-        <></>
+        <>
+          <ChannelSearch setOpenSearch={setOpenSearch} />
+        </>
       )}
     </ChatroomContext.Provider>
   );

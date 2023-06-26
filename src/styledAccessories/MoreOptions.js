@@ -47,7 +47,7 @@ export function MoreOptions() {
   async function leaveGroup() {
     try {
       // log(userContext.currentUser);
-      if (!!generalContext.currentChatroom.is_secret) {
+      if (!!generalContext.currentChatroom?.is_secret) {
         await leaveSecretChatroom(generalContext.currentChatroom.id, userContext.currentUser?.user_unique_id);
       } else {
         await leaveChatRoom(generalContext.currentChatroom.id, userContext.currentUser?.user_unique_id);
@@ -75,7 +75,7 @@ export function MoreOptions() {
         horizontal: 'left'
       }}
     >
-      {generalContext.currentChatroom.is_secret && userContext.currentUser?.memberState === 1 ? (
+      {generalContext.currentChatroom?.is_secret && userContext.currentUser?.memberState === 1 ? (
         <MenuItem
           key={'secretChatroomDialog'}
           onClick={() => {

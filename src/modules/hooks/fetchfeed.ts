@@ -87,9 +87,11 @@ export function useFetchFeed(
   useEffect(() => {
     async function setFeeds() {
       try {
+        generalContext.setShowLoadingBar(true);
         const feedcall: any = await getChatRoomDetails(myClient, id);
-        generalContext.setCurrentProfile(feedcall?.data);
-        generalContext.setCurrentChatroom(feedcall?.data?.chatroom);
+        console.log(feedcall);
+        generalContext.setCurrentProfile(feedcall?.data?.data);
+        generalContext.setCurrentChatroom(feedcall?.data?.data?.chatroom);
       } catch (error) {
         log(error);
       }

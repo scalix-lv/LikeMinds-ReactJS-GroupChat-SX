@@ -148,8 +148,8 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
   useEffect(() => {
     const { currentChatroom } = generalContext;
     if (
-      currentChatroom.member?.state === 1 ||
-      currentChatroom.chatroom_with_user?.state === 1
+      currentChatroom?.member?.state === 1 ||
+      currentChatroom?.chatroom_with_user?.state === 1
     ) {
       setChatRequestVariable(1);
     } else {
@@ -188,8 +188,9 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
       <div className="relative">
         <IconButton
           onClick={() => {
+            console.log(generalContext.currentChatroom);
             sendMessage(
-              generalContext.currentChatroom.chat_request_state,
+              generalContext?.currentChatroom?.chat_request_state,
               chatRequestVariable,
               chatroomContext,
               parseInt(id, 10),
