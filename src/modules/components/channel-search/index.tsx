@@ -1,5 +1,5 @@
 import { IconButton } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { myClient } from "../../..";
 import searchConversationsInsideChatroom from "../../../sdkFunctions/searchFunctions";
@@ -9,6 +9,7 @@ import ProfileTile from "./profile-tile";
 import { log } from "../../../sdkFunctions";
 import { ref } from "@firebase/database";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { GeneralContext } from "../../contexts/generalContext";
 // import { log } from "console";
 // log
 
@@ -22,6 +23,7 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
 
   const searchInputBoxRef = useRef<HTMLDivElement>(null);
 
+  const generalContext = useContext(GeneralContext);
   function setSearchString(e: any) {
     setSearchKey(e.target.value);
   }
@@ -92,7 +94,7 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
       return searchArray?.map((profile: any) => {
         return (
           <div className="my-2" key={profile?.id}>
-            <ProfileTile profile={profile} />
+            <ProfileTile profile={profile} setOpenSearch={setOpenSearch} />
           </div>
         );
       });
@@ -120,6 +122,7 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
             type="text"
             value={searchKey}
             onChange={setSearchString}
+            placeholder={`Search withing ${generalContext.currentChatroom?.header}`}
             className="w-full py-3 focus:border-0 focus:outline-0 active:border-0 focus:outline-0 px-14 bg-transparent"
           />
         </div>
