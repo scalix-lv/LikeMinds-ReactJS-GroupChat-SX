@@ -63,16 +63,18 @@ const ChatContainer: React.FC = () => {
 
   // Update height
   const updateHeight = (e: any) => {
-    const targetedConversationId = e?.details;
-    console.log(targetedConversationId);
+    const targetedConversationId = e?.detail;
+    console.log("the targeted conversation id is: ", targetedConversationId);
     if (targetedConversationId) {
       const element: Element | null = document.getElementById(
         targetedConversationId?.toString()
       );
+
       if (element) {
-        element.scrollIntoView({
-          behavior: "auto",
-        });
+        console.log("The targeted element is", element);
+        setTimeout(() => {
+          element.scrollIntoView();
+        }, 500);
       }
     }
     // const el = document.getElementById("chat");
@@ -172,6 +174,9 @@ const ChatContainer: React.FC = () => {
     // An empty list that will store the new conversation list after the paginated call.
     let newConversationArray: any = [];
 
+    // chatroom id for scrolling into the view in the next pagination
+    let scrollIntoViewId: any = "";
+
     if (!response.error) {
       // The list of conversations recieved from an array
       const conversations = response?.data?.conversations;
@@ -198,6 +203,8 @@ const ChatContainer: React.FC = () => {
             ...chatroomContext.conversationList,
             ...conversations,
           ];
+          scrollIntoViewId =
+            chatroomContext.conversationList[conversationsLength - 1]?.id;
         } else {
           // setting the conversation id in the session storage and making the new conversation array
           sessionStorage.setItem(
@@ -208,10 +215,12 @@ const ChatContainer: React.FC = () => {
             ...conversations,
             ...chatroomContext.conversationList,
           ];
+          scrollIntoViewId = chatroomContext.conversationList[0]?.id;
         }
         // replacing the old with new conversation array in the context
         chatroomContext.setConversationList(newConversationArray);
       }
+      return scrollIntoViewId;
     }
   };
 
@@ -398,13 +407,12 @@ const ChatContainer: React.FC = () => {
               loadMoreBackwardConversations
             ) {
               paginateChatroomConversations(id, 50, scrollPosition)
-                .then(() => setPageNo((p) => p + 1))
-                .then(() => {
+                // .then(() => setPageNo((p) => p + 1))
+                .then((e) => {
+                  console.log("the last convoId is: ", e);
                   document.dispatchEvent(
                     new CustomEvent(events.updateHeightOnPagination, {
-                      detail: sessionStorage.getItem(
-                        LAST_CONVERSATION_ID_BACKWARD
-                      ),
+                      detail: e,
                     })
                   );
                 });
@@ -414,13 +422,12 @@ const ChatContainer: React.FC = () => {
               loadMoreForwardConversations
             ) {
               paginateChatroomConversations(id, 50, scrollPosition)
-                .then(() => setPageNo((p) => p + 1))
-                .then(() => {
+                // .then(() => setPageNo((p) => p + 1))
+                .then((e) => {
+                  console.log("the last convoId is: ", e);
                   document.dispatchEvent(
                     new CustomEvent(events.updateHeightOnPagination, {
-                      detail: sessionStorage.getItem(
-                        LAST_CONVERSATION_ID_FORWARD
-                      ),
+                      detail: e,
                     })
                   );
                 });
