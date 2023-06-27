@@ -1,8 +1,11 @@
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { REGEX_USER_SPLITTING, REGEX_USER_TAGGING } from "../../../enums/regex";
 import { useContext } from "react";
+import parse from "html-react-parser";
 import { GeneralContext } from "../../contexts/generalContext";
 import { SEARCHED_CONVERSATION_ID } from "../../../enums/localStorageConstants";
+import { linkConverter, tagExtracter } from "../../../sdkFunctions";
+import { UserContext } from "../../contexts/userContext";
 
 function renderAnswers(text: string) {
   let arr = [];
@@ -72,10 +75,13 @@ const ProfileImageView = ({ imgSource }: any) => {
 };
 
 const ProfileData = ({ userName, answer }: any) => {
+  const userContext = useContext(UserContext);
   return (
     <div className="grow pl-4">
       <div className="font-semibold">{userName}</div>
-      <p className="text-ellipsis ">{answer}</p>
+      <p className="text-ellipsis ">
+        {parse(linkConverter(tagExtracter(answer, userContext)))}
+      </p>
     </div>
   );
 };
