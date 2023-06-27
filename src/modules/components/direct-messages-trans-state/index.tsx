@@ -62,7 +62,7 @@ export const AcceptTheirInviteFirst = ({ title }: any) => {
       generalContext.setCurrentChatroom(newChatroomObject?.data?.chatroom);
       generalContext.setCurrentProfile(newChatroomObject?.data);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 
@@ -73,7 +73,7 @@ export const AcceptTheirInviteFirst = ({ title }: any) => {
       generalContext.setCurrentChatroom(newChatroomObject?.data?.chatroom);
       generalContext.setCurrentProfile(newChatroomObject?.data);
     } catch (error) {
-      // // console.log(error);
+      // // // console.log(error);
     }
   }
 

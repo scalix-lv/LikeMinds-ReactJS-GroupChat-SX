@@ -134,6 +134,15 @@ const Feeds: React.FC = () => {
     };
   });
 
+  useEffect(() => {
+    return () => {
+      // console.log("running cleanup function");
+      setAllFeed!([]);
+      setHomeFeed!([]);
+      setDmHomeFeed!([]);
+    };
+  }, [mode]);
+
   function getFeed() {
     switch (mode) {
       case "groups": {
@@ -286,6 +295,7 @@ const GroupFeedContainer = ({
     return () => {
       setShouldLoadMoreAll(true);
       setShouldLoadMoreHome(true);
+      setAllFeed!([]);
     };
   }, [mode]);
   useEffect(() => {
@@ -455,6 +465,13 @@ const DirectMessagesFeedContainer = ({
       }
     });
   }, [id]);
+  useEffect(() => {
+    return () => {
+      setDmAllFeed!([]);
+      setAllFeed!([]);
+      setDmHomeFeed!([]);
+    };
+  }, [mode]);
   return (
     <>
       <div

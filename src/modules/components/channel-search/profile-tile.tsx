@@ -7,8 +7,8 @@ import { SEARCHED_CONVERSATION_ID } from "../../../enums/localStorageConstants";
 function renderAnswers(text: string) {
   let arr = [];
   let parts = text.split(REGEX_USER_SPLITTING);
-  console.log("the parts are");
-  console.log(parts);
+  // console.log("the parts are");
+  // console.log(parts);
   if (!!parts) {
     for (const matchResult of parts) {
       if (!!matchResult.match(REGEX_USER_TAGGING)) {
@@ -34,8 +34,9 @@ const ProfileTile = ({ profile, setOpenSearch }: any) => {
   const generalContext = useContext(GeneralContext);
   function handleSearchNavigation() {
     generalContext.setShowLoadingBar(true);
-    setOpenSearch(false);
+    // console.log("the profile time id is ", profile.id);
     sessionStorage.setItem(SEARCHED_CONVERSATION_ID, profile?.id?.toString());
+    setOpenSearch(false);
   }
   return (
     <div

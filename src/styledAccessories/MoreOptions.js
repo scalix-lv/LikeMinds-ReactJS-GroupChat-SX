@@ -252,7 +252,7 @@ export function MoreOptionsDM() {
       setShowSnackBar(true);
       setSnackbarMessage('Notifications ' + (id == 6 ? 'muted' : 'unmuted'));
     } catch (error) {
-      // // console.log(error);
+      // // // console.log(error);
     }
   }
   async function block(id) {

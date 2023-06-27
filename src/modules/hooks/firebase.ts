@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { onValue, ref } from "firebase/database";
 import { myClient } from "../..";
 import routeVariable from "../../enums/routeVariables";
+import { SEARCHED_CONVERSATION_ID } from "../../enums/localStorageConstants";
 
 export function useFirebaseChatConversations(
   getChatroomConversations: any,
@@ -15,7 +16,9 @@ export function useFirebaseChatConversations(
     const query = ref(db, `collabcards`);
     return onValue(query, (snapshot: any) => {
       if (snapshot.exists()) {
-        if (localStorage.getItem("searchConversationId") !== null) {
+        // console.log("the snapshot is");
+        // console.log(snapshot);
+        if (sessionStorage.getItem(SEARCHED_CONVERSATION_ID) !== null) {
           return;
         }
         getChatroomConversations(id, 100).then(() => {

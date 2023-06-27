@@ -188,7 +188,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
       <div className="relative">
         <IconButton
           onClick={() => {
-            console.log(generalContext.currentChatroom);
+            // console.log(generalContext.currentChatroom);
             sendMessage(
               generalContext?.currentChatroom?.chat_request_state,
               chatRequestVariable,

@@ -49,9 +49,9 @@ const Searchbar = () => {
 
         setSearchResultObject(obj);
         setShouldShowLoading(false);
-        // // console.log(obj);
+        // // // console.log(obj);
       } catch (error) {
-        // // console.log(error);
+        // // // console.log(error);
       }
     }, 500);
 
@@ -61,7 +61,7 @@ const Searchbar = () => {
   }, [searchString]);
 
   useEffect(() => {
-    // // console.log(showSearchContainer);
+    // // // console.log(showSearchContainer);
   }, [showSearchContainer]);
   return (
     <div>
