@@ -28,6 +28,7 @@ import {
   LAST_CONVERSATION_ID,
   LAST_CONVERSATION_ID_BACKWARD,
   LAST_CONVERSATION_ID_FORWARD,
+  PAGINATE_FORCED,
   SEARCHED_CONVERSATION_ID,
 } from "../../../enums/localStorageConstants";
 const ChatContainer: React.FC = () => {
@@ -93,23 +94,19 @@ const ChatContainer: React.FC = () => {
     const searchConvoElement: HTMLElement | null = document.getElementById(
       convoId?.toString()
     );
-    console.log("the searched convoId is, ", convoId);
+    // console.log("the searched convoId is, ", convoId);
     if (!!searchConvoElement) {
       setTimeout(() => {
-        searchConvoElement.scrollIntoView({
-          behavior: "smooth",
-        });
+        searchConvoElement.scrollIntoView();
         const msgNode = document.getElementById(convoId?.toString());
-
         if (msgNode) {
           msgNode.classList.add("lineItem");
           msgNode.classList.add("flash");
         }
-        // setTimeout(() => {
-
-        // }, 1000);
+        setTimeout(() => {
+          generalContext.setShowLoadingBar(false);
+        }, 500);
       }, 500);
-      generalContext.setShowLoadingBar(false);
     }
   };
   // get chatroom conversations
@@ -200,6 +197,7 @@ const ChatContainer: React.FC = () => {
             ...chatroomContext.conversationList,
             ...conversations,
           ];
+
           scrollIntoViewId =
             chatroomContext.conversationList[conversationsLength - 1]?.id;
         } else {
@@ -234,13 +232,14 @@ const ChatContainer: React.FC = () => {
 
       const callPre = await myClient.getConversation(config);
 
-      // config.scrollDirection = 1;
-      // config.include = true;
-      // const callPost = await myClient.getConversation(config);
+      config.scrollDirection = 1;
+      config.include = false;
+      const callPost = await myClient.getConversation(config);
       const newConvo = [
         ...callPre?.data?.conversations,
-        // ...callPost?.data?.conversations,
+        ...callPost?.data?.conversations,
       ];
+
       chatroomContext.setConversationList(newConvo);
       sessionStorage.removeItem(SEARCHED_CONVERSATION_ID);
       if (callPre?.data?.conversations?.length > 0) {
@@ -254,14 +253,14 @@ const ChatContainer: React.FC = () => {
             ?.id
         );
       }
-      // if (callPost?.data?.conversations?.length > 0) {
-      //   sessionStorage.setItem(
-      //     LAST_CONVERSATION_ID_FORWARD,
-      //     callPost?.data?.conversations[
-      //       callPost?.data?.conversations?.length - 1
-      //     ]?.id
-      //   );
-      // }
+      if (callPost?.data?.conversations?.length > 0) {
+        sessionStorage.setItem(
+          LAST_CONVERSATION_ID_FORWARD,
+          callPost?.data?.conversations[
+            callPost?.data?.conversations?.length - 1
+          ]?.id
+        );
+      }
       const call: any = await checkDMStatus(id);
       setLoadMoreForwardConversations(true);
       if (call?.data?.showDM) {
@@ -422,30 +421,27 @@ const ChatContainer: React.FC = () => {
               Math.floor(current - lastScrollPosition) >= 0 ? 1 : 0;
             let paginatePosition = undefined;
             if (isScrollBarAtBottom(scrollTop.current)) {
-              // // console.log("here");
               paginatePosition = 1;
             } else if (current === 0) {
               paginatePosition = 0;
             } else {
               return;
             }
-            // console.log("the paginatePosition is ", paginatePosition);
             if (
               scrollPosition === 0 &&
               paginatePosition === 0 &&
               loadMoreBackwardConversations
             ) {
               setDisableScroll(true);
-              paginateChatroomConversations(id, 50, scrollPosition)
-                // .then(() => setPageNo((p) => p + 1))
-                .then((e) => {
-                  // console.log("the last convoId is: ", e);
+              paginateChatroomConversations(id, 50, scrollPosition).then(
+                (e) => {
                   document.dispatchEvent(
                     new CustomEvent(events.updateHeightOnPagination, {
                       detail: e,
                     })
                   );
-                });
+                }
+              );
             } else if (
               scrollPosition === 1 &&
               paginatePosition === 1 &&
