@@ -105,7 +105,9 @@ const ChatContainer: React.FC = () => {
           msgNode.classList.add("lineItem");
           msgNode.classList.add("flash");
         }
-        generalContext.setShowLoadingBar(false);
+        setTimeout(() => {
+          generalContext.setShowLoadingBar(false);
+        }, 1000);
       }, 500);
     }
   };
