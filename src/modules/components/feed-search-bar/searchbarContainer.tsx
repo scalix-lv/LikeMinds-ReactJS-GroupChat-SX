@@ -1,14 +1,14 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-restricted-syntax */
-import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from '@mui/material';
-import { UserContext } from '../../contexts/userContext';
-import { joinChatRoom } from '../../../sdkFunctions';
-import NotFoundLogo from '../../../assets/Icon.png';
-import { groupMainPath } from '../../../routes';
-import { GeneralContext } from '../../contexts/generalContext';
-import routeVariable from '../../../enums/routeVariables';
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "@mui/material";
+import { UserContext } from "../../contexts/userContext";
+import { joinChatRoom } from "../../../sdkFunctions";
+import NotFoundLogo from "../../../assets/Icon.png";
+import { groupMainPath } from "../../../routes";
+import { GeneralContext } from "../../contexts/generalContext";
+import routeVariable from "../../../enums/routeVariables";
 
 const MatchTileHead = ({ matchObject, title }: any) => (
   <div>
@@ -31,7 +31,7 @@ const MatchTileHead = ({ matchObject, title }: any) => (
         title={searchItem?.chatroom?.header}
         key={searchItem?.chatroom?.title + searchIndex}
         match={searchItem}
-        showJoinButton={title === 'Other Groups'}
+        showJoinButton={title === "Other Groups"}
       />
     ))}
   </div>
@@ -54,12 +54,15 @@ const MatchTileFields = ({ title, match, showJoinButton }: any) => {
   const operation: any = params[routeVariable.operation];
   async function joinGroup() {
     try {
-      const call = await joinChatRoom(match.chatroom.id, userContext.currentUser.id);
+      const call = await joinChatRoom(
+        match.chatroom.id,
+        userContext.currentUser.id
+      );
       if (!call.error) {
         navigate(`${groupMainPath}/${match.chatroom.id}`);
       }
     } catch (error) {
-      // // console.log(error);
+      // // // console.log(error);
     }
   }
   return (
@@ -73,10 +76,12 @@ const MatchTileFields = ({ title, match, showJoinButton }: any) => {
         navigate(`${groupMainPath}/${match.chatroom.id}`);
       }}
     >
-      <span className="leading-[19px] font-normal text-center font-normal text-[#323232]">{title}</span>
+      <span className="leading-[19px] font-normal text-center font-normal text-[#323232]">
+        {title}
+      </span>
       {showJoinButton ? (
         <Button
-          sx={{ color: '#3884F7' }}
+          sx={{ color: "#3884F7" }}
           className=""
           variant="outlined"
           onClick={() => {
@@ -97,7 +102,9 @@ const NothingFound = ({ shouldShowLoading }: any) => (
     ) : (
       <>
         <img src={NotFoundLogo} alt="" />
-        <p className="leading-12 text-2xl text-center">Oops, There are no posts related to this search.</p>
+        <p className="leading-12 text-2xl text-center">
+          Oops, There are no posts related to this search.
+        </p>
       </>
     )}
   </div>
@@ -134,7 +141,13 @@ const SearchBarContainer = ({ searchResults, shouldShowLoading }: any) => {
         <>
           {searchArray.map((item, _itemIndex) => {
             const title = Object.keys(item)[0];
-            return <MatchFoundContainer matchArray={item[title]} key={title} title={title} />;
+            return (
+              <MatchFoundContainer
+                matchArray={item[title]}
+                key={title}
+                title={title}
+              />
+            );
           })}
         </>
       ) : (

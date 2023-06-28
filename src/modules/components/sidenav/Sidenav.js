@@ -13,11 +13,16 @@ import { RouteContext } from '../../contexts/routeContext';
 import { addedByMePath, directMessagePath, eventsPath, forumPath, groupPath } from '../../../routes';
 import { myClient } from '../../..';
 import { log } from '../../../sdkFunctions';
+import { UserContext } from '../../contexts/userContext';
 
 const Sidenav = ({ setOpenMenu, openMenu }) => {
   const [showNav, setShowNav] = useState(false)
   const [showDmTab, setShowDMTab] = useState(false)
+  const userContext = useContext(UserContext)
   useEffect(() => {
+    if (userContext.currentUser?.id === undefined) {
+      return
+    }
     myClient.checkDMTab().then(e => {
 
     })

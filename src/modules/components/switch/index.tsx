@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Snackbar } from "@mui/material";
 import Sidenav from "../sidenav/Sidenav";
@@ -9,6 +9,7 @@ import Container from "../container";
 import Header from "../header";
 import "../../../index.css";
 import routeVariable from "../../../enums/routeVariables";
+import { log } from "../../../sdkFunctions";
 
 const Switch: React.FC = () => {
   const params = useParams();
@@ -24,6 +25,7 @@ const Switch: React.FC = () => {
   const [currentChatroom, setCurrentChatroom] = useState({});
   const [currentProfile, setCurrentProfile] = useState({});
   const [chatroomUrl, setChatroomUrl] = useState("");
+
   return (
     <>
       <div className="flex w-[100%] h-[65px] z-10 top-0">

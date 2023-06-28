@@ -10,6 +10,7 @@ import ChatroomContext from '../modules/contexts/chatroomContext';
 import { GeneralContext } from '../modules/contexts/generalContext';
 import MemberDialogBox from '../modules/components/members-dialog-box';
 import routeVariable from '../enums/routeVariables';
+import { events } from '../enums/events';
 
 export function MoreOptions() {
   const [open, setOpen] = useState(false);
@@ -22,7 +23,7 @@ export function MoreOptions() {
   let id = params[routeVariable.id];
   let mode = params[routeVariable.mode];
   let operation = params[routeVariable.operation];
-  log(userContext);
+  // log(userContext);
   function closeMenu() {
     setOpen(false);
     setAnchor(null);
@@ -30,9 +31,9 @@ export function MoreOptions() {
 
   async function muteNotifications(id) {
     try {
-      let call = await myClient.muteChatroom({
-        chatroom_id: generalContext.currentChatroom.id,
-        value: id == 6 ? true : false
+      await myClient.muteChatroom({
+        chatroomId: generalContext.currentChatroom.id,
+        value: id === 6 ? true : false
       });
       closeMenu();
       let refreshCall = await getChatRoomDetails(myClient, generalContext.currentChatroom.id);
@@ -45,11 +46,16 @@ export function MoreOptions() {
 
   async function leaveGroup() {
     try {
-      log(userContext.currentUser);
-      if (!!generalContext.currentChatroom.is_secret) {
+      // log(userContext.currentUser);
+      if (!!generalContext.currentChatroom?.is_secret) {
         await leaveSecretChatroom(generalContext.currentChatroom.id, userContext.currentUser?.user_unique_id);
       } else {
         await leaveChatRoom(generalContext.currentChatroom.id, userContext.currentUser?.user_unique_id);
+        document.dispatchEvent(new CustomEvent(events.leaveGroupCommon, {
+          detail: {
+            chatroomId: id
+          }
+        }))
       }
       return generalContext.currentChatroom.id;
     } catch (error) {
@@ -69,7 +75,7 @@ export function MoreOptions() {
         horizontal: 'left'
       }}
     >
-      {generalContext.currentChatroom.is_secret && userContext.currentUser?.memberState === 1 ? (
+      {generalContext.currentChatroom?.is_secret && userContext.currentUser?.memberState === 1 ? (
         <MenuItem
           key={'secretChatroomDialog'}
           onClick={() => {
@@ -246,7 +252,7 @@ export function MoreOptionsDM() {
       setShowSnackBar(true);
       setSnackbarMessage('Notifications ' + (id == 6 ? 'muted' : 'unmuted'));
     } catch (error) {
-      // // console.log(error);
+      // // // console.log(error);
     }
   }
   async function block(id) {

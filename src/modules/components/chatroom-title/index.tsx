@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 
 import { Link, useParams } from "react-router-dom";
 import { groupInfoPath } from "../../../routes";
@@ -7,17 +7,54 @@ import { groupInfoPath } from "../../../routes";
 import { MoreOptions } from "../../../styledAccessories/MoreOptions";
 import SearchBar from "../../../styledAccessories/SearchBar";
 import routeVariable from "../../../enums/routeVariables";
+import searchIcon from "./../../../assets/svg/search.svg";
+import { useState } from "react";
+import ChannelSearch from "../channel-search";
 
 type propsTitle = {
   title: any;
   memberCount?: any;
   chatroomUrl: any;
+  openSearch?: any;
+  setOpenSearch?: any;
+};
+
+const Tittle = ({
+  title,
+  memberCount,
+  chatroomUrl,
+  openSearch,
+  setOpenSearch,
+}: propsTitle) => {
+  // const [openSearch, setOpenSearch] = useState(false);
+  const closeSearchField = () => {
+    setOpenSearch(false);
+  };
+  const openSearchField = () => {
+    setOpenSearch(true);
+  };
+  return (
+    <Box className="flex">
+      <div className="w-full flex border-b border-b-[#adadad] my-0 mr-[120px] ml-[28px] pt-0 px-0 pb-[10px] shadow-none z:max-md:mr-6 items-center">
+        <>
+          <TitleArea
+            title={title}
+            memberCount={memberCount}
+            chatroomUrl={chatroomUrl}
+          />
+          <IconButton onClick={openSearchField}>
+            <img src={searchIcon} alt="" />
+          </IconButton>
+          <MoreOptions />
+        </>
+      </div>
+    </Box>
+  );
 };
 const TitleArea = ({ title, memberCount, chatroomUrl }: propsTitle) => {
   const params = useParams();
   const id: any = params[routeVariable.id];
   const mode: any = params[routeVariable.mode];
-  const operation: any = params[routeVariable.operation];
   return (
     <Link
       to={mode === "groups" ? `${groupInfoPath}/${id}` : ""}
@@ -65,26 +102,5 @@ const TitleArea = ({ title, memberCount, chatroomUrl }: propsTitle) => {
     </Link>
   );
 };
-
-const OptionArea = () => (
-  <Box>
-    <SearchBar />
-    <MoreOptions />
-  </Box>
-);
-const Tittle = ({ title, memberCount, chatroomUrl }: propsTitle) => (
-  <Box className="flex">
-    <div className="w-full flex border-b border-b-[#adadad] my-0 mr-[120px] ml-[28px] pt-0 px-0 pb-[10px] shadow-none z:max-md:mr-6">
-      <TitleArea
-        title={title}
-        memberCount={memberCount}
-        chatroomUrl={chatroomUrl}
-      />
-      {/* <Gap /> */}
-      <OptionArea />
-    </div>
-    <Box className="flex" />
-  </Box>
-);
 
 export default Tittle;
