@@ -93,7 +93,7 @@ const ChatContainer: React.FC = () => {
     const searchConvoElement: HTMLElement | null = document.getElementById(
       convoId?.toString()
     );
-    // console.log("the searched convoId is, ", convoId);
+    console.log("the searched convoId is, ", convoId);
     if (!!searchConvoElement) {
       setTimeout(() => {
         searchConvoElement.scrollIntoView({
@@ -105,10 +105,11 @@ const ChatContainer: React.FC = () => {
           msgNode.classList.add("lineItem");
           msgNode.classList.add("flash");
         }
-        setTimeout(() => {
-          generalContext.setShowLoadingBar(false);
-        }, 1000);
+        // setTimeout(() => {
+
+        // }, 1000);
       }, 500);
+      generalContext.setShowLoadingBar(false);
     }
   };
   // get chatroom conversations
@@ -228,16 +229,17 @@ const ChatContainer: React.FC = () => {
         // paginateBy: 50,
         scrollDirection: 0,
         conversationID: convoId,
+        include: true,
       };
 
       const callPre = await myClient.getConversation(config);
 
-      config.scrollDirection = 1;
-      config.include = true;
-      const callPost = await myClient.getConversation(config);
+      // config.scrollDirection = 1;
+      // config.include = true;
+      // const callPost = await myClient.getConversation(config);
       const newConvo = [
         ...callPre?.data?.conversations,
-        ...callPost?.data?.conversations,
+        // ...callPost?.data?.conversations,
       ];
       chatroomContext.setConversationList(newConvo);
       sessionStorage.removeItem(SEARCHED_CONVERSATION_ID);
@@ -246,15 +248,20 @@ const ChatContainer: React.FC = () => {
           LAST_CONVERSATION_ID_BACKWARD,
           callPre?.data?.conversations[0]?.id
         );
-      }
-      if (callPost?.data?.conversations?.length > 0) {
         sessionStorage.setItem(
           LAST_CONVERSATION_ID_FORWARD,
-          callPost?.data?.conversations[
-            callPost?.data?.conversations?.length - 1
-          ]?.id
+          callPre?.data?.conversations[callPre?.data?.conversations?.length - 1]
+            ?.id
         );
       }
+      // if (callPost?.data?.conversations?.length > 0) {
+      //   sessionStorage.setItem(
+      //     LAST_CONVERSATION_ID_FORWARD,
+      //     callPost?.data?.conversations[
+      //       callPost?.data?.conversations?.length - 1
+      //     ]?.id
+      //   );
+      // }
       const call: any = await checkDMStatus(id);
       setLoadMoreForwardConversations(true);
       if (call?.data?.showDM) {
