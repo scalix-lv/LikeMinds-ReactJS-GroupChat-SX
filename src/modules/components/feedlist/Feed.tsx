@@ -32,6 +32,7 @@ import { myClient } from "../../..";
 import SkeletonFeed from "../feed-skeleton";
 import routeVariable from "../../../enums/routeVariables";
 import { UserContext } from "../../contexts/userContext";
+import { events } from "../../../enums/events";
 
 const Feeds: React.FC = () => {
   const [loadMoreHomeFeed, setLoadMoreHomeFeed] = useState<boolean>(true);
@@ -41,12 +42,7 @@ const Feeds: React.FC = () => {
   const params = useParams();
   const id: any = params[routeVariable.id];
   const mode: any = params[routeVariable.mode];
-  const operation: any = params[routeVariable.operation];
-  useEffect(() => {
-    log(id);
-    log(mode);
-    log(operation);
-  });
+
   const feedContext = useContext(FeedContext);
   const {
     homeFeed,
@@ -69,9 +65,10 @@ const Feeds: React.FC = () => {
         }
         return group;
       });
+      // log(`setting homefeed ${1}`);
       setHomeFeed!(newHomeFeed);
       setAllFeed!(newAllFeed);
-      navigate(groupPath);
+      // navigate(groupPath);
     } catch (error) {
       log(error);
     }
@@ -91,6 +88,7 @@ const Feeds: React.FC = () => {
       }
       newHomeFeed = [feedcall.data].concat(newHomeFeed);
       if (mode === "groups") {
+        // log(`setting homefeed ${2}`);
         setHomeFeed!(newHomeFeed);
       } else {
         setDmHomeFeed!(newHomeFeed);
@@ -109,6 +107,7 @@ const Feeds: React.FC = () => {
       log(error);
     }
   };
+
   useFetchFeed(
     setLoadMoreHomeFeed,
     setLoadMoreAllFeed,
@@ -121,13 +120,28 @@ const Feeds: React.FC = () => {
   );
 
   useEffect(() => {
-    document.addEventListener("leaveEvent", leaveChatroomContextRefresh);
-    document.addEventListener("joinEvent", joinChatroomContextRefresh);
+    document.addEventListener(events.leaveEvent, leaveChatroomContextRefresh);
+    document.addEventListener(events.joinEvent, joinChatroomContextRefresh);
     return () => {
-      document.removeEventListener("leaveEvent", leaveChatroomContextRefresh);
-      document.removeEventListener("joinEvent", joinChatroomContextRefresh);
+      document.removeEventListener(
+        events.leaveEvent,
+        leaveChatroomContextRefresh
+      );
+      document.removeEventListener(
+        events.joinEvent,
+        joinChatroomContextRefresh
+      );
     };
   });
+
+  useEffect(() => {
+    return () => {
+      // console.log("running cleanup function");
+      setAllFeed!([]);
+      setHomeFeed!([]);
+      setDmHomeFeed!([]);
+    };
+  }, [mode]);
 
   function getFeed() {
     switch (mode) {
@@ -193,10 +207,11 @@ const GroupFeedContainer = ({
   async function refreshHomeFeed() {
     try {
       const groupHomeFeedCall: any = await myClient.getHomeFeed({ page: 1 });
-      if (homeFeed.length < 10) {
-        setHomeFeed!(groupHomeFeedCall.my_chatrooms);
+      if (homeFeed?.length < 10) {
+        // (`setting homefeed ${3}`);
+        setHomeFeed!(groupHomeFeedCall.data.my_chatrooms);
       } else {
-        let newHomeFeed = groupHomeFeedCall.my_chatrooms;
+        let newHomeFeed = groupHomeFeedCall.data.my_chatrooms;
         const firstFeedEl: any = homeFeed[0];
         const firstFeedId = firstFeedEl?.chatroom.id;
         let index;
@@ -218,6 +233,7 @@ const GroupFeedContainer = ({
         });
         const newFeedRestHalf = oldFeed.filter((item) => item != null);
         newHomeFeed = newFeedFirstHalf.concat(newFeedRestHalf);
+        // log(`setting homefeed ${4}`);
         setHomeFeed!(newHomeFeed);
         document.dispatchEvent(new CustomEvent("feedLoaded", { detail: true }));
       }
@@ -234,13 +250,11 @@ const GroupFeedContainer = ({
       return item.chatroom.id != e.detail;
     });
     newHomeFeed = topFeed.concat(newHomeFeed);
+    // log(`setting homefeed ${5}`);
     setHomeFeed!(newHomeFeed);
   }
   function localRefreshInviteList(id: any) {
     const newSecretChatrooms: any = secretChatrooms.filter((chatroom: any) => {
-      log(chatroom);
-      log(id);
-      log("new one");
       if (chatroom?.chatroom?.id !== id) {
         return true;
       }
@@ -263,33 +277,39 @@ const GroupFeedContainer = ({
     if (id === undefined) {
       return;
     }
+    if (allFeed.length === 0) {
+      return;
+    }
     const communityId = sessionStorage.getItem("communityId");
     const query = ref(fb, `community/${communityId}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
-        log("the firebase val is");
-        log(snapshot.val());
+        // log("the firebase val is");
+        // log(snapshot.val());
         const chatroomId = snapshot.val().chatroom_id;
         if (chatroomId != id) refreshHomeFeed();
       }
     });
   }, [id]);
   useEffect(() => {
-    feedContext.setDmAllFeed!([]);
-    feedContext.setDmHomeFeed!([]);
-  }, [mode]);
-  useEffect(() => {
     return () => {
       setShouldLoadMoreAll(true);
       setShouldLoadMoreHome(true);
+      setAllFeed!([]);
     };
   }, [mode]);
   useEffect(() => {
-    document.addEventListener("sentMessage", localRefreshHomeFeed);
+    document.addEventListener(events.sentMessage, localRefreshHomeFeed);
     return () => {
-      document.removeEventListener("sentMessage", localRefreshHomeFeed);
+      document.removeEventListener(events.sentMessage, localRefreshHomeFeed);
     };
   });
+  function getFeedLength() {
+    const sL = secretChatrooms?.length;
+    const jL = homeFeed?.length;
+    const aL = allFeed?.length;
+    return sL + jL + aL;
+  }
   return (
     <div
       id="home-feed-container"
@@ -310,7 +330,7 @@ const GroupFeedContainer = ({
             setShouldLoadMoreAll
           );
         }}
-        dataLength={homeFeed.length + secretChatrooms.length + allFeed.length}
+        dataLength={getFeedLength()}
         loader={null}
         scrollableTarget="home-feed-container"
       >
@@ -338,7 +358,6 @@ const GroupFeedContainer = ({
                     generalContext.setChatroomUrl(
                       group?.chatroom?.chatroom_image_url
                     );
-                    generalContext.setShowLoadingBar(true);
                   }
                   routeContext.setIsNavigationBoxOpen(
                     !routeContext.isNavigationBoxOpen
@@ -447,8 +466,11 @@ const DirectMessagesFeedContainer = ({
     });
   }, [id]);
   useEffect(() => {
-    feedContext.setAllFeed!([]);
-    feedContext.setHomeFeed!([]);
+    return () => {
+      setDmAllFeed!([]);
+      setAllFeed!([]);
+      setDmHomeFeed!([]);
+    };
   }, [mode]);
   return (
     <>

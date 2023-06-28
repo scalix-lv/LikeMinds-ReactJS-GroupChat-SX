@@ -62,7 +62,7 @@ export const AcceptTheirInviteFirst = ({ title }: any) => {
       generalContext.setCurrentChatroom(newChatroomObject?.data?.chatroom);
       generalContext.setCurrentProfile(newChatroomObject?.data);
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   }
 
@@ -73,7 +73,7 @@ export const AcceptTheirInviteFirst = ({ title }: any) => {
       generalContext.setCurrentChatroom(newChatroomObject?.data?.chatroom);
       generalContext.setCurrentProfile(newChatroomObject?.data);
     } catch (error) {
-      // // console.log(error);
+      // // // console.log(error);
     }
   }
 
@@ -145,8 +145,8 @@ export const AcceptTheirInviteFirst = ({ title }: any) => {
               onClick={() => {
                 myClient
                   .inviteAction({
-                    channel_id: id!,
-                    invite_status: 1,
+                    channelId: id!,
+                    inviteStatus: 1,
                   })
                   .then(() => {
                     generalContext.setShowSnackBar(true);

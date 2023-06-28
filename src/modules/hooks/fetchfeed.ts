@@ -39,6 +39,8 @@ export function useFetchFeed(
     feedContext;
   useEffect(() => {
     async function fetchFeed() {
+      // // console.log("consoleling");
+      // // console.log(mode);
       try {
         switch (mode) {
           case "groups": {
@@ -85,9 +87,11 @@ export function useFetchFeed(
   useEffect(() => {
     async function setFeeds() {
       try {
+        generalContext.setShowLoadingBar(true);
         const feedcall: any = await getChatRoomDetails(myClient, id);
-        generalContext.setCurrentProfile(feedcall?.data);
-        generalContext.setCurrentChatroom(feedcall?.data?.chatroom);
+        // console.log(feedcall);
+        generalContext.setCurrentProfile(feedcall?.data?.data);
+        generalContext.setCurrentChatroom(feedcall?.data?.data?.chatroom);
       } catch (error) {
         log(error);
       }
@@ -117,7 +121,9 @@ export async function fetchActiveGroupFeeds({
     const currentChatroomLength = currentFeedList.length;
     const pageNo = Math.floor(currentChatroomLength / 10) + 1;
     const call = await myClient.getHomeFeed({ page: pageNo });
-    const chatrooms = call.my_chatrooms;
+    // log("active feeds");
+    // log(call);
+    const chatrooms = call.data.data.my_chatrooms;
     if (chatrooms.length < 10) {
       setShouldLoadMore(false);
     }
@@ -149,6 +155,8 @@ export async function fetchAllGroupFeeds({
       page: pageNo,
       orderType: 0,
     });
+    // log("all groups");
+    // log(call);
     const { chatrooms } = call;
     if (chatrooms.length < 10) {
       setShouldLoadMore(false);
@@ -173,6 +181,8 @@ export async function fetchActiveHomeFeeds({
       sessionStorage.getItem("communityId")!,
       pageNo
     );
+    // log("line 180");
+    // log(call);
     const chatrooms = call.data.dm_chatrooms;
     if (chatrooms.length < 10) {
       setShouldLoadMore(false);
@@ -230,15 +240,15 @@ const getSecretChatroomsInvite = async (setSecretChatrooms: any) => {
   try {
     let pageNo = 1;
     let shouldCall = true;
-    let res = <any>[];
+    let res = [] as any;
     const pageSize = 10;
     while (shouldCall) {
       const call = await myClient.getInvites({
-        channel_type: 1,
+        channelType: 1,
         page: pageNo++,
-        page_size: pageSize,
+        pageSize: pageSize,
       });
-      const inviteArray = call.user_invites;
+      const inviteArray = call.data.user_invites;
       res = res.concat(inviteArray);
       if (inviteArray.length < pageSize) {
         shouldCall = false;
@@ -264,13 +274,13 @@ export async function loadGroupFeed(
   setLoadMoreAll: any
 ) {
   try {
-    // const communityId = sessionStorage.getItem("communityId")?.toString() || "";
     homeFeed = [...homeFeed];
     allFeed = [...allFeed];
     let loadUnjoinedBool = false;
+    // // console.log("consoleling inside loadGroupFeeds");
     await getSecretChatroomsInvite(setSecretChatrooms);
     if (loadMoreHome) {
-      let cRooms = <any>[];
+      let cRooms: any = [];
       for (let i = 0; i < 3; i++) {
         const feedLength = homeFeed.length;
         const pgNo =
@@ -279,8 +289,10 @@ export async function loadGroupFeed(
           homeFeed = [];
         }
         const call = await myClient.getHomeFeed({ page: pgNo });
-        cRooms = cRooms.concat(call.my_chatrooms);
-        if (call.my_chatrooms.length < 10) {
+        const myChatrooms = call.data.my_chatrooms;
+        log(myChatrooms);
+        cRooms = [...cRooms, ...myChatrooms];
+        if (myChatrooms.length < 10) {
           setLoadMoreHome(false);
           setLoadMoreAll(true);
           loadUnjoinedBool = true;
@@ -288,23 +300,24 @@ export async function loadGroupFeed(
         }
       }
       const newJoinedFeed = homeFeed.concat(cRooms);
+      // log(`setting homefeed ${6}`);
       setHomeFeed(newJoinedFeed);
     }
     if (loadMoreAll || loadUnjoinedBool) {
-      log("inside all");
       const feedLength = allFeed.length;
       const pgNo = Math.floor(feedLength / 10) + 1;
       const call = await myClient.getExploreFeed({
         page: pgNo,
         orderType: 0,
       });
-      if (call?.chatrooms?.length < 10) {
+      const chatrooms = call.data.chatrooms;
+      if (chatrooms.length < 10) {
         setLoadMoreAll(false);
       }
-      const newunJoinedFeed = allFeed.concat(call?.chatrooms);
+      const newunJoinedFeed = allFeed.concat(chatrooms);
       setAllFeed(newunJoinedFeed);
     }
-    log("ending groups");
+    // log("ending groups");
     return true;
   } catch (error) {
     log(error);
@@ -315,8 +328,8 @@ export async function loadGroupFeed(
 export const invitationResponse = async (channel_id: any, response: any) => {
   try {
     const call = await myClient.inviteAction({
-      channel_id: channel_id.toString(),
-      invite_status: response,
+      channelId: channel_id.toString(),
+      inviteStatus: response,
     });
   } catch (error) {
     log(error);

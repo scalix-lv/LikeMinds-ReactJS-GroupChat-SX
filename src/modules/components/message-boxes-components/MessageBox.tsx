@@ -366,14 +366,14 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
   ) {
     try {
       const deleteCall = await myClient.pushReport({
-        tag_id: parseInt(id?.toString(), 10),
+        tagId: parseInt(id?.toString(), 10),
         reason,
-        conversation_id: convoid,
-        reported_Member_id: reportedMemberId,
+        conversationId: convoid,
+        reportedMemberId: reportedMemberId,
       });
       setShouldShowBlock(!shouldShow);
     } catch (error) {
-      // // console.log(error);
+      // // // console.log(error);
     }
   }
 
@@ -427,7 +427,7 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
             );
           } else if (!checkDMLimitCall.is_request_dm_limit_exceeded) {
             const createChatroomCall: any = await myClient.createDMChatroom({
-              member_id: convoObject?.member?.id,
+              memberId: convoObject?.member?.id,
             });
             navigate(
               `${directMessageChatPath}/${createChatroomCall?.chatroom?.id}/${isReplyParam}`
@@ -479,8 +479,8 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
           }
           if (
             (option.title === "Reply Privately" &&
-              generalContext.currentChatroom.type !== 7 &&
-              generalContext.currentChatroom.type !== 0 &&
+              generalContext.currentChatroom?.type !== 7 &&
+              generalContext.currentChatroom?.type !== 0 &&
               chatroomContext.showReplyPrivately) ||
             (option.title === "Reply Privately" && mode === "direct-messages")
           ) {

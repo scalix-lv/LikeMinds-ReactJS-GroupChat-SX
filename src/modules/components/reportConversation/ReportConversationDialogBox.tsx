@@ -1,8 +1,8 @@
 /* eslint-disable no-use-before-define */
-import { IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import React, { useEffect, useState } from 'react';
-import { getReportingOptions } from '../../../sdkFunctions';
+import { IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import React, { useEffect, useState } from "react";
+import { getReportingOptions } from "../../../sdkFunctions";
 
 type ReportConversationDialogBoxType = {
   convoId: any;
@@ -14,14 +14,14 @@ const ReportConversationDialogBox = ({
   convoId,
   onClick,
   closeBox,
-  reportedMemberId
+  reportedMemberId,
 }: ReportConversationDialogBoxType) => {
   const [reasonArr, setReasonArr] = useState([]);
   useEffect(() => {
     getReportingOptions()
       .then((r: any) => setReasonArr(r.data.report_tags))
       .catch((_e) => {
-        // console.log(e);
+        // // console.log(e);
       });
   }, []);
   return (
@@ -34,7 +34,9 @@ const ReportConversationDialogBox = ({
       </div>
 
       <div className="px-4 pb-4">
-        <p className="text-sm font-bold mb-2">Please specify the problem to continue</p>
+        <p className="text-sm font-bold mb-2">
+          Please specify the problem to continue
+        </p>
         <p className="text-sm font-normal text-[#666666]">
           You would be able to report this message after selecting a problem.
         </p>
@@ -63,7 +65,13 @@ type ReasonType = {
   conversationid: any;
   reportedMemberId: any;
 };
-const ReportedReasonBlock = ({ id, name, onClickhandler, conversationid, reportedMemberId }: ReasonType) => (
+const ReportedReasonBlock = ({
+  id,
+  name,
+  onClickhandler,
+  conversationid,
+  reportedMemberId,
+}: ReasonType) => (
   <div
     onClick={() => {
       onClickhandler(id, name, conversationid, reportedMemberId);

@@ -11,6 +11,7 @@ import GroupInfo from "../chatroom-info";
 import routeVariable from "../../../enums/routeVariables";
 import { log } from "../../../sdkFunctions";
 import { Button } from "@mui/material";
+import ChannelSearch from "../channel-search";
 
 const getChatroomComponents = (operation: string) => {
   switch (operation) {
@@ -35,6 +36,7 @@ const ChatroomWrapper: React.FC = () => {
   const [showReplyPrivately, setShowReplyPrivately] = useState(false);
   const [replyPrivatelyMode, setReplyPrivatelyMode] = useState(null);
   const [showTitle, setShowTitle] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
   const generalContext = useContext(GeneralContext);
   const userContext = useContext(UserContext);
   const params = useParams();
@@ -57,19 +59,25 @@ const ChatroomWrapper: React.FC = () => {
     }
     return generalContext?.currentChatroom?.chatroom_image_url;
   }
+  function resetChatroomContext() {
+    setConversationList([]);
+    setSelectedConversation({});
+    setIsSelectedConversation(false);
+    setShowReplyPrivately(false);
+    setReplyPrivatelyMode(null);
+    setOpenSearch(false);
+    generalContext.setChatroomUrl("");
+    generalContext.setCurrentChatroom({});
+    generalContext.setCurrentProfile({});
+    generalContext.setShowLoadingBar(false);
+    generalContext.setSnackBarMessage("");
+  }
   useEffect(() => {
-    if (id !== "" && id !== undefined) {
-      generalContext.setShowLoadingBar(true);
-      setShowTitle(false);
-    }
     return () => {
-      generalContext.setShowLoadingBar(true);
-      setShowTitle(false);
+      resetChatroomContext();
     };
-  }, [id]);
-  useEffect(() => {
-    setShowTitle(true);
-  }, [generalContext?.currentChatroom]);
+  }, [mode]);
+
   return (
     <ChatroomContext.Provider
       value={{
@@ -85,24 +93,27 @@ const ChatroomWrapper: React.FC = () => {
         setReplyPrivatelyMode,
       }}
     >
-      {operation !== "" &&
-      showTitle &&
-      generalContext.currentChatroom?.id !== undefined ? (
-        <>
-          <Tittle
-            title={getChatroomDisplayName()}
-            memberCount={
-              mode === "groups"
-                ? generalContext?.currentProfile?.participant_count
-                : null
-            }
-            chatroomUrl={getChatroomImageUrl()}
-          />
-
-          {getChatroomComponents(operation!)}
-        </>
+      {!openSearch ? (
+        Object.keys(generalContext.currentChatroom).length ? (
+          <>
+            <Tittle
+              title={getChatroomDisplayName()}
+              memberCount={
+                mode === "groups"
+                  ? generalContext?.currentProfile?.participant_count
+                  : null
+              }
+              chatroomUrl={getChatroomImageUrl()}
+              openSearch={openSearch}
+              setOpenSearch={setOpenSearch}
+            />
+            {getChatroomComponents(operation!)}
+          </>
+        ) : null
       ) : (
-        <></>
+        <>
+          <ChannelSearch setOpenSearch={setOpenSearch} />
+        </>
       )}
     </ChatroomContext.Provider>
   );
