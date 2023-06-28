@@ -22,6 +22,7 @@ import routeVariable from "../../../enums/routeVariables";
 import { messageStrings } from "../../../enums/strings";
 import { events } from "../../../enums/events";
 import { myClient } from "../../..";
+import "./index.css";
 import {
   CONVERSATION_LAST_SCROLL,
   LAST_CONVERSATION_ID,
@@ -98,9 +99,17 @@ const ChatContainer: React.FC = () => {
         searchConvoElement.scrollIntoView({
           behavior: "smooth",
         });
+        const msgNode = document.getElementById(convoId?.toString());
+
+        if (msgNode) {
+          msgNode.classList.add("lineItem");
+          msgNode.classList.add("flash");
+        }
+        setTimeout(() => {
+          generalContext.setShowLoadingBar(false);
+        }, 1000);
       }, 500);
     }
-    generalContext.setShowLoadingBar(false);
   };
   // get chatroom conversations
   const getChatroomConversations = async (chatroomId: string, pageNo: any) => {
