@@ -7,7 +7,8 @@ import { SEARCHED_CONVERSATION_ID } from "../../enums/localStorageConstants";
 
 export function useFirebaseChatConversations(
   getChatroomConversations: any,
-  setBufferMessage: any
+  setBufferMessage: any,
+  setNewMessage: any
 ) {
   const db = myClient.fbInstance();
   const params = useParams();
@@ -21,6 +22,9 @@ export function useFirebaseChatConversations(
         }
         getChatroomConversations(id, 100).then(() => {
           setBufferMessage(null);
+          setTimeout(() => {
+            setNewMessage();
+          }, 500);
         });
       }
     });

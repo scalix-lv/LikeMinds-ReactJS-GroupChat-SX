@@ -8,6 +8,10 @@ import { mergeInputFiles, sendDmRequest } from "../../../sdkFunctions";
 // import { chatroomContextType } from "../../contexts/chatroomContext";
 import { InputFieldContextType } from "../../contexts/inputFieldContext";
 import { chatroomContextType } from "../../contexts/chatroomContext";
+import {
+  LAST_CONVERSATION_ID_BACKWARD,
+  LAST_CONVERSATION_ID_FORWARD,
+} from "../../../enums/localStorageConstants";
 
 type ConversationCreateData = {
   chatroom_id: any;
@@ -51,6 +55,8 @@ const sendMessage = async (
       return;
     }
     setEnableInputBox(true);
+    sessionStorage.removeItem(LAST_CONVERSATION_ID_FORWARD);
+    sessionStorage.removeItem(LAST_CONVERSATION_ID_BACKWARD);
     const {
       conversationList,
       setConversationList,

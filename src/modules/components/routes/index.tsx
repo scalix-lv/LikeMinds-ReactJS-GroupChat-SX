@@ -1,8 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Switch from "../switch";
 import routeVariable from "../../../enums/routeVariables";
-import { useEffect } from "react";
-import { log } from "../../../sdkFunctions";
 
 const RouteProvider: React.FC = () => {
   return (

@@ -33,7 +33,6 @@ const ChatContainer: React.FC = () => {
   const params = useParams();
   const id: any = params[routeVariable.id];
   const chatroomContext = useContext(ChatroomContext);
-  const [loadMoreConversations, setLoadMoreConversations] = useState(true);
   const [bufferMessage, setBufferMessage] = useState(null);
   const scrollTop = useRef<HTMLDivElement>(null);
   const generalContext = useContext(GeneralContext);
@@ -96,7 +95,9 @@ const ChatContainer: React.FC = () => {
     // console.log("the searched convoId is, ", convoId);
     if (!!searchConvoElement) {
       setTimeout(() => {
-        searchConvoElement.scrollIntoView();
+        searchConvoElement.scrollIntoView({
+          behavior: "smooth",
+        });
       }, 500);
     }
     generalContext.setShowLoadingBar(false);
@@ -148,7 +149,12 @@ const ChatContainer: React.FC = () => {
       scrollDirection: scrollDirection,
       include: false,
     };
-
+    if (
+      optionObject?.conversationID === null ||
+      optionObject?.conversationID === undefined
+    ) {
+      return;
+    }
     // API call
     const response: any = await getConversationsForGroup(optionObject);
 
@@ -257,7 +263,7 @@ const ChatContainer: React.FC = () => {
   useEffect(() => {
     async function loadChatAndMarkReadChatroom() {
       try {
-        await getChatroomConversations(id, 100);
+        // await getChatroomConversations(id, 100);
         await markRead(id);
         const call: any = await checkDMStatus(id);
         if (call?.data?.showDM) {
@@ -273,11 +279,9 @@ const ChatContainer: React.FC = () => {
     setLoadMoreBackwardConversations(true);
     setLoadMoreForwardConversations(true);
     const convoId = sessionStorage.getItem(SEARCHED_CONVERSATION_ID);
-    // console.log("THe conversation id is ", convoId);
     if (!!convoId) {
       getConversationsFromSearch(convoId)
         .then(() => {
-          // console.log("the searched convo id is", convoId);
           setHeightOnSearchedConversation(convoId);
         })
         .catch(() => {
@@ -286,13 +290,16 @@ const ChatContainer: React.FC = () => {
     } else {
       loadChatAndMarkReadChatroom()
         .then(() => {
-          setNewHeight();
           setPageNo(1);
         })
         .catch((er) => {
           log("error here at loadChatroomAndMarkRead");
         });
     }
+
+    return () => {
+      sessionStorage.clear();
+    };
   }, [id]);
 
   // effect for updating the height of the chatroom container after paginated calls
@@ -348,7 +355,11 @@ const ChatContainer: React.FC = () => {
   }, [id, generalContext.currentChatroom]);
 
   // firebase listener
-  useFirebaseChatConversations(getChatroomConversations, setBufferMessage);
+  useFirebaseChatConversations(
+    getChatroomConversations,
+    setBufferMessage,
+    setNewHeight
+  );
 
   if (generalContext?.currentChatroom?.chat_request_state === 0) {
     if (
@@ -408,6 +419,7 @@ const ChatContainer: React.FC = () => {
               paginatePosition === 0 &&
               loadMoreBackwardConversations
             ) {
+              setDisableScroll(true);
               paginateChatroomConversations(id, 50, scrollPosition)
                 // .then(() => setPageNo((p) => p + 1))
                 .then((e) => {
@@ -423,6 +435,7 @@ const ChatContainer: React.FC = () => {
               paginatePosition === 1 &&
               loadMoreForwardConversations
             ) {
+              setDisableScroll(true);
               paginateChatroomConversations(id, 50, scrollPosition)
                 // .then(() => setPageNo((p) => p + 1))
                 .then((e) => {
