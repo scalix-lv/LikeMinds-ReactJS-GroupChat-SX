@@ -20,26 +20,16 @@ export const jsonReturnHandler = (callRes, error) => {
   return callRes;
 };
 
-// export const createNewClient = (key) => {
-//   const client = new LikeMinds({
-//     apiKey: key
-//   });
-//   return client;
-// };
-
 export const getChatRoomDetails = async (myClient, chatRoomId) => {
   try {
-    // // console.log(chatRoomId);
     const params = {
       chatroomId: chatRoomId,
       page: 1
     };
     const chatRoomResponse = await myClient.getChatroom(params);
-    console.log(chatRoomResponse)
-    // // console.log(chatRoomResponse);
+    // console.log(chatRoomResponse)
     return jsonReturnHandler({ data: chatRoomResponse }, null);
   } catch (error) {
-    // // console.log(error);
     return jsonReturnHandler(null, error);
   }
 };
@@ -47,7 +37,6 @@ export const getChatRoomDetails = async (myClient, chatRoomId) => {
 export const getConversationsForGroup = async (optionObject) => {
   try {
     const conversationCall = await myClient.getConversation(optionObject);
-    // console.log(conversationCall)
     return jsonReturnHandler(conversationCall, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
@@ -113,8 +102,8 @@ export async function getReportingOptions() {
 export async function addReaction(reaction, convoId, chatId) {
   try {
     const reactionCall = await myClient.putReaction({
-      chatroom_id: chatId,
-      conversation_id: convoId,
+      chatroomId: chatId,
+      conversationId: convoId,
       reaction
     });
     return jsonReturnHandler(reactionCall, null);
@@ -126,10 +115,10 @@ export async function addReaction(reaction, convoId, chatId) {
 export async function pushReport(convoId, tagId, reason, reportedMemberId) {
   try {
     const pushReportCall = await myClient.pushReport({
-      conversation_id: convoId,
-      tag_id: tagId,
+      conversationId: convoId,
+      tagId: tagId,
       reason,
-      reported_Member_id: reportedMemberId
+      reportedMemberId: reportedMemberId
     });
     return jsonReturnHandler(pushReportCall, null);
   } catch (error) {
@@ -171,10 +160,6 @@ export async function getAllChatroomMember(chatroomId, communityId, list, setFun
   }
 }
 
-// const userContext = useContext(UserContext)
-// import above 2 things
-// userContext.
-
 export function mergeInputFiles(inputContext) {
   const { mediaAttachments, documentAttachments, audioAttachments } = inputContext;
 
@@ -191,13 +176,11 @@ export function clearInputFiles(inputContext) {
 export async function getUnjoinedRooms(community_id, pageNo) {
   try {
     const unjoinedGroups = await myClient.fetchFeedData({
-      // community_id,
       order_type: 0,
       page: pageNo || 1
     });
     return jsonReturnHandler(unjoinedGroups, null);
   } catch (error) {
-    // // console.log(error);
     return jsonReturnHandler(null, error);
   }
 }
@@ -211,7 +194,7 @@ export async function joinNewGroup(collabId, userID, value) {
     });
     return jsonReturnHandler(joinCall, null);
   } catch (error) {
-    // // console.log(error);
+    // // // console.log(error);
     return jsonReturnHandler(null, error);
   }
 }
@@ -237,7 +220,6 @@ export async function leaveSecretChatroom(collabId, userId) {
   try {
     const leaveCall = await myClient.leaveSecretChatroom({
       chatroom_id: collabId,
-      // member_id: userId
       is_secret: true
     });
     if (!leaveCall.success) {
@@ -360,10 +342,10 @@ export async function dmChatFeed(communityId, pageNo) {
 
 export async function allChatroomMembersDm(communityId, page) {
   try {
-    const feedCall = await myClient.dmAllMembers({
+    const feedCall = await myClient.getAllMembers({
       // community_id: communityId,
       page,
-      member_state: 4
+      memberState: 4,
     });
     return jsonReturnHandler(feedCall, null);
   } catch (error) {
@@ -373,7 +355,7 @@ export async function allChatroomMembersDm(communityId, page) {
 
 export async function requestDM(memberId, communityId) {
   try {
-    console.log(memberId)
+    // console.log(memberId)
     const call = await myClient.checkDMLimit({
       memberId: memberId
     });
@@ -451,7 +433,7 @@ export async function undoBlock(chatroomId) {
       status: 1
     });
   } catch (error) {
-    // // console.log(error);
+    // // // console.log(error);
 
   }
 }
@@ -464,7 +446,7 @@ export async function deleteChatFromDM(idArr) {
     });
     return true;
   } catch (error) {
-    // // console.log(error);
+    // // // console.log(error);
     return error;
   }
 }
@@ -481,7 +463,7 @@ export function getDmMember(str, currentUser) {
 
 export function log(str) {
   if (process.env.NODE_ENV === 'development') {
-    // console.log(str);
+    // // console.log(str);
   }
 }
 

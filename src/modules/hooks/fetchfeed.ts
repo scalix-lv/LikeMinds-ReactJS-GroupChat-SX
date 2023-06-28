@@ -39,8 +39,8 @@ export function useFetchFeed(
     feedContext;
   useEffect(() => {
     async function fetchFeed() {
-      // console.log("consoleling");
-      // console.log(mode);
+      // // console.log("consoleling");
+      // // console.log(mode);
       try {
         switch (mode) {
           case "groups": {
@@ -89,7 +89,7 @@ export function useFetchFeed(
       try {
         generalContext.setShowLoadingBar(true);
         const feedcall: any = await getChatRoomDetails(myClient, id);
-        console.log(feedcall);
+        // console.log(feedcall);
         generalContext.setCurrentProfile(feedcall?.data?.data);
         generalContext.setCurrentChatroom(feedcall?.data?.data?.chatroom);
       } catch (error) {
@@ -277,7 +277,7 @@ export async function loadGroupFeed(
     homeFeed = [...homeFeed];
     allFeed = [...allFeed];
     let loadUnjoinedBool = false;
-    // console.log("consoleling inside loadGroupFeeds");
+    // // console.log("consoleling inside loadGroupFeeds");
     await getSecretChatroomsInvite(setSecretChatrooms);
     if (loadMoreHome) {
       let cRooms: any = [];

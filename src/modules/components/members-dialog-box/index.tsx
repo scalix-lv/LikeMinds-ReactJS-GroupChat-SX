@@ -41,7 +41,7 @@ const MemberDialogBox = ({ open, onClose, id }: MemberDialogBoxType) => {
         chatroomId: id,
         page: Math.floor(pg),
       });
-      console.log("the member call is", call);
+      // console.log("the member call is", call);
       if (call?.data?.members?.length < 10) {
         setShouldLoadMore(false);
       }

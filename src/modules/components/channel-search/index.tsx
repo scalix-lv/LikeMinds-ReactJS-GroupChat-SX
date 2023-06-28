@@ -30,8 +30,8 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
   async function searchFunction() {
     try {
       const pageNo = Math.floor(searchArray?.length / 20) + 1;
-      console.log("the page is");
-      console.log(searchArray);
+      // console.log("the page is");
+      // console.log(searchArray);
       const pageSize = 20;
       const call = await searchConversationsInsideChatroom(
         id!.toString(),
@@ -60,24 +60,21 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
     }
   }
 
-  // useEffect(() => {
-  //   log("hello");
-  //   function searchClickHandler(e: any) {
-  //     log("here inside");
-  //     if (
-  //       searchInputBoxRef.current &&
-  //       !searchInputBoxRef.current.contains(e.target)
-  //     ) {
-  //       setOpenSearch(false);
-  //       log("you clicked");
-  //       log(e);
-  //     }
-  //   }
-  //   document.addEventListener("click", searchClickHandler);
-  //   return () => {
-  //     document.removeEventListener("click", searchClickHandler);
-  //   };
-  // }, [searchInputBoxRef]);
+  useEffect(() => {
+    function searchClickHandler(e: any) {
+      // if (
+      //   searchInputBoxRef.current &&
+      //   !searchInputBoxRef.current.contains(e.target)
+      // ) {
+      //   setOpenSearch(false);
+      //   log(e);
+      // }
+    }
+    document.addEventListener("click", searchClickHandler, true);
+    return () => {
+      document.removeEventListener("click", searchClickHandler, true);
+    };
+  }, [searchInputBoxRef]);
 
   useEffect(() => {
     const searchChatroomTimeOut = setTimeout(() => {
@@ -104,13 +101,16 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
     }
   }
   return (
-    <div className="w-full">
+    <div className="">
       <div
-        className="w-full mx-4  border-b border-b-[#adadad] bg-[transparent]"
+        className=" mx-4  border-b border-b-[#adadad] bg-[transparent]"
         ref={searchInputBoxRef}
       >
-        <div className="relative flex w-full">
+        <div className="relative flex ">
           <IconButton
+            onClick={() => {
+              setOpenSearch(false);
+            }}
             sx={{
               position: "absolute",
               margin: "2px 4px",
@@ -123,12 +123,12 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
             value={searchKey}
             onChange={setSearchString}
             placeholder={`Search withing ${generalContext.currentChatroom?.header}`}
-            className="w-full py-3 focus:border-0 focus:outline-0 active:border-0 focus:outline-0 px-14 bg-transparent"
+            className="py-3 focus:border-0 focus:outline-0 active:border-0 focus:outline-0 px-14 bg-transparent grow"
           />
         </div>
       </div>
       <div
-        className="w-full mx-4 max-h-[400px] overflow-auto"
+        className="mx-4 max-h-[400px] overflow-auto"
         id="conversations-holder"
       >
         <InfiniteScroll

@@ -1,14 +1,19 @@
-import { Button, Snackbar } from '@mui/material';
-import { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Button, Snackbar } from "@mui/material";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 // import { myClient, UserContext } from "../..";
-import { myClient } from '../../..';
-import { UserContext } from '../../contexts/userContext';
-import { RouteContext } from '../../contexts/routeContext';
-import { directMessageChatPath, directMessageInfoPath } from '../../../routes';
+import { myClient } from "../../..";
+import { UserContext } from "../../contexts/userContext";
+import { RouteContext } from "../../contexts/routeContext";
+import { directMessageChatPath, directMessageInfoPath } from "../../../routes";
 // import { createDM, getChatRoomDetails, requestDM } from "../../sdkFunctions";
-import { createDM, getChatRoomDetails, log, requestDM } from '../../../sdkFunctions';
-import { GeneralContext } from '../../contexts/generalContext';
+import {
+  createDM,
+  getChatRoomDetails,
+  log,
+  requestDM,
+} from "../../../sdkFunctions";
+import { GeneralContext } from "../../contexts/generalContext";
 // import { DmContext } from "./DirectMessagesMain";
 
 export async function reqDM(
@@ -21,7 +26,7 @@ export async function reqDM(
   try {
     // log(profile);
     const call: any = await requestDM(profile.id, userContext.community.id);
-    // // console.log(call);
+    // // // console.log(call);
     // let i = 1;
 
     if (call.data === undefined) {
@@ -31,20 +36,23 @@ export async function reqDM(
     const callData = call.data;
 
     if (callData.chatroomId) {
-      const profileData: any = await getChatRoomDetails(myClient, call.data.chatroom_id);
+      const profileData: any = await getChatRoomDetails(
+        myClient,
+        call.data.chatroom_id
+      );
       if (profileData.error) {
         // eslint-disable-next-line no-throw-literal
-        throw 'Error';
+        throw "Error";
       }
-      // // console.log(profileData.error);
+      // // // console.log(profileData.error);
 
       if (profileData.data === undefined) {
         setOpenSnackBar(true);
-        setSnackBarMessage('An Error Occoured');
+        setSnackBarMessage("An Error Occoured");
         return;
       }
 
-      // // console.log(profileData);
+      // // // console.log(profileData);
       dmContext.setCurrentProfile(profileData.data);
       dmContext.setCurrentChatroom(profileData.data.chatroom);
       return profileData.data.chatroom.id;
@@ -52,9 +60,12 @@ export async function reqDM(
     const dmRequestLimit = callData.is_request_dm_limit_exceeded;
     if (!dmRequestLimit) {
       const createDmCall: any = await createDM(profile.id);
-      // // console.log(createDmCall);
-      const chatroomDetailsCall: any = await getChatRoomDetails(myClient, createDmCall.data.chatroom.id);
-      // // console.log(chatroomDetailsCall);
+      // // // console.log(createDmCall);
+      const chatroomDetailsCall: any = await getChatRoomDetails(
+        myClient,
+        createDmCall.data.chatroom.id
+      );
+      // // // console.log(chatroomDetailsCall);
       dmContext.setCurrentProfile(chatroomDetailsCall.data);
       dmContext.setCurrentChatroom(chatroomDetailsCall.data.chatroom);
       return chatroomDetailsCall.data.chatroom.id;
@@ -74,19 +85,26 @@ const DmMemberTile = ({ profile }: any) => {
   const userContext = useContext(UserContext);
   const routeContext = useContext(RouteContext);
   const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState('');
+  const [snackBarMessage, setSnackBarMessage] = useState("");
   return (
     <div
       className="flex justify-between items-center py-[16px] px-[20px] border-t border-solid border-[#EEEEEE] cursor-pointer"
-      style={{ backgroundColor: dmContext.currentChatroom?.id === profile?.id ? '#ECF3FF' : '#FFFFFF' }}
+      style={{
+        backgroundColor:
+          dmContext.currentChatroom?.id === profile?.id ? "#ECF3FF" : "#FFFFFF",
+      }}
       onClick={() => {
         routeContext.setIsNavigationBoxOpen(!routeContext.isNavigationBoxOpen);
       }}
     >
       <div className="flex flex-col">
-        <div className="text-[#323232] text-[16px] capitalize">{profile.name}</div>
+        <div className="text-[#323232] text-[16px] capitalize">
+          {profile.name}
+        </div>
         {profile.custom_title ? (
-          <div className="text-[12px] text-[#ADADAD]">{profile.custom_title}</div>
+          <div className="text-[12px] text-[#ADADAD]">
+            {profile.custom_title}
+          </div>
         ) : (
           <div className="text-[12px] text-[#ADADAD]">Other</div>
         )}
@@ -96,16 +114,22 @@ const DmMemberTile = ({ profile }: any) => {
       <Button
         variant="contained"
         sx={{
-          background: '#3884F7',
-          width: '87px',
-          height: '34px',
-          marginRight: '12px',
-          color: 'white',
-          ':hover': { background: 'grey' }
+          background: "#3884F7",
+          width: "87px",
+          height: "34px",
+          marginRight: "12px",
+          color: "white",
+          ":hover": { background: "grey" },
         }}
         onClick={() => {
           dmContext.setShowLoadingBar(true);
-          reqDM(profile, userContext, dmContext, setOpenSnackBar, setSnackBarMessage)
+          reqDM(
+            profile,
+            userContext,
+            dmContext,
+            setOpenSnackBar,
+            setSnackBarMessage
+          )
             .then((r) => {
               navigate(`${directMessageChatPath}/${r}`);
               dmContext.setShowLoadingBar(false);
@@ -113,7 +137,7 @@ const DmMemberTile = ({ profile }: any) => {
             .catch(() => {
               dmContext.setShowLoadingBar(false);
               setOpenSnackBar(true);
-              setSnackBarMessage('Error occoured while loading');
+              setSnackBarMessage("Error occoured while loading");
             });
         }}
       >
@@ -124,15 +148,15 @@ const DmMemberTile = ({ profile }: any) => {
         state={{
           communityId: userContext.community.id,
           memberId: profile.id,
-          isFromAllMembers: true
+          isFromAllMembers: true,
         }}
       >
         <Button
           sx={{
-            width: '107px',
-            height: '34px',
-            paddingX: '3px',
-            fontSize: '12px'
+            width: "107px",
+            height: "34px",
+            paddingX: "3px",
+            fontSize: "12px",
           }}
           variant="outlined"
           // onClick={routeToProfile}

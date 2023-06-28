@@ -1,14 +1,17 @@
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { REGEX_USER_SPLITTING, REGEX_USER_TAGGING } from "../../../enums/regex";
 import { useContext } from "react";
+import parse from "html-react-parser";
 import { GeneralContext } from "../../contexts/generalContext";
 import { SEARCHED_CONVERSATION_ID } from "../../../enums/localStorageConstants";
+import { linkConverter, tagExtracter } from "../../../sdkFunctions";
+import { UserContext } from "../../contexts/userContext";
 
 function renderAnswers(text: string) {
   let arr = [];
   let parts = text.split(REGEX_USER_SPLITTING);
-  console.log("the parts are");
-  console.log(parts);
+  // console.log("the parts are");
+  // console.log(parts);
   if (!!parts) {
     for (const matchResult of parts) {
       if (!!matchResult.match(REGEX_USER_TAGGING)) {
@@ -34,8 +37,9 @@ const ProfileTile = ({ profile, setOpenSearch }: any) => {
   const generalContext = useContext(GeneralContext);
   function handleSearchNavigation() {
     generalContext.setShowLoadingBar(true);
-    setOpenSearch(false);
+    // console.log("the profile time id is ", profile.id);
     sessionStorage.setItem(SEARCHED_CONVERSATION_ID, profile?.id?.toString());
+    setOpenSearch(false);
   }
   return (
     <div
@@ -71,10 +75,13 @@ const ProfileImageView = ({ imgSource }: any) => {
 };
 
 const ProfileData = ({ userName, answer }: any) => {
+  const userContext = useContext(UserContext);
   return (
     <div className="grow pl-4">
       <div className="font-semibold">{userName}</div>
-      <p className="text-ellipsis ">{answer}</p>
+      <p className="text-ellipsis ">
+        {parse(linkConverter(tagExtracter(answer, userContext)))}
+      </p>
     </div>
   );
 };
