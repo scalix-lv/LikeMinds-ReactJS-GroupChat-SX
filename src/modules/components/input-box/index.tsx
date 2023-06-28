@@ -93,7 +93,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
         searchName: searchString,
       });
       // // log(call);
-      return call.community_members;
+      return call?.data?.community_members;
     } catch (error) {
       // log(error);
     }
@@ -296,11 +296,11 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
             data={(search, callback) => {
               timeOut.current = setTimeout(() => {
                 getTaggingMembers(search, 1).then((val) => {
-                  const arr = val.map((item: any) => {
+                  const arr = val?.map((item: any) => {
                     item.display = item.name;
                     return item;
                   });
-                  if (arr.length < 10) {
+                  if (arr?.length < 10) {
                     setLoadMoreMembers(false);
                   }
                   cbRef.current = callback;
@@ -308,7 +308,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
                   setMemberDetailsArray(arr);
                   callback(arr);
                 });
-              }, 2000);
+              }, 500);
             }}
             markup="<<__display__|route://member/__id__>>"
             style={{ backgroundColor: "#daf4fa" }}

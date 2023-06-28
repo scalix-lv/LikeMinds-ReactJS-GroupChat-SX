@@ -138,7 +138,7 @@ const sendMessage = async (
         // log(newFile);
         await myClient.uploadMedia(uploadConfig).then((fileResponse: any) => {
           const onUploadConfig = {
-            conversationId: parseInt(createConversationCall.id, 10),
+            conversationId: parseInt(createConversationCall?.data?.id, 10),
             filesCount: 1,
             index,
             meta: { size: newFile.size },

@@ -16,8 +16,6 @@ export function useFirebaseChatConversations(
     const query = ref(db, `collabcards`);
     return onValue(query, (snapshot: any) => {
       if (snapshot.exists()) {
-        // console.log("the snapshot is");
-        // console.log(snapshot);
         if (sessionStorage.getItem(SEARCHED_CONVERSATION_ID) !== null) {
           return;
         }
