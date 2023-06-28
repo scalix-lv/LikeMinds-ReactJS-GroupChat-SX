@@ -124,6 +124,7 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
             onChange={setSearchString}
             placeholder={`Search withing ${generalContext.currentChatroom?.header}`}
             className="py-3 focus:border-0 focus:outline-0 active:border-0 focus:outline-0 px-14 bg-transparent grow"
+            autoFocus={true}
           />
         </div>
       </div>
