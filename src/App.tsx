@@ -15,11 +15,7 @@ function App() {
   useEffect(() => {
     const initiateClient = async () => {
       try {
-        let call: any = await initiateSDK(
-          false,
-          "2210471c-924d-4c7c-bb74-04a6a0ba2b22",
-          "Jai"
-        );
+        let call: any = await initiateSDK(false, "", "");
         setCommunity(call?.data?.community);
         setCurrentUser(call?.data?.user);
         sessionStorage.setItem("communityId", call?.data?.community?.id);
