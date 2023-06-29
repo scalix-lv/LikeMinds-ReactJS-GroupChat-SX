@@ -3,41 +3,33 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-throw-literal */
 /* eslint-disable camelcase */
-import LikeMinds from 'likeminds-chat-beta';
+// import LikeMinds from 'likeminds-chat-beta';
 import { myClient } from '..';
-export const jsonReturnHandler = (data, error) => {
-  const returnObject = {
-    error: false
-  };
-  if (!error) {
-    returnObject.data = data;
-  } else {
-    returnObject.error = true;
-    returnObject.errorMessage = error;
-  }
-  return returnObject;
-};
-
-export const createNewClient = (key) => {
-  const client = new LikeMinds({
-    apiKey: key
-  });
-  return client;
+export const jsonReturnHandler = (callRes, error) => {
+  // log("response hai")
+  // log(callRes)
+  // const returnObject = {
+  //   error: false
+  // };
+  // if (!error) {
+  //   returnObject.data = callRes;
+  // } else {
+  //   returnObject.error = true;
+  //   returnObject.errorMessage = error;
+  // }
+  return callRes;
 };
 
 export const getChatRoomDetails = async (myClient, chatRoomId) => {
   try {
-    // // console.log(chatRoomId);
     const params = {
       chatroomId: chatRoomId,
       page: 1
     };
     const chatRoomResponse = await myClient.getChatroom(params);
-
-    // // console.log(chatRoomResponse);
-    return jsonReturnHandler(chatRoomResponse, null);
+    // console.log(chatRoomResponse)
+    return jsonReturnHandler({ data: chatRoomResponse }, null);
   } catch (error) {
-    // // console.log(error);
     return jsonReturnHandler(null, error);
   }
 };
@@ -45,7 +37,7 @@ export const getChatRoomDetails = async (myClient, chatRoomId) => {
 export const getConversationsForGroup = async (optionObject) => {
   try {
     const conversationCall = await myClient.getConversation(optionObject);
-    return jsonReturnHandler(conversationCall.conversations, null);
+    return jsonReturnHandler(conversationCall, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
   }
@@ -110,8 +102,8 @@ export async function getReportingOptions() {
 export async function addReaction(reaction, convoId, chatId) {
   try {
     const reactionCall = await myClient.putReaction({
-      chatroom_id: chatId,
-      conversation_id: convoId,
+      chatroomId: chatId,
+      conversationId: convoId,
       reaction
     });
     return jsonReturnHandler(reactionCall, null);
@@ -123,25 +115,12 @@ export async function addReaction(reaction, convoId, chatId) {
 export async function pushReport(convoId, tagId, reason, reportedMemberId) {
   try {
     const pushReportCall = await myClient.pushReport({
-      conversation_id: convoId,
-      tag_id: tagId,
+      conversationId: convoId,
+      tagId: tagId,
       reason,
-      reported_Member_id: reportedMemberId
+      reportedMemberId: reportedMemberId
     });
     return jsonReturnHandler(pushReportCall, null);
-  } catch (error) {
-    return jsonReturnHandler(null, error);
-  }
-}
-
-export async function initiateSDK(isGuest, userUniqueId, username) {
-  try {
-    const initiateCall = await myClient.initiateUser({
-      is_guest: isGuest,
-      user_unique_id: userUniqueId,
-      user_name: username
-    });
-    return jsonReturnHandler(initiateCall, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
   }
@@ -181,10 +160,6 @@ export async function getAllChatroomMember(chatroomId, communityId, list, setFun
   }
 }
 
-// const userContext = useContext(UserContext)
-// import above 2 things
-// userContext.
-
 export function mergeInputFiles(inputContext) {
   const { mediaAttachments, documentAttachments, audioAttachments } = inputContext;
 
@@ -201,13 +176,11 @@ export function clearInputFiles(inputContext) {
 export async function getUnjoinedRooms(community_id, pageNo) {
   try {
     const unjoinedGroups = await myClient.fetchFeedData({
-      // community_id,
       order_type: 0,
       page: pageNo || 1
     });
     return jsonReturnHandler(unjoinedGroups, null);
   } catch (error) {
-    // // console.log(error);
     return jsonReturnHandler(null, error);
   }
 }
@@ -221,7 +194,7 @@ export async function joinNewGroup(collabId, userID, value) {
     });
     return jsonReturnHandler(joinCall, null);
   } catch (error) {
-    // // console.log(error);
+    // // // console.log(error);
     return jsonReturnHandler(null, error);
   }
 }
@@ -229,10 +202,11 @@ export async function joinNewGroup(collabId, userID, value) {
 export async function leaveChatRoom(collabId, userId) {
   try {
     const leaveCall = await myClient.followChatroom({
-      collabcard_id: collabId,
-      member_id: userId,
+      collabcardId: collabId,
+      memberId: userId,
       value: false
     });
+
     if (!leaveCall.success) {
       throw false;
     }
@@ -246,7 +220,6 @@ export async function leaveSecretChatroom(collabId, userId) {
   try {
     const leaveCall = await myClient.leaveSecretChatroom({
       chatroom_id: collabId,
-      // member_id: userId
       is_secret: true
     });
     if (!leaveCall.success) {
@@ -311,8 +284,8 @@ export function linkConverter(sampleString) {
 export async function joinChatRoom(collabId, userId) {
   try {
     const joinCall = await myClient.followChatroom({
-      collabcard_id: collabId,
-      member_id: userId,
+      collabcardId: collabId,
+      memberId: userId,
       value: true
     });
     // refreshContext();
@@ -326,7 +299,7 @@ export async function joinChatRoom(collabId, userId) {
 export async function markRead(chatroomId) {
   try {
     const markCall = await myClient.markReadChatroom({
-      chatroom_id: chatroomId
+      chatroomId: chatroomId
     });
     return jsonReturnHandler(markCall, null);
   } catch (error) {
@@ -369,10 +342,10 @@ export async function dmChatFeed(communityId, pageNo) {
 
 export async function allChatroomMembersDm(communityId, page) {
   try {
-    const feedCall = await myClient.dmAllMembers({
+    const feedCall = await myClient.getAllMembers({
       // community_id: communityId,
       page,
-      member_state: 4
+      memberState: 4,
     });
     return jsonReturnHandler(feedCall, null);
   } catch (error) {
@@ -382,9 +355,9 @@ export async function allChatroomMembersDm(communityId, page) {
 
 export async function requestDM(memberId, communityId) {
   try {
-    log(memberId);
+    // console.log(memberId)
     const call = await myClient.checkDMLimit({
-      memberId
+      memberId: memberId
     });
     return jsonReturnHandler(call, null);
   } catch (error) {
@@ -406,8 +379,9 @@ export async function canDirectMessage(chatroomId) {
 
 export async function createDM(memberId) {
   try {
+    // log(memberId)
     const call = await myClient.createDMChatroom({
-      member_id: memberId
+      memberId: memberId
     });
     return jsonReturnHandler(call, null);
   } catch (error) {
@@ -418,8 +392,8 @@ export async function createDM(memberId) {
 export async function sendDmRequest(chatroomId, messageText, state) {
   try {
     const call = await myClient.sendDMRequest({
-      chat_request_state: state,
-      chatroom_id: chatroomId,
+      chatRequestState: state,
+      chatroomId: chatroomId,
       text: messageText
     });
     return jsonReturnHandler(call, null);
@@ -431,8 +405,8 @@ export async function sendDmRequest(chatroomId, messageText, state) {
 export async function dmAction(requestState, chatroomId, text) {
   try {
     const config = {
-      chatroom_id: chatroomId,
-      chat_request_state: requestState,
+      chatroomId: chatroomId,
+      chatRequestState: requestState,
 
     };
     if (text != null) {
@@ -459,7 +433,7 @@ export async function undoBlock(chatroomId) {
       status: 1
     });
   } catch (error) {
-    // // console.log(error);
+    // // // console.log(error);
 
   }
 }
@@ -472,7 +446,7 @@ export async function deleteChatFromDM(idArr) {
     });
     return true;
   } catch (error) {
-    // // console.log(error);
+    // // // console.log(error);
     return error;
   }
 }
@@ -489,7 +463,7 @@ export function getDmMember(str, currentUser) {
 
 export function log(str) {
   if (process.env.NODE_ENV === 'development') {
-    console.log(str);
+    // // console.log(str);
   }
 }
 

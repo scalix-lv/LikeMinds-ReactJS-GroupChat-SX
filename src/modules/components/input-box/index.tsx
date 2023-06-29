@@ -18,7 +18,7 @@ import paperclip from "../../../assets/svg/paperclip.svg";
 import pdfIcon from "../../../assets/svg/pdf-document.svg";
 import "./Input.css";
 import ChatroomContext from "../../contexts/chatroomContext";
-import { clearInputFiles, log } from "../../../sdkFunctions";
+import { clearInputFiles } from "../../../sdkFunctions";
 import { sendMessage } from "./input";
 import ReplyBox from "./replyContainer";
 import { myClient } from "../../..";
@@ -92,10 +92,10 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
         pageSize: 10,
         searchName: searchString,
       });
-      // log(call);
-      return call.community_members;
+      // // log(call);
+      return call?.data?.community_members;
     } catch (error) {
-      log(error);
+      // log(error);
     }
   }
   useEffect(() => {
@@ -148,8 +148,8 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
   useEffect(() => {
     const { currentChatroom } = generalContext;
     if (
-      currentChatroom.member?.state === 1 ||
-      currentChatroom.chatroom_with_user?.state === 1
+      currentChatroom?.member?.state === 1 ||
+      currentChatroom?.chatroom_with_user?.state === 1
     ) {
       setChatRequestVariable(1);
     } else {
@@ -188,8 +188,9 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
       <div className="relative">
         <IconButton
           onClick={() => {
+            // console.log(generalContext.currentChatroom);
             sendMessage(
-              generalContext.currentChatroom.chat_request_state,
+              generalContext?.currentChatroom?.chat_request_state,
               chatRequestVariable,
               chatroomContext,
               parseInt(id, 10),
@@ -197,7 +198,10 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
               setBufferMessage,
               setEnableInputBox,
               mode
-            );
+            ).then(() => {
+              if (!generalContext.currentChatroom?.follow_status) {
+              }
+            });
           }}
           className="absolute right-[8.6%] top-[9.5%] "
           sx={{
@@ -292,11 +296,11 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
             data={(search, callback) => {
               timeOut.current = setTimeout(() => {
                 getTaggingMembers(search, 1).then((val) => {
-                  const arr = val.map((item: any) => {
+                  const arr = val?.map((item: any) => {
                     item.display = item.name;
                     return item;
                   });
-                  if (arr.length < 10) {
+                  if (arr?.length < 10) {
                     setLoadMoreMembers(false);
                   }
                   cbRef.current = callback;
@@ -304,7 +308,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
                   setMemberDetailsArray(arr);
                   callback(arr);
                 });
-              }, 2000);
+              }, 500);
             }}
             markup="<<__display__|route://member/__id__>>"
             style={{ backgroundColor: "#daf4fa" }}

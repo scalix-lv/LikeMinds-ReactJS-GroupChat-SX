@@ -36,7 +36,7 @@ const GroupAllFeedTile = ({
         navigate(`${groupMainPath}/${chatroomId}`);
       }
     } catch (error) {
-      // // console.log(error);
+      // // // console.log(error);
     }
   }
 
