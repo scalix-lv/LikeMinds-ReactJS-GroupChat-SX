@@ -262,7 +262,7 @@ function VoteOptionField({
     if (shouldShowVotes) {
       getPollUsers();
     }
-  }, []);
+  }, [shouldShowVotes]);
 
   return (
     <>
@@ -271,7 +271,25 @@ function VoteOptionField({
         onClose={() => {
           setShouldOpenPollResultsDialog(!shouldOpenPollResultsDialog);
         }}
-      ></Dialog>
+      >
+        <div className="py-2 px-4 min-h-[600px] min-w-[400px]">
+          <span
+            className="absolute top-[16px] right-[16px]"
+            onClick={() => {
+              setShouldOpenPollResultsDialog(!shouldOpenPollResultsDialog);
+            }}
+          >
+            <CloseIcon />
+          </span>
+          {pollResults?.members?.map((member: any) => {
+            return (
+              <div className="py-2 px-4 flex items-center" key={member.id}>
+                {member.name}
+              </div>
+            );
+          })}
+        </div>
+      </Dialog>
       <div
         key={poll?.id}
         className={`border border-[#D0D8E2] rounded rounded-[48px] text-md font-[300] mt-2 cursor-pointer`}
@@ -288,7 +306,7 @@ function VoteOptionField({
         <span
           className="cursor-pointer text-xs"
           onClick={() => {
-            setShouldShowVotes(true);
+            setShouldOpenPollResultsDialog(true);
           }}
         >
           {poll.no_votes} votes
