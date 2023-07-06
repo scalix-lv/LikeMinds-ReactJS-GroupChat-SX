@@ -1,9 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import Switch from "../switch";
 import routeVariable from "../../../enums/routeVariables";
+import Poll from "../../post-polls";
 
 const RouteProvider: React.FC = () => {
   return (
+    // <Poll />
     <Routes>
       <Route path="community/" element={<Switch />} />
       <Route path={`community/:${routeVariable.mode}`} element={<Switch />} />
