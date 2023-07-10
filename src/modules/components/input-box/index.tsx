@@ -4,7 +4,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-use-before-define */
 /* eslint-disable react/jsx-no-constructed-context-values */
-import { Box, IconButton, Menu } from "@mui/material";
+import { Box, Dialog, IconButton, Menu } from "@mui/material";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { MentionsInput, Mention } from "react-mentions";
@@ -26,6 +26,8 @@ import InputFieldContext from "../../contexts/inputFieldContext";
 import { INPUT_BOX_DEBOUNCE_TIME } from "../../constants/constants";
 import { GeneralContext } from "../../contexts/generalContext";
 import routeVariable from "../../../enums/routeVariables";
+import Poll from "../../post-polls";
+import PollIcon from "@mui/icons-material/Poll";
 
 const Input = ({ setBufferMessage, disableInputBox }: any) => {
   const [messageText, setMessageText] = useState("");
@@ -118,34 +120,6 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
     }
   });
   useEffect(() => {
-    async function getAllMembers() {
-      let cont = true;
-      let list: any = [];
-      let pgNo = 1;
-      while (cont) {
-        const call = await myClient.allMembers({
-          chatroom_id: parseInt(id, 10),
-          community_id: parseInt(sessionStorage.getItem("communityId")!, 10),
-          page: pgNo,
-        });
-        list = list.concat(call.members);
-        pgNo += 1;
-        if (call.members.length < 10) {
-          cont = false;
-        }
-      }
-      list = list.map((member: any) => ({
-        id: member.id,
-        display: member.name,
-        community: sessionStorage.getItem("communityId"),
-        imageUrl: member.image_url,
-      }));
-      setMemberDetailsArray(list);
-    }
-
-    // getAllMembers();
-  }, [id]);
-  useEffect(() => {
     const { currentChatroom } = generalContext;
     if (
       currentChatroom?.member?.state === 1 ||
@@ -156,6 +130,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
       setChatRequestVariable(0);
     }
   }, [generalContext.currentChatroom]);
+
   useEffect(() => {
     if (inputBoxRef.current) {
       inputBoxRef?.current?.focus();
@@ -342,6 +317,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
 };
 
 const InputOptions = ({ containerRef, disableInputBox }: any) => {
+  const [openPollDialog, setOpenPollDialog] = useState(false);
   const inputFieldContext = useContext(InputFieldContext);
   const {
     audioAttachments,
@@ -374,6 +350,10 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
       file: documentAttachments,
       setFile: setDocumentAttachments,
     },
+    {
+      title: "poll",
+      Icon: paperclip,
+    },
   ];
   if (disableInputBox) {
     return null;
@@ -394,6 +374,19 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
           accept = ".pdf";
           fileType = "doc";
         }
+        if (title === "poll") {
+          return (
+            <span
+              onClick={() => {
+                setOpenPollDialog(true);
+              }}
+              className="cursor-pointer"
+              key={title}
+            >
+              <PollIcon />
+            </span>
+          );
+        }
         if (title !== "GIF" && title !== "emojis") {
           return (
             <OptionButtonBox
@@ -413,6 +406,14 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
           />
         );
       })}
+      <Dialog
+        open={openPollDialog}
+        onClose={() => {
+          setOpenPollDialog(false);
+        }}
+      >
+        <Poll />
+      </Dialog>
     </Box>
   );
 };
@@ -443,47 +444,6 @@ const OptionButtonBox = ({ icon, accept, setFile, file }: any) => {
     </IconButton>
   );
 };
-
-// const EmojiButton = ({ option, containerRef }: any) => {
-//   const [anchorEl, setAnchorEl] = useState(null);
-//   const ref = useRef(null);
-//   const handleOpen = () => {
-//     setAnchorEl(ref.current);
-//   };
-//   const handleClose = () => {
-//     setAnchorEl(null);
-//   };
-//   const { messageText, setMessageText } = useContext(InputFieldContext);
-//   return (
-//     <div>
-//       <IconButton ref={ref} onClick={handleOpen}>
-//         <img className="w-[20px] h-[20px]" src={option.Icon} alt="" />
-//       </IconButton>
-//       <Menu
-//         open={Boolean(anchorEl)}
-//         anchorEl={anchorEl}
-//         onClose={handleClose}
-//         // anchorPosition={{
-//         //   hori
-//         // }}
-//         sx={{
-//           transform: "translate(100%, -20%)",
-//         }}
-//       >
-//         <EmojiPicker
-//           onEmojiClick={(e) => {
-//             let newText = messageText;
-//             newText += `${e.emoji}`;
-//             setMessageText(newText);
-//           }}
-//           previewConfig={{
-//             showPreview: false,
-//           }}
-//         />
-//       </Menu>
-//     </div>
-//   );
-// };
 
 const EmojiButton = ({ option }: any) => {
   const [anchorEl, setAnchorEl] = useState(null);

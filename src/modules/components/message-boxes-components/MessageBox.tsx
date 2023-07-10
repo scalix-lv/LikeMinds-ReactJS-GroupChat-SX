@@ -27,6 +27,7 @@ import { GeneralContext } from "../../contexts/generalContext";
 import AttachmentsHolder from "./AttachmentsHolder";
 import MediaCarousel from "../carousel";
 import routeVariable from "../../../enums/routeVariables";
+import PollResponse from "../../poll-response";
 
 async function getChatroomConversations(
   chatroomId: any,
@@ -78,85 +79,204 @@ const MessageBoxDM = ({
 
   const chatroomContext = useContext(ChatroomContext);
 
-  if (conversationObject.state !== 0) {
-    return (
-      <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
-        {conversationObject.state === 1 ? (
-          <span id="state-1">
+  // if (conversationObject.state !== 0) {
+  //   return (
+  //     <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
+  //       {conversationObject.state === 1 ? (
+  //         <span id="state-1">
+  //           {parse(linkConverter(tagExtracter(messageString, userContext, 1)))}
+  //         </span>
+  //       ) : (
+  //         <>
+  //           {parse(linkConverter(tagExtracter(messageString, userContext)))}
+  //           {/* Showing Tap to undo only if the user that has rejected the chatroom see it */}
+  //           {conversationObject?.state === 19 &&
+  //           generalContext?.currentChatroom?.chat_request_state === 2 &&
+  //           userContext.currentUser.id ===
+  //             generalContext.currentChatroom.chat_requested_by[0].id &&
+  //           index === chatroomContext.conversationList.length - 1 ? (
+  //             <span
+  //               className="text-[#3884f7] cursor-pointer"
+  //               onClick={() => {
+  //                 undoBlock(conversationObject.chatroom_id).then(() => {
+  //                   getChatroomConversations(
+  //                     generalContext.currentChatroom.id,
+  //                     100,
+  //                     chatroomContext
+  //                   ).then(() => {
+  //                     getChatRoomDetails(
+  //                       myClient,
+  //                       generalContext.currentChatroom.id
+  //                     ).then((e: any) => {
+  //                       generalContext.setCurrentChatroom(e.data.chatroom);
+  //                       generalContext.setCurrentProfile(e.data);
+  //                     });
+  //                   });
+  //                 });
+  //               }}
+  //             >
+  //               {" "}
+  //               Tap to Undo
+  //             </span>
+  //           ) : null}
+  //         </>
+  //       )}
+  //     </div>
+  //   );
+  // }
+  // return (
+  //   <div>
+  //     <Box className="flex mb-4">
+  //       <StringBox
+  //         username={username}
+  //         messageString={messageString}
+  //         time={time}
+  //         userId={userId}
+  //         attachments={attachments}
+  //         replyConversationObject={replyConversationObject}
+  //         conversationObject={conversationObject}
+  //       />
+  //       <MoreOptions
+  //         convoId={convoId}
+  //         convoObject={conversationObject}
+  //         index={index}
+  //       />
+  //     </Box>
+  //     <div>
+  //       {conversationObject.deleted_by !== undefined ? null : (
+  //         <>
+  //           {conversationReactions.map(
+  //             (reactionObject: any, reactionObjectIndex: any) => (
+  //               <ReactionIndicator
+  //                 reaction={reactionObject.reaction}
+  //                 key={reactionObjectIndex}
+  //               />
+  //             )
+  //           )}
+  //         </>
+  //       )}
+  //     </div>
+  //   </div>
+  // );
+  switch (conversationObject?.state) {
+    case 0: {
+      return (
+        <div>
+          <Box className="flex mb-4">
+            <StringBox
+              username={username}
+              messageString={messageString}
+              time={time}
+              userId={userId}
+              attachments={attachments}
+              replyConversationObject={replyConversationObject}
+              conversationObject={conversationObject}
+            />
+            <MoreOptions
+              convoId={convoId}
+              convoObject={conversationObject}
+              index={index}
+            />
+          </Box>
+          <div>
+            {conversationObject.deleted_by !== undefined ? null : (
+              <>
+                {conversationReactions.map(
+                  (reactionObject: any, reactionObjectIndex: any) => (
+                    <ReactionIndicator
+                      reaction={reactionObject.reaction}
+                      key={reactionObjectIndex}
+                    />
+                  )
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+    case 1: {
+      return (
+        <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
+          <span id="state-1 mx-auto">
             {parse(linkConverter(tagExtracter(messageString, userContext, 1)))}
           </span>
-        ) : (
-          <>
-            {parse(linkConverter(tagExtracter(messageString, userContext)))}
-            {/* Showing Tap to undo only if the user that has rejected the chatroom see it */}
-            {conversationObject?.state === 19 &&
-            generalContext?.currentChatroom?.chat_request_state === 2 &&
-            userContext.currentUser.id ===
-              generalContext.currentChatroom.chat_requested_by[0].id &&
-            index === chatroomContext.conversationList.length - 1 ? (
-              <span
-                className="text-[#3884f7] cursor-pointer"
-                onClick={() => {
-                  undoBlock(conversationObject.chatroom_id).then(() => {
-                    getChatroomConversations(
-                      generalContext.currentChatroom.id,
-                      100,
-                      chatroomContext
-                    ).then(() => {
-                      getChatRoomDetails(
-                        myClient,
-                        generalContext.currentChatroom.id
-                      ).then((e: any) => {
-                        generalContext.setCurrentChatroom(e.data.chatroom);
-                        generalContext.setCurrentProfile(e.data);
-                      });
+        </div>
+      );
+    }
+    case 10: {
+      return (
+        <div>
+          <Box className="flex mb-4">
+            <StringBox
+              username={username}
+              messageString={messageString}
+              time={time}
+              userId={userId}
+              attachments={attachments}
+              replyConversationObject={replyConversationObject}
+              conversationObject={conversationObject}
+            />
+            <MoreOptions
+              convoId={convoId}
+              convoObject={conversationObject}
+              index={index}
+            />
+          </Box>
+          <div>
+            {conversationObject.deleted_by !== undefined ? null : (
+              <>
+                {conversationReactions.map(
+                  (reactionObject: any, reactionObjectIndex: any) => (
+                    <ReactionIndicator
+                      reaction={reactionObject.reaction}
+                      key={reactionObjectIndex}
+                    />
+                  )
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+    default:
+      return (
+        <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
+          {parse(linkConverter(tagExtracter(messageString, userContext)))}
+          {/* Showing Tap to undo only if the user that has rejected the chatroom see it */}
+          {conversationObject?.state === 19 &&
+          generalContext?.currentChatroom?.chat_request_state === 2 &&
+          userContext.currentUser.id ===
+            generalContext.currentChatroom.chat_requested_by[0].id &&
+          index === chatroomContext.conversationList.length - 1 ? (
+            <span
+              className="text-[#3884f7] cursor-pointer"
+              onClick={() => {
+                undoBlock(conversationObject.chatroom_id).then(() => {
+                  getChatroomConversations(
+                    generalContext.currentChatroom.id,
+                    100,
+                    chatroomContext
+                  ).then(() => {
+                    getChatRoomDetails(
+                      myClient,
+                      generalContext.currentChatroom.id
+                    ).then((e: any) => {
+                      generalContext.setCurrentChatroom(e.data.chatroom);
+                      generalContext.setCurrentProfile(e.data);
                     });
                   });
-                }}
-              >
-                {" "}
-                Tap to Undo
-              </span>
-            ) : null}
-          </>
-        )}
-      </div>
-    );
+                });
+              }}
+            >
+              {" "}
+              Tap to Undo
+            </span>
+          ) : null}
+        </div>
+      );
   }
-  return (
-    <div>
-      <Box className="flex mb-4">
-        <StringBox
-          username={username}
-          messageString={messageString}
-          time={time}
-          userId={userId}
-          attachments={attachments}
-          replyConversationObject={replyConversationObject}
-          conversationObject={conversationObject}
-        />
-        <MoreOptions
-          convoId={convoId}
-          convoObject={conversationObject}
-          index={index}
-        />
-      </Box>
-      <div>
-        {conversationObject.deleted_by !== undefined ? null : (
-          <>
-            {conversationReactions.map(
-              (reactionObject: any, reactionObjectIndex: any) => (
-                <ReactionIndicator
-                  reaction={reactionObject.reaction}
-                  key={reactionObjectIndex}
-                />
-              )
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
 };
 
 const ReactionIndicator = ({ reaction }: any) => (
@@ -222,7 +342,7 @@ const StringBox = ({
         </div>
       </div>
 
-      {conversationObject.deleted_by !== undefined ? (
+      {conversationObject?.deleted_by !== undefined ? (
         <span className="text-[14px] w-full font-[300] text-[#323232]">
           This message has been deleted.
         </span>
@@ -264,11 +384,15 @@ const StringBox = ({
             </div>
           ) : null}
 
-          <div className="text-[14px] w-full font-[300] text-[#323232]">
-            <span className="msgCard" ref={ref}>
-              {parse(linkConverter(tagExtracter(messageString, userContext)))}
-            </span>
-          </div>
+          {conversationObject?.state === 10 ? (
+            <PollResponse conversation={conversationObject} />
+          ) : (
+            <div className="text-[14px] w-full font-[300] text-[#323232]">
+              <span className="msgCard" ref={ref}>
+                {parse(linkConverter(tagExtracter(messageString, userContext)))}
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>
