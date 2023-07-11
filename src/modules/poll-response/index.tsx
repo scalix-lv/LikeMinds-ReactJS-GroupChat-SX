@@ -6,6 +6,7 @@ import { messageStrings } from "../../enums/strings";
 import { myClient } from "../..";
 import { Dialog } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { AccountCircle } from "@mui/icons-material";
 type PollResponseProps = {
   conversation: any;
 };
@@ -272,27 +273,40 @@ function VoteOptionField({
           setShouldOpenPollResultsDialog(!shouldOpenPollResultsDialog);
         }}
       >
-        <div className="py-2 px-4 min-h-[600px] min-w-[400px]">
+        <div className="py-2 px-4 min-h-[600px] min-w-[400px] max-h-full">
           <span
-            className="absolute top-[16px] right-[16px]"
+            className="absolute top-[16px] right-[16px] cursor-pointer"
             onClick={() => {
               setShouldOpenPollResultsDialog(!shouldOpenPollResultsDialog);
             }}
           >
             <CloseIcon />
           </span>
-          {pollResults?.members?.map((member: any) => {
-            return (
-              <div className="py-2 px-4 flex items-center" key={member.id}>
-                {member.name}
-              </div>
-            );
-          })}
+          <div className="my-12">
+            {pollResults?.members?.map((member: any) => {
+              return (
+                <div className="py-2 px-4 flex items-center" key={member.id}>
+                  <div className="mr-8">
+                    {member?.image_url?.length !== 0 ? (
+                      <>
+                        <img src={member?.image_url} alt="imageIcon" />
+                      </>
+                    ) : (
+                      <>
+                        <AccountCircle />
+                      </>
+                    )}
+                  </div>
+                  <div className="grow">{member.name}</div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </Dialog>
       <div
         key={poll?.id}
-        className={`border border-[#D0D8E2] rounded rounded-[48px] text-md font-[300] mt-2 cursor-pointer`}
+        className={`border border-[#D0D8E2] rounded rounded-2 text-md font-[300] mt-2 cursor-pointer`}
       >
         <div onClick={clickHandler}>
           {poll.is_selected || showSelected ? (
