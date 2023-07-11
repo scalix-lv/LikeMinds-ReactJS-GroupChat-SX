@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
@@ -19,8 +19,9 @@ import {
 import { myClient } from "../..";
 import { useParams } from "react-router-dom";
 import routeVariable from "../../enums/routeVariables";
+import { GeneralContext } from "../contexts/generalContext";
 
-function PollBody() {
+function PollBody({ closeDialog }: any) {
   const [question, setQuestion] = useState<any>("");
   const [optionsArray, setOptionsArray] = useState<any>([]);
   const [voterAddOptions, setVoterAddOptions] = useState(false);
@@ -30,7 +31,7 @@ function PollBody() {
   const [voteAllowedPerUser, setVoteAllowedPerUser] = useState<any>(0);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState<any>(false);
   const [expiryTime, setExpiryTime] = useState<any>("");
-
+  const generalContext = useContext(GeneralContext);
   const params = useParams();
   const id = params[routeVariable.id];
   useEffect(() => {
@@ -73,11 +74,38 @@ function PollBody() {
   }
   async function postPoll() {
     try {
+      if (question?.length === 0) {
+        generalContext.setSnackBarMessage("Question Field cannot be empty");
+        generalContext.setShowSnackBar(true);
+        return;
+      }
+      if (expiryTime?.length === 0) {
+        generalContext.setSnackBarMessage("Please select expiry time");
+        generalContext.setShowSnackBar(true);
+        return;
+      }
+      const tempPollOptionsMap: any = {};
+      let shouldBreak = false;
       const polls = optionsArray.map((item: any) => {
-        return {
-          text: item?.text,
-        };
+        if (tempPollOptionsMap[item?.text] !== undefined) {
+          generalContext.setSnackBarMessage("Poll options cant be the same");
+          generalContext.setShowSnackBar(true);
+          shouldBreak = true;
+        } else {
+          if (item?.text === "") {
+            generalContext.setSnackBarMessage("Empty Options are not allowed");
+            generalContext.setShowSnackBar(true);
+            shouldBreak = true;
+          }
+          tempPollOptionsMap[item?.text] = true;
+          return {
+            text: item?.text,
+          };
+        }
       });
+      if (shouldBreak) {
+        return;
+      }
       const pollOptions = {
         chatroomId: parseInt(id!),
         text: question,
@@ -91,8 +119,10 @@ function PollBody() {
         multipleSelectNo: voteAllowedPerUser,
       };
       console.log(pollOptions);
+
       const pollCall = await myClient.postPollConversation(pollOptions);
       console.log(pollCall);
+      closeDialog();
     } catch (error) {
       console.log(error);
     }
@@ -244,12 +274,14 @@ function PollBody() {
 
         <div
           className="flex justify-center items-center cursor-pointer mt-4"
-          onClick={postPoll}
+          onClick={() => {
+            postPoll();
+          }}
         >
           <CheckCircleIcon
             className="text-[#00897B]"
             style={{
-              fontSize: "72px",
+              fontSize: "54px",
             }}
           />
         </div>

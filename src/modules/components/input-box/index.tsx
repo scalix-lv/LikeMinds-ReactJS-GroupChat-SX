@@ -27,7 +27,8 @@ import { INPUT_BOX_DEBOUNCE_TIME } from "../../constants/constants";
 import { GeneralContext } from "../../contexts/generalContext";
 import routeVariable from "../../../enums/routeVariables";
 import Poll from "../../post-polls";
-import PollIcon from "@mui/icons-material/Poll";
+import PollSharpIcon from "@mui/icons-material/PollSharp";
+import pollIcon from "../../../assets/pollIcon.png";
 
 const Input = ({ setBufferMessage, disableInputBox }: any) => {
   const [messageText, setMessageText] = useState("");
@@ -359,7 +360,7 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
     return null;
   }
   return (
-    <Box className="flex">
+    <Box className="flex items-center">
       {optionArr.map((option, _optionIndex) => {
         const { title, Icon, file, setFile } = option;
         let accept;
@@ -383,7 +384,12 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
               className="cursor-pointer"
               key={title}
             >
-              <PollIcon />
+              <PollSharpIcon
+                sx={{
+                  color: "black",
+                  // background: "white",
+                }}
+              />
             </span>
           );
         }
@@ -412,7 +418,11 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
           setOpenPollDialog(false);
         }}
       >
-        <Poll />
+        <Poll
+          closeDialog={() => {
+            setOpenPollDialog(false);
+          }}
+        />
       </Dialog>
     </Box>
   );
