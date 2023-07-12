@@ -7,6 +7,9 @@ import { myClient } from "../..";
 import { Dialog } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { AccountCircle } from "@mui/icons-material";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 type PollResponseProps = {
   conversation: any;
 };
@@ -19,6 +22,8 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
   const [showResultsButton, setShowResultsButton] = useState(false);
   const [addPollDialog, setAddPollDialog] = useState(false);
   const [addOptionInputField, setAddOptionInputField] = useState("");
+  const [hasPollEnded, setHasPollEnded] = useState(false);
+
   function setSelectedPollOptions(pollIndex: any) {
     const newSelectedPolls = [...selectedPolls];
     const isPollIndexIncluded = newSelectedPolls.includes(pollIndex);
@@ -32,6 +37,25 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
     }
     setSelectedPolls(newSelectedPolls);
   }
+
+  useEffect(() => {
+    const difference = conversation?.expiry_time - Date.now();
+
+    if (difference > 0) {
+      setHasPollEnded(false);
+    } else {
+      setHasPollEnded(true);
+    }
+    if (difference > 0) {
+      let timer = setTimeout(() => {
+        setHasPollEnded(true);
+      }, difference);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  });
 
   useEffect(() => {
     const res = conversation?.polls?.some((poll: any) => {
@@ -147,7 +171,7 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
           </div>
           <div className="mt-2">
             <button
-              className="w-full flex justify-center items-center bg-[#06c3af] border border-[#727272] rounded-[16px] py-2 mb-2 hover:opacity-50"
+              className="w-full flex justify-center items-center bg-[#3884f7] border border-[#727272] rounded-[16px] py-2 mb-2 hover:opacity-50"
               onClick={addPollOption}
             >
               <span className="text-sm text-white hover:text-black">
@@ -168,7 +192,40 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
             {conversation?.submit_type_text}
           </span>
         </div>
-        <div className="text-[14px] w-full font-[500] text-[#323232] py-2">
+        <div className="my-2 flex">
+          <span>
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 26 26"
+              fill="#3884f7"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="12"
+                fill="#3884f7"
+                stroke="none"
+                stroke-width="3"
+              />
+              <path d="M9 17H7V11H9V17Z" fill="white" />
+              <path d="M13 17H11V8H13V17Z" fill="white" />
+              <path d="M17 17H15V13H17V17Z" fill="white" />
+            </svg>
+          </span>
+          <span className="grow" />
+          <span
+            className={`border rounded-full py-1 px-2 text-xs text-white ${
+              hasPollEnded ? "bg-[#ff0000]" : "bg-[#3884f7]"
+            }`}
+          >
+            {hasPollEnded
+              ? "Poll Ended"
+              : "Poll Ends " + dayjs(conversation?.expiry_time).fromNow()}
+          </span>
+        </div>
+        <div className="text-[14px] w-full font-[500] text-[#323232]">
           <span className="msgCard">
             {parse(linkConverter(tagExtracter(answer, userContext)))}
           </span>
@@ -196,12 +253,12 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
             !showResultsButton
               ? null
               : "hidden"
-          } border border-[#EEEEEE] rounded py-2 flex justify-center bg-[#D3D3D3] hover:opacity-80  cursor-pointer`}
+          } border border-[#D0D8E2] rounded py-2 flex justify-center hover:opacity-80  cursor-pointer`}
           onClick={() => {
             setAddPollDialog(true);
           }}
         >
-          <span className="mx-auto text-white text-sm hover:text-black">
+          <span className="mx-auto text-black text-sm hover:text-black">
             ADD OPTION
           </span>
         </div>
@@ -210,7 +267,7 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
             shouldShowSubmitPollButton && showResultsButton === false
               ? null
               : "hidden"
-          } border border-[#EEEEEE] rounded-[48px] py-2 flex justify-center bg-[#06c3af] hover:opacity-80 cursor-pointer`}
+          } border border-[#EEEEEE] rounded-[48px] py-2 flex justify-center bg-[#3884f7] hover:opacity-80 cursor-pointer`}
           onClick={submitPoll}
         >
           <span className="mx-auto text-white text-sm">SUBMIT</span>
@@ -304,15 +361,18 @@ function VoteOptionField({
           </div>
         </div>
       </Dialog>
-      <div
-        key={poll?.id}
-        className={`border border-[#D0D8E2] rounded rounded-2 text-md font-[300] mt-2 cursor-pointer`}
-      >
+      <div key={poll?.id} className={` text-md font-[300] mt-2 cursor-pointer`}>
         <div onClick={clickHandler}>
           {poll.is_selected || showSelected ? (
-            <div className={` bg-[#06c3af] py-2 px-4`}>{poll?.text}</div>
+            <div
+              className={`border border-[#3884f7] py-2 px-4 rounded rounded-2`}
+            >
+              {poll?.text}
+            </div>
           ) : (
-            <div className="py-2 px-4">{poll?.text}</div>
+            <div className="border border-[#D0D8E2] rounded rounded-2 py-2 px-4">
+              {poll?.text}
+            </div>
           )}
         </div>
       </div>
