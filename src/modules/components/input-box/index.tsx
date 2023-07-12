@@ -29,6 +29,7 @@ import routeVariable from "../../../enums/routeVariables";
 import Poll from "../../post-polls";
 import PollSharpIcon from "@mui/icons-material/PollSharp";
 import pollIcon from "../../../assets/pollIcon.png";
+import pollInputIcon from "../../../assets/pollInputOptionsIcon.svg";
 
 const Input = ({ setBufferMessage, disableInputBox }: any) => {
   const [messageText, setMessageText] = useState("");
@@ -384,12 +385,20 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
               className="cursor-pointer"
               key={title}
             >
-              <PollSharpIcon
-                sx={{
-                  color: "black",
-                  // background: "white",
-                }}
-              />
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 20 20"
+                fill="red"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M11.4269 19.0057H7.63737V0.0583496H11.4269V19.0057ZM3.84796 19.0057H0.0584717V5.74254H3.84796V19.0057ZM15.2163 19.0057H19.0058V11.4268H15.2163V19.0057Z"
+                  fill="black"
+                />
+              </svg>
             </span>
           );
         }
