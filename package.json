@@ -5,8 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@likeminds.community/chat-js": "^1.4.2",
-    "@likeminds.community/chat-js-beta": "^1.1.78",
+    "@likeminds.community/chat-js-beta": "^1.1.76",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.13",
     "@testing-library/jest-dom": "^5.16.5",

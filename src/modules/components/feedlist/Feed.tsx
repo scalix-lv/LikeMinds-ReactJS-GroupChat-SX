@@ -33,6 +33,7 @@ import SkeletonFeed from "../feed-skeleton";
 import routeVariable from "../../../enums/routeVariables";
 import { UserContext } from "../../contexts/userContext";
 import { events } from "../../../enums/events";
+import { group } from "console";
 
 const Feeds: React.FC = () => {
   const [loadMoreHomeFeed, setLoadMoreHomeFeed] = useState<boolean>(true);
@@ -57,7 +58,9 @@ const Feeds: React.FC = () => {
   const leaveChatroomContextRefresh = async () => {
     try {
       let newHomeFeed = [];
-      newHomeFeed = homeFeed.filter((group: any) => group?.chatroom?.id !== id);
+      newHomeFeed = homeFeed.filter(
+        (group: any) => parseInt(group?.chatroom?.id) !== parseInt(id)
+      );
       let newAllFeed = [];
       newAllFeed = allFeed.map((group: any) => {
         if (group.id === id) {
@@ -65,10 +68,20 @@ const Feeds: React.FC = () => {
         }
         return group;
       });
+      if (generalContext.currentChatroom.is_secret) {
+        newAllFeed = newAllFeed.filter((group: any) => {
+          if (parseInt(group.id) !== parseInt(id)) {
+            return true;
+          }
+        });
+      }
       // log(`setting homefeed ${1}`);
       setHomeFeed!(newHomeFeed);
       setAllFeed!(newAllFeed);
-      // navigate(groupPath);
+      generalContext.setCurrentChatroom({});
+      generalContext.setCurrentProfile({});
+      generalContext.setChatroomUrl("");
+      navigate(groupPath);
     } catch (error) {
       log(error);
     }
@@ -351,7 +364,6 @@ const GroupFeedContainer = ({
               />
             ))}
             {homeFeed.map((group: any, groupIndex, homeFeed) => {
-              console.log("The homefeed is :", homeFeed);
               return (
                 <Link
                   to={`${groupMainPath}/${group?.chatroom?.id}`}

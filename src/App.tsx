@@ -5,7 +5,6 @@ import "./App.css";
 import RouteProvider from "./modules/components/routes";
 import { UserContext } from "./modules/contexts/userContext";
 import { log } from "./sdkFunctions";
-import { myClient } from ".";
 import { initiateSDK, retrieveMemberStates } from "./sdkFunctions/clientSetup";
 
 function App() {
@@ -17,8 +16,8 @@ function App() {
       try {
         let call: any = await initiateSDK(
           false,
-          "299dc20c-72e1-49cf-8018-8ae33208d0a2",
-          "Mahir Gupta"
+          "8619d45e-9c4c-4730-af8e-4099fe3dcc4b",
+          ""
         );
         setCommunity(call?.data?.community);
         setCurrentUser(call?.data?.user);
