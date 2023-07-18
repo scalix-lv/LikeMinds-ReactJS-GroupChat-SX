@@ -33,7 +33,6 @@ import SkeletonFeed from "../feed-skeleton";
 import routeVariable from "../../../enums/routeVariables";
 import { UserContext } from "../../contexts/userContext";
 import { events } from "../../../enums/events";
-import { group } from "console";
 
 const Feeds: React.FC = () => {
   const [loadMoreHomeFeed, setLoadMoreHomeFeed] = useState<boolean>(true);

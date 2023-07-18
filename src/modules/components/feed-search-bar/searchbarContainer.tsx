@@ -120,7 +120,6 @@ const SearchBarContainer = ({ searchResults, shouldShowLoading }: any) => {
   });
   useEffect(() => {
     if (searchResults?.length > 0) {
-      console.log(searchResults);
       for (const obj of searchResults) {
         if (obj[Object.keys(obj)[0]].length > 0) {
           if (!shouldShowSearchScreen) {
