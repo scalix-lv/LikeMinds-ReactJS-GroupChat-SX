@@ -441,7 +441,7 @@ export async function undoBlock(chatroomId) {
 export async function deleteChatFromDM(idArr) {
   try {
     const call = await myClient.deleteConversation({
-      conversation_ids: idArr,
+      conversationIds: idArr,
       reason: 'none'
     });
     return true;

@@ -77,8 +77,8 @@ const Feeds: React.FC = () => {
     try {
       const id = e.detail;
       const feedcall: any = await getChatRoomDetails(myClient, id);
-      generalContext.setCurrentProfile(feedcall.data);
-      generalContext.setCurrentChatroom(feedcall.data.chatroom);
+      generalContext.setCurrentProfile(feedcall.data.data);
+      generalContext.setCurrentChatroom(feedcall.data.data.chatroom);
 
       let newHomeFeed;
       if (mode === "groups") {
@@ -86,7 +86,7 @@ const Feeds: React.FC = () => {
       } else {
         newHomeFeed = [...dmHomeFeed];
       }
-      newHomeFeed = [feedcall.data].concat(newHomeFeed);
+      newHomeFeed = [feedcall.data.data].concat(newHomeFeed);
       if (mode === "groups") {
         // log(`setting homefeed ${2}`);
         setHomeFeed!(newHomeFeed);
@@ -350,30 +350,33 @@ const GroupFeedContainer = ({
                 localRefreshInviteList={localRefreshInviteList}
               />
             ))}
-            {homeFeed.map((group: any, groupIndex) => (
-              <Link
-                to={`${groupMainPath}/${group?.chatroom?.id}`}
-                onClick={() => {
-                  if (id != group.chatroom.id) {
-                    generalContext.setChatroomUrl(
-                      group?.chatroom?.chatroom_image_url
+            {homeFeed.map((group: any, groupIndex, homeFeed) => {
+              console.log("The homefeed is :", homeFeed);
+              return (
+                <Link
+                  to={`${groupMainPath}/${group?.chatroom?.id}`}
+                  onClick={() => {
+                    if (id != group.chatroom.id) {
+                      generalContext.setChatroomUrl(
+                        group?.chatroom?.chatroom_image_url
+                      );
+                    }
+                    routeContext.setIsNavigationBoxOpen(
+                      !routeContext.isNavigationBoxOpen
                     );
-                  }
-                  routeContext.setIsNavigationBoxOpen(
-                    !routeContext.isNavigationBoxOpen
-                  );
-                }}
-                key={group.chatroom.id + groupIndex + group.chatroom.header}
-              >
-                <GroupHomeTile
-                  key={group.chatroom.id + groupIndex}
-                  groupTitle={group.chatroom.header}
-                  chatroomId={group.chatroom.id}
-                  isSecret={group.chatroom.is_secret}
-                  unseenConversationCount={group.unseen_conversation_count}
-                />
-              </Link>
-            ))}
+                  }}
+                  key={group.chatroom.id + groupIndex + group.chatroom.header}
+                >
+                  <GroupHomeTile
+                    key={group.chatroom.id + groupIndex}
+                    groupTitle={group.chatroom.header}
+                    chatroomId={group.chatroom.id}
+                    isSecret={group.chatroom.is_secret}
+                    unseenConversationCount={group.unseen_conversation_count}
+                  />
+                </Link>
+              );
+            })}
             <div className="flex justify-between text-[20px] mt-[10px] py-4 px-5 items-center">
               <span>All Public Groups</span>
             </div>
