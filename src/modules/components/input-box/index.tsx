@@ -298,6 +298,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
                 getTaggingMembers(search, 1).then((val) => {
                   const arr = val?.map((item: any) => {
                     item.display = item.name;
+                    item.id = item.sdk_client_info.uuid;
                     return item;
                   });
                   if (arr?.length < 10) {
@@ -310,7 +311,7 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
                 });
               }, 500);
             }}
-            markup="<<__display__|route://member/__id__>>"
+            markup="<<__display__|route://user_profile/__id__>>"
             style={{ backgroundColor: "#daf4fa" }}
             // onAdd={(id) => setActorIds((actorIds) => [...actorIds, id])}
             appendSpaceOnAdd

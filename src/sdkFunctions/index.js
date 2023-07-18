@@ -219,8 +219,8 @@ export async function leaveChatRoom(collabId, userId) {
 export async function leaveSecretChatroom(collabId, userId) {
   try {
     const leaveCall = await myClient.leaveSecretChatroom({
-      chatroom_id: collabId,
-      is_secret: true
+      chatroomId: collabId,
+      isSecret: true,
     });
     if (!leaveCall.success) {
       throw false;
@@ -441,7 +441,7 @@ export async function undoBlock(chatroomId) {
 export async function deleteChatFromDM(idArr) {
   try {
     const call = await myClient.deleteConversation({
-      conversation_ids: idArr,
+      conversationIds: idArr,
       reason: 'none'
     });
     return true;

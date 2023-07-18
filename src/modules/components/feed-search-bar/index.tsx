@@ -44,8 +44,8 @@ const Searchbar = () => {
           searchType: "header",
         });
         const obj = [];
-        obj[0] = { "Followed Groups": callFollowed.chatrooms };
-        obj[1] = { "Other Groups": callUnFollowed.chatrooms };
+        obj[0] = { "Followed Groups": callFollowed?.data?.chatrooms };
+        obj[1] = { "Other Groups": callUnFollowed?.data?.chatrooms };
 
         setSearchResultObject(obj);
         setShouldShowLoading(false);
