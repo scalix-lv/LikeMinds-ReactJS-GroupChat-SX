@@ -17,7 +17,7 @@ function App() {
       try {
         let call: any = await initiateSDK(
           false,
-          "bae9f97d-2445-48d6-838b-281ad3ce62fe",
+          "a127e24d-4dc8-47dd-a986-27fd11a1de78",
           ""
         );
         setCommunity(call?.data?.community);

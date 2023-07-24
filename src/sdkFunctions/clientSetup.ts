@@ -22,9 +22,7 @@ export async function initiateSDK(
 
 export async function retrieveMemberStates(memberId: string) {
   try {
-    const call = await myClient.getMemberState({
-      memberId,
-    });
+    const call = await myClient.getMemberState();
     return jsonReturnHandler(call, null);
   } catch (error) {
     return jsonReturnHandler(null, error);
