@@ -1,21 +1,32 @@
 import React, { useContext, useEffect, useState } from "react";
-import { linkConverter, tagExtracter } from "../../sdkFunctions";
+import {
+  getConversationsForGroup,
+  linkConverter,
+  tagExtracter,
+} from "../../sdkFunctions";
 import { UserContext } from "../contexts/userContext";
 import parse from "html-react-parser";
 import { messageStrings } from "../../enums/strings";
 import { myClient } from "../..";
-import { Dialog } from "@mui/material";
+import { CircularProgress, Dialog, Tab, Tabs } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { AccountCircle } from "@mui/icons-material";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import noResults from "./../../assets/svg/noResults.svg";
+import routeVariable from "../../enums/routeVariables";
+import { useParams } from "react-router-dom";
+import ChatroomContext from "../contexts/chatroomContext";
 dayjs.extend(relativeTime);
 type PollResponseProps = {
   conversation: any;
 };
 const PollResponse = ({ conversation }: PollResponseProps) => {
   const { answer = "" } = conversation;
+  const params = useParams();
+  const id: any = params[routeVariable.id];
   const userContext = useContext(UserContext);
+  const chatroomContext = useContext(ChatroomContext);
   const [selectedPolls, setSelectedPolls] = useState<any>([]);
   const [shouldShowSubmitPollButton, setShouldShowSubmitPollButton] =
     useState(false);
@@ -38,6 +49,16 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
     setSelectedPolls(newSelectedPolls);
   }
 
+  useEffect(() => {
+    return () => {
+      setSelectedPolls([]);
+      setShouldShowSubmitPollButton(false);
+      setShowResultsButton(false);
+      setAddPollDialog(false);
+      setAddOptionInputField("");
+      setHasPollEnded(false);
+    };
+  }, [conversation]);
   useEffect(() => {
     const difference = conversation?.expiry_time - Date.now();
 
@@ -110,7 +131,18 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
         conversationId: conversation?.id,
         polls: polls,
       });
-      console.log(pollSubmissionCall);
+      const op: any = {
+        chatroomID: id,
+        // conversationID: conversation.id,
+        // include: true,
+        paginateBy: 100,
+      };
+      const conversations = await myClient.getConversation(op);
+      // const lastConvo = conversations?.data?.conversations.splice(-1);
+      // const newConvos = [...chatroomContext.conversationList];
+      // const newConvosLength = newConvos.length;
+      // newConvos[newConvosLength - 1] = lastConvo[0];
+      chatroomContext.setConversationList(conversations?.data?.conversations);
     } catch (error) {
       console.log("error at poll submission");
       console.log(error);
@@ -293,7 +325,8 @@ function VoteOptionField({
   const [pollResults, setPollResults] = useState<any>();
   const [shouldOpenPollResultsDialog, setShouldOpenPollResultsDialog] =
     useState(false);
-
+  const [selectedPollResultTab, setSelectedPollResultTab] = useState(0);
+  const [showLoadingCircle, setShowLoadingCircle] = useState(false);
   function clickHandler() {
     setShowSelected(!showSelected);
     setSelectedPollOptions(index);
@@ -302,25 +335,28 @@ function VoteOptionField({
     try {
       const getPollUsersCall: any = await myClient.getPollUsers({
         conversationId: conversationId,
-        pollId: poll?.id,
+        pollId: pollsArray[selectedPollResultTab]?.id,
       });
-      console.log(getPollUsersCall.data);
       setPollResults(getPollUsersCall?.data);
+      setShowLoadingCircle(false);
     } catch {}
+  }
+  function handlePollResultTabChange(event: any, newValue: any) {
+    setSelectedPollResultTab(newValue);
   }
   useEffect(() => {
     const res = pollsArray?.some((poll: any) => {
       return poll.is_selected === true;
     });
-    console.log("the value of shouldShowVotes is ", res);
     setShouldShowVotes(res);
-  }, []);
+  }, [pollsArray]);
 
   useEffect(() => {
     if (shouldShowVotes) {
+      setShowLoadingCircle(true);
       getPollUsers();
     }
-  }, [shouldShowVotes]);
+  }, [shouldShowVotes, selectedPollResultTab]);
 
   return (
     <>
@@ -339,25 +375,49 @@ function VoteOptionField({
           >
             <CloseIcon />
           </span>
-          <div className="my-12">
-            {pollResults?.members?.map((member: any) => {
-              return (
-                <div className="py-2 px-4 flex items-center" key={member.id}>
-                  <div className="mr-8">
-                    {member?.image_url?.length !== 0 ? (
-                      <>
-                        <img src={member?.image_url} alt="imageIcon" />
-                      </>
-                    ) : (
-                      <>
-                        <AccountCircle />
-                      </>
-                    )}
+          <div className="my-8">
+            <Tabs
+              value={selectedPollResultTab}
+              onChange={handlePollResultTabChange}
+              variant="fullWidth"
+            >
+              {pollsArray.map((poll: any) => {
+                return <Tab label={poll?.text} key={poll.id} />;
+              })}
+            </Tabs>
+            {showLoadingCircle ? (
+              <div className="flex justify-center items-center h-full">
+                <CircularProgress />
+              </div>
+            ) : pollResults?.members?.length === 0 ? (
+              <div className="h-[400px] flex justify-center items-center flex-col text-sm">
+                <img src={noResults} alt="" />
+
+                <p>No Results</p>
+              </div>
+            ) : (
+              pollResults?.members?.map((member: any) => {
+                return (
+                  <div
+                    className="py-6 px-4 flex items-center border-t border-b"
+                    key={member.id}
+                  >
+                    <div className="mr-8">
+                      {member?.image_url?.length !== 0 ? (
+                        <>
+                          <img src={member?.image_url} alt="imageIcon" />
+                        </>
+                      ) : (
+                        <>
+                          <AccountCircle />
+                        </>
+                      )}
+                    </div>
+                    <div className="grow">{member.name}</div>
                   </div>
-                  <div className="grow">{member.name}</div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
       </Dialog>
