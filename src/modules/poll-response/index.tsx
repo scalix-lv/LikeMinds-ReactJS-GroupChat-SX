@@ -307,9 +307,7 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
         </div>
         <div
           className={`my-2 ${
-            conversation?.allow_add_option &&
-            conversation?.poll_type === 0 &&
-            !showResultsButton
+            conversation?.allow_add_option && conversation?.poll_type === 0
               ? null
               : "hidden"
           } border border-[#D0D8E2] rounded py-2 flex justify-center hover:opacity-80  cursor-pointer`}
@@ -358,10 +356,9 @@ function VoteOptionField({
   const [showLoadingCircle, setShowLoadingCircle] = useState(false);
   const generalContext = useContext(GeneralContext);
   function clickHandler() {
-    if (Date.now() > conversation.expiry_time) {
+    if (Date.now() > conversation.expiry_time || shouldShowVotes) {
       return;
     }
-
     setShowSelected(!showSelected);
     setSelectedPollOptions(index);
   }
