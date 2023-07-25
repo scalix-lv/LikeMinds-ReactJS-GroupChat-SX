@@ -9,7 +9,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import checkmark from "../../assets/checkMark.svg";
 import {
   FormControl,
   InputAdornment,
@@ -24,13 +24,13 @@ import routeVariable from "../../enums/routeVariables";
 import { GeneralContext } from "../contexts/generalContext";
 
 function PollBody({ closeDialog }: any) {
-  const [question, setQuestion] = useState<any>("");
+  const [question, setQuestion] = useState<string>("");
   const [optionsArray, setOptionsArray] = useState<any>([]);
   const [voterAddOptions, setVoterAddOptions] = useState(false);
   const [anonymousPoll, setAnonymousPoll] = useState(false);
   const [liveResults, setLiveResults] = useState(false);
   const [voteAllowerPerUserTerm, setVoteAllowedPerUserTerm] = useState<any>(1);
-  const [voteAllowedPerUser, setVoteAllowedPerUser] = useState<any>(0);
+  const [voteAllowedPerUser, setVoteAllowedPerUser] = useState<any>(1);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState<any>(false);
   const [expiryTime, setExpiryTime] = useState<any>("");
   const generalContext = useContext(GeneralContext);
@@ -138,27 +138,29 @@ function PollBody({ closeDialog }: any) {
   }
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className="pt-2">
+      <div className="pt-2 overflow-x-hidden">
         <textarea
-          className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-2 p-4 resize-none"
+          className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-[8px] p-4 resize-none"
           placeholder="Ask a question*"
           value={question}
           onChange={setQuestionField}
           rows={2}
         />
 
-        <p>{messageStrings.POLL_OPTIONS_HEADING}</p>
-        <div className="mb-2">
-          {optionsArray.map((option: any, index: any) => {
+        <p className="text-[#ACB7C0] text-sm ml-4">
+          {messageStrings.POLL_OPTIONS_HEADING}
+        </p>
+        <div className="mb-1 ">
+          {optionsArray.map((option: any, index: number) => {
             return (
-              <div className="my-4 relative" key={option.id}>
+              <div className="mb-4 relative" key={option.id}>
                 <input
                   type="text"
                   value={option?.text}
                   onChange={(e: any) => {
                     handleInputOptionsChangeFunction(index, e?.target?.value);
                   }}
-                  className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-2 p-4"
+                  className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-[8px] p-4"
                   placeholder="Option"
                 />
                 <span
@@ -167,13 +169,18 @@ function PollBody({ closeDialog }: any) {
                     removeAnOption(index);
                   }}
                 >
-                  <HighlightOffIcon />
+                  <HighlightOffIcon
+                    sx={{
+                      color: "#979797",
+                      fontWeight: 300,
+                    }}
+                  />
                 </span>
               </div>
             );
           })}
           <div
-            className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-2 p-4 flex items-center cursor-pointer"
+            className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-[8px] p-4 flex items-center cursor-pointer mb-2"
             onClick={addNewOption}
           >
             <AddCircleOutlineIcon className="text-[#00897B]" />
@@ -182,7 +189,9 @@ function PollBody({ closeDialog }: any) {
             </span>
           </div>
         </div>
-        <p>{messageStrings.POLL_EXPIRES_ON_HEADING}</p>
+        <p className="text-[12px] text-[#ACB7C0] mt-2 ml-4">
+          {messageStrings.POLL_EXPIRES_ON_HEADING}
+        </p>
         {/* <div className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-2  cursor-pointer"> */}
         <div className="relative">
           <span className="absolute left-2 top-[50%] -translate-y-[50%]">
@@ -208,6 +217,7 @@ function PollBody({ closeDialog }: any) {
               width: "100%",
               border: "1px solid #D0D8E2",
               paddingLeft: "32px",
+              borderRadius: "8px",
             }}
             slotProps={{
               textField: {
@@ -225,41 +235,48 @@ function PollBody({ closeDialog }: any) {
         {/* </div> */}
 
         <div
-          className="w-full border border-[#D0D8E2] mt-4 rounded-8 rounded"
+          className="w-full border border-[#D0D8E2] mt-4 rounded-[8px]"
           style={{
             display: isAdvancedOpen ? "block" : "none",
           }}
         >
-          <div className="border-b border-[#D0D8E2] flex justify-between items-center p-2 py-4">
-            <span className="text-4">
+          <div className="border-b border-[#D0D8E2] flex justify-between items-center  pl-4 py-2">
+            <div className="text-4">
               {messageStrings.ALLOW_VOTERS_TO_ADD_OPTIONS}
-            </span>
-            <Switch
-              value={voterAddOptions}
-              onChange={(e) => {
-                setVoterAddOptions(e.target.checked);
-              }}
-            />
+            </div>
+            <div>
+              <Switch
+                value={voterAddOptions}
+                onChange={(e) => {
+                  setVoterAddOptions(e.target.checked);
+                }}
+              />
+            </div>
           </div>
-          <div className="border-b border-[#D0D8E2] flex justify-between items-center p-2 py-4">
-            <span className="text-4">{messageStrings.ANONYMOUS_POLL}</span>
-            <Switch
-              value={anonymousPoll}
-              onChange={(e) => {
-                setAnonymousPoll(e.target.checked);
-              }}
-            />
+          <div className="border-b border-[#D0D8E2] flex justify-between items-center pl-4 py-2">
+            <div className="text-4">{messageStrings.ANONYMOUS_POLL}</div>
+            <div>
+              <Switch
+                value={anonymousPoll}
+                onChange={(e) => {
+                  setAnonymousPoll(e.target.checked);
+                }}
+              />
+            </div>
           </div>
-          <div className="border-b border-[#D0D8E2] flex justify-between items-center p-2 py-4">
-            <span className="text-4">
+
+          <div className="border-b border-[#D0D8E2] flex justify-between items-center pl-4 py-2">
+            <div className="text-4">
               {messageStrings.DONT_SHOW_LIVE_RESULTS}
-            </span>
-            <Switch
-              value={liveResults}
-              onChange={(e) => {
-                setLiveResults(e.target.checked);
-              }}
-            />
+            </div>
+            <div>
+              <Switch
+                value={liveResults}
+                onChange={(e) => {
+                  setLiveResults(e.target.checked);
+                }}
+              />
+            </div>
           </div>
           <div className="border-b border-[#D0D8E2] p-2 py-4">
             {/* <p>{messageStrings.USERS_CAN_VOTE_FOR}</p> */}
@@ -294,35 +311,55 @@ function PollBody({ closeDialog }: any) {
                   label="Age"
                   defaultValue={1}
                 >
-                  <MenuItem value={1}>1 Option</MenuItem>
-                  <MenuItem value={2}>2 Option</MenuItem>
+                  {optionsArray?.map((_item: any, itemIndex: any) => {
+                    return (
+                      <MenuItem value={itemIndex + 1}>
+                        {itemIndex + 1} Option
+                      </MenuItem>
+                    );
+                  })}
                 </Select>
               </FormControl>
             </div>
           </div>
         </div>
         <div
-          className="flex justify-center cursor-pointer"
+          className="flex justify-center cursor-pointer mt-2 text-xs font-normal text-[#ACB7C0]"
           onClick={() => {
             setIsAdvancedOpen(!isAdvancedOpen);
           }}
         >
-          <span>Advanced</span>
-          {isAdvancedOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          <span>ADVANCED</span>
+          {isAdvancedOpen ? (
+            <KeyboardArrowUpIcon
+              sx={{
+                fontSize: "20px",
+                color: "#ACB7C0",
+              }}
+            />
+          ) : (
+            <KeyboardArrowDownIcon
+              sx={{
+                fontSize: "20px",
+                color: "#ACB7C0",
+              }}
+            />
+          )}
         </div>
 
         <div
-          className="flex justify-center items-center cursor-pointer mt-4"
+          className="flex justify-center items-center cursor-pointer mt-4 bg-[#D0D8E2] h-[54px] w-[54px] rounded-full mx-auto mb-4"
           onClick={() => {
             postPoll();
           }}
         >
-          <CheckCircleIcon
+          {/* <CheckCircleIcon
             className="text-[#00897B]"
             style={{
               fontSize: "54px",
             }}
-          />
+          /> */}
+          <img src={checkmark} alt="" />
         </div>
       </div>
     </LocalizationProvider>

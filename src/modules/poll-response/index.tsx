@@ -102,7 +102,7 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
       return poll.is_selected === true;
     });
     setShowResultsButton(res);
-  }, []);
+  }, [conversation]);
   useEffect(() => {
     if (conversation?.multiple_select_no === undefined) {
       if (selectedPolls.length > 0) {
@@ -307,7 +307,9 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
         </div>
         <div
           className={`my-2 ${
-            conversation?.allow_add_option && conversation?.poll_type === 0
+            conversation?.allow_add_option &&
+            conversation?.poll_type === 0 &&
+            !showResultsButton
               ? null
               : "hidden"
           } border border-[#D0D8E2] rounded py-2 flex justify-center hover:opacity-80  cursor-pointer`}
