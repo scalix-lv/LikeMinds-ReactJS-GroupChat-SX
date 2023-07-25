@@ -17,6 +17,7 @@ import noResults from "./../../assets/svg/noResults.svg";
 import routeVariable from "../../enums/routeVariables";
 import { useParams } from "react-router-dom";
 import ChatroomContext from "../contexts/chatroomContext";
+import { GeneralContext } from "../contexts/generalContext";
 dayjs.extend(relativeTime);
 type PollResponseProps = {
   conversation: any;
@@ -94,8 +95,10 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
     } else {
       switch (conversation?.multiple_select_state) {
         case undefined: {
-          if (selectedPolls.length === 1) {
+          if (selectedPolls.length === conversation.multiple_select_no) {
             setShouldShowSubmitPollButton(true);
+          } else {
+            setShouldShowSubmitPollButton(false);
           }
           break;
         }
@@ -105,12 +108,16 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
             selectedPolls.length > 0
           ) {
             setShouldShowSubmitPollButton(true);
+          } else {
+            setShouldShowSubmitPollButton(false);
           }
           break;
         }
         case 2: {
           if (selectedPolls.length >= conversation.multiple_select_no) {
             setShouldShowSubmitPollButton(true);
+          } else {
+            setShouldShowSubmitPollButton(false);
           }
           break;
         }
@@ -327,6 +334,7 @@ function VoteOptionField({
     useState(false);
   const [selectedPollResultTab, setSelectedPollResultTab] = useState(0);
   const [showLoadingCircle, setShowLoadingCircle] = useState(false);
+  const generalContext = useContext(GeneralContext);
   function clickHandler() {
     setShowSelected(!showSelected);
     setSelectedPollOptions(index);
@@ -399,14 +407,18 @@ function VoteOptionField({
               pollResults?.members?.map((member: any) => {
                 return (
                   <div
-                    className="py-6 px-4 flex items-center border-t border-b"
+                    className="py-4 px-4 flex items-center border-t border-b"
                     key={member.id}
                   >
                     <div className="mr-8">
                       {member?.image_url?.length !== 0 ? (
-                        <>
-                          <img src={member?.image_url} alt="imageIcon" />
-                        </>
+                        <div className="h-[48px] w-[48px] rounded rounded-full">
+                          <img
+                            className="h-full w-auto rounded rounded-full"
+                            src={member?.image_url}
+                            alt="imageIcon"
+                          />
+                        </div>
                       ) : (
                         <>
                           <AccountCircle />
@@ -440,6 +452,13 @@ function VoteOptionField({
         <span
           className="cursor-pointer text-xs"
           onClick={() => {
+            if (poll?.is_anonymous) {
+              generalContext.setShowSnackBar(true);
+              generalContext.setSnackBarMessage(
+                "Viewing Results Not Available In Anonymous Polls"
+              );
+              return;
+            }
             setShouldOpenPollResultsDialog(true);
           }}
         >

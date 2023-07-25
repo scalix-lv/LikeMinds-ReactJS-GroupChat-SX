@@ -86,6 +86,13 @@ function PollBody({ closeDialog }: any) {
         generalContext.setShowSnackBar(true);
         return;
       }
+      if (Date.now() > expiryTime) {
+        generalContext.setSnackBarMessage(
+          "Poll Expiry time should not be less than current time"
+        );
+        generalContext.setShowSnackBar(true);
+        return;
+      }
       const tempPollOptionsMap: any = {};
       let shouldBreak = false;
       const polls = optionsArray.map((item: any) => {
@@ -202,6 +209,12 @@ function PollBody({ closeDialog }: any) {
               border: "1px solid #D0D8E2",
               paddingLeft: "32px",
             }}
+            slotProps={{
+              textField: {
+                className: "text-xs",
+              },
+            }}
+            disablePast
             onChange={(val: any) => {
               if (val && Object.keys(val).includes("$d")) {
                 setExpiryTime(Date.parse(val["$d"].toString()));
@@ -280,8 +293,8 @@ function PollBody({ closeDialog }: any) {
                   }}
                   label="Age"
                 >
-                  <MenuItem value={0}>1 Option</MenuItem>
-                  <MenuItem value={1}>2 Option</MenuItem>
+                  <MenuItem value={1}>1 Option</MenuItem>
+                  <MenuItem value={2}>2 Option</MenuItem>
                 </Select>
               </FormControl>
             </div>
