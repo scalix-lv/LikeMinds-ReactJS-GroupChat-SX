@@ -37,14 +37,32 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
   const [hasPollEnded, setHasPollEnded] = useState(false);
 
   function setSelectedPollOptions(pollIndex: any) {
+    if (Date.now() > conversation.expiry_time) {
+      return;
+    }
     const newSelectedPolls = [...selectedPolls];
     const isPollIndexIncluded = newSelectedPolls.includes(pollIndex);
+
     if (isPollIndexIncluded) {
       const selectedIndex = newSelectedPolls.findIndex(
         (index) => index === pollIndex
       );
       newSelectedPolls.splice(selectedIndex, 1);
     } else {
+      switch (conversation?.multiple_select_state) {
+        case 0: {
+          if (selectedPolls.length === conversation.multiple_select_no) {
+            return;
+          }
+          break;
+        }
+        case 1: {
+          if (selectedPolls.length === conversation.multiple_select_no) {
+            return;
+          }
+          break;
+        }
+      }
       newSelectedPolls.push(pollIndex);
     }
     setSelectedPolls(newSelectedPolls);
@@ -274,12 +292,14 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
             (poll: any, index: any, pollsArray: any) => {
               return (
                 <VoteOptionField
+                  conversation={conversation}
                   poll={poll}
                   pollsArray={pollsArray}
                   setSelectedPollOptions={setSelectedPollOptions}
                   index={index}
                   conversationId={conversation?.id}
                   key={poll?.id}
+                  selectedPolls={selectedPolls}
                 />
               );
             }
@@ -320,12 +340,14 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
 };
 
 function VoteOptionField({
+  conversation,
   poll,
   pollsArray,
   setSelectedPollOptions,
   index,
   conversationId,
   setShouldShowResults,
+  selectedPolls,
 }: any) {
   const [shouldShowVotes, setShouldShowVotes] = useState(false);
   const [showSelected, setShowSelected] = useState(false);
@@ -336,6 +358,10 @@ function VoteOptionField({
   const [showLoadingCircle, setShowLoadingCircle] = useState(false);
   const generalContext = useContext(GeneralContext);
   function clickHandler() {
+    if (Date.now() > conversation.expiry_time) {
+      return;
+    }
+
     setShowSelected(!showSelected);
     setSelectedPollOptions(index);
   }
@@ -435,7 +461,7 @@ function VoteOptionField({
       </Dialog>
       <div key={poll?.id} className={` text-md font-[300] mt-2 cursor-pointer`}>
         <div onClick={clickHandler}>
-          {poll.is_selected || showSelected ? (
+          {poll.is_selected || selectedPolls.includes(index) ? (
             <div
               className={`border border-[#3884f7] py-2 px-4 rounded rounded-2`}
             >

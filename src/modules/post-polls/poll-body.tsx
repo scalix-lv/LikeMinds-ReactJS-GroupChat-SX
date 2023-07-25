@@ -292,6 +292,7 @@ function PollBody({ closeDialog }: any) {
                     setVoteAllowedPerUser(e.target.value);
                   }}
                   label="Age"
+                  defaultValue={1}
                 >
                   <MenuItem value={1}>1 Option</MenuItem>
                   <MenuItem value={2}>2 Option</MenuItem>
