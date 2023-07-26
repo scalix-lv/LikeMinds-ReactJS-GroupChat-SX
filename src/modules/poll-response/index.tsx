@@ -17,6 +17,7 @@ import noResults from "./../../assets/svg/noResults.svg";
 import routeVariable from "../../enums/routeVariables";
 import { useParams } from "react-router-dom";
 import ChatroomContext from "../contexts/chatroomContext";
+import { GeneralContext } from "../contexts/generalContext";
 dayjs.extend(relativeTime);
 type PollResponseProps = {
   conversation: any;
@@ -36,14 +37,32 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
   const [hasPollEnded, setHasPollEnded] = useState(false);
 
   function setSelectedPollOptions(pollIndex: any) {
+    if (Date.now() > conversation.expiry_time) {
+      return;
+    }
     const newSelectedPolls = [...selectedPolls];
     const isPollIndexIncluded = newSelectedPolls.includes(pollIndex);
+
     if (isPollIndexIncluded) {
       const selectedIndex = newSelectedPolls.findIndex(
         (index) => index === pollIndex
       );
       newSelectedPolls.splice(selectedIndex, 1);
     } else {
+      switch (conversation?.multiple_select_state) {
+        case 0: {
+          if (selectedPolls.length === conversation.multiple_select_no) {
+            return;
+          }
+          break;
+        }
+        case 1: {
+          if (selectedPolls.length === conversation.multiple_select_no) {
+            return;
+          }
+          break;
+        }
+      }
       newSelectedPolls.push(pollIndex);
     }
     setSelectedPolls(newSelectedPolls);
@@ -83,7 +102,7 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
       return poll.is_selected === true;
     });
     setShowResultsButton(res);
-  }, []);
+  }, [conversation]);
   useEffect(() => {
     if (conversation?.multiple_select_no === undefined) {
       if (selectedPolls.length > 0) {
@@ -94,8 +113,10 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
     } else {
       switch (conversation?.multiple_select_state) {
         case undefined: {
-          if (selectedPolls.length === 1) {
+          if (selectedPolls.length === conversation.multiple_select_no) {
             setShouldShowSubmitPollButton(true);
+          } else {
+            setShouldShowSubmitPollButton(false);
           }
           break;
         }
@@ -105,12 +126,16 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
             selectedPolls.length > 0
           ) {
             setShouldShowSubmitPollButton(true);
+          } else {
+            setShouldShowSubmitPollButton(false);
           }
           break;
         }
         case 2: {
           if (selectedPolls.length >= conversation.multiple_select_no) {
             setShouldShowSubmitPollButton(true);
+          } else {
+            setShouldShowSubmitPollButton(false);
           }
           break;
         }
@@ -267,12 +292,14 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
             (poll: any, index: any, pollsArray: any) => {
               return (
                 <VoteOptionField
+                  conversation={conversation}
                   poll={poll}
                   pollsArray={pollsArray}
                   setSelectedPollOptions={setSelectedPollOptions}
                   index={index}
                   conversationId={conversation?.id}
                   key={poll?.id}
+                  selectedPolls={selectedPolls}
                 />
               );
             }
@@ -313,12 +340,14 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
 };
 
 function VoteOptionField({
+  conversation,
   poll,
   pollsArray,
   setSelectedPollOptions,
   index,
   conversationId,
   setShouldShowResults,
+  selectedPolls,
 }: any) {
   const [shouldShowVotes, setShouldShowVotes] = useState(false);
   const [showSelected, setShowSelected] = useState(false);
@@ -327,7 +356,11 @@ function VoteOptionField({
     useState(false);
   const [selectedPollResultTab, setSelectedPollResultTab] = useState(0);
   const [showLoadingCircle, setShowLoadingCircle] = useState(false);
+  const generalContext = useContext(GeneralContext);
   function clickHandler() {
+    if (Date.now() > conversation.expiry_time || shouldShowVotes) {
+      return;
+    }
     setShowSelected(!showSelected);
     setSelectedPollOptions(index);
   }
@@ -382,7 +415,18 @@ function VoteOptionField({
               variant="fullWidth"
             >
               {pollsArray.map((poll: any) => {
-                return <Tab label={poll?.text} key={poll.id} />;
+                return (
+                  <Tab
+                    label={poll?.text}
+                    key={poll.id}
+                    icon={
+                      <p className="font-normal text-xs">
+                        {poll.no_votes} Votes
+                      </p>
+                    }
+                    iconPosition="top"
+                  />
+                );
               })}
             </Tabs>
             {showLoadingCircle ? (
@@ -399,21 +443,32 @@ function VoteOptionField({
               pollResults?.members?.map((member: any) => {
                 return (
                   <div
-                    className="py-6 px-4 flex items-center border-t border-b"
+                    className="py-4 px-4 flex items-center border-t border-b"
                     key={member.id}
                   >
-                    <div className="mr-8">
+                    <div className="mr-6">
                       {member?.image_url?.length !== 0 ? (
-                        <>
-                          <img src={member?.image_url} alt="imageIcon" />
-                        </>
+                        <div className="h-[48px] w-[48px] rounded rounded-full">
+                          <img
+                            className="h-full w-auto rounded rounded-full"
+                            src={member?.image_url}
+                            alt="imageIcon"
+                          />
+                        </div>
                       ) : (
-                        <>
+                        <div className="flex justify-center items-center">
                           <AccountCircle />
-                        </>
+                        </div>
                       )}
                     </div>
-                    <div className="grow">{member.name}</div>
+                    <div className="grow">
+                      {member.name
+                        .split(" ")
+                        .map((text: string) => {
+                          return text.charAt(0).toUpperCase() + text.slice(1);
+                        })
+                        .join(" ")}
+                    </div>
                   </div>
                 );
               })
@@ -423,7 +478,7 @@ function VoteOptionField({
       </Dialog>
       <div key={poll?.id} className={` text-md font-[300] mt-2 cursor-pointer`}>
         <div onClick={clickHandler}>
-          {poll.is_selected || showSelected ? (
+          {poll.is_selected || selectedPolls.includes(index) ? (
             <div
               className={`border border-[#3884f7] py-2 px-4 rounded rounded-2`}
             >
@@ -440,6 +495,13 @@ function VoteOptionField({
         <span
           className="cursor-pointer text-xs"
           onClick={() => {
+            if (poll?.is_anonymous) {
+              generalContext.setShowSnackBar(true);
+              generalContext.setSnackBarMessage(
+                "Viewing Results Not Available In Anonymous Polls"
+              );
+              return;
+            }
             setShouldOpenPollResultsDialog(true);
           }}
         >

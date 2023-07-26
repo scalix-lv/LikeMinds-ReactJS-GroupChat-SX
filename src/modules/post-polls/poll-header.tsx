@@ -10,7 +10,7 @@ function PollHeader({ closeDialog }: any) {
       >
         <CloseIcon />
       </span>
-      <p className="text-black">{messageStrings.NEW_POLL}</p>
+      <p className="text-black font-semibold">{messageStrings.NEW_POLL}</p>
     </div>
   );
 }
