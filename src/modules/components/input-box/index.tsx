@@ -382,12 +382,12 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
               onClick={() => {
                 setOpenPollDialog(true);
               }}
-              className="cursor-pointer"
+              className="cursor-pointer ml-1.5"
               key={title}
             >
               <svg
-                width="14"
-                height="14"
+                width="17"
+                height="17"
                 viewBox="0 0 20 20"
                 fill="red"
                 xmlns="http://www.w3.org/2000/svg"

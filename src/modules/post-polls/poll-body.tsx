@@ -76,9 +76,35 @@ function PollBody({ closeDialog }: any) {
   }
   async function postPoll() {
     try {
-      if (question?.length === 0) {
-        generalContext.setSnackBarMessage("Question Field cannot be empty");
+      if (question?.trim().length === 0) {
+        generalContext.setSnackBarMessage("Question field cannot be empty");
         generalContext.setShowSnackBar(true);
+        return;
+      }
+
+      const tempPollOptionsMap: any = {};
+      let shouldBreak = false;
+      const polls = optionsArray.map((item: any) => {
+        if (
+          tempPollOptionsMap[item?.text?.trim().toLowerCase()] !== undefined
+        ) {
+          generalContext.setSnackBarMessage("Poll options cannot be the same");
+          generalContext.setShowSnackBar(true);
+          shouldBreak = true;
+          return null;
+        } else {
+          if (item?.text?.trim()?.toLowerCase() === "") {
+            generalContext.setSnackBarMessage("Empty options are not allowed");
+            generalContext.setShowSnackBar(true);
+            shouldBreak = true;
+          }
+          tempPollOptionsMap[item?.text?.trim().toLowerCase()] = true;
+          return {
+            text: item?.text?.trim().toLowerCase(),
+          };
+        }
+      });
+      if (shouldBreak) {
         return;
       }
       if (expiryTime?.length === 0) {
@@ -88,33 +114,12 @@ function PollBody({ closeDialog }: any) {
       }
       if (Date.now() > expiryTime) {
         generalContext.setSnackBarMessage(
-          "Poll Expiry time should not be less than current time"
+          "Poll expiry time should not be less than current time"
         );
         generalContext.setShowSnackBar(true);
         return;
       }
-      const tempPollOptionsMap: any = {};
-      let shouldBreak = false;
-      const polls = optionsArray.map((item: any) => {
-        if (tempPollOptionsMap[item?.text] !== undefined) {
-          generalContext.setSnackBarMessage("Poll options cant be the same");
-          generalContext.setShowSnackBar(true);
-          shouldBreak = true;
-        } else {
-          if (item?.text === "") {
-            generalContext.setSnackBarMessage("Empty Options are not allowed");
-            generalContext.setShowSnackBar(true);
-            shouldBreak = true;
-          }
-          tempPollOptionsMap[item?.text] = true;
-          return {
-            text: item?.text,
-          };
-        }
-      });
-      if (shouldBreak) {
-        return;
-      }
+
       const pollOptions = {
         chatroomId: parseInt(id!),
         text: question,
@@ -303,6 +308,7 @@ function PollBody({ closeDialog }: any) {
                 </Select>
               </FormControl>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id="user-can-vote-term">Options</InputLabel>
                 <Select
                   value={voteAllowedPerUser}
                   onChange={(e) => {
@@ -348,7 +354,7 @@ function PollBody({ closeDialog }: any) {
         </div>
 
         <div
-          className="flex justify-center items-center cursor-pointer mt-4 bg-[#D0D8E2] h-[54px] w-[54px] rounded-full mx-auto mb-4"
+          className="flex justify-center items-center cursor-pointer mt-4 bg-[#00897B] h-[54px] w-[54px] rounded-full mx-auto mb-4"
           onClick={() => {
             postPoll();
           }}

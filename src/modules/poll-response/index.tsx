@@ -415,7 +415,18 @@ function VoteOptionField({
               variant="fullWidth"
             >
               {pollsArray.map((poll: any) => {
-                return <Tab label={poll?.text} key={poll.id} />;
+                return (
+                  <Tab
+                    label={poll?.text}
+                    key={poll.id}
+                    icon={
+                      <p className="font-normal text-xs">
+                        {poll.no_votes} Votes
+                      </p>
+                    }
+                    iconPosition="top"
+                  />
+                );
               })}
             </Tabs>
             {showLoadingCircle ? (
@@ -435,7 +446,7 @@ function VoteOptionField({
                     className="py-4 px-4 flex items-center border-t border-b"
                     key={member.id}
                   >
-                    <div className="mr-8">
+                    <div className="mr-6">
                       {member?.image_url?.length !== 0 ? (
                         <div className="h-[48px] w-[48px] rounded rounded-full">
                           <img
@@ -445,12 +456,19 @@ function VoteOptionField({
                           />
                         </div>
                       ) : (
-                        <>
+                        <div className="flex justify-center items-center">
                           <AccountCircle />
-                        </>
+                        </div>
                       )}
                     </div>
-                    <div className="grow">{member.name}</div>
+                    <div className="grow">
+                      {member.name
+                        .split(" ")
+                        .map((text: string) => {
+                          return text.charAt(0).toUpperCase() + text.slice(1);
+                        })
+                        .join(" ")}
+                    </div>
                   </div>
                 );
               })
