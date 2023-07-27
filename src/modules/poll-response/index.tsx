@@ -321,16 +321,43 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
             ADD OPTION
           </span>
         </div>
-        <div
-          className={`my-2 ${
-            shouldShowSubmitPollButton && showResultsButton === false
-              ? null
-              : "hidden"
-          } border border-[#EEEEEE] rounded-[48px] py-2 flex justify-center bg-[#3884f7] hover:opacity-80 cursor-pointer`}
-          onClick={submitPoll}
-        >
-          <span className="mx-auto text-white text-sm">SUBMIT</span>
-        </div>
+        {conversation.poll_type === 0 ? (
+          <div
+            className={`my-2 ${
+              shouldShowSubmitPollButton && showResultsButton === false
+                ? null
+                : "hidden"
+            } border border-[#EEEEEE] rounded-[48px] py-2 flex justify-center bg-[#3884f7] hover:opacity-80 cursor-pointer`}
+            onClick={submitPoll}
+          >
+            <span className="mx-auto text-white text-sm">SUBMIT</span>
+          </div>
+        ) : showResultsButton ? (
+          <div
+            className={`my-2 ${""} border border-[#EEEEEE] rounded-[48px] py-2 flex justify-center bg-[#3884f7] hover:opacity-80 cursor-pointer`}
+            onClick={() => {
+              setShowResultsButton(false);
+              conversation.polls = conversation.polls.map((item: any) => {
+                return {
+                  ...item,
+                  is_selected: false,
+                };
+              });
+              setSelectedPolls([]);
+            }}
+          >
+            <span className="mx-auto text-white text-sm">EDIT POLL</span>
+          </div>
+        ) : (
+          <div
+            className={`my-2 ${
+              shouldShowSubmitPollButton ? null : "hidden"
+            } border border-[#EEEEEE] rounded-[48px] py-2 flex justify-center bg-[#3884f7] hover:opacity-80 cursor-pointer`}
+            onClick={submitPoll}
+          >
+            <span className="mx-auto text-white text-sm">SUBMIT POLL</span>
+          </div>
+        )}
         <span className="pt-4 text-xs text-[#9B9B9B]">
           {conversation.poll_answer_text}
         </span>

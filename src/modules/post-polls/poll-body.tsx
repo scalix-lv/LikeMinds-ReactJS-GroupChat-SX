@@ -33,6 +33,7 @@ function PollBody({ closeDialog }: any) {
   const [voteAllowedPerUser, setVoteAllowedPerUser] = useState<any>(1);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState<any>(false);
   const [expiryTime, setExpiryTime] = useState<any>("");
+  const [isOptionsOkay, setIsOptionsOkay] = useState<boolean>(false);
   const generalContext = useContext(GeneralContext);
   const params = useParams();
   const id = params[routeVariable.id];
@@ -51,7 +52,29 @@ function PollBody({ closeDialog }: any) {
     ];
     setOptionsArray(initialOptionArray);
   }, []);
-
+  useEffect(() => {
+    const tempPollOptionsMap: any = {};
+    let shouldBreak = false;
+    optionsArray.map((item: any) => {
+      if (tempPollOptionsMap[item?.text?.trim().toLowerCase()] !== undefined) {
+        shouldBreak = true;
+        return null;
+      } else {
+        if (item?.text?.trim()?.toLowerCase() === "") {
+          shouldBreak = true;
+        }
+        tempPollOptionsMap[item?.text?.trim().toLowerCase()] = true;
+        return {
+          text: item?.text?.trim().toLowerCase(),
+        };
+      }
+    });
+    if (shouldBreak) {
+      return;
+    } else {
+      setIsOptionsOkay(true);
+    }
+  }, [optionsArray]);
   function setQuestionField(e: any) {
     setQuestion(e.target.value);
   }
@@ -124,7 +147,7 @@ function PollBody({ closeDialog }: any) {
         chatroomId: parseInt(id!),
         text: question,
         expiryTime: parseInt(expiryTime),
-        pollType: 0,
+        pollType: liveResults ? 1 : 0,
         isAnonymous: anonymousPoll,
         allowAddOption: voterAddOptions,
         polls: polls,
@@ -145,7 +168,7 @@ function PollBody({ closeDialog }: any) {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="pt-2 overflow-x-hidden">
         <textarea
-          className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-[8px] p-4 resize-none"
+          className="text-4 font-normal leading-6 w-full border border-[#D0D8E2] rounded-[8px] p-4 resize-none"
           placeholder="Ask a question*"
           value={question}
           onChange={setQuestionField}
@@ -165,7 +188,7 @@ function PollBody({ closeDialog }: any) {
                   onChange={(e: any) => {
                     handleInputOptionsChangeFunction(index, e?.target?.value);
                   }}
-                  className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-[8px] p-4"
+                  className="text-4 font-normal leading-6 w-full border border-[#D0D8E2] rounded-[8px] p-4"
                   placeholder="Option"
                 />
                 <span
@@ -188,8 +211,8 @@ function PollBody({ closeDialog }: any) {
             className="text-4 font-semibold leading-6 w-full border border-[#D0D8E2] rounded-[8px] p-4 flex items-center cursor-pointer mb-2"
             onClick={addNewOption}
           >
-            <AddCircleOutlineIcon className="text-[#00897B]" />
-            <span className="px-2 text-[#00897B]">
+            <AddCircleOutlineIcon className="text-[#3884f7]" />
+            <span className="px-2 text-[#3884f7]">
               {messageStrings.ADD_ANOTHER_POLL_OPTION}
             </span>
           </div>
@@ -209,10 +232,10 @@ function PollBody({ closeDialog }: any) {
             >
               <rect width="28" height="28" fill="white" fill-opacity="0.01" />
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M5.4834 10.25H22.5635C22.8293 10.25 23.0469 10.0391 23.0469 9.78125V8.375C23.0469 7.33984 22.1808 6.5 21.1133 6.5H19.1797V4.46875C19.1797 4.21094 18.9622 4 18.6963 4H17.085C16.8191 4 16.6016 4.21094 16.6016 4.46875V6.5H11.4453V4.46875C11.4453 4.21094 11.2278 4 10.9619 4H9.35059C9.08472 4 8.86719 4.21094 8.86719 4.46875V6.5H6.93359C5.86609 6.5 5 7.33984 5 8.375V9.78125C5 10.0391 5.21753 10.25 5.4834 10.25ZM22.5635 11.5H5.4834C5.21753 11.5 5 11.7109 5 11.9688V22.125C5 23.1602 5.86609 24 6.93359 24H21.1133C22.1808 24 23.0469 23.1602 23.0469 22.125V11.9688C23.0469 11.7109 22.8293 11.5 22.5635 11.5ZM10.1562 19.4688C10.1562 19.2109 9.93872 19 9.67285 19H8.06152C7.79565 19 7.57812 19.2109 7.57812 19.4688V21.0312C7.57812 21.2891 7.79565 21.5 8.06152 21.5H9.67285C9.93872 21.5 10.1562 21.2891 10.1562 21.0312V19.4688ZM9.67285 14C9.93872 14 10.1562 14.2109 10.1562 14.4688V16.0312C10.1562 16.2891 9.93872 16.5 9.67285 16.5H8.06152C7.79565 16.5 7.57812 16.2891 7.57812 16.0312V14.4688C7.57812 14.2109 7.79565 14 8.06152 14H9.67285ZM15.3125 19.4688C15.3125 19.2109 15.095 19 14.8291 19H13.2178C12.9519 19 12.7344 19.2109 12.7344 19.4688V21.0312C12.7344 21.2891 12.9519 21.5 13.2178 21.5H14.8291C15.095 21.5 15.3125 21.2891 15.3125 21.0312V19.4688ZM14.8291 14C15.095 14 15.3125 14.2109 15.3125 14.4688V16.0312C15.3125 16.2891 15.095 16.5 14.8291 16.5H13.2178C12.9519 16.5 12.7344 16.2891 12.7344 16.0312V14.4688C12.7344 14.2109 12.9519 14 13.2178 14H14.8291ZM20.4688 19.4688C20.4688 19.2109 20.2512 19 19.9854 19H18.374C18.1082 19 17.8906 19.2109 17.8906 19.4688V21.0312C17.8906 21.2891 18.1082 21.5 18.374 21.5H19.9854C20.2512 21.5 20.4688 21.2891 20.4688 21.0312V19.4688ZM19.9854 14C20.2512 14 20.4688 14.2109 20.4688 14.4688V16.0312C20.4688 16.2891 20.2512 16.5 19.9854 16.5H18.374C18.1082 16.5 17.8906 16.2891 17.8906 16.0312V14.4688C17.8906 14.2109 18.1082 14 18.374 14H19.9854Z"
-                fill="#00897B"
+                fill="#3884f7"
                 // #3884f7
               />
             </svg>
@@ -354,17 +377,22 @@ function PollBody({ closeDialog }: any) {
         </div>
 
         <div
-          className="flex justify-center items-center cursor-pointer mt-4 bg-[#00897B] h-[54px] w-[54px] rounded-full mx-auto mb-4"
+          className={`flex justify-center items-center cursor-pointer mt-4 h-[54px] w-[54px] rounded-full mx-auto mb-4
+          
+          `}
+          style={{
+            backgroundColor:
+              question?.trim().length !== 0 &&
+              expiryTime?.length !== 0 &&
+              Date.now() < expiryTime &&
+              isOptionsOkay
+                ? "#3884f7"
+                : "#ACB7C0",
+          }}
           onClick={() => {
             postPoll();
           }}
         >
-          {/* <CheckCircleIcon
-            className="text-[#00897B]"
-            style={{
-              fontSize: "54px",
-            }}
-          /> */}
           <img src={checkmark} alt="" />
         </div>
       </div>
