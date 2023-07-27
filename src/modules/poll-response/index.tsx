@@ -518,7 +518,7 @@ function VoteOptionField({
           )}
         </div>
       </div>
-      {shouldShowVotes ? (
+      {shouldShowVotes || Date.now() > conversation.expiry_time ? (
         <span
           className="cursor-pointer text-xs"
           onClick={() => {
