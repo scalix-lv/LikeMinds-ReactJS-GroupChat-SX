@@ -379,7 +379,11 @@ const StringBox = ({
                     })}
                   </>
                 ) : null}
-                {replyConversationObject?.answer}
+                {parse(
+                  linkConverter(
+                    tagExtracter(replyConversationObject?.answer, userContext)
+                  )
+                )}
               </div>
             </div>
           ) : null}
@@ -569,7 +573,13 @@ const MoreOptions = ({ convoId, convoObject, index }: moreOptionsType) => {
     },
   ];
   if (convoObject.deleted_by !== undefined) {
-    return null;
+    return (
+      <span
+        style={{
+          width: "72px",
+        }}
+      ></span>
+    );
   }
   return (
     <Box className="flex items-center">
