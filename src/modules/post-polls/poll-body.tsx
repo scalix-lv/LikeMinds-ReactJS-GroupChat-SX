@@ -155,13 +155,13 @@ function PollBody({ closeDialog }: any) {
         multipleSelectState: voteAllowerPerUserTerm,
         multipleSelectNo: voteAllowedPerUser,
       };
-      console.log(pollOptions);
+
 
       const pollCall = await myClient.postPollConversation(pollOptions);
-      console.log(pollCall);
+
       closeDialog();
     } catch (error) {
-      console.log(error);
+
     }
   }
   return (
@@ -307,7 +307,6 @@ function PollBody({ closeDialog }: any) {
             </div>
           </div>
           <div className="border-b border-[#D0D8E2] p-2 py-4">
-            {/* <p>{messageStrings.USERS_CAN_VOTE_FOR}</p> */}
             <div className="flex justify-between items-center">
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id="user-can-vote-term">

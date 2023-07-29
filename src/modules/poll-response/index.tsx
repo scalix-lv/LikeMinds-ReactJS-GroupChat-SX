@@ -147,29 +147,22 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
   }, [selectedPolls]);
   async function submitPoll() {
     try {
-      //   console.log(selectedPolls);
       const polls = selectedPolls?.map((itemIndex: any) => {
         return conversation?.polls[itemIndex];
       });
-      console.log(polls);
+
       const pollSubmissionCall = await myClient.submitPoll({
         conversationId: conversation?.id,
         polls: polls,
       });
       const op: any = {
         chatroomID: id,
-        // conversationID: conversation.id,
-        // include: true,
         paginateBy: 100,
       };
       const conversations = await myClient.getConversation(op);
-      // const lastConvo = conversations?.data?.conversations.splice(-1);
-      // const newConvos = [...chatroomContext.conversationList];
-      // const newConvosLength = newConvos.length;
-      // newConvos[newConvosLength - 1] = lastConvo[0];
       chatroomContext.setConversationList(conversations?.data?.conversations);
     } catch (error) {
-      console.log("error at poll submission");
+
       console.log(error);
     }
   }
@@ -187,7 +180,6 @@ const PollResponse = ({ conversation }: PollResponseProps) => {
         poll: pollObject,
       });
     } catch (error) {
-      console.log("error at addPollOption");
       console.log(error);
     }
   }
