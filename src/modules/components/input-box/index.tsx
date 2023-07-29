@@ -274,8 +274,8 @@ const InputSearchField = ({ setBufferMessage, disableInputBox }: any) => {
               timeOut.current = setTimeout(() => {
                 getTaggingMembers(search, 1).then((val) => {
                   const arr = val?.map((item: any) => {
-                    item.display = item.name;
-                    item.id = item.sdk_client_info.uuid;
+                    item.display = item?.name;
+                    item.id = item?.sdk_client_info.uuid;
                     return item;
                   });
                   if (arr?.length < 10) {
