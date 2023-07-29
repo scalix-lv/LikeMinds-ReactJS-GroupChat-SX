@@ -5,7 +5,6 @@ import "./App.css";
 import RouteProvider from "./modules/components/routes";
 import { UserContext } from "./modules/contexts/userContext";
 import { log } from "./sdkFunctions";
-import { myClient } from ".";
 import { initiateSDK, retrieveMemberStates } from "./sdkFunctions/clientSetup";
 
 function App() {
