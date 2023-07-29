@@ -37,8 +37,8 @@ export function MoreOptions() {
       });
       closeMenu();
       let refreshCall = await getChatRoomDetails(myClient, generalContext.currentChatroom.id);
-      generalContext.setCurrentProfile(refreshCall.data);
-      generalContext.setCurrentChatroom(refreshCall.data.chatroom);
+      generalContext.setCurrentProfile(refreshCall?.data?.data);
+      generalContext.setCurrentChatroom(refreshCall?.data?.data?.chatroom);
     } catch (error) {
       log(error);
     }
