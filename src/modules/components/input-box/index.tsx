@@ -378,28 +378,30 @@ const InputOptions = ({ containerRef, disableInputBox }: any) => {
         }
         if (title === "poll") {
           return (
-            <span
+            <IconButton
               onClick={() => {
                 setOpenPollDialog(true);
               }}
-              className="cursor-pointer ml-1.5"
               key={title}
+              className="p-2"
             >
-              <svg
-                width="17"
-                height="17"
-                viewBox="0 0 20 20"
-                fill="red"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M11.4269 19.0057H7.63737V0.0583496H11.4269V19.0057ZM3.84796 19.0057H0.0584717V5.74254H3.84796V19.0057ZM15.2163 19.0057H19.0058V11.4268H15.2163V19.0057Z"
-                  fill="black"
-                />
-              </svg>
-            </span>
+              <span className="cursor-pointer ">
+                <svg
+                  width="17"
+                  height="17"
+                  viewBox="0 0 20 20"
+                  fill="red"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M11.4269 19.0057H7.63737V0.0583496H11.4269V19.0057ZM3.84796 19.0057H0.0584717V5.74254H3.84796V19.0057ZM15.2163 19.0057H19.0058V11.4268H15.2163V19.0057Z"
+                    fill="black"
+                  />
+                </svg>
+              </span>
+            </IconButton>
           );
         }
         if (title !== "GIF" && title !== "emojis") {
