@@ -13,6 +13,9 @@ import {
   LAST_CONVERSATION_ID_FORWARD,
 } from "../../../enums/localStorageConstants";
 
+import CleverTap from "../../../../../analytics/clevertap/CleverTap";
+import { CT_EVENTS } from "../../../../../analytics/clevertap/constants";
+
 type ConversationCreateData = {
   chatroom_id: any;
   created_at: any;
@@ -33,6 +36,8 @@ type UploadConfigType = {
   url: string;
 };
 const sendMessage = async (
+  isReply: Boolean,
+  title: string,
   chat_request_state: any,
   state: any,
   chatroomContext: chatroomContextType,
@@ -40,10 +45,20 @@ const sendMessage = async (
   inputFieldContext: InputFieldContextType,
   setBufferMessage: any,
   setEnableInputBox: any,
-  mode: any
+  mode: any,
+  generalContext: any
 ) => {
   try {
+    let props: any = {};
+    let isDirectChat = false;
+    if (location?.pathname?.includes("/community/direct-messages/")) {
+      props["chat_member_name"] = generalContext?.currentChatroom?.member?.name;
+      isDirectChat = true;
+    } else {
+      props["groupName"] = generalContext?.currentChatroom?.header;
+    }
     if (chat_request_state === null && mode === "direct-messages") {
+      CleverTap.pushEvents(CT_EVENTS.NETWORK.CHAT.COMMENT_ADDED, props);
       await sendDmRequest(chatroom_id, inputFieldContext.messageText, state);
       document.dispatchEvent(
         new CustomEvent("joinEvent", { detail: chatroom_id })
@@ -122,6 +137,26 @@ const sendMessage = async (
 
     // above this point
 
+    if (isReply && mode === "groups") {
+      CleverTap.pushEvents(
+        CT_EVENTS.NETWORK.GROUP.JOINED_GROUP_REPLY_COMPLETE,
+        props
+      );
+    }
+    if (
+      filesArray.length == 0 &&
+      !isDirectChat &&
+      chat_request_state == null &&
+      !isReply
+    ) {
+      CleverTap.pushEvents(
+        CT_EVENTS.NETWORK.GROUP.JOINED_GROUP_COMMENT_ADD,
+        props
+      );
+    } else if (filesArray.length == 0 && isDirectChat && !isReply) {
+      CleverTap.pushEvents(CT_EVENTS.NETWORK.CHAT.COMMENT_ADDED, props);
+    }
+
     if (filesArray.length) {
       let index = 0;
       for (const newFile of filesArray) {
@@ -133,12 +168,45 @@ const sendMessage = async (
         let fileType = "";
         if (filesArray[0].type.split("/")[1] === "pdf") {
           fileType = "pdf";
+          if (isDirectChat) {
+            CleverTap.pushEvents(
+              CT_EVENTS.NETWORK.CHAT.COMMENT_DOCUMENT_ADDED,
+              props
+            );
+          } else {
+            CleverTap.pushEvents(
+              CT_EVENTS.NETWORK.GROUP.JOINED_GROUP_COMMENT_DOCUMENT_ADD,
+              props
+            );
+          }
         } else if (filesArray[0].type.split("/")[0] === "audio") {
           fileType = "audio";
+          if (isDirectChat) {
+            CleverTap.pushEvents(
+              CT_EVENTS.NETWORK.CHAT.COMMENT_VOICE_ADDED,
+              props
+            );
+          } else {
+            CleverTap.pushEvents(
+              CT_EVENTS.NETWORK.GROUP.JOINED_GROUP_COMMENT_VOICE_ADD,
+              props
+            );
+          }
         } else if (filesArray[0].type.split("/")[0] === "video") {
           fileType = "video";
         } else {
           fileType = "image";
+          if (isDirectChat) {
+            CleverTap.pushEvents(
+              CT_EVENTS.NETWORK.CHAT.COMMENT_IMAGE_ADDED,
+              props
+            );
+          } else {
+            CleverTap.pushEvents(
+              CT_EVENTS.NETWORK.GROUP.JOINED_GROUP_COMMENT_IMAGE_ADD,
+              props
+            );
+          }
         }
         index++;
         // log(newFile);

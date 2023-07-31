@@ -10,6 +10,8 @@ import routeVariable from "../../../enums/routeVariables";
 import searchIcon from "./../../../assets/svg/search.svg";
 import { useState } from "react";
 import ChannelSearch from "../channel-search";
+import { CT_EVENTS } from "../../../../../analytics/clevertap/constants";
+import CleverTap from "../../../../../analytics/clevertap/CleverTap";
 
 type propsTitle = {
   title: any;
@@ -33,6 +35,7 @@ const Tittle = ({
   const openSearchField = () => {
     setOpenSearch(true);
   };
+
   return (
     <Box className="flex">
       <div className="w-full flex border-b border-b-[#adadad] my-0 mr-[120px] ml-[28px] pt-0 px-0 pb-[10px] shadow-none z:max-md:mr-6 items-center">
@@ -55,6 +58,15 @@ const TitleArea = ({ title, memberCount, chatroomUrl }: propsTitle) => {
   const params = useParams();
   const id: any = params[routeVariable.id];
   const mode: any = params[routeVariable.mode];
+  if (mode == "direct-messages") {
+    CleverTap.pushEvents(CT_EVENTS.NETWORK.GROUP.JOINED_GROUP_VISIT, {
+      groupName: title,
+    });
+  } else if (mode == "groups") {
+    CleverTap.pushEvents(CT_EVENTS.NETWORK.CHAT.MEMBER_CHAT_CLICK, {
+      chatName: title,
+    });
+  }
   return (
     <Link
       to={mode === "groups" ? `${groupInfoPath}/${id}` : ""}

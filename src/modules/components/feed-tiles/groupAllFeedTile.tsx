@@ -7,6 +7,7 @@ import { FeedContext } from "../../contexts/feedContext";
 import { GeneralContext } from "../../contexts/generalContext";
 import { RouteContext } from "../../contexts/routeContext";
 import { UserContext } from "../../contexts/userContext";
+import ForumManager from "../../../../../modules/community/managers/ForumManager";
 
 type GroupAllFeedTileProps = {
   groupTitle: any;
@@ -25,10 +26,17 @@ const GroupAllFeedTile = ({
   const userContext = useContext(UserContext);
   const routeContext = useContext(RouteContext);
   const generalContext = useContext(GeneralContext);
+  const forumManager = new ForumManager();
   const navigate = useNavigate();
   async function joinGroup() {
     try {
       const call = await joinChatRoom(chatroomId, userContext.currentUser.id);
+      if (!call.error)
+        forumManager.updateUserForumInfo({
+          group: { name: groupTitle, id: chatroomId },
+          follow: true,
+          communityIds: [userContext?.currentUser?.user_unique_id],
+        });
       // chatroomContext.refreshChatroomContext();
       const joinEvent = new CustomEvent("joinEvent", { detail: chatroomId });
       document.dispatchEvent(joinEvent);

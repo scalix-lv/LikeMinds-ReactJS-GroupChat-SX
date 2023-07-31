@@ -14,6 +14,7 @@ import {
 import { FeedContext } from "../contexts/feedContext";
 import { GeneralContext } from "../contexts/generalContext";
 import routeVariable from "../../enums/routeVariables";
+import ForumManager from "../../../../modules/community/managers/ForumManager";
 
 type feedArrayContent = {
   header: string;
@@ -325,12 +326,25 @@ export async function loadGroupFeed(
   }
 }
 
-export const invitationResponse = async (channel_id: any, response: any) => {
+export const invitationResponse = async (
+  channel_id: any,
+  response: any,
+  title: any,
+  currentUser: any
+) => {
   try {
     const call = await myClient.inviteAction({
       channelId: channel_id.toString(),
       inviteStatus: response,
     });
+    if (call?.success && response === 1) {
+      const forumManager = new ForumManager();
+      forumManager.updateUserForumInfo({
+        group: { name: title, id: channel_id },
+        follow: true,
+        communityIds: [currentUser?.user_unique_id],
+      });
+    }
   } catch (error) {
     log(error);
   }
