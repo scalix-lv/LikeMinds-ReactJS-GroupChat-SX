@@ -368,9 +368,7 @@ const ChatContainer: React.FC = () => {
       setLoadMoreForwardConversations(false);
     };
   }, [id, generalContext.currentChatroom]);
-  useEffect(() => {
-    return () => chatroomContext.setConversationList([]);
-  }, [id]);
+
   // firebase listener
   useFirebaseChatConversations(
     getChatroomConversations,

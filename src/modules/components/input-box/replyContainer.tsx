@@ -1,10 +1,12 @@
 /* eslint-disable react/require-default-props */
-import { Close } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
-import React, { useContext } from "react";
-import { getString, linkConverter, tagExtracter } from "../../../sdkFunctions";
-import parse from "html-react-parser";
-import { UserContext } from "../../contexts/userContext";
+import { Close } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import React, { useContext } from 'react';
+import { getString, linkConverter, tagExtracter } from '../../../sdkFunctions';
+import parse from 'html-react-parser';
+import { UserContext } from '../../contexts/userContext';
+import CleverTap from '../../../../../analytics/clevertap/CleverTap';
+import { CT_EVENTS } from '../../../../../analytics/clevertap/constants';
 type ReplyBoxType = {
   openReplyBox: boolean;
   memberName: string;
@@ -12,6 +14,7 @@ type ReplyBoxType = {
   setIsSelectedConversation: any;
   setSelectedConversation: any;
   attachments?: any;
+  title: string;
 };
 
 const ReplyBox: React.FC<ReplyBoxType> = ({
@@ -21,14 +24,15 @@ const ReplyBox: React.FC<ReplyBoxType> = ({
   setIsSelectedConversation,
   setSelectedConversation,
   attachments,
+  title
 }: ReplyBoxType) => {
   const userContext = useContext(UserContext);
   return (
     <div
       className="w-full justify-between shadow-sm overflow-auto bg-white absolute  max-h-[250px] rounded-[5px]"
       style={{
-        display: openReplyBox ? "flex" : "none",
-        transform: "translate(0, -105%)",
+        display: openReplyBox ? 'flex' : 'none',
+        transform: 'translate(0, -105%)'
       }}
     >
       <div className="border-l-4 border-l-green-500 px-2 text-[14px]">
@@ -37,14 +41,8 @@ const ReplyBox: React.FC<ReplyBoxType> = ({
           {attachments !== undefined ? (
             <div>
               {attachments.map((item: any) => {
-                if (item.type === "image") {
-                  return (
-                    <img
-                      src={item.url}
-                      className="h-[120px] w-[120px]"
-                      alt=""
-                    />
-                  );
+                if (item.type === 'image') {
+                  return <img src={item.url} className="h-[120px] w-[120px]" alt="" />;
                 }
                 return null;
               })}
@@ -56,6 +54,9 @@ const ReplyBox: React.FC<ReplyBoxType> = ({
       <div>
         <IconButton
           onClick={() => {
+            CleverTap.pushEvents(CT_EVENTS.NETWORK.GROUP.JOINED_GROUP_REPLY_ABANDON, {
+              groupName: title
+            });
             setIsSelectedConversation(false);
             setSelectedConversation({});
           }}

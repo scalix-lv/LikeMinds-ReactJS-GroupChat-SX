@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-import searchIcon from './../assets/svg/search.svg';
+import React, { useEffect, useRef, useState } from "react";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
+import searchIcon from "./../assets/svg/search.svg";
 
 function SearchBar() {
   const [openSearch, setOpenSearch] = useState(false);
@@ -34,9 +34,9 @@ function SearchField({ closeSearchField }) {
         closeSearchField();
       }
     };
-    document.addEventListener('click', handleOutSideClick, true);
+    document.addEventListener("click", handleOutSideClick, true);
     return () => {
-      document.removeEventListener('click', handleOutSideClick, true);
+      document.removeEventListener("click", handleOutSideClick, true);
     };
   });
   return (
@@ -49,24 +49,24 @@ function SearchField({ closeSearchField }) {
           </InputAdornment>
         ),
         endAdornment: (
-
-          <CloseIcon style={{
-            fontSize: "12px"
-          }} />
-
+          <CloseIcon
+            style={{
+              fontSize: "12px",
+            }}
+          />
         ),
         sx: {
-          fontFamily: 'Lato'
+          fontFamily: "Lato",
         },
         inputProps: {
           style: {
-            padding: '8px'
-          }
-        }
+            padding: "8px",
+          },
+        },
       }}
       className="bg-white p-0"
       sx={{
-        fontFamily: 'Lato'
+        fontFamily: "Lato",
       }}
     ></TextField>
   );
