@@ -78,7 +78,7 @@ const MessageBoxDM = ({
 
   if (conversationObject.state !== 0) {
     return (
-      <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[300] text-[#323232]">
+      <div className="mx-auto text-center rounded-[4px] text-[14px] w-full font-[400] text-[#323232]">
         {conversationObject.state === 1 ? (
           <span id="state-1">{parse(linkConverter(tagExtracter(messageString, userContext, 1)))}</span>
         ) : (
@@ -193,11 +193,11 @@ const StringBox = ({
         <div className="text-[12px] leading-[14px] text-[#323232] font-[700] capitalize">
           <div>{userId === userContext.currentUser.id ? 'you' : username}</div>
         </div>
-        <div className="text-[10px] leading-[12px] text-[#323232] font-[300]">{time}</div>
+        <div className="text-[10px] leading-[12px] text-[#323232] font-[400]">{time}</div>
       </div>
 
       {conversationObject.deleted_by !== undefined ? (
-        <span className="text-[14px] w-full font-[300] text-[#323232]">This message has been deleted.</span>
+        <span className="text-[14px] w-full font-[400] text-[#323232]">This message has been deleted.</span>
       ) : (
         <div className="flex w-full flex-col">
           <div className="w-full mb-1 h-full">
@@ -227,7 +227,7 @@ const StringBox = ({
             </div>
           ) : null}
 
-          <div className="text-[14px] w-full font-[300] text-[#323232]">
+          <div className="text-[14px] w-full font-[400] text-[#323232]">
             <span className="msgCard" ref={ref}>
               {parse(linkConverter(tagExtracter(messageString, userContext)))}
             </span>
