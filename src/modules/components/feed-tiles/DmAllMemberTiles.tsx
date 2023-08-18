@@ -77,7 +77,6 @@ const DmMemberTile = ({ profile }: any) => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState('');
   const { state } = useLocation();
-  console.log({ state });
 
   if (state?.directMessage && profile?.user_unique_id === state?.communityId) {
     dmContext.setShowLoadingBar(true);

@@ -9,9 +9,12 @@ import { UserContext } from '../../contexts/userContext';
 import GroupInfo from '../chatroom-info';
 import routeVariable from '../../../enums/routeVariables';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import UserProfileView from '../../../../../modules/common/userProfileView';
 import ChannelSearch from '../channel-search';
+import NoDataPage from '../../../../../modules/common/noDataPage/NoDataPage';
+import { IconConstant } from '../../../../../constants/IconConstants';
+import { getColor } from '../../../../../globalColors/Colors';
 
 const getChatroomComponents = (operation: string) => {
   switch (operation) {
@@ -97,7 +100,29 @@ const ChatroomWrapper: React.FC = () => {
     >
       {!openSearch ? (
         mode !== 'groups' && operation === 'personal-info' ? (
-          <Box mt="-2rem" ml="2rem">
+          <Box mt="1rem" ml="2rem">
+            <Link
+              // className={classes.button}
+              style={{
+                textTransform: 'none',
+                fontSize: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.063rem',
+                color: getColor('primary', 50),
+                fontWeight: '700',
+                textDecoration: 'none',
+                filter:
+                  'invert(61%) sepia(58%) saturate(6436%) hue-rotate(200deg) brightness(99%) contrast(96%) !important',
+                cursor: 'pointer'
+              }}
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
+              <img src={IconConstant?.ARROW_LEFT_BLUE_ICON} alt="back button arrow" />
+              Back
+            </Link>
             <UserProfileView
               userData={{ user_unique_id: status }}
               callBack={() => navigate(`/community/direct-messages/main/${state?.chatroomId}`)}
@@ -115,7 +140,13 @@ const ChatroomWrapper: React.FC = () => {
             />
             {getChatroomComponents(operation!)}
           </>
-        ) : null
+        ) : (
+          <NoDataPage
+            multiLine
+            line1="Oops!"
+            line2={mode !== 'groups' ? 'You have not initiated any chat' : 'You have not joined any Gorup'}
+          />
+        )
       ) : (
         <>
           <ChannelSearch setOpenSearch={setOpenSearch} />
