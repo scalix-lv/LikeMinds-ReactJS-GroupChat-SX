@@ -1,22 +1,26 @@
 import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import filterIcon from '../../../assets/svg/menu.svg';
 import searchIcon from '../../../assets/svg/searchBoxIcon.svg';
 import { myClient } from '../../..';
 import SearchBarContainer from './searchbarContainer';
 import { CT_EVENTS } from '../../../../../analytics/clevertap/constants';
 import CleverTap from '../../../../../analytics/clevertap/CleverTap';
+import { FeedContext } from '../../contexts/feedContext';
 
-const Searchbar = () => {
+const Searchbar = ({ leaveChatroomContextRefresh, mode }: any) => {
   const [searchString, setSearchString] = useState('');
   const [searchResultObject, setSearchResultObject] = useState<any>([]);
   const [showSearchContainer, setShowSearchContainer] = useState(false);
   const [shouldShowLoading, setShouldShowLoading] = useState(true);
+  const feedContext = useContext(FeedContext);
+  const { dmAllFeed }: any = feedContext;
   const ref = useRef<any>(null);
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (ref.current && !ref.current.contains(event.target)) {
         setShowSearchContainer(false);
+        setSearchString('');
       }
     };
     document.addEventListener('click', handleClickOutside, true);
@@ -28,29 +32,38 @@ const Searchbar = () => {
     const searchTimeOut = setTimeout(async () => {
       try {
         if (searchString === '') {
+          setSearchResultObject([]);
           return;
         }
         setShouldShowLoading(true);
-        const callFollowed = await myClient.searchChatroom({
-          followStatus: true,
-          search: searchString,
-          pageSize: 200,
-          page: 1,
-          searchType: 'header'
-        });
-        const callUnFollowed = await myClient.searchChatroom({
-          followStatus: false,
-          search: searchString,
-          pageSize: 200,
-          page: 1,
-          searchType: 'header'
-        });
-        const obj = [];
-        obj[0] = { 'Followed Groups': callFollowed?.data?.chatrooms };
-        obj[1] = { 'Other Groups': callUnFollowed?.data?.chatrooms };
+        if (mode === 'groups') {
+          const callFollowed = await myClient.searchChatroom({
+            followStatus: true,
+            search: searchString,
+            pageSize: 200,
+            page: 1,
+            searchType: 'header'
+          });
+          const callUnFollowed = await myClient.searchChatroom({
+            followStatus: false,
+            search: searchString,
+            pageSize: 200,
+            page: 1,
+            searchType: 'header'
+          });
+          const obj = [];
+          obj[0] = { 'Followed Groups': callFollowed?.data?.chatrooms };
+          obj[1] = { 'Other Groups': callUnFollowed?.data?.chatrooms };
 
-        setSearchResultObject(obj);
+          setSearchResultObject(obj);
+        } else {
+          const serchedDm: any = dmAllFeed?.filter((participant: any) => participant?.name?.includes(searchString));
+          const obj = [];
+          obj[0] = { 'All Members': serchedDm };
+          setSearchResultObject(obj);
+        }
         setShouldShowLoading(false);
+
         // // // console.log(obj);
       } catch (error) {
         // // // console.log(error);
@@ -91,7 +104,7 @@ const Searchbar = () => {
             },
             className: ' font-[300] text-[14px] h-[48px] w-[100%]'
           }}
-          placeholder="Search for groups"
+          placeholder={mode === 'groups' ? 'Search for groups' : 'Search for Message'}
           value={searchString}
           onChange={(e) => {
             if (location?.pathname?.includes('/community/groups/main/')) {
@@ -133,7 +146,12 @@ const Searchbar = () => {
           width: '100%'
         }}
       >
-        <SearchBarContainer searchResults={searchResultObject} shouldShowLoading={shouldShowLoading} />
+        <SearchBarContainer
+          searchResults={searchResultObject}
+          shouldShowLoading={shouldShowLoading}
+          leaveChatroomContextRefresh={leaveChatroomContextRefresh}
+          mode={mode}
+        />
       </div>
     </div>
   );

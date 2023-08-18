@@ -1,20 +1,20 @@
-import { IconButton } from "@mui/material";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { myClient } from "../../..";
-import searchConversationsInsideChatroom from "../../../sdkFunctions/searchFunctions";
-import routeVariable from "../../../enums/routeVariables";
-import { useParams } from "react-router";
-import ProfileTile from "./profile-tile";
-import { log } from "../../../sdkFunctions";
-import { ref } from "@firebase/database";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { GeneralContext } from "../../contexts/generalContext";
+import { Box, IconButton } from '@mui/material';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { myClient } from '../../..';
+import searchConversationsInsideChatroom from '../../../sdkFunctions/searchFunctions';
+import routeVariable from '../../../enums/routeVariables';
+import { useParams } from 'react-router';
+import ProfileTile from './profile-tile';
+import { log } from '../../../sdkFunctions';
+import { ref } from '@firebase/database';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { GeneralContext } from '../../contexts/generalContext';
 // import { log } from "console";
 // log
 
 const ChannelSearch = ({ setOpenSearch }: any) => {
-  const [searchKey, setSearchKey] = useState("");
+  const [searchKey, setSearchKey] = useState('');
   const [searchState, setSearchState] = useState(0);
   const [searchArray, setSearchArray] = useState<any>([]);
   const [loadMoreConversations, setLoadMoreConversations] = useState(true);
@@ -47,7 +47,7 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
         pageSize
       );
       const response: any = call?.data?.conversations;
-      log("the profiles after the search are");
+      log('the profiles after the search are');
       log(response);
       if (response.length < 20 && searchState === 1) {
         setSearchState(2);
@@ -70,9 +70,9 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
       //   log(e);
       // }
     }
-    document.addEventListener("click", searchClickHandler, true);
+    document.addEventListener('click', searchClickHandler, true);
     return () => {
-      document.removeEventListener("click", searchClickHandler, true);
+      document.removeEventListener('click', searchClickHandler, true);
     };
   }, [searchInputBoxRef]);
 
@@ -85,6 +85,8 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
     };
   }, [searchKey]);
 
+  console.log({ searchKey, searchArray });
+
   // for rendering the profiles
   function renderProfiles() {
     try {
@@ -96,24 +98,21 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
         );
       });
     } catch (error) {
-      log("error in renderProfiles");
+      log('error in renderProfiles');
       log(error);
     }
   }
   return (
     <div className="">
-      <div
-        className=" mx-4  border-b border-b-[#adadad] bg-[transparent]"
-        ref={searchInputBoxRef}
-      >
-        <div className="relative flex ">
+      <div className=" mx-4  border-b border-b-[#adadad] bg-[transparent]" ref={searchInputBoxRef}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
           <IconButton
             onClick={() => {
               setOpenSearch(false);
             }}
             sx={{
-              position: "absolute",
-              margin: "2px 4px",
+              position: 'absolute',
+              margin: '2px 4px'
             }}
           >
             <ArrowBackIcon />
@@ -122,16 +121,14 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
             type="text"
             value={searchKey}
             onChange={setSearchString}
-            placeholder={`Search withing ${generalContext.currentChatroom?.header}`}
+            placeholder={`Search in ${generalContext.currentChatroom?.header}`}
+            style={{ height: '50px' }}
             className="py-3 focus:border-0 focus:outline-0 active:border-0 focus:outline-0 px-14 bg-transparent grow"
             autoFocus={true}
           />
-        </div>
+        </Box>
       </div>
-      <div
-        className="mx-4 max-h-[400px] overflow-auto"
-        id="conversations-holder"
-      >
+      <div className="mx-4 max-h-[400px] overflow-auto" id="conversations-holder">
         <InfiniteScroll
           hasMore={loadMoreConversations}
           scrollableTarget="conversations-holder"
@@ -153,3 +150,4 @@ const ChannelSearch = ({ setOpenSearch }: any) => {
 };
 
 export default ChannelSearch;
+
